@@ -1,0 +1,11 @@
+# Xcode
+xcuserdata/
+DerivedData/
+*.xcresult
+build/
+
+# Firebase
+GoogleService-Info.plist
+
+# macOS
+.DS_Store
