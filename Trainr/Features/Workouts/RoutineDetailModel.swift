@@ -179,22 +179,23 @@ final class RoutineDetailModel {
     // One timer at a time: starting an exercise replaces whatever was running.
     func startTimer(for exercise: ExerciseUi) {
         cancelTick()
-        let seconds = exercise.minutes * Constants.Workout.secondsPerMinute
-        state.timer = ExerciseTimerUi(
-            position: exercise.position, remainingSeconds: seconds, isRunning: true
+        state.timer = .running(
+            position: exercise.position,
+            totalSeconds: exercise.minutes * Constants.Workout.secondsPerMinute,
+            from: Date()
         )
         startTicking()
     }
 
     func pauseTimer() {
         cancelTick()
-        state.timer?.isRunning = false
+        state.timer?.pause(at: Date())
     }
 
     func resumeTimer() {
         guard state.timer != nil else { return }
         cancelTick()
-        state.timer?.isRunning = true
+        state.timer?.resume(at: Date())
         startTicking()
     }
 
@@ -207,13 +208,7 @@ final class RoutineDetailModel {
     // again, not going again.
     func resetTimer() {
         cancelTick()
-        guard let timer = state.timer else { return }
-        state.timer = ExerciseTimerUi(
-            position: timer.position,
-            remainingSeconds: timer.totalSeconds,
-            isRunning: false,
-            totalSeconds: timer.totalSeconds
-        )
+        state.timer?.reset()
     }
 
     // The loop holds the model weakly, so a screen that goes away takes its
@@ -232,10 +227,9 @@ final class RoutineDetailModel {
     // Running out of time is what finishes an exercise, so the card turns green
     // and its timer goes away together. Returns whether the clock keeps running.
     private func tick() -> Bool {
-        guard let timer = state.timer else { return false }
-        let remaining = timer.remainingSeconds - 1
-        if remaining > 0 {
-            state.timer?.remainingSeconds = remaining
+        guard var timer = state.timer else { return false }
+        if timer.advance(to: Date()) {
+            state.timer = timer
             return true
         }
         state.routine = state.routine.markCompleted(at: timer.position)
