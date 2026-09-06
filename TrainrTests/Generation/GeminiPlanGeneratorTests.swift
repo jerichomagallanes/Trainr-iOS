@@ -170,6 +170,17 @@ struct GeminiPlanGeneratorTests {
         #expect(client.modelsAsked == [PlanModelChain.models[0], PlanModelChain.models[1]])
     }
 
+    // A caller the backend turns away is turned away everywhere, so the walk
+    // stops at the first door rather than knocking on five.
+    @Test func aRefusedCallerStopsTheWalk() async {
+        let client = answering(.refused, .text(validPlanJSON))
+
+        let result = await generator(client).generate(request())
+
+        #expect(result == .failure(.failed))
+        #expect(client.modelsAsked == [PlanModelChain.models[0]])
+    }
+
     @Test func everyModelRefusingFailsSoftly() async {
         let client = answering(repeating: .modelUnavailable,
                                count: PlanModelChain.models.count)

@@ -92,6 +92,13 @@ struct GeminiPlanGenerator: PlanGenerator {
                 breadcrumbs.record("generation: nothing reachable")
                 return .failure(.offline)
 
+            // Turned away at the door. Asking the next model would only be
+            // turned away again, and the client is not offline: something
+            // about this build or its App Check standing is wrong.
+            case .refused:
+                breadcrumbs.record("generation: refused by the backend")
+                return .failure(.failed)
+
             // Out of allowance for the day. Remembered, so the next
             // generation skips it instead of learning this again.
             case .quotaSpent:
