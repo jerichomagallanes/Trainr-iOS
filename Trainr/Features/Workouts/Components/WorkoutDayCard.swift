@@ -33,7 +33,7 @@ struct WorkoutDayCard: View {
         HStack(alignment: .top) {
             VStack(alignment: .leading, spacing: 0) {
                 Text(weekday)
-                    .font(.labelLarge)
+                    .font(.sectionTitle)
                 Text(day.title)
                     .font(.body14)
             }
@@ -74,9 +74,7 @@ struct WorkoutDayCard: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
 
-            Image(systemName: "arrow.forward.circle.fill")
-                .font(.system(size: 28))
-                .foregroundStyle(Color.slate800)
+            CardArrow()
         }
         .padding(Spacing.card)
         .background(Color.white)

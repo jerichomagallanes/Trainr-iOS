@@ -5,6 +5,7 @@ import SwiftUI
 struct CompletionView: View {
     let systemImage: String
     let iconSize: CGFloat
+    var iconColor = Color.orange500
     let title: String
     let message: String
     let secondaryTitle: String
@@ -24,7 +25,7 @@ struct CompletionView: View {
                     .resizable()
                     .scaledToFit()
                     .frame(width: iconSize, height: iconSize)
-                    .foregroundStyle(Color.orange500)
+                    .foregroundStyle(iconColor)
                     .accessibilityHidden(true)
 
                 Text(title)
@@ -88,6 +89,8 @@ struct WeekCompletedView: View {
         CompletionView(
             systemImage: "trophy.fill",
             iconSize: 100,
+            // The one mark in the app that is not brand orange: a trophy is gold.
+            iconColor: .trophyGold,
             title: L10n.weekCompletedFormat(weekNumber),
             message: L10n.weekCompletedMessage,
             secondaryTitle: L10n.viewWeeklyProgress,

@@ -1,27 +1,40 @@
 import SwiftUI
 
 // A compact action that sits inside content rather than under it: the timer's
-// controls, and anything else offered beside the thing it acts on.
+// controls, and anything else offered beside the thing it acts on. Filled is
+// the brand orange; outlined is white with the outline grey rim.
 struct PillButton: View {
     let title: String
     let systemImage: String
     var filled = true
     let action: () -> Void
 
+    private var content: Color { filled ? .white : .slate800 }
+
     var body: some View {
         Button(action: action) {
-            Label(title, systemImage: systemImage)
-                .font(.labelMedium)
-                .foregroundStyle(filled ? Color.white : Color.slate800)
-                .padding(.horizontal, Spacing.medium)
-                .frame(height: ComponentHeight.chip)
-                .background(filled ? Color.slate800 : Color.white, in: .capsule)
-                .overlay {
-                    if !filled {
-                        Capsule().strokeBorder(Color.slate800, lineWidth: 1)
-                    }
+            HStack(spacing: Spacing.extraSmall) {
+                Image(systemName: systemImage)
+                    .font(.system(size: 14, weight: .semibold))
+                    .frame(width: 24, height: 24)
+                Text(title)
+                    .font(.labelLarge)
+            }
+            .foregroundStyle(content)
+            .padding(.leading, 5)
+            .padding(.trailing, Spacing.card)
+            .frame(height: ComponentHeight.pill)
+            .background(
+                filled ? Color.orange500 : Color.white,
+                in: .rect(cornerRadius: CornerRadius.medium)
+            )
+            .overlay {
+                if !filled {
+                    RoundedRectangle(cornerRadius: CornerRadius.medium)
+                        .strokeBorder(Color.outlineGray, lineWidth: 1.5)
                 }
-                .contentShape(.capsule)
+            }
+            .contentShape(.rect(cornerRadius: CornerRadius.medium))
         }
         .buttonStyle(.plain)
     }

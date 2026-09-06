@@ -37,7 +37,7 @@ struct ExerciseCard<Extras: View>: View {
                 .background(accent, in: .circle)
 
             Text(exercise.name)
-                .font(.labelLarge)
+                .font(.sectionTitle)
                 .foregroundStyle(accent)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
