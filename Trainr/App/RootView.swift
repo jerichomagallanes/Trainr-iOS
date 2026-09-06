@@ -36,7 +36,7 @@ struct RootView: View {
         .task {
             let model = OnboardingModel(dependencies: dependencies)
             onboarding = model
-            try? await Task.sleep(for: .seconds(2))
+            try? await Task.sleep(for: .seconds(Self.splashSeconds))
             // A returning user lands on their plan; onboarding is for the
             // first run.
             nextWeek = NextWeekModel(dependencies: dependencies)
@@ -80,6 +80,19 @@ struct RootView: View {
         planGeneration += 1
         phase = .home
         path = []
+    }
+
+    // Two seconds, unless a UI test asks for longer so it can read the splash.
+    private static var splashSeconds: Double {
+        #if DEBUG
+        let arguments = ProcessInfo.processInfo.arguments
+        if let index = arguments.firstIndex(of: "-splashSeconds"),
+           arguments.indices.contains(index + 1),
+           let seconds = Double(arguments[index + 1]) {
+            return seconds
+        }
+        #endif
+        return 2
     }
 
     static var version: String {

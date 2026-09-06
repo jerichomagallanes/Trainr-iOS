@@ -87,6 +87,29 @@ final class RoutineDetailScreenTests: XCTestCase {
         XCTAssertFalse(app.staticTexts["Timer paused"].exists)
     }
 
+    // Resetting is preparing to go again, not going again: the clock goes back
+    // to the top and holds there.
+    @MainActor
+    func testATimerCanBeResetWithoutBeingAbandoned() {
+        openUnstartedDay()
+        XCTAssertFalse(app.buttons["Reset"].exists)
+        app.buttons["Start timer"].firstMatch.tap()
+        XCTAssertTrue(app.staticTexts["Exercise in progress…"].waitForExistence(timeout: 3))
+
+        let clock = app.staticTexts.matching(
+            NSPredicate(format: "label MATCHES %@", "^[0-9]+:[0-9]{2}$")
+        ).firstMatch
+        let top = clock.label
+        Thread.sleep(forTimeInterval: 2.2)
+        XCTAssertNotEqual(clock.label, top)
+
+        app.buttons["Reset"].tap()
+
+        XCTAssertTrue(app.staticTexts["Timer paused"].waitForExistence(timeout: 3))
+        XCTAssertTrue(clock.label.hasSuffix(":00"))
+        XCTAssertTrue(app.buttons["Resume"].exists)
+    }
+
     @MainActor
     func testAddingASetAppendsARow() {
         openUnstartedDay()

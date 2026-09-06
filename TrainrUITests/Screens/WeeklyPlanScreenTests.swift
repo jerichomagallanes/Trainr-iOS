@@ -36,6 +36,17 @@ final class WeeklyPlanScreenTests: XCTestCase {
         XCTAssertTrue(app.button(containing: "Lower Body Power, Not started").exists)
     }
 
+    // Missed is not a state a day enters, it is what an unfinished day in the
+    // past IS; and it reads in the same grey as not started.
+    @MainActor
+    func testADayWhoseDateHasPassedUntrainedReadsAsMissed() {
+        openPlan(.missedDay)
+
+        XCTAssertTrue(app.button(containing: "Full Body Strength, Missed").exists)
+        XCTAssertTrue(app.button(containing: "Cardio & Core, Not started").exists)
+        XCTAssertTrue(app.buttons["START TODAY'S WORKOUT"].exists)
+    }
+
     @MainActor
     func testTheHomeScreenOffersNoBackArrowButDoesOfferTheAccount() {
         openPlan(.midWeek)

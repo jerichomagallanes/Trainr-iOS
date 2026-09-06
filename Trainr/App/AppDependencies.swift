@@ -71,6 +71,7 @@ final class AppDependencies {
     // so no run of a development build can spend the day's allowance.
     private static func makePlanGenerator(breadcrumbs: any Breadcrumbs) -> any PlanGenerator {
         #if DEBUG
+        if let failing = UITestFixtures.failingGeneratorIfRequested() { return failing }
         let canned = ProcessInfo.processInfo.arguments.contains("-cannedGeneration")
             || FirebaseApp.app() == nil
         if canned { return CannedPlanGenerator() }

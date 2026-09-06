@@ -17,6 +17,10 @@ struct GeneratingView: View {
 
     @State private var activeIndicator = 0
     @State private var shownAt = Date()
+    // Owned here rather than derived: an alert driven by a constant binding is
+    // dismissed by its own button and then never shown again, so a retry that
+    // failed the same way left the client staring at the wait screen.
+    @State private var isShowingFailure = false
 
     private static let totalIndicators = 14
     private static let minimumVisible: TimeInterval = 1.5
@@ -62,9 +66,12 @@ struct GeneratingView: View {
             try? await Task.sleep(for: .seconds(remaining))
             onDone()
         }
+        .onChange(of: failure, initial: true) { _, now in
+            isShowingFailure = now != nil
+        }
         .alert(
             failure == .dailyLimitReached ? L10n.generationLimitTitle : L10n.generationFailedTitle,
-            isPresented: .constant(failure != nil)
+            isPresented: $isShowingFailure
         ) {
             // Retrying a spent allowance cannot work, so that dialog does not
             // offer it. A button the app already knows will fail is worse than

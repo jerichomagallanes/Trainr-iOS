@@ -225,20 +225,20 @@ private struct DurationCell: View {
     let placeholderSeconds: Int?
     let onChange: (Int?) -> Void
 
-    @State private var digits = ""
-
-    private var shown: String {
-        SetFormatting.secondsFromDigits(digits).map(SetFormatting.seconds) ?? ""
-    }
+    // The field's own text, rewritten after every keystroke. A computed
+    // binding was not enough: the field kept what was typed and showed
+    // "5:50000" for a five typed into the middle of "5:00".
+    @State private var text = ""
 
     var body: some View {
-        TextField(
-            placeholderSeconds.map(SetFormatting.seconds) ?? "",
-            text: Binding(get: { shown }, set: { typed in
-                digits = String(String(typed.filter(\.isNumber)).suffix(4))
-                onChange(SetFormatting.secondsFromDigits(digits))
-            })
-        )
+        TextField(placeholderSeconds.map(SetFormatting.seconds) ?? "", text: $text)
+            .onChange(of: text) { _, typed in
+                let digits = String(String(typed.filter(\.isNumber)).suffix(4))
+                let total = SetFormatting.secondsFromDigits(digits)
+                let formatted = total.map(SetFormatting.seconds) ?? ""
+                if formatted != typed { text = formatted }
+                onChange(total)
+            }
         .font(.body14)
         .foregroundStyle(Color.slate800)
         .multilineTextAlignment(.center)
@@ -250,6 +250,6 @@ private struct DurationCell: View {
                 .strokeBorder(Color.outlineGray, lineWidth: 1)
         }
         .padding(.horizontal, Spacing.extraSmall)
-        .onAppear { digits = seconds.map(SetFormatting.durationDigits) ?? "" }
+        .onAppear { text = seconds.map(SetFormatting.seconds) ?? "" }
     }
 }
