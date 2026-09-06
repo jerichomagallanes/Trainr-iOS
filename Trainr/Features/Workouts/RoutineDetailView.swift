@@ -55,8 +55,15 @@ struct RoutineDetailView: View {
             guard !model.state.isLoaded else { return }
             model.load()
         }
-        .onChange(of: routine.isComplete, initial: true) { _, isComplete in
-            guard state.isLoaded else { return }
+        .onChange(of: routine.isComplete, initial: true) { _, _ in
+            // Read together, live, rather than trusting the value the change
+            // carries: the initial call can arrive after the routine has loaded
+            // yet still carry the empty routine it was scheduled with, and
+            // pairing that stale "incomplete" with a fresh "loaded" recorded a
+            // moment that never existed — and then finishing the day on open.
+            let current = model.state
+            guard current.isLoaded else { return }
+            let isComplete = current.routine.isComplete
             let previous = wasComplete
             wasComplete = isComplete
             guard previous == false, isComplete else { return }
