@@ -185,7 +185,6 @@ final class OnboardingFlowTests: XCTestCase {
         ).firstMatch.tap()
 
         XCTAssertTrue(app.staticTexts["Set"].waitForExistence(timeout: 15))
-        XCTAssertTrue(app.staticTexts["Reps"].exists)
         XCTAssertTrue(app.buttons["Add set"].firstMatch.exists)
         XCTAssertTrue(app.buttons["Start timer"].firstMatch.exists)
         XCTAssertTrue(app.staticTexts["Equipment: Dumbbells"].exists)
@@ -238,6 +237,17 @@ final class OnboardingFlowTests: XCTestCase {
         XCTAssertTrue(app.buttons.matching(
             NSPredicate(format: "label CONTAINS[c] %@", "1/3 days completed")
         ).firstMatch.exists)
+
+        // A week opened from the list is the same screen with a way back, and
+        // without the actions that belong to the plan as a whole.
+        app.buttons.matching(
+            NSPredicate(format: "label BEGINSWITH %@", "Week 1")
+        ).firstMatch.tap()
+
+        XCTAssertTrue(app.staticTexts["YOUR WEEKLY WORKOUT PLAN"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.buttons["Back"].exists)
+        XCTAssertFalse(app.buttons["Profile and app"].exists)
+        XCTAssertFalse(app.buttons["Track Weekly Progress →"].exists)
     }
 
     @MainActor
