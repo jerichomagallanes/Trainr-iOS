@@ -30,3 +30,9 @@ function_body_length:
 cyclomatic_complexity:
   warning: 15
   error: 20
+
+# The onboarding answers travel together — six questions, one callback — the
+# same shape the Android app hands them around in.
+function_parameter_count:
+  warning: 7
+  error: 9

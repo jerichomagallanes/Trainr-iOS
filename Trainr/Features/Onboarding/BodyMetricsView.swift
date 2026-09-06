@@ -89,8 +89,8 @@ struct BodyMetricsView: View {
     var body: some View {
         ScreenScaffold(onBack: onBack, closeInsteadOfBack: isEditing) {
             PrimaryButton(title: isEditing ? L10n.save : L10n.next, isEnabled: isFormValid) {
-                let (h, w) = parsed
-                onNext(h, w, useMetric ? .metric : .imperial)
+                let (heightCm, weightKg) = parsed
+                onNext(heightCm, weightKg, useMetric ? .metric : .imperial)
             }
         } content: {
             if !isEditing {

@@ -26,10 +26,10 @@ nonisolated enum BodyMetricsConverter {
     }
 
     static func calculateBMI(height: String, weight: String, useMetric: Bool) -> Double? {
-        let (h, w) = parseMetrics(height: height, weight: weight, useMetric: useMetric)
-        guard h > 0, w > 0 else { return nil }
-        let heightMetres = h / 100
-        return w / (heightMetres * heightMetres)
+        let (heightCm, weightKg) = parseMetrics(height: height, weight: weight, useMetric: useMetric)
+        guard heightCm > 0, weightKg > 0 else { return nil }
+        let heightMetres = heightCm / 100
+        return weightKg / (heightMetres * heightMetres)
     }
 
     static func convertHeightToImperial(_ heightCm: String) -> String {

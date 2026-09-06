@@ -60,7 +60,7 @@ lines = [
     '// Regenerate rather than editing: the catalog and these accessors move together.',
     'import Foundation',
     '',
-    '// swiftlint:disable file_length type_body_length line_length',
+    '// swiftlint:disable all',
     'nonisolated enum L10n {',
 ]
 for key, (kind, value) in sorted(strings.items()):
@@ -81,6 +81,6 @@ for key, (kind, value) in sorted(strings.items()):
             lines.append(f'        String.localizedStringWithFormat(String(localized: "{key}"), {call})')
             lines.append('    }')
 lines.append('}')
-lines.append('// swiftlint:enable file_length type_body_length line_length')
+lines.append('// swiftlint:enable all')
 open(out_swift, 'w').write('\n'.join(lines) + '\n')
 print(f'{len(strings)} strings')

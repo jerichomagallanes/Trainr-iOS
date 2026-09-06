@@ -2,7 +2,7 @@
 // Regenerate rather than editing: the catalog and these accessors move together.
 import Foundation
 
-// swiftlint:disable file_length type_body_length line_length
+// swiftlint:disable all
 nonisolated enum L10n {
     static var aboutTheApp: String { String(localized: "about_the_app") }
     static var addSet: String { String(localized: "add_set") }
@@ -338,4 +338,4 @@ nonisolated enum L10n {
     static var yourMeasurements: String { String(localized: "your_measurements") }
     static var yourWeeklyWorkoutPlan: String { String(localized: "your_weekly_workout_plan") }
 }
-// swiftlint:enable file_length type_body_length line_length
+// swiftlint:enable all
