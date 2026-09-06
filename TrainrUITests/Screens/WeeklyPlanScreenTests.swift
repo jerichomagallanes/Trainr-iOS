@@ -192,6 +192,37 @@ final class WeeklyPlanScreenTests: XCTestCase {
         XCTAssertFalse(app.buttons["GENERATE NEXT WEEK"].exists)
     }
 
+    // Dragging a session onto another weekday swaps the two around: the later
+    // session lands in the earlier slot and the cards relabel to their new days.
+    @MainActor
+    func testDraggingASessionOntoAnEarlierDayReschedulesIt() {
+        openPlan(.midWeek)
+        let later = app.button(containing: "Lower Body Power")
+        let earlier = app.button(containing: "Cardio & Core")
+        XCTAssertGreaterThan(later.frame.minY, earlier.frame.minY)
+
+        later.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5))
+            .press(
+                forDuration: 1.2,
+                thenDragTo: earlier.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.1))
+            )
+        Thread.sleep(forTimeInterval: 1)
+
+        XCTAssertLessThan(
+            app.button(containing: "Lower Body Power").frame.minY,
+            app.button(containing: "Cardio & Core").frame.minY
+        )
+        // The move is a record: reopening the plan shows the new order.
+        app.buttons["Track Weekly Progress →"].tap()
+        XCTAssertTrue(app.staticTexts["WEEKLY PROGRESS"].waitForExistence(timeout: 5))
+        app.buttons["Back"].tap()
+        XCTAssertTrue(app.staticTexts["YOUR WEEKLY WORKOUT PLAN"].waitForExistence(timeout: 5))
+        XCTAssertLessThan(
+            app.button(containing: "Lower Body Power").frame.minY,
+            app.button(containing: "Cardio & Core").frame.minY
+        )
+    }
+
     // A finished session is the record of a date it was actually done on, so
     // it stays put and nothing may be dragged across it.
     @MainActor
