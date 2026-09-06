@@ -33,6 +33,9 @@ final class AppDependencies {
             container = try! TrainingStore.container(inMemory: true)
         }
         let store = TrainingStore(container: container)
+        #if DEBUG
+        UITestFixtures.seedIfRequested(into: store)
+        #endif
         let breadcrumbs = CrashlyticsBreadcrumbs()
         return AppDependencies(
             store: store,

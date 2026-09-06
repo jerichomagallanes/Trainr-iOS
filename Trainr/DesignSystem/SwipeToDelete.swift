@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 // The list idiom, for a row that is not in a List: swiping left reveals the
 // delete, and carrying the swipe past the row's middle commits it. SwiftUI's
@@ -11,9 +12,6 @@ struct SwipeToDelete<Content: View>: View {
 
     @State private var offset: CGFloat = 0
     @State private var committed = false
-    // Decided once per drag, from the first movement: a row that claimed every
-    // drag stopped the page scrolling wherever these rows covered it.
-    @State private var isSideways: Bool?
 
     private static var actionWidth: CGFloat { 72 }
 
@@ -23,13 +21,22 @@ struct SwipeToDelete<Content: View>: View {
             content
                 .background(Color.white)
                 .offset(x: offset)
-                // Simultaneous rather than high priority, so a vertical drag
-                // still belongs to whatever is scrolling behind the row.
-                .simultaneousGesture(swipe)
+                .gesture(
+                    HorizontalPan(
+                        // Leftwards only: a row that slid right would reveal
+                        // nothing.
+                        onChanged: { offset = min($0, 0) },
+                        onEnded: settle
+                    )
+                )
         }
         // The same promise without the gesture, for anyone driving the screen
         // by voice, switch or keyboard.
         .accessibilityAction(named: label, delete)
+        // Back at rest, the row can be asked again.
+        .onChange(of: offset) { _, now in
+            if now == 0 { committed = false }
+        }
     }
 
     private var deleteAction: some View {
@@ -48,37 +55,69 @@ struct SwipeToDelete<Content: View>: View {
         .opacity(offset < 0 ? 1 : 0)
     }
 
-    private var swipe: some Gesture {
-        DragGesture(minimumDistance: 12)
-            .onChanged { value in
-                if isSideways == nil {
-                    isSideways = abs(value.translation.width) > abs(value.translation.height)
-                }
-                guard isSideways == true else { return }
-                // Leftwards only: a row that slid right would reveal nothing.
-                offset = min(value.translation.width, 0)
-            }
-            .onEnded { value in
-                defer { isSideways = nil }
-                guard isSideways == true else { return }
-
-                let travelled = -value.translation.width
-                if travelled > Self.actionWidth * 1.5 {
-                    delete()
-                } else {
-                    withAnimation(.snappy(duration: MotionDuration.short)) {
-                        offset = travelled > Self.actionWidth / 2 ? -Self.actionWidth : 0
-                    }
-                }
-            }
+    private func settle(_ translation: CGFloat) {
+        let travelled = -translation
+        if travelled > Self.actionWidth * 1.5 {
+            delete()
+            return
+        }
+        withAnimation(.snappy(duration: MotionDuration.short)) {
+            offset = travelled > Self.actionWidth / 2 ? -Self.actionWidth : 0
+        }
     }
 
-    // Exactly once per row: a gesture that ends past the threshold and a tap on
-    // the revealed button are the same request, and a row already on its way
-    // out must not ask twice.
+    // Exactly once per swipe: a gesture that ends past the threshold and a tap
+    // on the revealed button are the same request. The row then returns to
+    // rest, so one that survives the question the delete asks is not left
+    // hanging open.
     private func delete() {
         guard !committed else { return }
         committed = true
         onDelete()
+        withAnimation(.snappy(duration: MotionDuration.short)) { offset = 0 }
+    }
+}
+
+// A pan that answers only to sideways movement. Built on UIKit rather than
+// DragGesture because a DragGesture cannot give a touch up once it has it: as
+// a high-priority gesture it took every vertical drag and the page stopped
+// scrolling, and as a simultaneous one the swipe reached the row's button as
+// a tap, opening what was being deleted. A UIKit recogniser that fails on
+// vertical movement hands the touch to the scroll view, and one that
+// recognises cancels the touch for everything beneath it.
+private struct HorizontalPan: UIGestureRecognizerRepresentable {
+    let onChanged: (CGFloat) -> Void
+    let onEnded: (CGFloat) -> Void
+
+    func makeUIGestureRecognizer(context: Context) -> HorizontalPanRecognizer {
+        HorizontalPanRecognizer()
+    }
+
+    func handleUIGestureRecognizerAction(
+        _ recognizer: HorizontalPanRecognizer, context: Context
+    ) {
+        let translation = recognizer.translation(in: recognizer.view).x
+        switch recognizer.state {
+        case .changed:
+            onChanged(translation)
+        case .ended:
+            onEnded(translation)
+        case .cancelled, .failed:
+            onEnded(0)
+        default:
+            break
+        }
+    }
+}
+
+private final class HorizontalPanRecognizer: UIPanGestureRecognizer {
+    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent) {
+        super.touchesMoved(touches, with: event)
+        // Decided once, from the first movement past the threshold.
+        guard state == .began else { return }
+        let velocity = velocity(in: view)
+        if abs(velocity.y) > abs(velocity.x) {
+            state = .cancelled
+        }
     }
 }
