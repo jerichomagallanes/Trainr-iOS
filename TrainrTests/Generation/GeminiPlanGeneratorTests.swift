@@ -49,6 +49,7 @@ struct GeminiPlanGeneratorTests {
         var states: [String: String] = [:]
         func record(_ event: String) { events.append(event) }
         func state(key: String, value: String) { states[key] = value }
+        func report(_ error: any Error, doing action: String) { events.append("failed: \(action)") }
         func everything() -> [String] { events + states.keys + states.values }
     }
 

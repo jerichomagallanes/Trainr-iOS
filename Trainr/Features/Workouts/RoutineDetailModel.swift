@@ -48,12 +48,12 @@ final class RoutineDetailModel {
 
     func load() {
         let store = dependencies.store
-        guard let user = try? store.currentUser() else {
+        guard let user = dependencies.attempt("currentUser", { try store.currentUser() }) else {
             state.isLoaded = true
             return
         }
         let units = user.weightUnits
-        let plans = (try? store.plans(for: user.id)) ?? []
+        let plans = dependencies.attempt("plans", { try store.plans(for: user.id) }) ?? []
         let plan = requestedWeekNumber
             .flatMap { number in plans.first { $0.weekNumber == number } }
             ?? (requestedWeekNumber == nil ? plans.max { $0.weekNumber < $1.weekNumber } : nil)
@@ -73,12 +73,14 @@ final class RoutineDetailModel {
         let before = day.completedAt ?? .distantFuture
         var previousByKey: [String: [ExerciseSet]] = [:]
         for exercise in day.exercises where !exercise.exerciseKey.isEmpty {
-            let sets = (try? store.previousSets(
-                userID: user.id,
-                exerciseKey: exercise.exerciseKey,
-                excludingDayID: day.id,
-                before: before
-            )) ?? []
+            let sets = dependencies.attempt("previousSets", {
+                try store.previousSets(
+                    userID: user.id,
+                    exerciseKey: exercise.exerciseKey,
+                    excludingDayID: day.id,
+                    before: before
+                )
+            }) ?? []
             if !sets.isEmpty { previousByKey[exercise.exerciseKey] = sets }
         }
 
@@ -114,9 +116,8 @@ final class RoutineDetailModel {
         state.routine = state.routine.updating(set, at: position)
         reconcileCompletion(at: position, was: was)
 
-        guard let exercise = storedExercise(at: position) else { return }
-        try? dependencies.store.updateSet(set)
-        _ = exercise
+        guard storedExercise(at: position) != nil else { return }
+        dependencies.attempt("updateSet", { try dependencies.store.updateSet(set) })
     }
 
     func addSet(at position: Int) {
@@ -127,7 +128,7 @@ final class RoutineDetailModel {
         guard let exercise = storedExercise(at: position),
               let added = state.routine.exercises.first(where: { $0.position == position })?.sets.last
         else { return }
-        try? dependencies.store.addSet(added, exerciseID: exercise.id)
+        dependencies.attempt("addSet", { try dependencies.store.addSet(added, exerciseID: exercise.id) })
     }
 
     // Deletion is keyed by set number, not instance: the row that reports the
@@ -142,10 +143,10 @@ final class RoutineDetailModel {
         reconcileCompletion(at: position, was: was)
 
         guard storedExercise(at: position) != nil else { return }
-        try? dependencies.store.deleteSet(id: set.id)
+        dependencies.attempt("deleteSet", { try dependencies.store.deleteSet(id: set.id) })
         // The renumbered rows are written back, so order survives a reload.
         for kept in state.routine.exercises.first(where: { $0.position == position })?.sets ?? [] {
-            try? dependencies.store.updateSet(kept)
+            dependencies.attempt("updateSet", { try dependencies.store.updateSet(kept) })
         }
     }
 
@@ -274,7 +275,7 @@ final class RoutineDetailModel {
         day.exercises[position - 1] = exercise
         storedDay = day
 
-        try? dependencies.store.updateExercise(exercise)
+        dependencies.attempt("updateExercise", { try dependencies.store.updateExercise(exercise) })
         // Both ways round: un-ticking clears the marks on the sets, and those
         // have to reach the record too.
         persistFilledSets(at: [position])
@@ -291,7 +292,7 @@ final class RoutineDetailModel {
         storedDay = day
 
         for exercise in day.exercises {
-            try? dependencies.store.updateExercise(exercise)
+            dependencies.attempt("updateExercise", { try dependencies.store.updateExercise(exercise) })
         }
         persistFilledSets(at: state.routine.exercises.map(\.position))
         persistDayStatus()
@@ -310,7 +311,7 @@ final class RoutineDetailModel {
             let before = Dictionary(uniqueKeysWithValues: stored.sets.map { ($0.id, $0) })
 
             for set in logged where before[set.id] != set {
-                try? dependencies.store.updateSet(set)
+                dependencies.attempt("updateSet", { try dependencies.store.updateSet(set) })
             }
             day.exercises[position - 1].sets = logged
         }
@@ -329,7 +330,7 @@ final class RoutineDetailModel {
         day.status = status
         day.completedAt = status == .completed ? (day.completedAt ?? Date()) : nil
         storedDay = day
-        try? dependencies.store.updateDay(day)
+        dependencies.attempt("updateDay", { try dependencies.store.updateDay(day) })
     }
 
     // Finishing the last outstanding day of the week ends the week, not just

@@ -33,14 +33,14 @@ final class WeeklyProgressModel {
         let plans = storedPlans()
         guard let plan = plans.first(where: { $0.weekNumber == weekNumber }) else { return }
 
-        try? dependencies.store.deletePlan(id: plan.id)
+        dependencies.attempt("deletePlan", { try dependencies.store.deletePlan(id: plan.id) })
         renumber(plans.filter { $0.id != plan.id })
         refresh()
     }
 
     private func storedPlans() -> [WeeklyPlan] {
-        guard let user = try? dependencies.store.currentUser(),
-              let plans = try? dependencies.store.plans(for: user.id)
+        guard let user = dependencies.attempt("currentUser", { try dependencies.store.currentUser() }),
+              let plans = dependencies.attempt("plans", { try dependencies.store.plans(for: user.id) })
         else { return [] }
         return plans
     }
@@ -55,7 +55,7 @@ final class WeeklyProgressModel {
         where plan.weekNumber != index + 1 {
             var renumbered = plan
             renumbered.weekNumber = index + 1
-            try? dependencies.store.updatePlan(renumbered)
+            dependencies.attempt("updatePlan", { try dependencies.store.updatePlan(renumbered) })
         }
     }
 

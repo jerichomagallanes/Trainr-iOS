@@ -13,10 +13,17 @@ protocol Breadcrumbs {
 
     // A fact that is true until it changes, attached to whatever crash follows.
     func state(key: String, value: String)
+
+    // Something failed that the screen could not do anything about. It is not a
+    // crash — the client keeps their place — but it must not vanish either: a
+    // write that did not land is the kind of thing only a report ever reveals.
+    // `action` names what was being attempted, never what it was attempted on.
+    func report(_ error: any Error, doing action: String)
 }
 
 // For tests, and for anywhere a trail would be noise.
 struct NoBreadcrumbs: Breadcrumbs {
     func record(_ event: String) {}
     func state(key: String, value: String) {}
+    func report(_ error: any Error, doing action: String) {}
 }

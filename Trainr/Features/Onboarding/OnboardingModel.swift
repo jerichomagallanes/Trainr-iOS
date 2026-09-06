@@ -26,6 +26,7 @@ final class OnboardingModel {
     // than handing over a week nobody asked for.
     private(set) var generationFailure: PlanGenerationFailure?
 
+    private let dependencies: AppDependencies
     private let store: TrainingStore
     private let planGenerator: any PlanGenerator
     private let languageCode: String
@@ -36,12 +37,13 @@ final class OnboardingModel {
     private var isWorking = false
 
     init(dependencies: AppDependencies) {
+        self.dependencies = dependencies
         store = dependencies.store
         planGenerator = dependencies.planGenerator
         languageCode = dependencies.languageCode
         // A returning user editing or regenerating starts from the profile
         // they saved, not from blank forms.
-        if let stored = try? store.currentUser() {
+        if let stored = dependencies.attempt("currentUser", { try store.currentUser() }) {
             profile = stored
         }
     }
@@ -100,7 +102,7 @@ final class OnboardingModel {
     }
 
     func hasCompletedOnboarding() -> Bool {
-        (try? store.hasUsers()) ?? false
+        dependencies.attempt("hasUsers", { try store.hasUsers() }) ?? false
     }
 
     // Editing the profile from the plan must leave training history alone, so
@@ -110,10 +112,10 @@ final class OnboardingModel {
     func updateProfileOnly(onSuccess: @escaping () -> Void) {
         Task {
             isLoading = true
-            if let existing = try? store.currentUser() {
+            if let existing = dependencies.attempt("currentUser", { try store.currentUser() }) {
                 var updated = profile
                 updated.id = existing.id
-                try? store.updateUser(updated)
+                dependencies.attempt("updateUser", { try store.updateUser(updated) })
             }
             isLoading = false
             onSuccess()
@@ -129,7 +131,7 @@ final class OnboardingModel {
             isCompleted = false
             generationFailure = nil
 
-            let existing = try? store.currentUser()
+            let existing = dependencies.attempt("currentUser", { try store.currentUser() })
             var toSave = profile
             if let existing { toSave.id = existing.id }
             // The plan starts today. Anchoring it to the Monday just gone
@@ -162,7 +164,7 @@ final class OnboardingModel {
                 // training would carry their weeks away, which is the whole
                 // reason nothing is written before the plan.
                 if existing == nil {
-                    try? store.saveUser(toSave)
+                    dependencies.attempt("saveUser", { try store.saveUser(toSave) })
                 }
                 isLoading = false
                 if case .failure(let failure) = result {

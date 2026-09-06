@@ -20,6 +20,32 @@ final class AppDependencies {
         self.breadcrumbs = breadcrumbs
     }
 
+    // A store call made where the screen can do nothing useful about a failure:
+    // the change is already on screen, and there is no honest message for "the
+    // database refused". So it is reported, with the action's name and never
+    // its subject, and the screen carries on. Swallowing it instead left a
+    // write that did not land looking exactly like one that did.
+    @discardableResult
+    func attempt<T>(_ action: String, _ work: () throws -> T) -> T? {
+        do {
+            return try work()
+        } catch {
+            breadcrumbs.report(error, doing: action)
+            return nil
+        }
+    }
+
+    // The same, for a call that is itself optional, so the caller gets one
+    // level of optional rather than two.
+    func attempt<T>(_ action: String, _ work: () throws -> T?) -> T? {
+        do {
+            return try work()
+        } catch {
+            breadcrumbs.report(error, doing: action)
+            return nil
+        }
+    }
+
     static func live() -> AppDependencies {
         let container: ModelContainer
         do {
