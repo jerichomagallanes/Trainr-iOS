@@ -69,7 +69,7 @@ final class WeeklyPlanModel {
     // Coming back from a routine re-reads the plan, so a day completed there is
     // reflected here.
     func refresh() {
-        let plans = (try? currentUserPlans()) ?? []
+        let plans = dependencies.attempt("plans", { try currentUserPlans() }) ?? []
         let newest = plans.max { $0.weekNumber < $1.weekNumber }
         let stored = requestedWeekNumber
             .flatMap { number in plans.first { $0.weekNumber == number } }
@@ -105,7 +105,7 @@ final class WeeklyPlanModel {
 
         let before = Dictionary(uniqueKeysWithValues: plan.workoutDays.map { ($0.id, $0.dayNumber) })
         for day in reordered where before[day.id] != day.dayNumber {
-            try? dependencies.store.updateDay(day)
+            dependencies.attempt("updateDay", { try dependencies.store.updateDay(day) })
         }
     }
 

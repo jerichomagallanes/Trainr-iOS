@@ -51,18 +51,19 @@ final class NextWeekModel {
             isReady = true
         }
 
-        guard let user = try? dependencies.store.currentUser(),
-              let plans = try? dependencies.store.plans(for: user.id),
+        guard let user = dependencies.attempt("currentUser", { try dependencies.store.currentUser() }),
+              let plans = dependencies.attempt("plans", { try dependencies.store.plans(for: user.id) }),
               let latest = plans.max(by: { $0.weekNumber < $1.weekNumber }),
               latest.isReadyForTheNextWeek(),
-              (try? dependencies.store.plan(for: user.id, weekNumber: latest.weekNumber + 1)) == nil
+              dependencies.attempt("plan", {
+                  try dependencies.store.plan(for: user.id, weekNumber: latest.weekNumber + 1)
+              }) == nil
         else { return }
 
         let source = sourceWeekNumber
             .flatMap { number in plans.first { $0.weekNumber == number } } ?? latest
-        try? dependencies.store.savePlan(
-            Self.repeated(source, weekNumber: latest.weekNumber + 1, startingOn: startAfter(latest))
-        )
+        let copy = Self.repeated(source, weekNumber: latest.weekNumber + 1, startingOn: startAfter(latest))
+        dependencies.attempt("savePlan", { try dependencies.store.savePlan(copy) })
     }
 
     // Replacing the week you are in rather than adding one after it: the number
@@ -117,13 +118,13 @@ final class NextWeekModel {
             if case .failure(let reason) = result { failure = reason }
             return
         }
-        try? dependencies.store.savePlan(plan)
+        dependencies.attempt("savePlan", { try dependencies.store.savePlan(plan) })
         isReady = true
     }
 
     private func regenerate() async {
-        guard let user = try? dependencies.store.currentUser(),
-              let plans = try? dependencies.store.plans(for: user.id),
+        guard let user = dependencies.attempt("currentUser", { try dependencies.store.currentUser() }),
+              let plans = dependencies.attempt("plans", { try dependencies.store.plans(for: user.id) }),
               let current = plans.max(by: { $0.weekNumber < $1.weekNumber }),
               !current.isReadyForTheNextWeek()
         else {
@@ -149,8 +150,8 @@ final class NextWeekModel {
         }
         // Only now. One week per number, so the old one goes to make room — and
         // it goes with a replacement already in hand.
-        try? dependencies.store.deletePlan(id: current.id)
-        try? dependencies.store.savePlan(plan)
+        dependencies.attempt("deletePlan", { try dependencies.store.deletePlan(id: current.id) })
+        dependencies.attempt("savePlan", { try dependencies.store.savePlan(plan) })
         isReady = true
     }
 
@@ -158,13 +159,15 @@ final class NextWeekModel {
     // nothing to do when the week after this one already exists, so revisiting
     // the completion screen cannot stack duplicates.
     private func nextWeekSource() -> (UserProfile, WeeklyPlan)? {
-        guard let user = try? dependencies.store.currentUser(),
-              let plans = try? dependencies.store.plans(for: user.id),
+        guard let user = dependencies.attempt("currentUser", { try dependencies.store.currentUser() }),
+              let plans = dependencies.attempt("plans", { try dependencies.store.plans(for: user.id) }),
               let latest = plans.max(by: { $0.weekNumber < $1.weekNumber }),
               // The plan takes one week at a time, and the rule is enforced here
               // as well as shown: a screen may forget to ask, the write must not.
               latest.isReadyForTheNextWeek(),
-              (try? dependencies.store.plan(for: user.id, weekNumber: latest.weekNumber + 1)) == nil
+              dependencies.attempt("plan", {
+                  try dependencies.store.plan(for: user.id, weekNumber: latest.weekNumber + 1)
+              }) == nil
         else { return nil }
         return (user, latest)
     }
