@@ -26,22 +26,6 @@ for el in tree.getroot():
         qty = {item.get('quantity'): convert_fmt(text_of(item)) for item in el}
         strings[el.get('name')] = ('plural', qty)
 
-catalog = {"sourceLanguage": "en", "strings": {}, "version": "1.0"}
-for key, (kind, value) in sorted(strings.items()):
-    if kind == 'plural':
-        catalog["strings"][key] = {"extractionState": "manual", "localizations": {"en": {
-            "variations": {"plural": {q: {"stringUnit": {"state": "translated", "value": v}}
-                                      for q, v in value.items()}}}}}
-    else:
-        catalog["strings"][key] = {"extractionState": "manual", "localizations": {"en": {
-            "stringUnit": {"state": "translated", "value": value}}}}
-
-json.dump(catalog, open(out_catalog, 'w'), indent=2, ensure_ascii=False, sort_keys=True)
-
-def camel(key):
-    parts = key.split('_')
-    return parts[0] + ''.join(p.capitalize() for p in parts[1:])
-
 def args_of(fmt):
     # positional or sequential specifiers, in order
     found = re.findall(r'%(\d+\$)?(@|lld|\.?\d*f)', fmt)
@@ -55,6 +39,42 @@ def args_of(fmt):
         return 'Double'
     return [kind_of(kind) for _, kind in ordered]
 
+# Which argument a plural counts on. Android names it at every call site and
+# Swift cannot infer it once a string carries more than one number, so the few
+# that do are listed here, read off those calls.
+PLURAL_ARG = {
+    'days_completed_format': 2,
+    'regenerate_week_message_trained': 1,
+    'delete_week_message_trained': 1,
+}
+
+catalog = {"sourceLanguage": "en", "strings": {}, "version": "1.0"}
+for key, (kind, value) in sorted(strings.items()):
+    if kind == 'plural':
+        variations = {"plural": {q: {"stringUnit": {"state": "translated", "value": v}}
+                                 for q, v in value.items()}}
+        # A plural carrying other numbers cannot say which one it counts on, so
+        # the whole sentence becomes a substitution that names the argument.
+        if max(len(args_of(v)) for v in value.values()) > 1:
+            catalog["strings"][key] = {"extractionState": "manual", "localizations": {"en": {
+                "stringUnit": {"state": "translated", "value": "%#@count@"},
+                "substitutions": {"count": {
+                    "argNum": PLURAL_ARG.get(key, 1),
+                    "formatSpecifier": "lld",
+                    "variations": variations}}}}}
+        else:
+            catalog["strings"][key] = {"extractionState": "manual", "localizations": {"en": {
+                "variations": variations}}}
+    else:
+        catalog["strings"][key] = {"extractionState": "manual", "localizations": {"en": {
+            "stringUnit": {"state": "translated", "value": value}}}}
+
+json.dump(catalog, open(out_catalog, 'w'), indent=2, ensure_ascii=False, sort_keys=True)
+
+def camel(key):
+    parts = key.split('_')
+    return parts[0] + ''.join(p.capitalize() for p in parts[1:])
+
 lines = [
     '// Generated from the Android app\'s strings.xml by scripts/generate-strings.sh.',
     '// Regenerate rather than editing: the catalog and these accessors move together.',
@@ -67,8 +87,11 @@ for key, (kind, value) in sorted(strings.items()):
     name = camel(key)
     if name == 'continue': name = 'continueLabel'
     if kind == 'plural':
-        lines.append(f'    static func {name}(_ count: Int) -> String {{')
-        lines.append(f'        String.localizedStringWithFormat(String(localized: "{key}"), count)')
+        args = max((args_of(v) for v in value.values()), key=len)
+        params = ', '.join(f'_ p{i}: {t}' for i, t in enumerate(args, 1)) or '_ p1: Int'
+        call = ', '.join(f'p{i}' for i in range(1, max(len(args), 1) + 1))
+        lines.append(f'    static func {name}({params}) -> String {{')
+        lines.append(f'        String.localizedStringWithFormat(String(localized: "{key}"), {call})')
         lines.append('    }')
     else:
         args = args_of(value)

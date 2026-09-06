@@ -29,10 +29,13 @@ struct ScreenScaffold<Content: View, BottomButton: View>: View {
     }
 }
 
-struct TopBar: View {
+struct TopBar<Trailing: View>: View {
     var onBack: (() -> Void)?
     var closeInsteadOfBack = false
     var showLogo = true
+    // What belongs to the screen as a whole rather than to its content: home
+    // hangs the account here, and every other screen leaves it empty.
+    @ViewBuilder var trailing: Trailing
 
     var body: some View {
         ZStack {
@@ -54,10 +57,19 @@ struct TopBar: View {
                     .accessibilityLabel(closeInsteadOfBack ? "Close" : "Back")
                 }
                 Spacer()
+                trailing
             }
             .padding(.horizontal, Spacing.extraSmall)
         }
         .frame(height: 56)
         .background(Color.white)
+    }
+}
+
+extension TopBar where Trailing == EmptyView {
+    init(onBack: (() -> Void)? = nil, closeInsteadOfBack: Bool = false, showLogo: Bool = true) {
+        self.init(
+            onBack: onBack, closeInsteadOfBack: closeInsteadOfBack, showLogo: showLogo
+        ) { EmptyView() }
     }
 }

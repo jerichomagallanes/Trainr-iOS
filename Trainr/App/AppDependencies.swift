@@ -41,6 +41,16 @@ final class AppDependencies {
         )
     }
 
+    // A preview needs a plan to draw and no Firebase at all: the sample week in
+    // a store that lives only as long as the canvas.
+    static var preview: AppDependencies {
+        // swiftlint:disable:next force_try
+        let store = TrainingStore(container: try! TrainingStore.container(inMemory: true))
+        return AppDependencies(
+            store: store, planGenerator: CannedPlanGenerator(), breadcrumbs: NoBreadcrumbs()
+        )
+    }
+
     // A UI test needs every launch to start from nothing, so it asks for a
     // store that vanishes with the process.
     private static var startsFresh: Bool {
