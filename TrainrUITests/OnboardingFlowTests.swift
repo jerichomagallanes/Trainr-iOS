@@ -60,6 +60,17 @@ final class OnboardingFlowTests: XCTestCase {
     @MainActor
     func testTheWholeFirstRunEndsOnThePlan() {
         launch()
+        answerEveryQuestion()
+        readTheProfileBack()
+        arriveOnThePlan()
+        trainTheFirstSession()
+        readTheProgressBack()
+    }
+
+    // MARK: - The journey, a stage at a time
+
+    @MainActor
+    private func answerEveryQuestion() {
         // Splash hands over to welcome on its own.
         let getStarted = app.buttons["GET STARTED"]
         XCTAssertTrue(getStarted.waitForExistence(timeout: 10))
@@ -121,6 +132,10 @@ final class OnboardingFlowTests: XCTestCase {
         app.buttons["Lower Back Pain"].tap()
         app.buttons["SUBMIT"].tap()
 
+    }
+
+    @MainActor
+    private func readTheProfileBack() {
         // The review reads every answer back.
         XCTAssertTrue(app.staticTexts["YOUR FITNESS PROFILE"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.staticTexts["Alex"].exists)
@@ -131,6 +146,10 @@ final class OnboardingFlowTests: XCTestCase {
 
         scrollToAndTap(app.buttons["GENERATE MY WORKOUT PLAN"])
 
+    }
+
+    @MainActor
+    private func arriveOnThePlan() {
         // The canned coach answers at once; the wait screen still shows long
         // enough to be read, then hands over to the plan.
         let heading = app.staticTexts["YOUR WEEKLY WORKOUT PLAN"]
@@ -155,7 +174,11 @@ final class OnboardingFlowTests: XCTestCase {
         XCTAssertTrue(app.buttons["START TODAY'S WORKOUT"].exists
             || app.buttons["START NEXT WORKOUT"].exists)
 
-        // And it leads somewhere: the session opens on its own routine, with
+    }
+
+    @MainActor
+    private func trainTheFirstSession() {
+        // The plan leads somewhere: the session opens on its own routine, with
         // the exercises the coach wrote and a row per prescribed set.
         app.buttons.matching(
             NSPredicate(format: "label BEGINSWITH %@", "START")
@@ -168,12 +191,24 @@ final class OnboardingFlowTests: XCTestCase {
         XCTAssertTrue(app.staticTexts["Equipment: Dumbbells"].exists)
 
         // Finishing the session ends the day, and the day says so.
+        // The routine is longer than the screen and its length depends on the
+        // session asked for, so the slider is scrolled to rather than assumed
+        // to be in view.
         let slider = app.buttons["SLIDE TO FINISH THIS WORKOUT"]
+        XCTAssertTrue(slider.waitForExistence(timeout: 5))
         var attempts = 0
-        while !slider.isHittable && attempts < 8 {
-            app.scrollViews.firstMatch.swipeUp()
+        while !slider.isHittable && attempts < 20 {
+            // Dragged along the left margin, clear of the set rows: a swipe
+            // that starts on a text field is the field's, not the page's.
+            app.coordinate(withNormalizedOffset: CGVector(dx: 0.03, dy: 0.8))
+                .press(
+                    forDuration: 0.05,
+                    thenDragTo: app.coordinate(withNormalizedOffset: CGVector(dx: 0.03, dy: 0.2))
+                )
             attempts += 1
         }
+        XCTAssertTrue(slider.isHittable, "The slider never came into view")
+        Thread.sleep(forTimeInterval: 0.5)
         // A slide, driven as one: the thumb sits at the near end and has to
         // travel most of the track before it counts. Tapping the middle is
         // exactly what the control is designed to ignore.
@@ -191,6 +226,17 @@ final class OnboardingFlowTests: XCTestCase {
         XCTAssertTrue(app.staticTexts["YOUR WEEKLY WORKOUT PLAN"].waitForExistence(timeout: 10))
         XCTAssertTrue(app.buttons.matching(
             NSPredicate(format: "label CONTAINS[c] %@", "Completed")
+        ).firstMatch.exists)
+
+    }
+
+    @MainActor
+    private func readTheProgressBack() {
+        // Weekly progress lists the week and what has been done in it.
+        app.buttons["Track Weekly Progress →"].tap()
+        XCTAssertTrue(app.staticTexts["WEEKLY PROGRESS"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.buttons.matching(
+            NSPredicate(format: "label CONTAINS[c] %@", "1/3 days completed")
         ).firstMatch.exists)
     }
 

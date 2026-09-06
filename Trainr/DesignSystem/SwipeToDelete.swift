@@ -11,6 +11,9 @@ struct SwipeToDelete<Content: View>: View {
 
     @State private var offset: CGFloat = 0
     @State private var committed = false
+    // Decided once per drag, from the first movement: a row that claimed every
+    // drag stopped the page scrolling wherever these rows covered it.
+    @State private var isSideways: Bool?
 
     private static var actionWidth: CGFloat { 72 }
 
@@ -20,7 +23,9 @@ struct SwipeToDelete<Content: View>: View {
             content
                 .background(Color.white)
                 .offset(x: offset)
-                .highPriorityGesture(swipe)
+                // Simultaneous rather than high priority, so a vertical drag
+                // still belongs to whatever is scrolling behind the row.
+                .simultaneousGesture(swipe)
         }
         // The same promise without the gesture, for anyone driving the screen
         // by voice, switch or keyboard.
@@ -46,10 +51,17 @@ struct SwipeToDelete<Content: View>: View {
     private var swipe: some Gesture {
         DragGesture(minimumDistance: 12)
             .onChanged { value in
+                if isSideways == nil {
+                    isSideways = abs(value.translation.width) > abs(value.translation.height)
+                }
+                guard isSideways == true else { return }
                 // Leftwards only: a row that slid right would reveal nothing.
                 offset = min(value.translation.width, 0)
             }
             .onEnded { value in
+                defer { isSideways = nil }
+                guard isSideways == true else { return }
+
                 let travelled = -value.translation.width
                 if travelled > Self.actionWidth * 1.5 {
                     delete()
