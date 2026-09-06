@@ -150,11 +150,11 @@ struct WorkoutSetupView: View {
                                 text: L10n.minutes(duration),
                                 isSelected: selectedDuration == duration,
                                 height: ComponentHeight.chipTall,
-                                horizontalPadding: 0
+                                horizontalPadding: Spacing.extraSmall,
+                                fillsWidth: true
                             ) {
                                 selectedDuration = duration
                             }
-                            .frame(maxWidth: .infinity)
                         }
                     }
                 }
@@ -228,11 +228,11 @@ struct WorkoutSetupView: View {
             text: label,
             isSelected: selectedLiftingUnits == units,
             height: ComponentHeight.chipTall,
-            horizontalPadding: 0
+            horizontalPadding: Spacing.extraSmall,
+            fillsWidth: true
         ) {
             selectedLiftingUnits = units
         }
-        .frame(maxWidth: .infinity)
     }
 
     private func timeChip(_ label: String, _ time: WorkoutTime) -> some View {

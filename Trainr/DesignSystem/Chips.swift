@@ -6,6 +6,12 @@ struct ToggleChip: View {
     let isSelected: Bool
     var height: CGFloat = ComponentHeight.chip
     var horizontalPadding: CGFloat = Spacing.large
+    // Takes an equal share of the row it is in, the way the frames lay out the
+    // duration and units choices. It has to be the LABEL that fills, not the
+    // chip: a button hugs its label, and the fill and border hug the button, so
+    // widening the chip from outside leaves the paint at label width with the
+    // text spilling past it.
+    var fillsWidth = false
     let action: () -> Void
 
     var body: some View {
@@ -19,6 +25,7 @@ struct ToggleChip: View {
                 // never an ellipsis.
                 .minimumScaleFactor(0.75)
                 .padding(.horizontal, horizontalPadding)
+                .frame(maxWidth: fillsWidth ? .infinity : nil)
                 .frame(height: height)
                 .contentShape(RoundedRectangle(cornerRadius: CornerRadius.medium))
         }
