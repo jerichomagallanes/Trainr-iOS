@@ -1,0 +1,82 @@
+import json, re, sys
+import xml.etree.ElementTree as ET
+
+src, out_catalog, out_swift = sys.argv[1], sys.argv[2], sys.argv[3]
+
+def unescape(s):
+    if s is None: return ''
+    s = s.replace("\\'", "'").replace('\\"', '"').replace('\\n', '\n')
+    return s
+
+def convert_fmt(s):
+    # Android format specifiers -> Foundation ones.
+    s = re.sub(r'%(\d+\$)?s', lambda m: f"%{m.group(1) or ''}@", s)
+    s = re.sub(r'%(\d+\$)?d', lambda m: f"%{m.group(1) or ''}lld", s)
+    return s
+
+def text_of(el):
+    return unescape(''.join(el.itertext()))
+
+tree = ET.parse(src)
+strings = {}   # key -> ('plain'|'fmt'|'plural', value or {qty: value})
+for el in tree.getroot():
+    if el.tag == 'string':
+        strings[el.get('name')] = ('plain', convert_fmt(text_of(el)))
+    elif el.tag == 'plurals':
+        qty = {item.get('quantity'): convert_fmt(text_of(item)) for item in el}
+        strings[el.get('name')] = ('plural', qty)
+
+catalog = {"sourceLanguage": "en", "strings": {}, "version": "1.0"}
+for key, (kind, value) in sorted(strings.items()):
+    if kind == 'plural':
+        catalog["strings"][key] = {"extractionState": "manual", "localizations": {"en": {
+            "variations": {"plural": {q: {"stringUnit": {"state": "translated", "value": v}}
+                                      for q, v in value.items()}}}}}
+    else:
+        catalog["strings"][key] = {"extractionState": "manual", "localizations": {"en": {
+            "stringUnit": {"state": "translated", "value": value}}}}
+
+json.dump(catalog, open(out_catalog, 'w'), indent=2, ensure_ascii=False, sort_keys=True)
+
+def camel(key):
+    parts = key.split('_')
+    return parts[0] + ''.join(p.capitalize() for p in parts[1:])
+
+def args_of(fmt):
+    # positional or sequential specifiers, in order
+    found = re.findall(r'%(\d+\$)?(@|lld)', fmt)
+    if any(pos for pos, _ in found):
+        ordered = sorted(found, key=lambda f: int(f[0][:-1]))
+    else:
+        ordered = found
+    return ['String' if kind == '@' else 'Int' for _, kind in ordered]
+
+lines = [
+    '// Generated from the Android app\'s strings.xml by scripts/generate-strings.sh.',
+    '// Regenerate rather than editing: the catalog and these accessors move together.',
+    'import Foundation',
+    '',
+    '// swiftlint:disable file_length type_body_length line_length',
+    'nonisolated enum L10n {',
+]
+for key, (kind, value) in sorted(strings.items()):
+    name = camel(key)
+    if name == 'continue': name = 'continueLabel'
+    if kind == 'plural':
+        lines.append(f'    static func {name}(_ count: Int) -> String {{')
+        lines.append(f'        String.localizedStringWithFormat(String(localized: "{key}"), count)')
+        lines.append('    }')
+    else:
+        args = args_of(value)
+        if not args:
+            lines.append(f'    static var {name}: String {{ String(localized: "{key}") }}')
+        else:
+            params = ', '.join(f'_ p{i}: {t}' for i, t in enumerate(args, 1))
+            call = ', '.join(f'p{i}' for i in range(1, len(args) + 1))
+            lines.append(f'    static func {name}({params}) -> String {{')
+            lines.append(f'        String.localizedStringWithFormat(String(localized: "{key}"), {call})')
+            lines.append('    }')
+lines.append('}')
+lines.append('// swiftlint:enable file_length type_body_length line_length')
+open(out_swift, 'w').write('\n'.join(lines) + '\n')
+print(f'{len(strings)} strings')
