@@ -1,5 +1,6 @@
 import FirebaseAILogic
 import Foundation
+import OSLog
 
 // Generation goes through Firebase AI Logic rather than straight to the Gemini
 // endpoint, so the key never ships inside the app. Every request carries an App
@@ -32,6 +33,14 @@ struct FirebaseAIPlanModelClient: PlanModelClient {
             let response = try await generativeModel.generateContent(userPrompt)
             return response.text.map(GeminiResponse.text) ?? .failed
         } catch {
+            // Development runs have no crash report to read the trail from, so
+            // the coach's refusal goes to the console instead: the one place a
+            // 403 for a disabled API or an unregistered App Check token was
+            // otherwise invisible. Release keeps to the breadcrumbs.
+            #if DEBUG
+            Logger(subsystem: "com.jericx.trainr", category: "generation")
+                .error("\(model, privacy: .public) refused: \(String(describing: error), privacy: .public)")
+            #endif
             return Self.response(for: error)
         }
     }
