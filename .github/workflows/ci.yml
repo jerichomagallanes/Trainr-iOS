@@ -79,6 +79,11 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
+      # The macos-26 image no longer ships SwiftLint, so the job installs it
+      # itself. Homebrew is preinstalled and the formula is free.
+      - name: Install SwiftLint
+        run: brew install swiftlint
+
       # SARIF lands the findings in the repository's Security tab and annotates
       # them inline on the PR diff. Code scanning is free on public repositories.
       - name: Run SwiftLint

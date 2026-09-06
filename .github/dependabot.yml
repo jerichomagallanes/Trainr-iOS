@@ -1,0 +1,29 @@
+version: 2
+
+updates:
+  # Keeps the pinned action SHAs in .github/workflows current.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    labels:
+      - dependencies
+      - ci
+
+  # Swift packages. Dependabot reads Package.swift manifests only, so this
+  # entry covers the day the project grows one; the packages declared in the
+  # Xcode project itself (firebase-ios-sdk, YouTubePlayerKit) are bumped by
+  # hand through File > Packages > Update to Latest Package Versions.
+  - package-ecosystem: swift
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies
+    groups:
+      firebase:
+        patterns:
+          - 'firebase-ios-sdk'
