@@ -51,7 +51,7 @@ struct SwipeToDelete<Content: View>: View {
         }
         .buttonStyle(.plain)
         .accessibilityLabel(label)
-        .clipShape(.rect(cornerRadius: CornerRadius.small))
+        .clipShape(.rect(cornerRadius: CornerRadius.medium))
         .opacity(offset < 0 ? 1 : 0)
     }
 

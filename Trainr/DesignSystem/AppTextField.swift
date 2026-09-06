@@ -10,7 +10,12 @@ struct AppTextField: View {
     @FocusState private var isFocused: Bool
 
     var body: some View {
-        TextField(placeholder, text: $text)
+        TextField(
+            placeholder,
+            text: $text,
+            // The muted text colour at six tenths, as the frames draw a hint.
+            prompt: Text(placeholder).foregroundStyle(Color.textMuted.opacity(0.6))
+        )
             .font(.body16)
             .foregroundStyle(Color.slate800)
             .keyboardType(keyboard)

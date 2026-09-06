@@ -10,9 +10,11 @@ struct LocationCard: View {
     var body: some View {
         Button(action: action) {
             VStack(spacing: Spacing.small) {
+                // Orange on both card states: the frames export every location
+                // icon as the brand orange, the selected dark card included.
                 Image(systemName: symbol)
                     .font(.system(size: 26))
-                    .foregroundStyle(isSelected ? Color.white : .orange500)
+                    .foregroundStyle(Color.orange500)
                     .frame(width: 35, height: 35)
                 Text(title)
                     .font(.body16)

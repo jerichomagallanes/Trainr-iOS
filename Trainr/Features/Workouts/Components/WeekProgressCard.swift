@@ -46,7 +46,7 @@ struct WeekProgressCard: View {
     // so one line says which week and when without reading as two things.
     private var title: AttributedString {
         var number = AttributedString(L10n.weekNumberFormat(week.weekNumber) + " ")
-        number.font = .labelMedium
+        number.font = .body16.weight(.medium)
         var range = AttributedString(L10n.weekRangeParens(dateRange))
         range.font = .body14
         return number + range
@@ -64,9 +64,7 @@ struct WeekProgressCard: View {
             .background(Color.gray100, in: .rect(cornerRadius: CornerRadius.medium))
             .frame(maxWidth: .infinity, alignment: .leading)
 
-            Image(systemName: "arrow.forward.circle.fill")
-                .font(.system(size: 28))
-                .foregroundStyle(Color.slate800)
+            CardArrow()
         }
     }
 }

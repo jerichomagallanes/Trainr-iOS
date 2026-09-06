@@ -34,6 +34,10 @@ extension Color {
     static let redError = Color(rgb: 0xE74C3C)
     static let yellowWarning = Color(rgb: 0xF39C12)
 
+    // Glyphs the frames draw in their own colours rather than the palette's.
+    static let arrowInk = Color(rgb: 0x1F1F1F)
+    static let trophyGold = Color(rgb: 0xDAB900)
+
     // Workout status
     static let statusCompleted = Color(rgb: 0x5F8C32)
     static let statusInProgress = orange500
