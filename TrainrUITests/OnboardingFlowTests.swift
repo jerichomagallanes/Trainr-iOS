@@ -166,6 +166,32 @@ final class OnboardingFlowTests: XCTestCase {
         XCTAssertTrue(app.buttons["Add set"].firstMatch.exists)
         XCTAssertTrue(app.buttons["Start timer"].firstMatch.exists)
         XCTAssertTrue(app.staticTexts["Equipment: Dumbbells"].exists)
+
+        // Finishing the session ends the day, and the day says so.
+        let slider = app.buttons["SLIDE TO FINISH THIS WORKOUT"]
+        var attempts = 0
+        while !slider.isHittable && attempts < 8 {
+            app.scrollViews.firstMatch.swipeUp()
+            attempts += 1
+        }
+        // A slide, driven as one: the thumb sits at the near end and has to
+        // travel most of the track before it counts. Tapping the middle is
+        // exactly what the control is designed to ignore.
+        slider.coordinate(withNormalizedOffset: CGVector(dx: 0.06, dy: 0.5))
+            .press(
+                forDuration: 0.1,
+                thenDragTo: slider.coordinate(withNormalizedOffset: CGVector(dx: 0.98, dy: 0.5))
+            )
+
+        XCTAssertTrue(app.staticTexts["DAY 1 COMPLETED"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.buttons["VIEW WEEKLY PROGRESS"].exists)
+
+        // And it leads back to the plan, with the day now logged.
+        app.buttons["BACK TO MY WORKOUT PLAN"].tap()
+        XCTAssertTrue(app.staticTexts["YOUR WEEKLY WORKOUT PLAN"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.buttons.matching(
+            NSPredicate(format: "label CONTAINS[c] %@", "Completed")
+        ).firstMatch.exists)
     }
 
     @MainActor
