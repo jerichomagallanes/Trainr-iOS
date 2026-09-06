@@ -191,6 +191,7 @@ struct RootView: View {
                 onStart: { onboarding.saveUserProfile() },
                 onDone: restartOnHome,
                 failure: onboarding.generationFailure,
+                failureCount: onboarding.failureCount,
                 onRetry: { onboarding.saveUserProfile() },
                 // Nothing was written, so the way out is back to the profile
                 // the plan would have been built from.
@@ -289,6 +290,7 @@ struct RootView: View {
                 onStart: start,
                 onDone: restartOnHome,
                 failure: nextWeek.failure,
+                failureCount: nextWeek.failureCount,
                 onRetry: start,
                 // The plan they already have is still there to go back to.
                 onGiveUp: pop,

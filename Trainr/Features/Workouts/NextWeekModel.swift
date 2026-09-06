@@ -5,6 +5,9 @@ import Observation
 final class NextWeekModel {
 
     private(set) var failure: PlanGenerationFailure?
+    // Counts up on every failure, so a second failure that says the same
+    // thing as the first still registers as a new one.
+    private(set) var failureCount = 0
     // Finishing is state rather than a callback: a callback belongs to the view
     // that made it, so a screen rebuilt mid-generation would never hear that its
     // week had arrived.
@@ -115,7 +118,10 @@ final class NextWeekModel {
         // when the coach never wrote it, and repeating a week is a decision they
         // should get to make.
         guard case .generated(let plan) = result else {
-            if case .failure(let reason) = result { failure = reason }
+            if case .failure(let reason) = result {
+                failure = reason
+                failureCount += 1
+            }
             return
         }
         dependencies.attempt("savePlan", { try dependencies.store.savePlan(plan) })
@@ -145,7 +151,10 @@ final class NextWeekModel {
         )
 
         guard case .generated(let plan) = result else {
-            if case .failure(let reason) = result { failure = reason }
+            if case .failure(let reason) = result {
+                failure = reason
+                failureCount += 1
+            }
             return
         }
         // Only now. One week per number, so the old one goes to make room — and
