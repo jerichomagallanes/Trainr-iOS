@@ -11,6 +11,9 @@ struct GeneratingView: View {
     // changes. The animation stays behind the dialog rather than pretending to
     // still be working.
     var failure: PlanGenerationFailure?
+    // Changes on every failure where the failure itself may not: a retry that
+    // fails the same way must still bring the alert back.
+    var failureCount = 0
     var onRetry: () -> Void = {}
     var onGiveUp: () -> Void = {}
     var giveUpLabel = L10n.cancel
@@ -66,8 +69,8 @@ struct GeneratingView: View {
             try? await Task.sleep(for: .seconds(remaining))
             onDone()
         }
-        .onChange(of: failure, initial: true) { _, now in
-            isShowingFailure = now != nil
+        .onChange(of: failureCount, initial: true) { _, _ in
+            isShowingFailure = failure != nil
         }
         .alert(
             failure == .dailyLimitReached ? L10n.generationLimitTitle : L10n.generationFailedTitle,
