@@ -1,0 +1,53 @@
+name: Release smoke
+
+# Nothing else in the pipeline runs against optimized output: tests use the
+# debug build, so a Release-only failure — whole-module optimization, stripped
+# symbols, a DEBUG-gated dependency — would only surface in production. This
+# builds the Release configuration, installs it on a simulator and checks it
+# starts and stays up.
+#
+# Advisory rather than required, for the same reason as the UI tests: simulator
+# flakes should not block a correct change.
+on:
+  pull_request:
+    branches: [main]
+    paths-ignore:
+      - '**/*.md'
+      - 'docs/**'
+  schedule:
+    - cron: '30 18 * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: release-smoke-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    name: Release build smoke
+    runs-on: macos-26
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # The build number is the commit count, so the whole history is needed.
+          fetch-depth: 0
+
+      - name: Build the Release configuration
+        run: |
+          set -o pipefail
+          xcodebuild build \
+            -project Trainr.xcodeproj \
+            -scheme Trainr \
+            -configuration Release \
+            -destination 'platform=iOS Simulator,name=iPhone 17 Pro' \
+            -derivedDataPath DerivedData \
+            CODE_SIGNING_ALLOWED=NO \
+            CURRENT_PROJECT_VERSION=$(git rev-list --count HEAD) \
+            | xcbeautify
+
+      - name: Install, launch and watch for a crash
+        run: bash scripts/release-smoke.sh DerivedData/Build/Products/Release-iphonesimulator/Trainr.app

@@ -1,0 +1,68 @@
+name: UI tests
+
+# UI tests need a booted simulator, so they are kept out of the CI workflow:
+# they run automatically on every PR, but they are deliberately NOT a required
+# check. Simulator flakes should never be able to block a merge on their own —
+# read the result, re-run if it looks like a flake, investigate if it doesn't.
+# The nightly run on main catches anything that slipped through.
+on:
+  pull_request:
+    branches: [main]
+    paths-ignore:
+      - '**/*.md'
+      - 'docs/**'
+      - '.gitignore'
+  schedule:
+    - cron: '0 18 * * *'  # 03:00 JST daily, against main
+  workflow_dispatch:
+
+concurrency:
+  group: ui-tests-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  DESTINATION: platform=iOS Simulator,name=iPhone 17 Pro
+
+jobs:
+  ui-tests:
+    name: UI tests
+    runs-on: macos-26
+    timeout-minutes: 45
+    permissions:
+      contents: read
+      checks: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Run UI tests
+        run: |
+          set -o pipefail
+          xcodebuild test \
+            -project Trainr.xcodeproj \
+            -scheme Trainr \
+            -destination "$DESTINATION" \
+            -only-testing:TrainrUITests \
+            -resultBundlePath UITestResults.xcresult \
+            | xcbeautify --report junit --report-path build/reports
+
+      - name: Publish test results
+        if: ${{ !cancelled() }}
+        uses: mikepenz/action-junit-report@a9170d5795813c01ab4901ffb045b52bab4ab09d # v6.5.0
+        with:
+          report_paths: build/reports/junit.xml
+          check_name: UI test results
+          detailed_summary: true
+          include_passed: false
+          job_summary: true
+          require_tests: false
+
+      - name: Upload test results
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: ui-test-results
+          path: UITestResults.xcresult
+          retention-days: 14

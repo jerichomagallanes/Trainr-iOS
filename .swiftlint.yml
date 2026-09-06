@@ -1,0 +1,32 @@
+excluded:
+  - DerivedData
+  - .build
+
+line_length:
+  warning: 120
+  error: 160
+
+identifier_name:
+  min_length: 2
+  excluded: [x, y, a, b]
+
+# Rationale comments above types are the house style; a large screen file is
+# not by itself a smell worth failing the build over.
+type_body_length:
+  warning: 400
+  error: 600
+
+file_length:
+  warning: 600
+  error: 1000
+
+# The coaching brief is one long string and the generator's model walk is one
+# deliberate loop, ported shape-for-shape from the Android app; splitting either
+# to satisfy a threshold would hide the contract they implement.
+function_body_length:
+  warning: 100
+  error: 150
+
+cyclomatic_complexity:
+  warning: 15
+  error: 20

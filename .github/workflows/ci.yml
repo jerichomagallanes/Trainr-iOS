@@ -1,0 +1,120 @@
+name: CI
+
+# Every pull request into main must pass this workflow, and it runs again on
+# main after a merge so the default branch always has a known-good result.
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+# One run per pull request. Pushing a fixup cancels the run still in flight
+# instead of queueing a second one behind it.
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+# Least privilege by default; jobs opt into more where they need it.
+permissions:
+  contents: read
+
+# The app builds without Firebase credentials by design: configuration is
+# guarded on GoogleService-Info.plist being present, and tests run against the
+# canned coach, so this pipeline needs no secrets at all.
+env:
+  DESTINATION: platform=iOS Simulator,name=iPhone 17 Pro
+
+jobs:
+  unit-tests:
+    name: Unit tests
+    runs-on: macos-26
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      checks: write         # publish the test-result check run
+      pull-requests: write  # keep a single summary comment up to date
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Run unit tests
+        run: |
+          set -o pipefail
+          xcodebuild test \
+            -project Trainr.xcodeproj \
+            -scheme Trainr \
+            -destination "$DESTINATION" \
+            -only-testing:TrainrTests \
+            -resultBundlePath TestResults.xcresult \
+            | xcbeautify --report junit --report-path build/reports
+
+      # Runs even when the step above failed, so a red build still explains
+      # itself with per-test annotations on the diff rather than a raw log.
+      - name: Publish test results
+        if: ${{ !cancelled() }}
+        uses: mikepenz/action-junit-report@a9170d5795813c01ab4901ffb045b52bab4ab09d # v6.5.0
+        with:
+          report_paths: build/reports/junit.xml
+          check_name: Unit test results
+          detailed_summary: true
+          include_passed: false
+          job_summary: true
+          comment: true
+          updateComment: true
+
+      - name: Upload test results
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: unit-test-results
+          path: TestResults.xcresult
+          retention-days: 14
+
+  lint:
+    name: SwiftLint
+    runs-on: macos-26
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      security-events: write  # upload lint findings to the Security tab
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      # SARIF lands the findings in the repository's Security tab and annotates
+      # them inline on the PR diff. Code scanning is free on public repositories.
+      - name: Run SwiftLint
+        run: swiftlint lint --strict --reporter sarif > swiftlint.sarif
+
+      - name: Upload lint results to code scanning
+        if: ${{ !cancelled() }}
+        uses: github/codeql-action/upload-sarif@cdf488f595d80d6e07e03d4674febd5ab45fa938 # v4
+        with:
+          sarif_file: swiftlint.sarif
+          category: swiftlint
+
+  build:
+    name: Build app
+    runs-on: macos-26
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Build for simulator
+        run: |
+          set -o pipefail
+          xcodebuild build \
+            -project Trainr.xcodeproj \
+            -scheme Trainr \
+            -destination "$DESTINATION" \
+            -derivedDataPath DerivedData \
+            CODE_SIGNING_ALLOWED=NO \
+            | xcbeautify
+
+      # Attaching the app to the run means any PR can be dropped onto a booted
+      # simulator straight from the checks tab, without building it locally.
+      - name: Upload app
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: trainr-debug-${{ github.sha }}
+          path: DerivedData/Build/Products/Debug-iphonesimulator/Trainr.app
+          if-no-files-found: error
+          retention-days: 14

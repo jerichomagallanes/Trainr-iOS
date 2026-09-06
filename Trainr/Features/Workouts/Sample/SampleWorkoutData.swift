@@ -80,7 +80,8 @@ nonisolated enum SampleWorkoutData {
                             sets: repSets(3, reps: 12, weightKg: 20, done: true),
                             durationMinutes: 8,
                             prescription: "3 sets of 12 reps",
-                            instructions: "Squat holding a dumbbell at your chest to build the legs and brace the core.",
+                            instructions: "Squat holding a dumbbell at your chest to build the legs "
+                                + "and brace the core.",
                             isCompleted: true
                         ),
                         WorkoutExercise(
@@ -162,7 +163,8 @@ nonisolated enum SampleWorkoutData {
                             sets: timedSets(5, seconds: 60),
                             durationMinutes: 10,
                             prescription: "5 sets of 1 minute",
-                            instructions: "Quick bursts of intense effort with short rest to boost cardio, burn fat, and build endurance."
+                            instructions: "Quick bursts of intense effort with short rest to boost "
+                                + "cardio, burn fat, and build endurance."
                         ),
                         WorkoutExercise(
                             exerciseKey: "bicycle_crunch",
@@ -171,7 +173,8 @@ nonisolated enum SampleWorkoutData {
                             sets: repSets(3, reps: 20),
                             durationMinutes: 5,
                             prescription: "3 sets of 20 reps",
-                            instructions: "Core exercise with alternating elbow-to-knee twists to target abs and obliques."
+                            instructions: "Core exercise with alternating elbow-to-knee twists to "
+                                + "target abs and obliques."
                         ),
                         WorkoutExercise(
                             exerciseKey: "russian_twist",
