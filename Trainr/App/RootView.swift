@@ -15,6 +15,7 @@ struct RootView: View {
     @State private var phase = Phase.splash
     @State private var path: [Route] = []
     @State private var weeklyPlan: WeeklyPlanModel?
+    @State private var nextWeek: NextWeekModel?
 
     var body: some View {
         NavigationStack(path: $path) {
@@ -37,6 +38,7 @@ struct RootView: View {
             // A returning user lands on their plan; onboarding is for the
             // first run.
             weeklyPlan = WeeklyPlanModel(dependencies: dependencies)
+            nextWeek = NextWeekModel(dependencies: dependencies)
             phase = model.hasCompletedOnboarding() ? .home : .welcome
         }
     }
@@ -59,7 +61,10 @@ struct RootView: View {
                     onLeavePlanConfirmed: { phase = .welcome },
                     onUpdateProfile: { path.append(.review(fromPlan: true, profileOnly: true)) },
                     onStartNextWeek: { path.append(.generatingNextWeek) },
-                    onRepeatWeek: { weeklyPlan.refresh() },
+                    onRepeatWeek: {
+                        nextWeek?.repeatWeek()
+                        weeklyPlan.refresh()
+                    },
                     onRegenerateWeek: { path.append(.regeneratingWeek) },
                     onCreatePlan: { phase = .welcome }
                 )
@@ -235,10 +240,34 @@ struct RootView: View {
                 onLastWeekDeleted: restartOnHome
             )
 
+        case .generatingNextWeek:
+            generating(start: { nextWeek?.generateNextWeek() })
+
+        case .regeneratingWeek:
+            generating(start: { nextWeek?.regenerateThisWeek() })
+
         // The rest of the workout surface is still being ported; until it lands
         // these routes say so rather than showing a blank screen.
         default:
             NotPortedYetView()
+        }
+    }
+
+    // Both ways of writing a week wear the same wait: the difference is which
+    // week is being written, and the client is watching the same thing happen.
+    @ViewBuilder
+    private func generating(start: @escaping () -> Void) -> some View {
+        if let nextWeek {
+            GeneratingView(
+                isReady: nextWeek.isReady,
+                onStart: start,
+                onDone: restartOnHome,
+                failure: nextWeek.failure,
+                onRetry: start,
+                // The plan they already have is still there to go back to.
+                onGiveUp: pop,
+                giveUpLabel: L10n.backToWorkoutPlan
+            )
         }
     }
 
