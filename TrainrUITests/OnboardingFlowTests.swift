@@ -133,8 +133,27 @@ final class OnboardingFlowTests: XCTestCase {
 
         // The canned coach answers at once; the wait screen still shows long
         // enough to be read, then hands over to the plan.
-        let planSurface = app.staticTexts["The weekly plan lives here next."]
-        XCTAssertTrue(planSurface.waitForExistence(timeout: 15))
+        let heading = app.staticTexts["YOUR WEEKLY WORKOUT PLAN"]
+        XCTAssertTrue(heading.waitForExistence(timeout: 15))
+
+        // The week the coach wrote, not a stand-in: its number, its dates, and
+        // one card per training day.
+        XCTAssertTrue(app.staticTexts.matching(
+            NSPredicate(format: "label BEGINSWITH %@", "Week 1:")
+        ).firstMatch.exists)
+        XCTAssertTrue(app.buttons["Workout plan options"].exists)
+        XCTAssertTrue(app.buttons["Profile and app"].exists)
+
+        // Three days were asked for, so three cards answer, each carrying the
+        // weekday its slot falls on.
+        let dayCards = app.buttons.matching(
+            NSPredicate(format: "label CONTAINS[c] %@", "Not started")
+        )
+        XCTAssertEqual(dayCards.count, 3)
+
+        // Nothing has been trained yet, so the way on is the first session.
+        XCTAssertTrue(app.buttons["START TODAY'S WORKOUT"].exists
+            || app.buttons["START NEXT WORKOUT"].exists)
     }
 
     @MainActor

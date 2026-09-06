@@ -14,6 +14,7 @@ struct RootView: View {
     @State private var onboarding: OnboardingModel?
     @State private var phase = Phase.splash
     @State private var path: [Route] = []
+    @State private var weeklyPlan: WeeklyPlanModel?
 
     var body: some View {
         NavigationStack(path: $path) {
@@ -35,6 +36,7 @@ struct RootView: View {
             try? await Task.sleep(for: .seconds(2))
             // A returning user lands on their plan; onboarding is for the
             // first run.
+            weeklyPlan = WeeklyPlanModel(dependencies: dependencies)
             phase = model.hasCompletedOnboarding() ? .home : .welcome
         }
     }
@@ -47,15 +49,34 @@ struct RootView: View {
         case .welcome:
             WelcomeView { path.append(.basicInfo(editing: false)) }
         case .home:
-            HomePlaceholderView()
+            if let weeklyPlan {
+                WeeklyPlanView(
+                    model: weeklyPlan,
+                    versionName: Self.version,
+                    onDayTap: { path.append(.routineDetail(dayNumber: $0.dayNumber, weekNumber: nil)) },
+                    onTrackProgress: { path.append(.weeklyProgress) },
+                    onStartWorkout: { path.append(.routineDetail(dayNumber: $0.dayNumber, weekNumber: nil)) },
+                    onLeavePlanConfirmed: { phase = .welcome },
+                    onUpdateProfile: { path.append(.review(fromPlan: true, profileOnly: true)) },
+                    onStartNextWeek: { path.append(.generatingNextWeek) },
+                    onRepeatWeek: { weeklyPlan.refresh() },
+                    onRegenerateWeek: { path.append(.regeneratingWeek) },
+                    onCreatePlan: { phase = .welcome }
+                )
+            }
         }
     }
 
     // The new plan is a fresh start whichever door led here, so the whole
     // stack goes with it.
     private func restartOnHome() {
+        weeklyPlan?.refresh()
         phase = .home
         path = []
+    }
+
+    static var version: String {
+        Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? ""
     }
 
     @ViewBuilder
@@ -157,8 +178,10 @@ struct RootView: View {
                 giveUpLabel: L10n.backToProfile
             )
 
+        // The rest of the workout surface is still being ported; until it lands
+        // these routes say so rather than showing a blank screen.
         default:
-            HomePlaceholderView()
+            NotPortedYetView()
         }
     }
 
@@ -194,17 +217,15 @@ struct SplashView: View {
         .background(Color.white)
     }
 
-    private static var version: String {
-        Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? ""
-    }
+    private static var version: String { RootView.version }
 }
 
-// Stands in for the plan surface until the workout screens are ported.
-struct HomePlaceholderView: View {
+// Stands in for a screen the port has not reached yet.
+struct NotPortedYetView: View {
     var body: some View {
         VStack(spacing: Spacing.medium) {
             Image("Wordmark").resizable().scaledToFit().frame(width: 140)
-            Text("The weekly plan lives here next.")
+            Text("This screen lands in the next part of the port.")
                 .font(.body14)
                 .foregroundStyle(Color.textMuted)
         }

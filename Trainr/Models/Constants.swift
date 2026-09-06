@@ -5,6 +5,9 @@ nonisolated enum Constants {
     enum Workout {
         static let defaultDuration = 45
         static let defaultDaysPerWeek = 3
+        // The length of a plan week, which is the calendar's, not the client's:
+        // a three-day week still spans Monday to Sunday.
+        static let daysPerWeek = 7
 
         // BMI category boundaries.
         static let bmiUnderweightThreshold = 18.5

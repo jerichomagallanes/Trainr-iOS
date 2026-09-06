@@ -56,17 +56,17 @@ nonisolated enum L10n {
         String.localizedStringWithFormat(String(localized: "day_completed_format"), p1)
     }
     static var dayCompletedMessage: String { String(localized: "day_completed_message") }
-    static func daysCompletedFormat(_ count: Int) -> String {
-        String.localizedStringWithFormat(String(localized: "days_completed_format"), count)
+    static func daysCompletedFormat(_ p1: Int, _ p2: Int, _ p3: Int) -> String {
+        String.localizedStringWithFormat(String(localized: "days_completed_format"), p1, p2, p3)
     }
-    static func daysPerWeekFormat(_ count: Int) -> String {
-        String.localizedStringWithFormat(String(localized: "days_per_week_format"), count)
+    static func daysPerWeekFormat(_ p1: Int) -> String {
+        String.localizedStringWithFormat(String(localized: "days_per_week_format"), p1)
     }
     static var deleteSet: String { String(localized: "delete_set") }
     static var deleteWeekConfirm: String { String(localized: "delete_week_confirm") }
     static var deleteWeekMessage: String { String(localized: "delete_week_message") }
-    static func deleteWeekMessageTrained(_ count: Int) -> String {
-        String.localizedStringWithFormat(String(localized: "delete_week_message_trained"), count)
+    static func deleteWeekMessageTrained(_ p1: Int, _ p2: Int) -> String {
+        String.localizedStringWithFormat(String(localized: "delete_week_message_trained"), p1, p2)
     }
     static func deleteWeekTitle(_ p1: Int) -> String {
         String.localizedStringWithFormat(String(localized: "delete_week_title"), p1)
@@ -74,8 +74,8 @@ nonisolated enum L10n {
     static var dropdownContentDescription: String { String(localized: "dropdown_content_description") }
     static var dumbbells: String { String(localized: "dumbbells") }
     static var durationLabel: String { String(localized: "duration_label") }
-    static func durationMinutesFormat(_ count: Int) -> String {
-        String.localizedStringWithFormat(String(localized: "duration_minutes_format"), count)
+    static func durationMinutesFormat(_ p1: Int) -> String {
+        String.localizedStringWithFormat(String(localized: "duration_minutes_format"), p1)
     }
     static var earlyMorning: String { String(localized: "early_morning") }
     static var earlyMorningTime: String { String(localized: "early_morning_time") }
@@ -91,8 +91,8 @@ nonisolated enum L10n {
     static var evening: String { String(localized: "evening") }
     static var eveningTime: String { String(localized: "evening_time") }
     static var exerciseInProgress: String { String(localized: "exercise_in_progress") }
-    static func exercisesCount(_ count: Int) -> String {
-        String.localizedStringWithFormat(String(localized: "exercises_count"), count)
+    static func exercisesCount(_ p1: Int) -> String {
+        String.localizedStringWithFormat(String(localized: "exercises_count"), p1)
     }
     static var experienceLabel: String { String(localized: "experience_label") }
     static var female: String { String(localized: "female") }
@@ -185,8 +185,8 @@ nonisolated enum L10n {
     static var measurementsDescription: String { String(localized: "measurements_description") }
     static var measurementsLabel: String { String(localized: "measurements_label") }
     static var metric: String { String(localized: "metric") }
-    static func minutes(_ count: Int) -> String {
-        String.localizedStringWithFormat(String(localized: "minutes"), count)
+    static func minutes(_ p1: Int) -> String {
+        String.localizedStringWithFormat(String(localized: "minutes"), p1)
     }
     static var missed: String { String(localized: "missed") }
     static var mixedBalanced: String { String(localized: "mixed_balanced") }
@@ -238,8 +238,8 @@ nonisolated enum L10n {
     static var regeneratePlan: String { String(localized: "regenerate_plan") }
     static var regenerateWeek: String { String(localized: "regenerate_week") }
     static var regenerateWeekConfirm: String { String(localized: "regenerate_week_confirm") }
-    static func regenerateWeekMessageTrained(_ count: Int) -> String {
-        String.localizedStringWithFormat(String(localized: "regenerate_week_message_trained"), count)
+    static func regenerateWeekMessageTrained(_ p1: Int, _ p2: Int) -> String {
+        String.localizedStringWithFormat(String(localized: "regenerate_week_message_trained"), p1, p2)
     }
     static var regenerateWeekTitle: String { String(localized: "regenerate_week_title") }
     static var repeatThisWeek: String { String(localized: "repeat_this_week") }
@@ -322,15 +322,15 @@ nonisolated enum L10n {
     static var weightsMarkedIn: String { String(localized: "weights_marked_in") }
     static var welcomeTo: String { String(localized: "welcome_to") }
     static var whereWillYouWorkOut: String { String(localized: "where_will_you_work_out") }
-    static func workoutDaysOption(_ count: Int) -> String {
-        String.localizedStringWithFormat(String(localized: "workout_days_option"), count)
+    static func workoutDaysOption(_ p1: Int) -> String {
+        String.localizedStringWithFormat(String(localized: "workout_days_option"), p1)
     }
     static var workoutDaysPerWeek: String { String(localized: "workout_days_per_week") }
     static var workoutSetupLabel: String { String(localized: "workout_setup_label") }
     static var workoutStyleLabel: String { String(localized: "workout_style_label") }
     static var wristPainInjury: String { String(localized: "wrist_pain_injury") }
-    static func yearsOldFormat(_ count: Int) -> String {
-        String.localizedStringWithFormat(String(localized: "years_old_format"), count)
+    static func yearsOldFormat(_ p1: Int) -> String {
+        String.localizedStringWithFormat(String(localized: "years_old_format"), p1)
     }
     static var your: String { String(localized: "your") }
     static var yourFitnessGoals: String { String(localized: "your_fitness_goals") }
