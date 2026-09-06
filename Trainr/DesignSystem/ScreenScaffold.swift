@@ -44,7 +44,7 @@ struct TopBar<Trailing: View>: View {
                     .resizable()
                     .scaledToFit()
                     .frame(height: 32)
-                    .accessibilityLabel("Trainr")
+                    .accessibilityLabel(L10n.appName)
             }
             HStack {
                 if let onBack {
@@ -54,7 +54,7 @@ struct TopBar<Trailing: View>: View {
                             .foregroundStyle(Color.slate800)
                             .frame(width: 44, height: 44)
                     }
-                    .accessibilityLabel(closeInsteadOfBack ? "Close" : "Back")
+                    .accessibilityLabel(closeInsteadOfBack ? L10n.close : L10n.back)
                 }
                 Spacer()
                 trailing

@@ -16,47 +16,6 @@ final class OnboardingFlowTests: XCTestCase {
         app.launch()
     }
 
-    // Scrolls an element into reach before tapping it: XCUITest taps element
-    // centres but never scrolls on its own, and a fling can leave a target
-    // half-settled under the pinned bottom bar.
-    @MainActor
-    private func scrollToAndTap(_ element: XCUIElement) {
-        XCTAssertTrue(element.waitForExistence(timeout: 5))
-        var attempts = 0
-        while !element.isHittable && attempts < 4 {
-            app.scrollViews.firstMatch.swipeUp()
-            attempts += 1
-        }
-        // A tap that lands while the scroll is still decelerating stops the
-        // scroll instead of pressing, so the content is given a moment to
-        // settle first.
-        Thread.sleep(forTimeInterval: 0.5)
-        element.tap()
-    }
-
-    // Taps a choice and insists it took: the selection state is the truth,
-    // not the synthesized event.
-    @MainActor
-    private func select(_ element: XCUIElement) {
-        scrollToAndTap(element)
-        var attempts = 0
-        while !element.isSelected && attempts < 3 {
-            Thread.sleep(forTimeInterval: 0.4)
-            if element.isHittable { element.tap() }
-            attempts += 1
-        }
-        XCTAssertTrue(element.isSelected)
-    }
-
-    // A choice card reads its whole content as one label — "Beginner, New to
-    // working out..." — so it is found by how the label starts.
-    @MainActor
-    private func card(startingWith title: String) -> XCUIElement {
-        app.buttons.matching(
-            NSPredicate(format: "label BEGINSWITH %@", title)
-        ).firstMatch
-    }
-
     @MainActor
     func testTheWholeFirstRunEndsOnThePlan() {
         launch()
@@ -90,7 +49,7 @@ final class OnboardingFlowTests: XCTestCase {
         ageField.typeText("30")
 
         app.buttons["Male"].tap()
-        card(startingWith: "Beginner").tap()
+        app.button(startingWith: "Beginner").tap()
         XCTAssertTrue(next.isEnabled)
         next.tap()
 
@@ -108,8 +67,8 @@ final class OnboardingFlowTests: XCTestCase {
 
         // Goals and style.
         XCTAssertTrue(app.staticTexts["YOUR FITNESS GOALS"].waitForExistence(timeout: 5))
-        card(startingWith: "Build Muscle").tap()
-        select(card(startingWith: "Strength Training"))
+        app.button(startingWith: "Build Muscle").tap()
+        app.select(app.button(startingWith: "Strength Training"))
         app.buttons["NEXT"].tap()
 
         // Workout setup.
@@ -122,7 +81,7 @@ final class OnboardingFlowTests: XCTestCase {
         app.buttons["Choose how many days"].tap()
         app.buttons["3 days"].tap()
         app.buttons["45 mins"].tap()
-        select(app.buttons["Morning (7-12 PM)"])
+        app.select(app.buttons["Morning (7-12 PM)"])
         let setupNext = app.buttons["NEXT"]
         XCTAssertTrue(setupNext.isEnabled)
         setupNext.tap()
@@ -144,7 +103,8 @@ final class OnboardingFlowTests: XCTestCase {
         XCTAssertTrue(app.staticTexts["Build Muscle"].exists)
         XCTAssertTrue(app.staticTexts["Lower Back Pain"].exists)
 
-        scrollToAndTap(app.buttons["GENERATE MY WORKOUT PLAN"])
+        app.scrollUntilHittable(app.buttons["GENERATE MY WORKOUT PLAN"])
+        app.buttons["GENERATE MY WORKOUT PLAN"].tap()
 
     }
 
