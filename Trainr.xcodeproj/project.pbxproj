@@ -6,53 +6,22 @@
 	objectVersion = 77;
 	objects = {
 
-/* Begin XCRemoteSwiftPackageReference section */
-		500000000000000000000001 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 12.5.0;
-			};
+/* Begin XCLocalSwiftPackageReference section */
+		500000000000000000000003 /* XCLocalSwiftPackageReference "Packages/TrainrDependencies" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/TrainrDependencies;
 		};
-		500000000000000000000002 /* XCRemoteSwiftPackageReference "YouTubePlayerKit" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/SvenTiigi/YouTubePlayerKit";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 2.0.0;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
+/* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		600000000000000000000001 /* FirebaseAILogic */ = {
+		600000000000000000000005 /* TrainrDependencies */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 500000000000000000000001 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseAILogic;
-		};
-		600000000000000000000002 /* FirebaseAppCheck */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 500000000000000000000001 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseAppCheck;
-		};
-		600000000000000000000003 /* FirebaseCrashlytics */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 500000000000000000000001 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseCrashlytics;
-		};
-		600000000000000000000004 /* YouTubePlayerKit */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 500000000000000000000002 /* XCRemoteSwiftPackageReference "YouTubePlayerKit" */;
-			productName = YouTubePlayerKit;
+			productName = TrainrDependencies;
 		};
 /* End XCSwiftPackageProductDependency section */
 
 /* Begin PBXBuildFile section */
-		700000000000000000000001 /* FirebaseAILogic in Frameworks */ = {isa = PBXBuildFile; productRef = 600000000000000000000001 /* FirebaseAILogic */; };
-		700000000000000000000002 /* FirebaseAppCheck in Frameworks */ = {isa = PBXBuildFile; productRef = 600000000000000000000002 /* FirebaseAppCheck */; };
-		700000000000000000000003 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = 600000000000000000000003 /* FirebaseCrashlytics */; };
-		700000000000000000000004 /* YouTubePlayerKit in Frameworks */ = {isa = PBXBuildFile; productRef = 600000000000000000000004 /* YouTubePlayerKit */; };
+		700000000000000000000005 /* TrainrDependencies in Frameworks */ = {isa = PBXBuildFile; productRef = 600000000000000000000005 /* TrainrDependencies */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -101,10 +70,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				700000000000000000000001 /* FirebaseAILogic in Frameworks */,
-				700000000000000000000002 /* FirebaseAppCheck in Frameworks */,
-				700000000000000000000003 /* FirebaseCrashlytics in Frameworks */,
-				700000000000000000000004 /* YouTubePlayerKit in Frameworks */,
+				700000000000000000000005 /* TrainrDependencies in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -165,10 +131,7 @@
 			);
 			name = Trainr;
 			packageProductDependencies = (
-				600000000000000000000001 /* FirebaseAILogic */,
-				600000000000000000000002 /* FirebaseAppCheck */,
-				600000000000000000000003 /* FirebaseCrashlytics */,
-				600000000000000000000004 /* YouTubePlayerKit */,
+				600000000000000000000005 /* TrainrDependencies */,
 			);
 			productName = Trainr;
 			productReference = E00000000000000000000001 /* Trainr.app */;
@@ -246,8 +209,7 @@
 			mainGroup = D00000000000000000000001;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				500000000000000000000001 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
-				500000000000000000000002 /* XCRemoteSwiftPackageReference "YouTubePlayerKit" */,
+				500000000000000000000003 /* XCLocalSwiftPackageReference "Packages/TrainrDependencies" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = D00000000000000000000002 /* Products */;

@@ -11,12 +11,10 @@ updates:
       - dependencies
       - ci
 
-  # Swift packages. Dependabot reads Package.swift manifests only, so this
-  # entry covers the day the project grows one; the packages declared in the
-  # Xcode project itself (firebase-ios-sdk, YouTubePlayerKit) are bumped by
-  # hand through File > Packages > Update to Latest Package Versions.
+  # Swift packages, declared in Packages/TrainrDependencies/Package.swift
+  # because Dependabot cannot read packages declared in an Xcode project.
   - package-ecosystem: swift
-    directory: /
+    directory: /Packages/TrainrDependencies
     schedule:
       interval: weekly
       day: monday
