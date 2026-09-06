@@ -58,6 +58,21 @@ extension XCUIApplication {
         return app
     }
 
+    // Taps a choice and insists it took: the selection state is the truth, not
+    // the synthesized event.
+    @MainActor
+    func select(_ element: XCUIElement) {
+        scrollUntilHittable(element)
+        element.tap()
+        var attempts = 0
+        while !element.isSelected && attempts < 3 {
+            Thread.sleep(forTimeInterval: 0.4)
+            if element.isHittable { element.tap() }
+            attempts += 1
+        }
+        XCTAssertTrue(element.isSelected)
+    }
+
     func button(startingWith prefix: String) -> XCUIElement {
         buttons.matching(NSPredicate(format: "label BEGINSWITH %@", prefix)).firstMatch
     }
