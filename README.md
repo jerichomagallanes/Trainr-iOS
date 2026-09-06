@@ -51,8 +51,6 @@ Tests: `xcodebuild test -project Trainr.xcodeproj -scheme Trainr -destination 'p
 
 The simulator must run iOS 27: the stock iOS 26.2 simulators crash on SwiftData built against the iOS 27 SDK.
 
-How the work is branched, committed, checked and merged: [CONTRIBUTING.md](CONTRIBUTING.md).
-
 ## 🔒 Privacy
 
 Trainr stores your profile and training history on your device. Generation requests carry the profile to Gemini through Firebase AI Logic; crash reports say what broke, never who you are. The full policy: [Privacy Policy](https://jerichomagallanes.github.io/Trainr/privacy-policy).
