@@ -44,12 +44,16 @@ def camel(key):
 
 def args_of(fmt):
     # positional or sequential specifiers, in order
-    found = re.findall(r'%(\d+\$)?(@|lld)', fmt)
+    found = re.findall(r'%(\d+\$)?(@|lld|\.?\d*f)', fmt)
     if any(pos for pos, _ in found):
         ordered = sorted(found, key=lambda f: int(f[0][:-1]))
     else:
         ordered = found
-    return ['String' if kind == '@' else 'Int' for _, kind in ordered]
+    def kind_of(kind):
+        if kind == '@': return 'String'
+        if kind == 'lld': return 'Int'
+        return 'Double'
+    return [kind_of(kind) for _, kind in ordered]
 
 lines = [
     '// Generated from the Android app\'s strings.xml by scripts/generate-strings.sh.',

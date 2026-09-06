@@ -308,7 +308,9 @@ nonisolated enum L10n {
     static var weightColumn: String { String(localized: "weight_column") }
     static var weightColumnLbs: String { String(localized: "weight_column_lbs") }
     static var weightKg: String { String(localized: "weight_kg") }
-    static var weightKgFormat: String { String(localized: "weight_kg_format") }
+    static func weightKgFormat(_ p1: Double) -> String {
+        String.localizedStringWithFormat(String(localized: "weight_kg_format"), p1)
+    }
     static var weightLabel: String { String(localized: "weight_label") }
     static var weightLbs: String { String(localized: "weight_lbs") }
     static func weightLbsFormat(_ p1: String) -> String {
