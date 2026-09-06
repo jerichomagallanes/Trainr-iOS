@@ -23,7 +23,7 @@ final class AppDependencies {
     static func live() -> AppDependencies {
         let container: ModelContainer
         do {
-            container = try TrainingStore.container()
+            container = try TrainingStore.container(inMemory: startsFresh)
         } catch {
             // The store is the app; without it there is nothing to fall back
             // to. In-memory keeps the session alive so the crash report that
@@ -39,6 +39,16 @@ final class AppDependencies {
             planGenerator: makePlanGenerator(breadcrumbs: breadcrumbs),
             breadcrumbs: breadcrumbs
         )
+    }
+
+    // A UI test needs every launch to start from nothing, so it asks for a
+    // store that vanishes with the process.
+    private static var startsFresh: Bool {
+        #if DEBUG
+        ProcessInfo.processInfo.arguments.contains("-inMemoryStore")
+        #else
+        false
+        #endif
     }
 
     // The shipped build asks the model, through Firebase AI Logic so no key

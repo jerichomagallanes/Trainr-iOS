@@ -6,8 +6,6 @@ import SwiftUI
 struct DropdownField: View {
     let selectedValue: String
     let options: [String]
-    // Shown, muted, when nothing has been chosen yet, the same way the text
-    // fields show theirs.
     var placeholder = ""
     let onSelect: (String) -> Void
 
@@ -33,6 +31,7 @@ struct DropdownField: View {
                 RoundedRectangle(cornerRadius: CornerRadius.medium)
                     .strokeBorder(Color.outlineGray, lineWidth: 1)
             }
+            .contentShape(RoundedRectangle(cornerRadius: CornerRadius.medium))
         }
         .buttonStyle(.plain)
     }

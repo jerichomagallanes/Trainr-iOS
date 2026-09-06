@@ -30,6 +30,7 @@ struct SelectionCard: View {
                 .padding(.trailing, Spacing.extraLarge)
             }
             .padding(Spacing.tight)
+            .contentShape(RoundedRectangle(cornerRadius: CornerRadius.medium))
         }
         .buttonStyle(.plain)
         .background(

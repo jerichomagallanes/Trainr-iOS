@@ -20,6 +20,7 @@ struct ToggleChip: View {
                 .minimumScaleFactor(0.75)
                 .padding(.horizontal, horizontalPadding)
                 .frame(height: height)
+                .contentShape(RoundedRectangle(cornerRadius: CornerRadius.medium))
         }
         .buttonStyle(.plain)
         .background(
@@ -57,6 +58,7 @@ struct RadioChip: View {
             .padding(.leading, Spacing.card)
             .padding(.trailing, Spacing.tight)
             .frame(height: height)
+            .contentShape(RoundedRectangle(cornerRadius: CornerRadius.medium))
         }
         .buttonStyle(.plain)
         .background(
@@ -95,6 +97,7 @@ struct CheckboxChip: View {
                     .foregroundStyle(isChecked ? Color.white : .outlineGray)
             }
             .padding(Spacing.card)
+            .contentShape(RoundedRectangle(cornerRadius: CornerRadius.medium))
         }
         .buttonStyle(.plain)
         .background(

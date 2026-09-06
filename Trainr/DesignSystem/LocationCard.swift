@@ -23,6 +23,7 @@ struct LocationCard: View {
             }
             .frame(maxWidth: .infinity)
             .frame(height: 124)
+            .contentShape(RoundedRectangle(cornerRadius: CornerRadius.medium))
         }
         .buttonStyle(.plain)
         .background(
