@@ -154,6 +154,18 @@ final class OnboardingFlowTests: XCTestCase {
         // Nothing has been trained yet, so the way on is the first session.
         XCTAssertTrue(app.buttons["START TODAY'S WORKOUT"].exists
             || app.buttons["START NEXT WORKOUT"].exists)
+
+        // And it leads somewhere: the session opens on its own routine, with
+        // the exercises the coach wrote and a row per prescribed set.
+        app.buttons.matching(
+            NSPredicate(format: "label BEGINSWITH %@", "START")
+        ).firstMatch.tap()
+
+        XCTAssertTrue(app.staticTexts["Set"].waitForExistence(timeout: 15))
+        XCTAssertTrue(app.staticTexts["Reps"].exists)
+        XCTAssertTrue(app.buttons["Add set"].firstMatch.exists)
+        XCTAssertTrue(app.buttons["Start timer"].firstMatch.exists)
+        XCTAssertTrue(app.staticTexts["Equipment: Dumbbells"].exists)
     }
 
     @MainActor
