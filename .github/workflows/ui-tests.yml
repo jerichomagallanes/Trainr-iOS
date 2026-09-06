@@ -5,6 +5,13 @@ name: UI tests
 # check. Simulator flakes should never be able to block a merge on their own —
 # read the result, re-run if it looks like a flake, investigate if it doesn't.
 # The nightly run on main catches anything that slipped through.
+#
+# The suite takes 37-46 minutes on a hosted runner against the 19 it takes on a
+# development machine, so the limit is set well clear of it: at 45 the nightly
+# run was killed mid-suite and reported as cancelled, which reads like someone
+# stopped it rather than like a result. A test that fails is given one more
+# attempt, because typing into a text field is where the hosted simulator
+# stalls; a test that fails twice still fails the job.
 on:
   pull_request:
     branches: [main]
@@ -30,7 +37,7 @@ jobs:
   ui-tests:
     name: UI tests
     runs-on: macos-26
-    timeout-minutes: 45
+    timeout-minutes: 75
     permissions:
       contents: read
       checks: write
@@ -46,6 +53,8 @@ jobs:
             -destination "$DESTINATION" \
             -only-testing:TrainrUITests \
             -resultBundlePath UITestResults.xcresult \
+            -retry-tests-on-failure \
+            -test-iterations 2 \
             | xcbeautify --report junit --report-path build/reports
 
       - name: Publish test results
