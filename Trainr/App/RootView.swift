@@ -178,6 +178,21 @@ struct RootView: View {
                 giveUpLabel: L10n.backToProfile
             )
 
+        case .routineDetail(let dayNumber, let weekNumber):
+            RoutineDetailView(
+                dependencies: dependencies,
+                dayNumber: dayNumber,
+                weekNumber: weekNumber,
+                onBack: {
+                    // The plan is re-read on the way back, so a day finished
+                    // here is reflected there.
+                    weeklyPlan?.refresh()
+                    pop()
+                },
+                onDayCompleted: { path.append(.dayCompleted(dayNumber: $0)) },
+                onWeekCompleted: { path.append(.weekCompleted(weekNumber: $0)) }
+            )
+
         // The rest of the workout surface is still being ported; until it lands
         // these routes say so rather than showing a blank screen.
         default:

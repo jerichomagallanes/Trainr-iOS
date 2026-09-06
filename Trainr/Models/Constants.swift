@@ -8,6 +8,7 @@ nonisolated enum Constants {
         // The length of a plan week, which is the calendar's, not the client's:
         // a three-day week still spans Monday to Sunday.
         static let daysPerWeek = 7
+        static let secondsPerMinute = 60
 
         // BMI category boundaries.
         static let bmiUnderweightThreshold = 18.5
