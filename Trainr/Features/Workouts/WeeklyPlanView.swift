@@ -2,19 +2,53 @@ import SwiftUI
 
 struct WeeklyPlanView: View {
 
-    @Bindable var model: WeeklyPlanModel
-    var versionName = ""
-    var onDayTap: (WorkoutDay) -> Void = { _ in }
-    var onTrackProgress: () -> Void = {}
-    var onStartWorkout: (WorkoutDay) -> Void = { _ in }
-    var onLeavePlanConfirmed: () -> Void = {}
-    var onUpdateProfile: () -> Void = {}
-    var onStartNextWeek: () -> Void = {}
-    var onRepeatWeek: () -> Void = {}
-    var onRegenerateWeek: () -> Void = {}
-    var onCreatePlan: () -> Void = {}
+    // Owned here rather than handed in, so a screen rebuilt around it keeps the
+    // week it read. Home builds one for the newest week; a week opened from
+    // Weekly Progress builds its own for that number.
+    @State private var model: WeeklyPlanModel
+    private let versionName: String
+    private let onDayTap: (WorkoutDay) -> Void
+    private let onTrackProgress: () -> Void
+    private let onStartWorkout: (WorkoutDay) -> Void
+    private let onLeavePlanConfirmed: () -> Void
+    private let onUpdateProfile: () -> Void
+    private let onStartNextWeek: () -> Void
+    private let onRepeatWeek: () -> Void
+    private let onRegenerateWeek: () -> Void
+    private let onCreatePlan: () -> Void
     // Set only when a week was opened from Weekly Progress.
-    var onBack: (() -> Void)?
+    private let onBack: (() -> Void)?
+
+    init(
+        dependencies: AppDependencies,
+        weekNumber: Int? = nil,
+        versionName: String = "",
+        onDayTap: @escaping (WorkoutDay) -> Void = { _ in },
+        onTrackProgress: @escaping () -> Void = {},
+        onStartWorkout: @escaping (WorkoutDay) -> Void = { _ in },
+        onLeavePlanConfirmed: @escaping () -> Void = {},
+        onUpdateProfile: @escaping () -> Void = {},
+        onStartNextWeek: @escaping () -> Void = {},
+        onRepeatWeek: @escaping () -> Void = {},
+        onRegenerateWeek: @escaping () -> Void = {},
+        onCreatePlan: @escaping () -> Void = {},
+        onBack: (() -> Void)? = nil
+    ) {
+        _model = State(
+            initialValue: WeeklyPlanModel(dependencies: dependencies, weekNumber: weekNumber)
+        )
+        self.versionName = versionName
+        self.onDayTap = onDayTap
+        self.onTrackProgress = onTrackProgress
+        self.onStartWorkout = onStartWorkout
+        self.onLeavePlanConfirmed = onLeavePlanConfirmed
+        self.onUpdateProfile = onUpdateProfile
+        self.onStartNextWeek = onStartNextWeek
+        self.onRepeatWeek = onRepeatWeek
+        self.onRegenerateWeek = onRegenerateWeek
+        self.onCreatePlan = onCreatePlan
+        self.onBack = onBack
+    }
 
     @State private var showLeaveDialog = false
     @State private var showRegenerateDialog = false
@@ -172,7 +206,12 @@ struct WeeklyPlanView: View {
             // moment as a generated week rather than landing on top of one still
             // being trained.
             if state.canAddWeek {
-                Button(L10n.repeatThisWeek, action: onRepeatWeek)
+                Button(L10n.repeatThisWeek) {
+                    onRepeatWeek()
+                    // The copy lands while this screen is still on top, so
+                    // nothing else is going to re-read the plan for it.
+                    model.refresh()
+                }
             }
             // The other half of the same question: still in this week, so it can
             // be written again; done with it, and the offer becomes the week
@@ -305,9 +344,6 @@ struct WeeklyPlanView: View {
 
 #Preview {
     NavigationStack {
-        WeeklyPlanView(
-            model: WeeklyPlanModel(dependencies: .preview),
-            versionName: "1.0.0"
-        )
+        WeeklyPlanView(dependencies: .preview, versionName: "1.0.0")
     }
 }

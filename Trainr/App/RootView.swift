@@ -14,8 +14,10 @@ struct RootView: View {
     @State private var onboarding: OnboardingModel?
     @State private var phase = Phase.splash
     @State private var path: [Route] = []
-    @State private var weeklyPlan: WeeklyPlanModel?
     @State private var nextWeek: NextWeekModel?
+    // Bumped whenever the plan is replaced wholesale, to give home a new
+    // identity and with it a model that reads the new plan.
+    @State private var planGeneration = 0
 
     var body: some View {
         NavigationStack(path: $path) {
@@ -37,7 +39,6 @@ struct RootView: View {
             try? await Task.sleep(for: .seconds(2))
             // A returning user lands on their plan; onboarding is for the
             // first run.
-            weeklyPlan = WeeklyPlanModel(dependencies: dependencies)
             nextWeek = NextWeekModel(dependencies: dependencies)
             phase = model.hasCompletedOnboarding() ? .home : .welcome
         }
@@ -51,31 +52,32 @@ struct RootView: View {
         case .welcome:
             WelcomeView { path.append(.basicInfo(editing: false)) }
         case .home:
-            if let weeklyPlan {
-                WeeklyPlanView(
-                    model: weeklyPlan,
-                    versionName: Self.version,
-                    onDayTap: { path.append(.routineDetail(dayNumber: $0.dayNumber, weekNumber: nil)) },
-                    onTrackProgress: { path.append(.weeklyProgress) },
-                    onStartWorkout: { path.append(.routineDetail(dayNumber: $0.dayNumber, weekNumber: nil)) },
-                    onLeavePlanConfirmed: { phase = .welcome },
-                    onUpdateProfile: { path.append(.review(fromPlan: true, profileOnly: true)) },
-                    onStartNextWeek: { path.append(.generatingNextWeek) },
-                    onRepeatWeek: {
-                        nextWeek?.repeatWeek()
-                        weeklyPlan.refresh()
-                    },
-                    onRegenerateWeek: { path.append(.regeneratingWeek) },
-                    onCreatePlan: { phase = .welcome }
-                )
-            }
+            WeeklyPlanView(
+                dependencies: dependencies,
+                versionName: Self.version,
+                onDayTap: { path.append(.routineDetail(dayNumber: $0.dayNumber, weekNumber: nil)) },
+                onTrackProgress: { path.append(.weeklyProgress) },
+                onStartWorkout: {
+                    path.append(.routineDetail(dayNumber: $0.dayNumber, weekNumber: nil))
+                },
+                onLeavePlanConfirmed: { phase = .welcome },
+                onUpdateProfile: { path.append(.review(fromPlan: true, profileOnly: true)) },
+                onStartNextWeek: { path.append(.generatingNextWeek) },
+                onRepeatWeek: { nextWeek?.repeatWeek() },
+                onRegenerateWeek: { path.append(.regeneratingWeek) },
+                onCreatePlan: { phase = .welcome }
+            )
+            // A plan rebuilt from nothing is a different plan, so the screen
+            // that shows it starts over too rather than keeping the week it
+            // had already read.
+            .id(planGeneration)
         }
     }
 
     // The new plan is a fresh start whichever door led here, so the whole
     // stack goes with it.
     private func restartOnHome() {
-        weeklyPlan?.refresh()
+        planGeneration += 1
         phase = .home
         path = []
     }
@@ -198,12 +200,7 @@ struct RootView: View {
                 dependencies: dependencies,
                 dayNumber: dayNumber,
                 weekNumber: weekNumber,
-                onBack: {
-                    // The plan is re-read on the way back, so a day finished
-                    // here is reflected there.
-                    weeklyPlan?.refresh()
-                    pop()
-                },
+                onBack: pop,
                 onDayCompleted: { path.append(.dayCompleted(dayNumber: $0)) },
                 onWeekCompleted: { path.append(.weekCompleted(weekNumber: $0)) }
             )
@@ -229,11 +226,7 @@ struct RootView: View {
         case .weeklyProgress:
             WeeklyProgressView(
                 dependencies: dependencies,
-                onBack: {
-                    // A week deleted here changes the plan behind it.
-                    weeklyPlan?.refresh()
-                    pop()
-                },
+                onBack: pop,
                 onWeekTap: { path.append(.weekPlan(weekNumber: $0.weekNumber)) },
                 // Nothing left to show progress against, so the plan screen
                 // takes over: it is the one that can offer to build another.
@@ -246,10 +239,30 @@ struct RootView: View {
         case .regeneratingWeek:
             generating(start: { nextWeek?.regenerateThisWeek() })
 
-        // The rest of the workout surface is still being ported; until it lands
-        // these routes say so rather than showing a blank screen.
+        // A week opened from Weekly Progress: the same screen, given a way back
+        // and a particular week to read. Whether it is live or a record is the
+        // week's own business, so the screen decides that from what it finds.
+        case .weekPlan(let weekNumber):
+            WeeklyPlanView(
+                dependencies: dependencies,
+                weekNumber: weekNumber,
+                onDayTap: {
+                    path.append(
+                        .routineDetail(dayNumber: $0.dayNumber, weekNumber: weekNumber)
+                    )
+                },
+                onStartWorkout: {
+                    path.append(
+                        .routineDetail(dayNumber: $0.dayNumber, weekNumber: weekNumber)
+                    )
+                },
+                onRepeatWeek: { nextWeek?.repeatWeek(numbered: weekNumber) },
+                onBack: pop
+            )
+
+        // The onboarding routes never reach here; they are answered above.
         default:
-            NotPortedYetView()
+            EmptyView()
         }
     }
 
@@ -304,19 +317,4 @@ struct SplashView: View {
     }
 
     private static var version: String { RootView.version }
-}
-
-// Stands in for a screen the port has not reached yet.
-struct NotPortedYetView: View {
-    var body: some View {
-        VStack(spacing: Spacing.medium) {
-            Image("Wordmark").resizable().scaledToFit().frame(width: 140)
-            Text("This screen lands in the next part of the port.")
-                .font(.body14)
-                .foregroundStyle(Color.textMuted)
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color.white)
-        .toolbar(.hidden, for: .navigationBar)
-    }
 }
