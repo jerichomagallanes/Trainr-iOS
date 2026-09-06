@@ -178,6 +178,16 @@ struct RootView: View {
                 giveUpLabel: L10n.backToProfile
             )
 
+        default:
+            workoutDestination(for: route)
+        }
+    }
+
+    // The workout surface, kept apart from the questions that lead into it:
+    // they are two flows that happen to share a stack.
+    @ViewBuilder
+    private func workoutDestination(for route: Route) -> some View {
+        switch route {
         case .routineDetail(let dayNumber, let weekNumber):
             RoutineDetailView(
                 dependencies: dependencies,
@@ -191,6 +201,24 @@ struct RootView: View {
                 },
                 onDayCompleted: { path.append(.dayCompleted(dayNumber: $0)) },
                 onWeekCompleted: { path.append(.weekCompleted(weekNumber: $0)) }
+            )
+
+        case .dayCompleted(let dayNumber):
+            DayCompletedView(
+                dayNumber: dayNumber,
+                onBack: pop,
+                onViewProgress: { path.append(.weeklyProgress) },
+                // The session is over, so the way on is the plan itself rather
+                // than the routine that led here.
+                onBackToPlan: restartOnHome
+            )
+
+        case .weekCompleted(let weekNumber):
+            WeekCompletedView(
+                weekNumber: weekNumber,
+                onBack: pop,
+                onViewProgress: { path.append(.weeklyProgress) },
+                onGenerateNextWeek: { path.append(.generatingNextWeek) }
             )
 
         // The rest of the workout surface is still being ported; until it lands
