@@ -1,0 +1,41 @@
+name: Bug report
+description: Something in the app behaves incorrectly
+labels: [bug]
+body:
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: What you saw, and what you expected instead.
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open the onboarding flow
+        2. Tap ...
+        3. ...
+    validations:
+      required: true
+
+  - type: input
+    id: device
+    attributes:
+      label: Device and iOS version
+      placeholder: iPhone 17 Pro, iOS 26.1
+
+  - type: dropdown
+    id: build
+    attributes:
+      label: Build
+      options: [Xcode debug run, TestFlight, App Store]
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs or screenshots
+      description: Console output, a crash log from Settings > Privacy & Security > Analytics, or a screen recording.
+      render: shell

@@ -1,0 +1,23 @@
+name: Feature request
+description: An idea for something the app should do
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem
+      description: What is awkward or missing today? Describe the need, not the solution.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: What you have in mind, if you already have a shape for it.
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes
+      description: Alternatives considered, sketches, links, prior art.
