@@ -55,12 +55,13 @@ struct RoutineDetailView: View {
             guard !model.state.isLoaded else { return }
             model.load()
         }
-        .onChange(of: routine.isComplete, initial: true) { _, _ in
-            // Read together, live, rather than trusting the value the change
-            // carries: the initial call can arrive after the routine has loaded
-            // yet still carry the empty routine it was scheduled with, and
-            // pairing that stale "incomplete" with a fresh "loaded" recorded a
-            // moment that never existed — and then finishing the day on open.
+        .onChange(of: CompletionKey(state), initial: true) { _, _ in
+            // Keyed on loading as well as completion: on iOS 26 the initial
+            // call lands before the routine loads, and an unloaded routine is
+            // neither complete nor incomplete, so nothing would prime and the
+            // first finish would go unnoticed. Read live rather than trusting
+            // the value the change carries, which can be the one it was
+            // scheduled with.
             let current = model.state
             guard current.isLoaded else { return }
             let isComplete = current.routine.isComplete
@@ -199,5 +200,15 @@ struct RoutineDetailView: View {
                 .frame(maxWidth: .infinity)
                 .padding(.top, Spacing.section + Spacing.tight)
         }
+    }
+}
+
+private struct CompletionKey: Equatable {
+    let isLoaded: Bool
+    let isComplete: Bool
+
+    init(_ state: RoutineDetailState) {
+        isLoaded = state.isLoaded
+        isComplete = state.routine.isComplete
     }
 }
