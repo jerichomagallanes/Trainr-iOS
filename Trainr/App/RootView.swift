@@ -221,6 +221,20 @@ struct RootView: View {
                 onGenerateNextWeek: { path.append(.generatingNextWeek) }
             )
 
+        case .weeklyProgress:
+            WeeklyProgressView(
+                dependencies: dependencies,
+                onBack: {
+                    // A week deleted here changes the plan behind it.
+                    weeklyPlan?.refresh()
+                    pop()
+                },
+                onWeekTap: { path.append(.weekPlan(weekNumber: $0.weekNumber)) },
+                // Nothing left to show progress against, so the plan screen
+                // takes over: it is the one that can offer to build another.
+                onLastWeekDeleted: restartOnHome
+            )
+
         // The rest of the workout surface is still being ported; until it lands
         // these routes say so rather than showing a blank screen.
         default:
