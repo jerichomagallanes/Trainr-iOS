@@ -25,6 +25,10 @@ final class OnboardingModel {
     // Set when a plan could not be written, so the screen can say why rather
     // than handing over a week nobody asked for.
     private(set) var generationFailure: PlanGenerationFailure?
+    // Counts up on every failure, so a screen can tell a second failure from
+    // the first even when both say the same thing. The failure value alone
+    // cannot: cleared and set again within one turn, it reads as unchanged.
+    private(set) var failureCount = 0
 
     private let dependencies: AppDependencies
     private let store: TrainingStore
@@ -169,6 +173,7 @@ final class OnboardingModel {
                 isLoading = false
                 if case .failure(let failure) = result {
                     generationFailure = failure
+                    failureCount += 1
                 }
                 return
             }
@@ -183,6 +188,7 @@ final class OnboardingModel {
             } catch {
                 isLoading = false
                 generationFailure = .failed
+                failureCount += 1
             }
         }
     }
