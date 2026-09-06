@@ -12,6 +12,12 @@ enum Fixture: String {
     case finishedWeek
     // A finished week behind a week in progress.
     case twoWeeks
+    // Nothing done yet, starting today.
+    case freshWeek
+    // Nothing done yet, and the first day's date has passed.
+    case missedDay
+    // Every day done but today's, the last of the week.
+    case lastDayLeft
 }
 
 extension XCUIApplication {
@@ -41,6 +47,15 @@ extension XCUIApplication {
             remaining -= 1
         }
         Thread.sleep(forTimeInterval: 0.4)
+    }
+
+    // Launches into the first run, with generation set to fail the given way.
+    @MainActor
+    static func launchedToFail(_ reason: String) -> XCUIApplication {
+        let app = XCUIApplication()
+        app.launchArguments = ["-inMemoryStore", "-generationFails", reason]
+        app.launch()
+        return app
     }
 
     func button(startingWith prefix: String) -> XCUIElement {

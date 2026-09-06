@@ -33,6 +33,12 @@ enum UITestFixtures {
         case "twoWeeks":
             try? store.savePlan(week(1, for: user, startingDaysAgo: 9, shape: .finished))
             try? store.savePlan(week(2, for: user, startingDaysAgo: 2, shape: .midWeek))
+        case "freshWeek":
+            try? store.savePlan(week(1, for: user, startingDaysAgo: 0, shape: .fresh))
+        case "missedDay":
+            try? store.savePlan(week(1, for: user, startingDaysAgo: 2, shape: .fresh))
+        case "lastDayLeft":
+            try? store.savePlan(week(1, for: user, startingDaysAgo: 4, shape: .lastDayLeft))
         default:
             assertionFailure("Unknown fixture \(name)")
         }
@@ -43,6 +49,20 @@ enum UITestFixtures {
         // last still to come.
         case midWeek
         case finished
+        // Nothing done yet. Started today it is a week ahead; started two days
+        // ago its first day is missed.
+        case fresh
+        // Every day done but the last, whose date is today.
+        case lastDayLeft
+
+        func status(for day: WorkoutDay, at index: Int, of count: Int) -> WorkoutStatus {
+            switch self {
+            case .midWeek: day.status
+            case .finished: .completed
+            case .fresh: .notStarted
+            case .lastDayLeft: index == count - 1 ? .notStarted : .completed
+            }
+        }
     }
 
     private static func client() -> UserProfile {
@@ -76,10 +96,11 @@ enum UITestFixtures {
         plan.weekNumber = number
         plan.title = "Strength Foundations"
         plan.startDate = start
-        plan.workoutDays = plan.workoutDays.map { day in
+        let count = plan.workoutDays.count
+        plan.workoutDays = plan.workoutDays.enumerated().map { index, day in
             var shaped = day
             shaped.id = UUID()
-            let status: WorkoutStatus = shape == .finished ? .completed : day.status
+            let status = shape.status(for: day, at: index, of: count)
             shaped.status = status
             shaped.completedAt = status == .completed
                 ? WorkoutWeek.date(of: day.dayNumber, startingFrom: start) : nil
@@ -105,6 +126,34 @@ enum UITestFixtures {
             return shaped
         }
         return plan
+    }
+
+    // The wait screen has three ways to fail, and a test needs each on demand.
+    static let failureArgument = "-generationFails"
+
+    static func failingGeneratorIfRequested() -> (any PlanGenerator)? {
+        let arguments = ProcessInfo.processInfo.arguments
+        guard let index = arguments.firstIndex(of: failureArgument),
+              arguments.indices.contains(index + 1)
+        else { return nil }
+        let reason: PlanGenerationFailure = switch arguments[index + 1] {
+        case "offline": .offline
+        case "dailyLimit": .dailyLimitReached
+        default: .failed
+        }
+        return FailingPlanGenerator(reason: reason)
+    }
+
+    private struct FailingPlanGenerator: PlanGenerator {
+        let reason: PlanGenerationFailure
+
+        // A moment before answering, as a real request takes. Answering within
+        // the same turn it was asked in let the failure go nil and back before
+        // the screen looked, so a retry that failed again showed nothing.
+        func generate(_ request: PlanRequest) async -> PlanGenerationResult {
+            try? await Task.sleep(for: .milliseconds(300))
+            return .failure(reason)
+        }
     }
 
     private static func logged(_ set: ExerciseSet) -> ExerciseSet {

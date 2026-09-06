@@ -38,6 +38,29 @@ final class CompletionScreenTests: XCTestCase {
         XCTAssertTrue(app.button(containing: "Lower Body Power, Completed").exists)
     }
 
+    // The design counts workout days, not weekdays: the first session of the
+    // week is day one whatever weekday it falls on.
+    @MainActor
+    func testTheFirstWorkoutDayReadsAsDayOne() {
+        finish(day: "Full Body Strength", from: .freshWeek)
+        XCTAssertTrue(app.staticTexts["DAY 1 COMPLETED"].waitForExistence(timeout: 5))
+    }
+
+    // Finishing the last outstanding day ends the week, not just the day, and
+    // the week offers what follows it.
+    @MainActor
+    func testFinishingTheLastDayEndsTheWeekAndOffersTheNextOne() {
+        finish(day: "Lower Body Power", from: .lastDayLeft)
+
+        XCTAssertTrue(app.staticTexts["WEEK 1 COMPLETED"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.text(containing: "Amazing consistency").exists)
+        XCTAssertTrue(app.buttons["VIEW WEEKLY PROGRESS"].exists)
+        XCTAssertTrue(app.buttons["GENERATE NEXT WEEK"].exists)
+
+        app.buttons["GENERATE NEXT WEEK"].tap()
+        XCTAssertTrue(app.text(containing: "Week 2:").waitForExistence(timeout: 15))
+    }
+
     @MainActor
     func testFinishingADayCanLeadToProgress() {
         finish(day: "Lower Body Power", from: .midWeek)
