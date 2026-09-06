@@ -15,6 +15,11 @@ nonisolated enum GeminiResponse: Equatable, Sendable {
     // deliberately not remembered.
     case modelUnavailable
 
+    // The backend would not talk to this caller at all: the request was made
+    // without a valid App Check token, or from an app the project does not
+    // recognise. Nothing about the model; no other model will answer either.
+    case refused
+
     case failed
 }
 

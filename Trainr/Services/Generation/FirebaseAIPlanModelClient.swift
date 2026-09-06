@@ -64,10 +64,16 @@ struct FirebaseAIPlanModelClient: PlanModelClient {
             return error.code == NSURLErrorTimedOut ? .modelUnavailable : .unreachable
         }
         if error.domain.hasPrefix(Self.backendErrorDomain) {
-            // 429: its allowance for the day is spent; the next model has its
-            // own, and this one will keep saying so until the quota resets.
-            // Anything else is overloaded or retired — someone else may answer.
-            return error.code == 429 ? .quotaSpent : .modelUnavailable
+            switch error.code {
+            // Its allowance for the day is spent; the next model has its own,
+            // and this one will keep saying so until the quota resets.
+            case 429: return .quotaSpent
+            // Not this model's answer but the door's: the caller was turned
+            // away, and would be at every model down the list.
+            case 401, 403: return .refused
+            // Overloaded or retired — someone else may answer.
+            default: return .modelUnavailable
+            }
         }
         // The network failure may sit a level down, wrapped by the SDK.
         for underlying in error.underlyingErrors {
