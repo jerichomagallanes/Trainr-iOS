@@ -6,6 +6,10 @@ import SwiftData
 // records stay in here.
 final class TrainingStore {
 
+    enum StoreError: Error {
+        case noSuchUser(UUID)
+    }
+
     // The container is held, not just its context: a context does not keep its
     // container alive, and a store built from a temporary would be reading from
     // a database that deallocated under it.
@@ -66,8 +70,16 @@ final class TrainingStore {
     // removed in the same save, so two generations racing each other cannot
     // leave both behind.
     func savePlan(_ plan: WeeklyPlan) throws {
-        guard let owner = try userRecord(id: plan.userID) else { return }
-        if let existing = owner.plans.first(where: { $0.weekNumber == plan.weekNumber }) {
+        // A plan with no client to own it is not a plan. Returning quietly let
+        // a generation report a week it had not written, which reads to the
+        // client as a plan that vanished.
+        guard let owner = try userRecord(id: plan.userID) else {
+            throw StoreError.noSuchUser(plan.userID)
+        }
+        // Every week carrying this number, not the first one found: one is all
+        // this can create, but a store that already holds two should not be
+        // left holding one of them.
+        for existing in owner.plans where existing.weekNumber == plan.weekNumber {
             context.delete(existing)
         }
 
@@ -204,7 +216,22 @@ final class TrainingStore {
                 else { return false }
                 return record.sets.contains { $0.actualReps != nil || $0.actualSeconds != nil }
             }
-            .max { ($0.day?.completedAt ?? .distantPast) < ($1.day?.completedAt ?? .distantPast) }
+            // Two days finished in the same instant are separated by which
+            // week and day they are, because the later one is the more recent
+            // performance. Comparing the times alone left the answer to the
+            // order the fetch happened to return, so the PREVIOUS column could
+            // read differently from one launch to the next.
+            .max { lhs, rhs in
+                (
+                    lhs.day?.completedAt ?? .distantPast,
+                    lhs.day?.plan?.weekNumber ?? 0,
+                    lhs.day?.dayNumber ?? 0
+                ) < (
+                    rhs.day?.completedAt ?? .distantPast,
+                    rhs.day?.plan?.weekNumber ?? 0,
+                    rhs.day?.dayNumber ?? 0
+                )
+            }
 
         return performance?.sets
             .sorted { $0.setNumber < $1.setNumber }
