@@ -15,7 +15,7 @@ struct IconCard: View {
                 RadioDot(isSelected: isSelected)
                 HStack(spacing: Spacing.tight) {
                     Image(systemName: symbol)
-                        .font(.system(size: 26))
+                        .font(.oneOff(26))
                         .foregroundStyle(Color.orange500)
                         .frame(width: 35, height: 35)
                     VStack(alignment: .leading, spacing: Spacing.small) {

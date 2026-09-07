@@ -100,7 +100,7 @@ struct CheckboxChip: View {
                     .foregroundStyle(isChecked ? Color.white : .slate800)
                 Spacer(minLength: Spacing.small)
                 Image(systemName: isChecked ? "checkmark.square.fill" : "square")
-                    .font(.system(size: 20))
+                    .font(.oneOff(20))
                     .foregroundStyle(isChecked ? Color.white : .outlineGray)
             }
             .padding(Spacing.card)

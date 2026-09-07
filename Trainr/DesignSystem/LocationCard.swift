@@ -13,7 +13,7 @@ struct LocationCard: View {
                 // Orange on both card states: the frames export every location
                 // icon as the brand orange, the selected dark card included.
                 Image(systemName: symbol)
-                    .font(.system(size: 26))
+                    .font(.oneOff(26))
                     .foregroundStyle(Color.orange500)
                     .frame(width: 35, height: 35)
                 Text(title)

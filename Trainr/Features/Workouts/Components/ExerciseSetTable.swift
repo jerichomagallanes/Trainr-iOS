@@ -1,5 +1,10 @@
 import SwiftUI
 
+// The row's design height, kept as a floor rather than a fixed size so a
+// reader's larger setting grows the row instead of clipping the number in it.
+private let setRowHeight: CGFloat = 34
+private let setColumnWidth: CGFloat = 34
+
 struct ExerciseSetTable: View {
     let measure: ExerciseMeasure
     let sets: [ExerciseSet]
@@ -9,9 +14,7 @@ struct ExerciseSetTable: View {
     let onAddSet: () -> Void
     var onDeleteSet: (ExerciseSet) -> Void = { _ in }
 
-    private static let rowHeight: CGFloat = 34
     private static let checkSize: CGFloat = 24
-    private static let setColumnWidth: CGFloat = 34
 
     // No column at all without history: a week-one card looks exactly like the
     // design, which has no PREVIOUS.
@@ -55,7 +58,7 @@ struct ExerciseSetTable: View {
 
     private var headings: some View {
         HStack(spacing: 0) {
-            ColumnLabel(L10n.setColumn).frame(width: Self.setColumnWidth)
+            ColumnLabel(L10n.setColumn).frame(width: setColumnWidth)
             if showsPrevious {
                 ColumnLabel(L10n.previousColumn).frame(maxWidth: .infinity)
             }
@@ -111,7 +114,7 @@ private struct SetRow: View {
             Text("\(set.setNumber)")
                 .font(.labelLarge)
                 .foregroundStyle(Color.slate800)
-                .frame(width: 34)
+                .frame(minWidth: setColumnWidth)
 
             if let previousText {
                 Text(previousText)
@@ -145,7 +148,7 @@ private struct SetRow: View {
                 onSetChanged(changed)
             } label: {
                 Image(systemName: set.isCompleted ? "checkmark.square.fill" : "square")
-                    .font(.system(size: 20))
+                    .font(.oneOff(20))
                     .foregroundStyle(set.isCompleted ? Color.statusCompleted : Color.outlineGray)
                     .frame(width: 24, height: 24)
                     .contentShape(.rect)
@@ -197,7 +200,7 @@ private struct NumberCell: View {
             .foregroundStyle(Color.slate800)
             .multilineTextAlignment(.center)
             .keyboardType(isDecimal ? .decimalPad : .numberPad)
-            .frame(height: 34)
+            .frame(minHeight: setRowHeight)
             .frame(maxWidth: .infinity)
             .overlay {
                 RoundedRectangle(cornerRadius: CornerRadius.small)
@@ -243,7 +246,7 @@ private struct DurationCell: View {
         .foregroundStyle(Color.slate800)
         .multilineTextAlignment(.center)
         .keyboardType(.numberPad)
-        .frame(height: 34)
+        .frame(minHeight: setRowHeight)
         .frame(maxWidth: .infinity)
         .overlay {
             RoundedRectangle(cornerRadius: CornerRadius.small)

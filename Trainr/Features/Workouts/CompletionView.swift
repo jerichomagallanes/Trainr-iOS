@@ -29,7 +29,7 @@ struct CompletionView: View {
                     .accessibilityHidden(true)
 
                 Text(title)
-                    .font(.system(size: 20, weight: .semibold))
+                    .font(.oneOff(20, .semibold))
                     .foregroundStyle(Color.slate800)
                     .multilineTextAlignment(.center)
                     .padding(.top, Spacing.screen)

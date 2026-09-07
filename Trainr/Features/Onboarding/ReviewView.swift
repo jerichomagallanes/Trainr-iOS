@@ -207,7 +207,7 @@ private struct AIPreviewCard: View {
         VStack(spacing: 0) {
             HStack(alignment: .top, spacing: Spacing.small) {
                 Image(systemName: "brain.head.profile")
-                    .font(.system(size: 24))
+                    .font(.oneOff(24))
                     .foregroundStyle(Color.white)
                 VStack(alignment: .leading, spacing: Spacing.extraSmall) {
                     Text(L10n.aiRoutinePreviewLabel)

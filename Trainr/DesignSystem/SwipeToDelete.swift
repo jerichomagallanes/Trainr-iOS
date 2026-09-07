@@ -42,7 +42,7 @@ struct SwipeToDelete<Content: View>: View {
     private var deleteAction: some View {
         Button(action: delete) {
             Image(systemName: "trash")
-                .font(.system(size: 16, weight: .semibold))
+                .font(.oneOff(16, .semibold))
                 .foregroundStyle(Color.white)
                 .frame(width: Self.actionWidth)
                 .frame(maxHeight: .infinity)

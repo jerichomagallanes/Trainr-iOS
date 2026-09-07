@@ -43,7 +43,7 @@ struct ExerciseCard<Extras: View>: View {
 
             Button(action: onToggleCompleted) {
                 Image(systemName: exercise.isCompleted ? "checkmark.square.fill" : "square")
-                    .font(.system(size: 26))
+                    .font(.oneOff(26))
                     .foregroundStyle(exercise.isCompleted ? Color.statusCompleted : Color.outlineGray)
                     .frame(width: 30, height: 30)
                     .contentShape(.rect)
@@ -90,7 +90,7 @@ struct ExerciseCard<Extras: View>: View {
     private var prescription: some View {
         HStack(spacing: Spacing.extraSmall) {
             Image(systemName: "clock")
-                .font(.system(size: 15))
+                .font(.oneOff(15))
                 .foregroundStyle(Color.slate800)
             Text(L10n.minutes(exercise.minutes))
                 .font(.body14)

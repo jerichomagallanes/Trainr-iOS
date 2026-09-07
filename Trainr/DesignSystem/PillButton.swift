@@ -15,7 +15,7 @@ struct PillButton: View {
         Button(action: action) {
             HStack(spacing: Spacing.extraSmall) {
                 Image(systemName: systemImage)
-                    .font(.system(size: 14, weight: .semibold))
+                    .font(.oneOff(14, .semibold))
                     .frame(width: 24, height: 24)
                 Text(title)
                     .font(.labelLarge)

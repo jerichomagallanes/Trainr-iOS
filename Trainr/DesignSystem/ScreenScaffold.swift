@@ -50,7 +50,7 @@ struct TopBar<Trailing: View>: View {
                 if let onBack {
                     Button(action: onBack) {
                         Image(systemName: closeInsteadOfBack ? "xmark" : "chevron.backward")
-                            .font(.system(size: 18, weight: .semibold))
+                            .font(.oneOff(18, .semibold))
                             .foregroundStyle(Color.slate800)
                             .frame(width: 44, height: 44)
                     }

@@ -6,6 +6,8 @@ struct RoutineDetailView: View {
     // rebuilt more than once, and a model built alongside it would throw away
     // the routine it had just read every time.
     @State private var model: RoutineDetailModel
+    // Same one-string-two-weights line as the day card carries.
+    @ScaledMetric(relativeTo: .subheadline) private var labelSize = TextRole.labelMedium.size
     private let onBack: () -> Void
     private let onDayCompleted: (Int) -> Void
     private let onWeekCompleted: (Int) -> Void
@@ -144,7 +146,7 @@ struct RoutineDetailView: View {
 
     private var equipmentLine: AttributedString {
         var label = AttributedString(L10n.equipmentLabel + " ")
-        label.font = .labelMedium
+        label.font = TextRole.labelMedium.font(at: labelSize)
         return label + AttributedString(state.equipment.joined(separator: ", "))
     }
 
