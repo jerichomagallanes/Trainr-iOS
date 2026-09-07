@@ -51,7 +51,7 @@ Tests: `xcodebuild test -project Trainr.xcodeproj -scheme Trainr -destination 'p
 
 The simulator must run iOS 27: the stock iOS 26.2 simulators crash on SwiftData built against the iOS 27 SDK.
 
-UI tests run on a throwaway clone of the simulator unless you pass `-parallel-testing-enabled NO`, which drives the visible device instead. Debug builds also accept a few launch arguments the UI tests rely on: `-inMemoryStore` for a store that dies with the process, `-cannedGeneration` to answer from the built-in coach, `-seedFixture <noPlan|midWeek|finishedWeek|twoWeeks|freshWeek|missedDay|lastDayLeft>` to start on a known plan, `-generationFails <offline|failed|dailyLimit>` to make the coach fail that way, and `-splashSeconds <n>` to hold the splash.
+UI tests run on a throwaway clone of the simulator unless you pass `-parallel-testing-enabled NO`, which drives the visible device instead. Debug builds also accept a few launch arguments the UI tests rely on: `-inMemoryStore` for a store that dies with the process, `-cannedGeneration` to answer from the built-in coach, `-seedFixture <noPlan|midWeek|finishedWeek|twoWeeks|freshWeek|missedDay|lastDayLeft>` to start on a known plan, `-generationFails <offline|failed|dailyLimit>` to make the coach fail that way, `-slowGeneration <seconds>` to answer correctly but slowly, and `-splashSeconds <n>` to hold the splash.
 
 ## 🔒 Privacy
 

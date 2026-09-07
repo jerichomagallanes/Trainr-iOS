@@ -57,6 +57,10 @@ struct GeneratingView: View {
             let shown = Date().timeIntervalSince(shownAt)
             let remaining = max(Self.minimumVisible - shown, 0)
             try? await Task.sleep(for: .seconds(remaining))
+            // The wait is restarted whenever readiness changes, which cancels
+            // this one. try? swallows that, so without the check a run that was
+            // superseded still reported itself done.
+            guard !Task.isCancelled else { return }
             onDone()
         }
         .onChange(of: failureCount, initial: true) { _, _ in

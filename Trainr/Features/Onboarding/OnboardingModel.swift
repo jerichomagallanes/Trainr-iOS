@@ -116,11 +116,17 @@ final class OnboardingModel {
     func saveUserProfile(onSuccess: @escaping () -> Void = {}) {
         guard !isWorking else { return }
         isWorking = true
+        // Cleared before the work begins rather than inside it. This model
+        // outlives every screen that uses it, and the wait reads isCompleted to
+        // decide it is over: set from within the task, the previous run's
+        // success is still showing when the wait first looks, and it leaves
+        // before there is a plan to leave for.
+        isLoading = true
+        isCompleted = false
+        generationFailure = nil
+
         run = Task {
             defer { isWorking = false }
-            isLoading = true
-            isCompleted = false
-            generationFailure = nil
 
             let existing = dependencies.attempt("currentUser", { try store.currentUser() })
             var toSave = profile
