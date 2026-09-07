@@ -243,6 +243,14 @@ final class RoutineDetailModel {
         ticker = nil
     }
 
+    // The screen going away stops the clock. The model outlives the view — it
+    // is held as @State and released only when SwiftUI drops the destination —
+    // so without this the loop kept counting a second at a time, and writing
+    // each finished exercise to the store, for a screen nobody was looking at.
+    func screenWentAway() {
+        cancelTick()
+    }
+
     // MARK: - Persistence
 
     private func completion(at position: Int) -> Bool? {
