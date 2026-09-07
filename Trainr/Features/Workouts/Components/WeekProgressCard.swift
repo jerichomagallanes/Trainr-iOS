@@ -65,7 +65,7 @@ struct WeekProgressCard: View {
             .font(.labelMedium)
             .foregroundStyle(Color.slate800)
             .padding(.horizontal, Spacing.card)
-            .padding(.vertical, 5)
+            .padding(.vertical, Spacing.snug)
             .background(Color.gray100, in: .rect(cornerRadius: CornerRadius.medium))
             .frame(maxWidth: .infinity, alignment: .leading)
 

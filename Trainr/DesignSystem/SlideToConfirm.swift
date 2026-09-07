@@ -72,7 +72,11 @@ struct SlideToConfirm: View {
                 DragGesture(minimumDistance: 0)
                     .onChanged { offset = min(max($0.translation.width, 0), travel) }
                     .onEnded { _ in
-                        if offset >= travel * Self.confirmFraction { action() }
+                        // travel > 0 as well as the distance: on a first layout
+                        // pass, or in a container that collapsed, the track has
+                        // no width, and "nothing is at least nothing" made a
+                        // plain tap finish the whole session.
+                        if travel > 0, offset >= travel * Self.confirmFraction { action() }
                         // Short of the end, the thumb returns: a slide that was
                         // not finished did not ask for anything.
                         withAnimation(.spring(duration: MotionDuration.short)) { offset = 0 }

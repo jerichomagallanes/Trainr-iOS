@@ -67,7 +67,7 @@ struct WorkoutDayCard: View {
                     .font(.labelLarge)
                     .foregroundStyle(Color.slate800)
                     .padding(.horizontal, Spacing.small)
-                    .padding(.vertical, 3)
+                    .padding(.vertical, Spacing.hairline)
                     .background(Color.gray100, in: .rect(cornerRadius: CornerRadius.small))
 
                 if !day.equipment.isEmpty {
@@ -84,12 +84,8 @@ struct WorkoutDayCard: View {
         .background(Color.white)
     }
 
-    // The label is emphasised and the list beside it is not, which AttributedString
-    // expresses in one Text rather than two that could wrap apart from each other.
     private var equipmentLine: AttributedString {
-        var label = AttributedString(L10n.equipmentLabel + " ")
-        label.font = TextRole.labelMedium.font(at: labelSize)
-        return label + AttributedString(day.equipment.joined(separator: ", "))
+        EquipmentLine.text(day.equipment, labelFont: TextRole.labelMedium.font(at: labelSize))
     }
 }
 

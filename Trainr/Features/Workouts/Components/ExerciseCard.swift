@@ -99,7 +99,7 @@ struct ExerciseCard<Extras: View>: View {
                 .font(.body14)
                 .foregroundStyle(Color.white)
                 .padding(.horizontal, Spacing.tight)
-                .padding(.vertical, 3)
+                .padding(.vertical, Spacing.hairline)
                 .background(Color.slate800, in: .rect(cornerRadius: CornerRadius.medium))
                 .padding(.leading, Spacing.extraSmall)
         }

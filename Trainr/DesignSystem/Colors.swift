@@ -43,3 +43,13 @@ extension Color {
         )
     }
 }
+
+// The ground a bar pinned to the bottom of a screen sits on: white, lifted off
+// what scrolls under it. Written out in two screens before this, with different
+// padding either side of it, so the two had already begun to disagree.
+extension ShapeStyle where Self == AnyShapeStyle {
+
+    static var pinnedBar: AnyShapeStyle {
+        AnyShapeStyle(Color.white.shadow(.drop(color: .black.opacity(0.08), radius: 4, y: -2)))
+    }
+}

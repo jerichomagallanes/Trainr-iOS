@@ -30,7 +30,7 @@ struct IconCard: View {
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                 }
-                .padding(.vertical, 5)
+                .padding(.vertical, Spacing.snug)
                 .padding(.trailing, Spacing.extraLarge)
             }
             .padding(Spacing.tight)

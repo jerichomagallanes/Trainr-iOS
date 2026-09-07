@@ -18,6 +18,11 @@ final class NextWeekModel {
     // without this a second ask — a re-entered screen, an impatient tap — runs
     // alongside the first and both write a week.
     private var isWorking = false
+    // Held so an abandoned wait can be called off. The request itself runs to
+    // completion either way — it is a network call with no cancellation point
+    // of its own — but a cancelled run must not write the week that nobody is
+    // waiting for any more.
+    private var run: Task<Void, Never>?
 
     init(dependencies: AppDependencies) {
         self.dependencies = dependencies
@@ -30,7 +35,7 @@ final class NextWeekModel {
         isWorking = true
         beginRun()
 
-        Task { [weak self] in
+        run = Task { [weak self] in
             defer { self?.isWorking = false }
             await self?.generate()
         }
@@ -84,7 +89,7 @@ final class NextWeekModel {
         isWorking = true
         beginRun()
 
-        Task { [weak self] in
+        run = Task { [weak self] in
             defer { self?.isWorking = false }
             await self?.regenerate()
         }
@@ -96,6 +101,13 @@ final class NextWeekModel {
     private func beginRun() {
         failure = nil
         isReady = false
+    }
+
+    // Giving up on the wait: what has been asked for cannot be unasked, but its
+    // answer stops being written.
+    func cancelRun() {
+        run?.cancel()
+        run = nil
     }
 
     private func generate() async {
@@ -119,6 +131,7 @@ final class NextWeekModel {
         // dishonesty as a sample week: the client is told next week is ready
         // when the coach never wrote it, and repeating a week is a decision they
         // should get to make.
+        guard !Task.isCancelled else { return }
         guard case .generated(let plan) = result else {
             if case .failure(let reason) = result {
                 failure = reason
@@ -152,6 +165,7 @@ final class NextWeekModel {
             )
         )
 
+        guard !Task.isCancelled else { return }
         guard case .generated(let plan) = result else {
             if case .failure(let reason) = result {
                 failure = reason
