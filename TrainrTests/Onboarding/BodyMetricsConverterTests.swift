@@ -66,8 +66,7 @@ struct BodyMetricsConverterTests {
         let metric = try #require(BodyMetricsConverter.calculateBMI(height: "170", weight: "70", useMetric: true))
         #expect(close(metric, 24.22, within: 0.1))
         let imperial = try #require(BodyMetricsConverter.calculateBMI(height: "5'7\"", weight: "154", useMetric: false))
-        // The imperial figures are rounded inputs, not exact equivalents, so the two
-        // agree to a couple of tenths rather than to the hundredth.
+        // The imperial figures are rounded inputs, not exact equivalents.
         #expect(close(metric, imperial, within: 0.25))
         #expect(BodyMetricsConverter.calculateBMI(height: "0", weight: "70", useMetric: true) == nil)
     }

@@ -2,9 +2,8 @@ import Foundation
 
 nonisolated struct PlanPromptBuilder {
 
-    // The canonical exercise vocabulary (the video catalog's keys). The model
-    // may invent new keys for other movements, but these movements must use
-    // these exact keys or history and tutorials silently split.
+    // The video catalog's keys. Other movements may get new keys, but these
+    // must use these exact ones or history and tutorials silently split.
     private let canonicalKeys: [String]
 
     init(canonicalKeys: Set<String> = []) {
@@ -166,9 +165,8 @@ nonisolated struct PlanPromptBuilder {
         }
     }
 
-    // In kilograms, because that is the unit the contract speaks. Five pounds
-    // is 2.27 kg, so a client in pounds gets multiples that convert back onto
-    // the plates and dumbbells they actually own.
+    // In kilograms, the unit the contract speaks: five pounds is 2.27 kg, so a
+    // client in pounds gets multiples that land on plates they actually own.
     private func incrementKg(for units: UnitSystem) -> String {
         switch units {
         case .metric: "2.5"

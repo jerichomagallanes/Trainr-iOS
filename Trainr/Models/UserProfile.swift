@@ -17,19 +17,12 @@ nonisolated struct UserProfile: Identifiable, Equatable, Sendable {
     var preferredWorkoutTime = WorkoutTime.anytime
     var injuries: [String] = []
     var workoutType = WorkoutType.mixed
-    // How the client reads their own body: centimetres and kilograms, or feet
-    // and pounds. Storage stays metric either way.
     var bodyUnitSystem = UnitSystem.standard
-    // What the plates in their gym are marked in, which is a different question
-    // with a different answer: thinking of yourself in stones and pounds does
-    // not stop the bar being loaded in kilos. Nil until there is loaded
-    // equipment to ask about.
+    // What the gym's plates are marked in, a different question from how the
+    // client reads their own body. Nil until there is loaded kit to ask about.
     var liftingUnitSystem: UnitSystem?
     var createdAt = Date()
 
-    // What a weight on a set should be shown in. Falls back to the body units
-    // for a client who only ever trains with their own bodyweight and was
-    // therefore never asked.
     var weightUnits: UnitSystem { liftingUnitSystem ?? bodyUnitSystem }
 }
 

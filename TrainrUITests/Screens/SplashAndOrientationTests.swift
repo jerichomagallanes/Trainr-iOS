@@ -10,7 +10,6 @@ final class SplashAndOrientationTests: XCTestCase {
         XCUIDevice.shared.orientation = .portrait
     }
 
-    // The first screen is the wordmark and which build this is.
     @MainActor
     func testTheSplashShowsTheWordmarkAndTheVersion() {
         let app = XCUIApplication()
@@ -22,7 +21,6 @@ final class SplashAndOrientationTests: XCTestCase {
         XCTAssertTrue(app.images["Trainr"].exists)
     }
 
-    // A phone turned on its side keeps the app upright.
     @MainActor
     func testTheAppIsLockedToPortrait() {
         let app = XCUIApplication.launched(.midWeek)

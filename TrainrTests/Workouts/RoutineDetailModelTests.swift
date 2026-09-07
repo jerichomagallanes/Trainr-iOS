@@ -2,9 +2,6 @@ import Foundation
 import Testing
 @testable import Trainr
 
-// The session screen's own rules, against a store that lives only as long as
-// the test: what ticking, logging, adding and clearing do to the routine, and
-// what each of them leaves behind for the next week to read.
 @MainActor
 @Suite("Routine detail")
 struct RoutineDetailModelTests {
@@ -12,9 +9,7 @@ struct RoutineDetailModelTests {
     private let dependencies: AppDependencies
     private let userID: UUID
 
-    // A week written here rather than the built-in sample, whose first day is
-    // already finished: these rules are about what a session does from
-    // untouched, and half of them cannot be seen on a day that is done.
+    // Built by hand rather than the sample week, whose first day is already finished.
     init() throws {
         let store = TrainingStore(container: try TrainingStore.container(inMemory: true))
         dependencies = AppDependencies(
@@ -85,8 +80,6 @@ struct RoutineDetailModelTests {
         #expect(!model.state.routine.exercises.isEmpty)
     }
 
-    // The screen counts workout days, not weekdays: the second session of the
-    // week is day 2 even when it falls on a Wednesday.
     @Test("The day number counts sessions rather than weekdays")
     func theDayNumberIsThePositionInTheWeek() throws {
         let plan = try #require(try dependencies.store.plan(for: userID, weekNumber: 1))
@@ -98,8 +91,6 @@ struct RoutineDetailModelTests {
         #expect(model.state.weekNumber == 1)
     }
 
-    // Finishing a day ends the week only when it is the last one outstanding,
-    // which is a fact about the other days rather than about this one.
     @Test("A day finishes the week only once the others are done")
     func onlyTheLastOutstandingDayEndsTheWeek() throws {
         #expect(!loaded(day: firstDayNumber).state.completesTheWeek)
@@ -198,7 +189,6 @@ struct RoutineDetailModelTests {
         }
     }
 
-    // The targets were never overwritten, so starting over must not lose them.
     @Test("Starting over keeps the prescription it was given")
     func clearingProgressKeepsTheTargets() throws {
         let model = loaded(day: firstDayNumber)
@@ -281,8 +271,6 @@ struct RoutineDetailModelTests {
         #expect(timer.isRunning)
     }
 
-    // One clock on the screen: the second exercise takes the timer over rather
-    // than running a second one beside it.
     @Test("Starting another exercise's timer replaces the running one")
     func onlyOneTimerRunsAtATime() throws {
         let model = loaded(day: firstDayNumber)
@@ -366,8 +354,6 @@ struct RoutineDetailModelTests {
         #expect(model.state.expandedVideo == nil)
     }
 
-    // The model outlives the view, so nothing else stops the loop: without this
-    // it kept counting, and writing, for a screen nobody was looking at.
     @Test("Leaving the screen stops the clock advancing")
     func theScreenGoingAwayStopsTheTimer() async throws {
         let model = loaded(day: firstDayNumber)

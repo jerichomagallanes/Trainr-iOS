@@ -52,9 +52,6 @@ struct LimitationsView: View {
                 Subtitle(text: L10n.limitationsDescription)
                 Spacer().frame(height: Spacing.extraLarge)
 
-                // Everything else in onboarding is needed, so the exception is
-                // the thing worth marking. Asterisking eleven fields to flag
-                // one would be noise.
                 SectionTitle(text: L10n.optionalLabel(L10n.anyInjuriesOrAreas))
 
                 Spacer().frame(height: Spacing.medium)
@@ -74,8 +71,6 @@ struct LimitationsView: View {
         }
     }
 
-    // "None" stands alone: choosing it clears the list, and choosing anything
-    // real clears it back out.
     private func toggle(_ injury: String, to isChecked: Bool) {
         if injury == L10n.noneInjury {
             selectedInjuries = isChecked ? [injury] : []

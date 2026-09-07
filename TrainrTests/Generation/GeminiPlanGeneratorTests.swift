@@ -4,9 +4,6 @@ import Testing
 
 struct GeminiPlanGeneratorTests {
 
-    // The model is asked through a protocol, so these tests are about what
-    // the generator does with an answer — retrying, walking the model list,
-    // giving up — rather than about how the answer got here.
     private final class FakeModelClient: PlanModelClient {
         private var remaining: [GeminiResponse]
         var modelsAsked: [String] = []
@@ -35,7 +32,6 @@ struct GeminiPlanGeneratorTests {
         FakeModelClient(Array(repeating: answer, count: count))
     }
 
-    // Remembers in memory what the real one remembers on disk.
     private final class FakeSpentModels: SpentModels {
         private var spent: Set<String>
         init(_ initial: Set<String> = []) { spent = initial }
@@ -43,7 +39,6 @@ struct GeminiPlanGeneratorTests {
         func markSpent(_ model: String) { spent.insert(model) }
     }
 
-    // Keeps everything it was told, so a test can read the whole trail.
     private final class FakeBreadcrumbs: Breadcrumbs {
         var events: [String] = []
         var states: [String: String] = [:]
@@ -119,7 +114,6 @@ struct GeminiPlanGeneratorTests {
         #expect(plan.userID == userID)
         #expect(plan.startDate == Date(timeIntervalSince1970: 1))
         #expect(plan.workoutDays.first?.exercises.first?.exerciseKey == "goblet_squat")
-        // The strongest model is asked first and, answering, is the only one asked.
         #expect(client.modelsAsked == [PlanModelChain.models[0]])
     }
 
@@ -156,8 +150,6 @@ struct GeminiPlanGeneratorTests {
         #expect(client.prompts.count == 3)
     }
 
-    // An answer that cannot be used is worth another go; a model that will not
-    // answer is worth someone else.
     @Test func aModelThatWillNotAnswerHandsOverToTheNextOne() async {
         let client = answering(.modelUnavailable, .text(validPlanJSON))
 
@@ -170,8 +162,6 @@ struct GeminiPlanGeneratorTests {
         #expect(client.modelsAsked == [PlanModelChain.models[0], PlanModelChain.models[1]])
     }
 
-    // A caller the backend turns away is turned away everywhere, so the walk
-    // stops at the first door rather than knocking on five.
     @Test func aRefusedCallerStopsTheWalk() async {
         let client = answering(.refused, .text(validPlanJSON))
 
@@ -191,10 +181,6 @@ struct GeminiPlanGeneratorTests {
         #expect(client.modelsAsked == PlanModelChain.models)
     }
 
-    // Asking a model that has run out is the one thing guaranteed not to help,
-    // and every extra call is a request the client no longer has. So a refusal
-    // moves along the list rather than spending an attempt — refusals still
-    // leave the attempts intact for a model that will answer.
     @Test func refusalsDoNotSpendTheAttemptsMeantForUnusableAnswers() async {
         let client = answering(
             .modelUnavailable, .modelUnavailable, .text("not json at all"),
@@ -203,8 +189,7 @@ struct GeminiPlanGeneratorTests {
 
         let result = await generator(client).generate(request())
 
-        // Two refusals, then a genuine answer that was unusable, then one that
-        // was not: four calls, of which only the last two were attempts.
+        // Two refusals, one unusable answer, then a good one: four calls, two attempts.
         guard case .generated = result else {
             Issue.record("expected a generated plan, got \(result)")
             return
@@ -212,8 +197,6 @@ struct GeminiPlanGeneratorTests {
         #expect(client.prompts.count == 4)
     }
 
-    // Nothing is reachable, so no other model will be either: the list stops
-    // rather than working through five models that cannot be called.
     @Test func beingOfflineStopsTheListAtOnce() async {
         let client = answering(.unreachable, .text(validPlanJSON))
 
@@ -223,20 +206,13 @@ struct GeminiPlanGeneratorTests {
         #expect(client.modelsAsked.count == 1)
     }
 
-    // An alias resolves onto a model that is already in the list and shares its
-    // allowance, so it would add waiting rather than capacity: driving
-    // gemini-3.5-flash-lite to its per-minute limit refuses
-    // gemini-flash-lite-latest in the same breath. Checked here because the
-    // list looks like somewhere you would helpfully add more names.
+    // A -latest alias resolves onto a model already listed and shares its allowance.
     @Test func theModelListHoldsRealNamesRatherThanAliases() {
         #expect(!PlanModelChain.models.isEmpty)
         #expect(PlanModelChain.models.allSatisfy { !$0.hasSuffix("-latest") })
         #expect(Set(PlanModelChain.models).count == PlanModelChain.models.count)
     }
 
-    // The whole point of the cache: a model that said it was out of allowance
-    // this morning is not asked again this afternoon. Each pointless ask costs
-    // a full round trip, and with five models that is where the minutes went.
     @Test func aModelThatIsOutOfAllowanceIsNotAskedAgain() async {
         let spent = FakeSpentModels()
         let first = answering(.quotaSpent, .text(validPlanJSON))
@@ -252,9 +228,6 @@ struct GeminiPlanGeneratorTests {
         #expect(second.modelsAsked.first == PlanModelChain.models[1])
     }
 
-    // Overloaded or slow is not the same as out of allowance. It may answer
-    // perfectly well a minute later, so remembering it would strike a healthy
-    // model off the list for the rest of the day.
     @Test func aModelThatIsMerelyUnavailableIsNotRemembered() async {
         let spent = FakeSpentModels()
 
@@ -264,8 +237,6 @@ struct GeminiPlanGeneratorTests {
         #expect(spent.spentToday().isEmpty)
     }
 
-    // Everything is spent, so there is nothing to skip to. Asking anyway beats
-    // refusing: the reset may have just passed, or the record may be stale.
     @Test func withEveryModelSpentItStillAsksRatherThanGivingUp() async {
         let spent = FakeSpentModels(Set(PlanModelChain.models))
         let client = answering(.text(validPlanJSON))
@@ -279,8 +250,6 @@ struct GeminiPlanGeneratorTests {
         }
     }
 
-    // Every model out of allowance is a different thing from a failed run, and
-    // the client needs opposite advice for each: wait, or try again.
     @Test func everyModelOutOfAllowanceReportsTheDailyLimit() async {
         let client = answering(repeating: .quotaSpent, count: PlanModelChain.models.count)
 
@@ -289,9 +258,6 @@ struct GeminiPlanGeneratorTests {
         #expect(result == .failure(.dailyLimitReached))
     }
 
-    // A run that also hit a bad answer has an ordinary failure to report.
-    // Telling this client to come back tomorrow would send them away from
-    // something a retry would have fixed.
     @Test func aMixedFailureIsNotReportedAsTheDailyLimit() async {
         let client = answering(.quotaSpent, .failed, .failed, .failed)
 
@@ -300,15 +266,12 @@ struct GeminiPlanGeneratorTests {
         #expect(result == .failure(.failed))
     }
 
-    // Nothing reached the model at all, which says nothing about allowance.
     @Test func beingOfflineIsNotReportedAsTheDailyLimit() async {
         let result = await generator(answering(.unreachable)).generate(request())
 
         #expect(result == .failure(.offline))
     }
 
-    // Models already known to be spent are skipped, so a client whose whole
-    // chain was recorded this morning is told the truth without a single call.
     @Test func anAlreadyExhaustedChainReportsTheLimit() async {
         let spent = FakeSpentModels(Set(PlanModelChain.models))
         let client = answering(repeating: .quotaSpent, count: PlanModelChain.models.count)
@@ -318,8 +281,6 @@ struct GeminiPlanGeneratorTests {
         #expect(result == .failure(.dailyLimitReached))
     }
 
-    // The trail is what makes a crash report worth reading: it says which model
-    // was asked, in what order, and what each one said.
     @Test func theTrailRecordsTheWalkThroughTheModels() async {
         let trail = FakeBreadcrumbs()
         let client = answering(.quotaSpent, .modelUnavailable, .text(validPlanJSON))
@@ -332,10 +293,7 @@ struct GeminiPlanGeneratorTests {
         #expect(trail.states["week"] == "1")
     }
 
-    // The policy promises a crash report says what broke, not who the client is.
-    // A breadcrumb is stored by Google and outlives the session, so no answer
-    // the client gave may appear in one — and a validation message can quote the
-    // model's own text, which was written from the profile.
+    // Breadcrumbs are stored by Google and outlive the session, so no client answer may reach one.
     @Test func noAnswerTheClientGaveReachesTheTrail() async {
         let trail = FakeBreadcrumbs()
         let profile = UserProfile(

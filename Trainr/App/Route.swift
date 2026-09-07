@@ -1,6 +1,5 @@
-// Every place the app can navigate to, one case per screen. The associated
-// values are the screen's identity, never its content: content is read from
-// the store when the screen appears.
+// The associated values are the screen's identity, never its content: content
+// is read from the store when the screen appears.
 enum Route: Hashable {
     case basicInfo(editing: Bool)
     case bodyMetrics(editing: Bool)
@@ -11,17 +10,15 @@ enum Route: Hashable {
     case generating
     case weeklyProgress
     case weekPlan(weekNumber: Int)
-    // Nil week means the week being trained, whatever its number is by the
-    // time the screen opens.
+    // Nil week means the week being trained, whatever its number.
     case routineDetail(dayNumber: Int, weekNumber: Int?)
     case dayCompleted(dayNumber: Int)
     case weekCompleted(weekNumber: Int)
     case regeneratingWeek
     case generatingNextWeek
 
-    // What a crash report calls this screen. The pattern, never the filled-in
-    // arguments: a week number is harmless, but the pattern is what identifies
-    // the screen, and recording only it keeps that true by construction.
+    // The pattern only, never the filled-in arguments, so no recorded value can
+    // travel into a crash report.
     var breadcrumbName: String {
         switch self {
         case .basicInfo: "basic_info"

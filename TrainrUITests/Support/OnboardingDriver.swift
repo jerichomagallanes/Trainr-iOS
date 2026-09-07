@@ -1,8 +1,5 @@
 import XCTest
 
-// Drives the first run the way a client does, one screen at a time, so a test
-// can start on whichever screen it is about without repeating the steps that
-// lead there.
 extension XCUIApplication {
 
     @MainActor
@@ -13,7 +10,6 @@ extension XCUIApplication {
         return app
     }
 
-    // Welcome to basic info.
     @MainActor
     func startOnboarding() {
         let getStarted = buttons["GET STARTED"]
@@ -22,7 +18,6 @@ extension XCUIApplication {
         XCTAssertTrue(textFields["Enter your name"].waitForExistence(timeout: 5))
     }
 
-    // Basic info, answered, to measurements.
     @MainActor
     func fillBasicInfo(name: String = "Alex", age: String = "30") {
         let nameField = textFields["Enter your name"]
@@ -37,8 +32,7 @@ extension XCUIApplication {
         XCTAssertTrue(staticTexts["YOUR MEASUREMENTS"].waitForExistence(timeout: 5))
     }
 
-    // Measurements, in the given units, to goals. The imperial height has to
-    // be feet and inches, apostrophe included: digits alone are refused.
+    // The imperial height needs its apostrophe: digits alone are refused.
     @MainActor
     func fillBodyMetrics(imperial: Bool = false) {
         if imperial {
@@ -62,7 +56,6 @@ extension XCUIApplication {
         XCTAssertTrue(staticTexts["YOUR FITNESS GOALS"].waitForExistence(timeout: 5))
     }
 
-    // Goals to setup.
     @MainActor
     func fillGoals() {
         buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "Build Muscle")).firstMatch.tap()
@@ -75,7 +68,6 @@ extension XCUIApplication {
         XCTAssertTrue(staticTexts["SET UP YOUR WORKOUT"].waitForExistence(timeout: 5))
     }
 
-    // Setup to limitations.
     @MainActor
     func fillSetup() {
         buttons["Home"].tap()
@@ -94,7 +86,6 @@ extension XCUIApplication {
         XCTAssertTrue(staticTexts["LET'S KEEP YOU SAFE"].waitForExistence(timeout: 5))
     }
 
-    // Limitations to the review.
     @MainActor
     func submitLimitations(injury: String? = "Lower Back Pain") {
         if let injury { buttons[injury].tap() }
@@ -102,7 +93,6 @@ extension XCUIApplication {
         XCTAssertTrue(staticTexts["YOUR FITNESS PROFILE"].waitForExistence(timeout: 5))
     }
 
-    // The whole first run up to the review.
     @MainActor
     func reachReview(imperial: Bool = false) {
         startOnboarding()

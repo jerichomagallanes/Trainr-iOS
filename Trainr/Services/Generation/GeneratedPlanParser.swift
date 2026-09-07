@@ -5,10 +5,8 @@ nonisolated enum PlanParseResult {
     case invalid([String])
 }
 
-// Turns generator output into a WeeklyPlan, or a list of everything wrong with
-// it. The generator never writes ids, dates, week numbers or completion state:
-// the app knows those, the model has no clock, so they arrive as parameters
-// instead of JSON.
+// The generator never writes ids, dates, week numbers or completion state — the
+// model has no clock — so those arrive as parameters instead of JSON.
 nonisolated struct GeneratedPlanParser {
 
     func parse(
@@ -140,8 +138,8 @@ nonisolated struct GeneratedPlanParser {
         )
     }
 
-    // A set keeps only the targets its measure renders, so a stray weight on a
-    // bodyweight exercise cannot linger invisibly in the log.
+    // Only the targets its measure renders, so a stray weight on a bodyweight
+    // exercise cannot linger invisibly in the log.
     private func set(
         _ generated: GeneratedSet,
         number: Int,

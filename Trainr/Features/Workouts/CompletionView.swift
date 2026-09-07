@@ -1,7 +1,5 @@
 import SwiftUI
 
-// The shape both endings share: a mark, what was finished, a word about it, and
-// two ways on — the quieter one to look back, the louder one to carry on.
 struct CompletionView: View {
     let systemImage: String
     let iconSize: CGFloat

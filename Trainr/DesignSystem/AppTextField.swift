@@ -1,7 +1,5 @@
 import SwiftUI
 
-// The design's 42pt field: a plain text field in a drawn border, orange when
-// it holds the cursor.
 struct AppTextField: View {
     let placeholder: String
     @Binding var text: String
@@ -13,7 +11,6 @@ struct AppTextField: View {
         TextField(
             placeholder,
             text: $text,
-            // The muted text colour at six tenths, as the frames draw a hint.
             prompt: Text(placeholder).foregroundStyle(Color.textMuted.opacity(0.6))
         )
             .font(.body16)

@@ -1,6 +1,5 @@
 import XCTest
 
-// The two endings a session can have, and where each leads.
 final class CompletionScreenTests: XCTestCase {
 
     private var app: XCUIApplication!
@@ -25,7 +24,6 @@ final class CompletionScreenTests: XCTestCase {
             )
     }
 
-    // With other days still to come, finishing one is finishing a day.
     @MainActor
     func testFinishingADayLeadsBackToThePlanWithItLogged() {
         finish(day: "Lower Body Power", from: .midWeek)
@@ -38,16 +36,12 @@ final class CompletionScreenTests: XCTestCase {
         XCTAssertTrue(app.button(containing: "Lower Body Power, Completed").exists)
     }
 
-    // The design counts workout days, not weekdays: the first session of the
-    // week is day one whatever weekday it falls on.
     @MainActor
     func testTheFirstWorkoutDayReadsAsDayOne() {
         finish(day: "Full Body Strength", from: .freshWeek)
         XCTAssertTrue(app.staticTexts["DAY 1 COMPLETED"].waitForExistence(timeout: 5))
     }
 
-    // Finishing the last outstanding day ends the week, not just the day, and
-    // the week offers what follows it.
     @MainActor
     func testFinishingTheLastDayEndsTheWeekAndOffersTheNextOne() {
         finish(day: "Lower Body Power", from: .lastDayLeft)

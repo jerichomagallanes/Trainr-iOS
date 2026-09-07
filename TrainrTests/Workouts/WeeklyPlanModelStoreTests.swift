@@ -2,8 +2,6 @@ import Foundation
 import Testing
 @testable import Trainr
 
-// What the plan screen does with the store behind it: which week it reads, what
-// it claims before it has read one, and what a dragged session leaves written.
 @MainActor
 @Suite("Weekly plan, against the store")
 struct WeeklyPlanModelStoreTests {
@@ -100,9 +98,6 @@ struct WeeklyPlanModelStoreTests {
         #expect(!model.state.hasPlan)
     }
 
-    // Whether another week may be added is a fact about the newest week, not
-    // about the one being looked at: an old week is always finished, and that
-    // says nothing about whether the plan is ready to go on.
     @Test("Readiness for another week is read off the newest one")
     func readinessIgnoresTheWeekBeingBrowsed() throws {
         try save(week: 1, days: [day(1, .completed)], startingDaysAgo: 9)
@@ -151,7 +146,6 @@ struct WeeklyPlanModelStoreTests {
         #expect(stored.workoutDays.map(\.dayNumber).sorted() == [1, 3, 5])
     }
 
-    // A finished session is the record of a date it was actually done on.
     @Test("Nothing may be dragged across a finished session")
     func aCompletedDayBlocksTheMove() throws {
         try save(week: 1, days: [day(1), day(3, .completed), day(5)])

@@ -2,11 +2,9 @@ import SwiftUI
 
 struct RoutineDetailView: View {
 
-    // Owned here rather than handed in: a navigation destination's body is
-    // rebuilt more than once, and a model built alongside it would throw away
-    // the routine it had just read every time.
+    // Owned here: a destination's body is rebuilt more than once, and a model
+    // built alongside it would throw away the routine it had just read.
     @State private var model: RoutineDetailModel
-    // Same one-string-two-weights line as the day card carries.
     @ScaledMetric(relativeTo: .subheadline) private var labelSize = TextRole.labelMedium.size
     private let onBack: () -> Void
     private let onDayCompleted: (Int) -> Void
@@ -30,10 +28,9 @@ struct RoutineDetailView: View {
         self.onWeekCompleted = onWeekCompleted
     }
 
-    // However the last exercise gets ticked — the slider or its own checkbox —
-    // finishing the routine is what ends the day. Opening an already-finished
-    // routine is not finishing it, so only the transition counts: nil means
-    // nothing loaded has been seen yet, and the first loaded state only primes.
+    // Only the transition counts, so opening a finished routine is not
+    // finishing it: nil means nothing loaded has been seen yet, and the first
+    // loaded state only primes.
     @State private var wasComplete: Bool?
     @State private var showStartOver = false
 
@@ -43,8 +40,6 @@ struct RoutineDetailView: View {
     var body: some View {
         VStack(spacing: 0) {
             TopBar(onBack: onBack)
-            // A blank moment is honest; the sample week that used to fill it
-            // was a workout nobody was doing.
             if state.isLoaded {
                 content
             } else {
@@ -59,12 +54,9 @@ struct RoutineDetailView: View {
         }
         .onDisappear { model.screenWentAway() }
         .onChange(of: CompletionKey(state), initial: true) { _, _ in
-            // Keyed on loading as well as completion: on iOS 26 the initial
-            // call lands before the routine loads, and an unloaded routine is
-            // neither complete nor incomplete, so nothing would prime and the
-            // first finish would go unnoticed. Read live rather than trusting
-            // the value the change carries, which can be the one it was
-            // scheduled with.
+            // Keyed on loading too: on iOS 26 the initial call lands before the
+            // routine loads, so nothing would prime. Read live rather than from
+            // the change, which can carry the value it was scheduled with.
             let current = model.state
             guard current.isLoaded else { return }
             let isComplete = current.routine.isComplete
@@ -78,9 +70,6 @@ struct RoutineDetailView: View {
                 onDayCompleted(state.dayNumber)
             }
         }
-        // Same shape as the plan screen's destructive dialogs: what is lost
-        // named first, the way out in the quieter place. The message is the
-        // whole point, because "start over" alone does not say what survives.
         .alert(L10n.startWorkoutOverTitle, isPresented: $showStartOver) {
             Button(L10n.startOver, role: .destructive) { model.clearProgress() }
             Button(L10n.cancel, role: .cancel) {}
@@ -185,10 +174,6 @@ struct RoutineDetailView: View {
         .padding(.top, Spacing.section)
     }
 
-    // The foot of the screen holds exactly one action, and which one depends on
-    // whether there is anything left to finish. Sliding a finished session
-    // again says nothing; what a finished session needs is the way back, in the
-    // place the slider just was.
     @ViewBuilder
     private var footer: some View {
         if !routine.isComplete {

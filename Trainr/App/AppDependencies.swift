@@ -2,16 +2,13 @@ import FirebaseCore
 import Foundation
 import SwiftData
 
-// The one place the app is wired together. Everything below it takes what it
-// needs through init, so a test can hand in a fake of any piece.
 @Observable
 final class AppDependencies {
 
     let store: TrainingStore
     let planGenerator: any PlanGenerator
     let breadcrumbs: any Breadcrumbs
-    // English-only for now, whatever the device says: the build ships English
-    // alone, and the plan's display copy has to match the words around it.
+    // English-only: the plan's display copy must match the shipped English UI.
     let languageCode = "en"
 
     init(store: TrainingStore, planGenerator: any PlanGenerator, breadcrumbs: any Breadcrumbs) {
@@ -20,11 +17,7 @@ final class AppDependencies {
         self.breadcrumbs = breadcrumbs
     }
 
-    // A store call made where the screen can do nothing useful about a failure:
-    // the change is already on screen, and there is no honest message for "the
-    // database refused". So it is reported, with the action's name and never
-    // its subject, and the screen carries on. Swallowing it instead left a
-    // write that did not land looking exactly like one that did.
+    // Reported with the action's name and never its subject.
     @discardableResult
     func attempt<T>(_ action: String, _ work: () throws -> T) -> T? {
         do {
@@ -35,8 +28,6 @@ final class AppDependencies {
         }
     }
 
-    // The same, for a call that is itself optional, so the caller gets one
-    // level of optional rather than two.
     func attempt<T>(_ action: String, _ work: () throws -> T?) -> T? {
         do {
             return try work()
@@ -46,11 +37,8 @@ final class AppDependencies {
         }
     }
 
-    // Built once for the process. `live()` opens a database container and seeds
-    // the UI-test fixtures, and it used to sit in a @State initialiser, whose
-    // expression runs on every initialisation of the view that holds it. Every
-    // result but the first was thrown away, each having opened a store that
-    // stayed open until it deallocated.
+    // Built once for the process: every `live()` call opens a store that stays
+    // open until it deallocates.
     static let shared = live()
 
     static func live() -> AppDependencies {
@@ -58,19 +46,13 @@ final class AppDependencies {
         do {
             container = try TrainingStore.container(inMemory: startsFresh)
         } catch {
-            // The store is the app; without it there is nothing to fall back
-            // to. In-memory keeps the session alive so the crash report that
-            // explains the broken database can actually be written.
+            // In-memory keeps the session alive long enough to write the
+            // crash report that explains the broken database.
             CrashlyticsBreadcrumbs().record("store: persistent container failed, using memory")
             do {
                 container = try TrainingStore.container(inMemory: true)
             } catch {
-                // Both failed, so it is the schema that cannot be loaded rather
-                // than the file that cannot be read, and nothing the app does
-                // works without a store. Stopping here with the reason named is
-                // what puts that reason in the crash report; the forced try it
-                // replaces left an unwrap and no cause, which is the opposite
-                // of what this fallback exists for.
+                // Naming the reason here is what puts it in the crash report.
                 CrashlyticsBreadcrumbs().record("store: memory container failed too: \(error)")
                 fatalError("Trainr cannot open a data store: \(error)")
             }
@@ -87,8 +69,6 @@ final class AppDependencies {
         )
     }
 
-    // A preview needs a plan to draw and no Firebase at all: the sample week in
-    // a store that lives only as long as the canvas.
     static var preview: AppDependencies {
         // swiftlint:disable:next force_try
         let store = TrainingStore(container: try! TrainingStore.container(inMemory: true))
@@ -97,8 +77,6 @@ final class AppDependencies {
         )
     }
 
-    // A UI test needs every launch to start from nothing, so it asks for a
-    // store that vanishes with the process.
     private static var startsFresh: Bool {
         #if DEBUG
         ProcessInfo.processInfo.arguments.contains("-inMemoryStore")
@@ -107,11 +85,8 @@ final class AppDependencies {
         #endif
     }
 
-    // The shipped build asks the model, through Firebase AI Logic so no key
-    // travels inside the app. Development answers from the canned coach — by
-    // launch argument (which the UI tests pass), or simply by running a
-    // checkout that has no Firebase credentials. A canned week asks no model,
-    // so no run of a development build can spend the day's allowance.
+    // Debug answers from the canned coach (launch argument, or no Firebase
+    // credentials), so no development run spends the day's model allowance.
     private static func makePlanGenerator(breadcrumbs: any Breadcrumbs) -> any PlanGenerator {
         #if DEBUG
         if let failing = UITestFixtures.failingGeneratorIfRequested() { return failing }

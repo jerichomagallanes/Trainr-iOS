@@ -1,6 +1,5 @@
 import SwiftUI
 
-// The workout-location tiles: a square card with the symbol above its label.
 struct LocationCard: View {
     let title: String
     let symbol: String
@@ -10,8 +9,7 @@ struct LocationCard: View {
     var body: some View {
         Button(action: action) {
             VStack(spacing: Spacing.small) {
-                // Orange on both card states: the frames export every location
-                // icon as the brand orange, the selected dark card included.
+                // Orange on the selected dark card too, as the frames export it.
                 Image(systemName: symbol)
                     .font(.oneOff(26))
                     .foregroundStyle(Color.orange500)

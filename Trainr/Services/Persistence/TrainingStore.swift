@@ -1,18 +1,14 @@
 import Foundation
 import SwiftData
 
-// Every read and write the app makes against what the client has done and what
-// their coach has written. Views and models speak in the value types; the
-// records stay in here.
+// Views and models speak in the value types; the records stay in here.
 final class TrainingStore {
 
     enum StoreError: Error {
         case noSuchUser(UUID)
     }
 
-    // The container is held, not just its context: a context does not keep its
-    // container alive, and a store built from a temporary would be reading from
-    // a database that deallocated under it.
+    // Held, not just its context: a context does not keep its container alive.
     private let container: ModelContainer
     private var context: ModelContext { container.mainContext }
 
@@ -30,9 +26,8 @@ final class TrainingStore {
 
     // MARK: - Profile
 
-    // Replaces a profile that already carries this id, and the old plans go
-    // with it: redoing onboarding is a fresh start, and a reseed that left the
-    // old week one behind would show two.
+    // Replaces a profile carrying this id, and the old plans cascade with it:
+    // redoing onboarding is a fresh start.
     func saveUser(_ profile: UserProfile) throws {
         if let existing = try userRecord(id: profile.id) {
             context.delete(existing)
@@ -66,19 +61,15 @@ final class TrainingStore {
 
     // MARK: - Plans
 
-    // A client has one week three. The old week with the same number is
-    // removed in the same save, so two generations racing each other cannot
-    // leave both behind.
+    // A client has one week three: the old week with that number is removed in
+    // the same save, so two racing generations cannot leave both behind.
     func savePlan(_ plan: WeeklyPlan) throws {
-        // A plan with no client to own it is not a plan. Returning quietly let
-        // a generation report a week it had not written, which reads to the
-        // client as a plan that vanished.
+        // Throwing, not returning quietly: a silent skip reports an unwritten week.
         guard let owner = try userRecord(id: plan.userID) else {
             throw StoreError.noSuchUser(plan.userID)
         }
-        // Every week carrying this number, not the first one found: one is all
-        // this can create, but a store that already holds two should not be
-        // left holding one of them.
+        // Every week carrying this number, not just the first: a store that
+        // somehow holds two should not be left holding one.
         for existing in owner.plans where existing.weekNumber == plan.weekNumber {
             context.delete(existing)
         }
@@ -102,7 +93,6 @@ final class TrainingStore {
             .first { $0.weekNumber == weekNumber }?.plan
     }
 
-    // The plan's own fields; its days are written through their own updates.
     func updatePlan(_ plan: WeeklyPlan) throws {
         guard let record = try planRecord(id: plan.id) else { return }
         record.weekNumber = plan.weekNumber
@@ -128,7 +118,6 @@ final class TrainingStore {
         try context.save()
     }
 
-    // The day's own fields; its exercises are written through their own updates.
     func updateDay(_ day: WorkoutDay) throws {
         guard let record = try dayRecord(id: day.id) else { return }
         record.dayNumber = day.dayNumber
@@ -147,7 +136,6 @@ final class TrainingStore {
         try exerciseRecord(id: id)?.exercise
     }
 
-    // The exercise's own fields; its sets are written through their own updates.
     func updateExercise(_ exercise: WorkoutExercise) throws {
         guard let record = try exerciseRecord(id: exercise.id) else { return }
         record.exerciseKey = exercise.exerciseKey
@@ -184,10 +172,9 @@ final class TrainingStore {
         try context.save()
     }
 
-    // The most recent completed performance of the same movement, matched on
-    // exerciseKey — never on the display name, which is free to drift. A day
-    // finished without logging anything (slide-to-complete) is not a
-    // performance, so it must not shadow an older day that has real numbers.
+    // Matched on exerciseKey, never the display name, which is free to drift. A
+    // day finished without logging anything is not a performance, so it must not
+    // shadow an older day with real numbers.
     func previousSets(
         userID: UUID,
         exerciseKey: String,
@@ -200,11 +187,8 @@ final class TrainingStore {
         )[exerciseKey] ?? []
     }
 
-    // Every key the screen is about to ask for, in one pass. Asked one key at a
-    // time it was a fetch across the whole exercise table per exercise, each
-    // faulting in its day, plan and user to filter them out again — work that
-    // grew with the client's history and ran on the main actor while the screen
-    // waited for it.
+    // Every key the screen needs, in one pass: one fetch per key faults in each
+    // day, plan and user on the main actor, and grows with the client's history.
     func previousSets(
         userID: UUID,
         exerciseKeys: [String],
@@ -231,11 +215,9 @@ final class TrainingStore {
                 else { return false }
                 return record.sets.contains { $0.actualReps != nil || $0.actualSeconds != nil }
             }
-            // Two days finished in the same instant are separated by which
-            // week and day they are, because the later one is the more recent
-            // performance. Comparing the times alone left the answer to the
-            // order the fetch happened to return, so the PREVIOUS column could
-            // read differently from one launch to the next.
+            // Days finished in the same instant are separated by week and day
+            // number; on the times alone the winner is whatever the fetch
+            // returned first, and PREVIOUS differs between launches.
 
         return Dictionary(grouping: usable, by: \.exerciseKey).compactMapValues { records in
             records

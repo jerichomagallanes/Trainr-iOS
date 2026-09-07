@@ -31,15 +31,13 @@ nonisolated struct WorkoutExercise: Identifiable, Equatable, Sendable {
     // name may vary between weeks and locales; this must not.
     var exerciseKey = ""
     var name: String
-    // How this exercise is measured, and so which columns its sets show.
     var measure = ExerciseMeasure.reps
     var sets: [ExerciseSet] = []
     var setCount: Int?
     var reps: String?
     var duration: String?
-    // What the card shows: how long the exercise is allotted, and the
-    // prescription beside it. The two are independent — ten minutes of "5 sets
-    // of 1 minute" is not five minutes — so neither can be derived.
+    // Independent of each other — ten minutes of "5 sets of 1 minute" is not
+    // five minutes — so neither can be derived from the other.
     var durationMinutes = 0
     var prescription = ""
     var restTime: Int?
@@ -50,8 +48,6 @@ nonisolated struct WorkoutExercise: Identifiable, Equatable, Sendable {
     var notes = ""
 }
 
-// A prescription is what the plan asks for; a log is what you did. Both live on
-// the same row so the card can show the target and record the result beside it.
 nonisolated struct ExerciseSet: Identifiable, Equatable, Sendable {
     var id = UUID()
     var setNumber: Int
@@ -64,9 +60,8 @@ nonisolated struct ExerciseSet: Identifiable, Equatable, Sendable {
     var isCompleted = false
 }
 
-// The raw values are the wire contract with the model — the schema enumerates
-// them and every generated plan arrives speaking them — so they stay put even
-// though the cases read as Swift.
+// The raw values are the wire contract with the model: the schema enumerates
+// them and every generated plan arrives speaking them.
 nonisolated enum ExerciseMeasure: String, Codable, CaseIterable, Sendable {
     case weightAndReps = "WEIGHT_AND_REPS"
     case reps = "REPS"

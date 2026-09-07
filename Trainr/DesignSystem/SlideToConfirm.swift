@@ -1,7 +1,5 @@
 import SwiftUI
 
-// A deliberate action that a tap would make too easy to do by accident: the
-// thumb travels the track, and only a slide that reaches the far end confirms.
 struct SlideToConfirm: View {
 
     let title: String
@@ -18,19 +16,14 @@ struct SlideToConfirm: View {
             let travel = max(proxy.size.width - Spacing.tight * 2 - Self.thumbSize, 0)
             ZStack(alignment: .leading) {
                 label(Color.orange500)
-                // The same strip again in the inverse colours, cut off exactly
-                // where the thumb has reached. Drawing it twice and clipping the
-                // top copy is what lets one word be orange on the near side of
-                // the thumb and white on the far side, instead of the fill
-                // sliding under unchanged text.
+                // The same strip in inverse colours, clipped where the thumb
+                // has reached: that is what changes the word's colour mid-word.
                 label(Color.white)
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
                     .background(Color.orange500)
                     .mask(alignment: .leading) {
-                        // The thumb's own inset eases in over the first few
-                        // pixels rather than appearing the moment the thumb
-                        // moves, so the paint is a continuous function of the
-                        // offset and shrinks back to nothing on release.
+                        // The inset eases in over the first pixels, so the
+                        // paint stays a continuous function of the offset.
                         Rectangle().frame(width: offset + min(offset, Spacing.tight))
                     }
 
@@ -48,8 +41,6 @@ struct SlideToConfirm: View {
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(title)
         .accessibilityAddTraits(.isButton)
-        // A slide is a poor gesture to ask of anyone driving the screen by
-        // voice or switch, so the same promise is one activation away.
         .accessibilityAction(named: title, action)
     }
 
@@ -72,13 +63,9 @@ struct SlideToConfirm: View {
                 DragGesture(minimumDistance: 0)
                     .onChanged { offset = min(max($0.translation.width, 0), travel) }
                     .onEnded { _ in
-                        // travel > 0 as well as the distance: on a first layout
-                        // pass, or in a container that collapsed, the track has
-                        // no width, and "nothing is at least nothing" made a
-                        // plain tap finish the whole session.
+                        // travel > 0 as well: with no width yet, "nothing is at
+                        // least nothing" let a plain tap finish the session.
                         if travel > 0, offset >= travel * Self.confirmFraction { action() }
-                        // Short of the end, the thumb returns: a slide that was
-                        // not finished did not ask for anything.
                         withAnimation(.spring(duration: MotionDuration.short)) { offset = 0 }
                     }
             )

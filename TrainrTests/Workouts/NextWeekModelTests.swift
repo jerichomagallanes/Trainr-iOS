@@ -47,7 +47,6 @@ struct NextWeekModelTests {
 
         let exercise = day.exercises[0]
         #expect(!exercise.isCompleted)
-        // The prescription survives; only what was done is cleared.
         #expect(exercise.sets.allSatisfy { $0.targetReps == 10 })
         #expect(exercise.sets.allSatisfy { $0.targetWeightKg == 20 })
         #expect(exercise.sets.allSatisfy { $0.actualReps == nil })

@@ -1,7 +1,5 @@
 import SwiftUI
 
-// Rows that wrap: each item keeps its own size and the line breaks where the
-// width runs out, the way the chip groups in the frames do.
 struct FlowLayout: Layout {
     var horizontalSpacing: CGFloat = Spacing.small
     var verticalSpacing: CGFloat = Spacing.small

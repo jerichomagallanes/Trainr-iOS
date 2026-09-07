@@ -1,8 +1,7 @@
 import FirebaseAILogic
 
-// docs/generation-contract.md, in the shape the SDK asks for. Everything is
-// required unless named in optionalProperties; the parser still enforces the
-// rules a schema cannot express (bounds, key vocabulary, day counts).
+// docs/generation-contract.md in the shape the SDK asks for. The parser still
+// enforces the rules a schema cannot (bounds, key vocabulary, day counts).
 enum GeneratedPlanSchema {
 
     static var schema: Schema {
@@ -41,8 +40,7 @@ enum GeneratedPlanSchema {
         )
     }
 
-    // A set carries whichever of the three the exercise is measured in, so none
-    // of them is required and the parser decides what the measure needs.
+    // A set carries only what its measure needs, so none of the three is required.
     private static var set: Schema {
         .object(
             properties: [

@@ -1,9 +1,7 @@
 import SwiftUI
 
-// A swipe carousel that wraps: the page after the last is the first again.
-// Built as the classic sentinel trick — a copy of the last page before the
-// first and of the first after the last, with an unanimated jump when a
-// sentinel settles.
+// Wraps by the sentinel trick: a copy of the last page before the first and of
+// the first after the last, with an unanimated jump when a sentinel settles.
 struct LoopingPager<Item: Hashable, Content: View>: View {
     let items: [Item]
     @Binding var currentIndex: Int

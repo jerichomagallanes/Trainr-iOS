@@ -1,8 +1,5 @@
 import SwiftUI
 
-// A field-shaped menu. Shows its placeholder, muted, until something has been
-// chosen: a dropdown that opens on a real-looking value has answered the
-// question on the client's behalf.
 struct DropdownField: View {
     let selectedValue: String
     let options: [String]

@@ -1,7 +1,5 @@
 import SwiftUI
 
-// The app's one full-width action. Filled orange for the step everyone takes,
-// outlined for the way around it.
 struct PrimaryButton: View {
     let title: String
     var isPrimary = true
@@ -17,10 +15,8 @@ struct PrimaryButton: View {
                 .padding(.horizontal, Spacing.small)
                 .padding(.vertical, Spacing.tight)
                 .frame(maxWidth: .infinity)
-                // A floor rather than a fixed height: at the design size the
-                // title is one line and the button is exactly as tall as it
-                // was, and at a reader's larger setting it grows instead of
-                // truncating the one action on the screen.
+                // A floor, not a fixed height, so a larger text setting grows
+                // the button instead of truncating it.
                 .frame(minHeight: ComponentHeight.large)
         }
         .background(fill, in: RoundedRectangle(cornerRadius: CornerRadius.medium))

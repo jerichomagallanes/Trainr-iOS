@@ -1,7 +1,5 @@
 import XCTest
 
-// The plan home, in each state a client can find it in: a week being trained,
-// a week finished, no plan at all, and a past week opened to be read.
 final class WeeklyPlanScreenTests: XCTestCase {
 
     private var app: XCUIApplication!
@@ -26,7 +24,6 @@ final class WeeklyPlanScreenTests: XCTestCase {
         XCTAssertTrue(app.button(containing: "Lower Body Power").exists)
     }
 
-    // Each card carries the weekday its slot falls on and where it stands.
     @MainActor
     func testShowsEachWorkoutsStatus() {
         openPlan(.midWeek)
@@ -36,8 +33,6 @@ final class WeeklyPlanScreenTests: XCTestCase {
         XCTAssertTrue(app.button(containing: "Lower Body Power, Not started").exists)
     }
 
-    // Missed is not a state a day enters, it is what an unfinished day in the
-    // past IS; and it reads in the same grey as not started.
     @MainActor
     func testADayWhoseDateHasPassedUntrainedReadsAsMissed() {
         openPlan(.missedDay)
@@ -56,7 +51,6 @@ final class WeeklyPlanScreenTests: XCTestCase {
         XCTAssertTrue(app.buttons["Track Weekly Progress →"].exists)
     }
 
-    // Today's session is in progress, so the call to action is today's.
     @MainActor
     func testTappingTheCallToActionStartsTodaysWorkout() {
         openPlan(.midWeek)
@@ -74,8 +68,6 @@ final class WeeklyPlanScreenTests: XCTestCase {
         XCTAssertTrue(app.buttons["Back"].exists)
     }
 
-    // Still in the week: it can be written again, and the next one is not yet
-    // on offer.
     @MainActor
     func testAnUnfinishedWeekOffersToRewriteItselfAndNothingElse() {
         openPlan(.midWeek)
@@ -87,8 +79,6 @@ final class WeeklyPlanScreenTests: XCTestCase {
         XCTAssertTrue(app.buttons["Start a new workout plan"].exists)
     }
 
-    // A week with training in it is a record, and what a new week costs is
-    // named before it is asked for.
     @MainActor
     func testRewritingAWeekWithTrainingInItAsksFirst() {
         openPlan(.midWeek)
@@ -113,9 +103,6 @@ final class WeeklyPlanScreenTests: XCTestCase {
         XCTAssertTrue(app.staticTexts["YOUR WEEKLY WORKOUT PLAN"].exists)
     }
 
-    // The profile is already answered, so another plan is built from it rather
-    // than from the first question again — and the plan stays underneath, so
-    // closing the review is a way back to it.
     @MainActor
     func testConfirmingANewPlanOpensTheSavedProfile() {
         openPlan(.midWeek)
@@ -130,8 +117,6 @@ final class WeeklyPlanScreenTests: XCTestCase {
         XCTAssertTrue(app.staticTexts["YOUR WEEKLY WORKOUT PLAN"].waitForExistence(timeout: 5))
     }
 
-    // With the week behind you there are two sound ways on: progress from what
-    // you lifted, or run the same week again.
     @MainActor
     func testAFinishedWeekOffersTheNextOneAndARepeat() {
         openPlan(.finishedWeek)
@@ -146,8 +131,6 @@ final class WeeklyPlanScreenTests: XCTestCase {
         XCTAssertFalse(app.buttons["Generate this week again"].exists)
     }
 
-    // Repeating asks nothing of the network, so the copy lands at once and the
-    // plan moves on to it.
     @MainActor
     func testRepeatingAFinishedWeekAddsTheNextOne() {
         openPlan(.finishedWeek)
@@ -168,8 +151,6 @@ final class WeeklyPlanScreenTests: XCTestCase {
         app.buttons["Close"].tap()
     }
 
-    // Deleting every week is allowed, so landing there has to be a place rather
-    // than a gap, and who you are stays reachable from it.
     @MainActor
     func testNoPlanSaysSoAndOffersToCreateOne() {
         app = .launched(.noPlan)
@@ -180,9 +161,6 @@ final class WeeklyPlanScreenTests: XCTestCase {
         XCTAssertFalse(app.buttons["Workout plan options"].exists)
     }
 
-    // A week opened from Weekly Progress is a record to read: it needs a way
-    // back, and must not offer to start today, to rebuild the plan, or to
-    // bounce the reader back to the progress screen they arrived from.
     @MainActor
     func testABrowsedWeekOffersAWayBackAndNoPlanActions() {
         openPlan(.twoWeeks)
@@ -199,8 +177,6 @@ final class WeeklyPlanScreenTests: XCTestCase {
         XCTAssertFalse(app.buttons["GENERATE NEXT WEEK"].exists)
     }
 
-    // Dragging a session onto another weekday swaps the two around: the later
-    // session lands in the earlier slot and the cards relabel to their new days.
     @MainActor
     func testDraggingASessionOntoAnEarlierDayReschedulesIt() {
         openPlan(.midWeek)
@@ -219,7 +195,6 @@ final class WeeklyPlanScreenTests: XCTestCase {
             app.button(containing: "Lower Body Power").frame.minY,
             app.button(containing: "Cardio & Core").frame.minY
         )
-        // The move is a record: reopening the plan shows the new order.
         app.buttons["Track Weekly Progress →"].tap()
         XCTAssertTrue(app.staticTexts["WEEKLY PROGRESS"].waitForExistence(timeout: 5))
         app.buttons["Back"].tap()
@@ -230,8 +205,6 @@ final class WeeklyPlanScreenTests: XCTestCase {
         )
     }
 
-    // A finished session is the record of a date it was actually done on, so
-    // it stays put and nothing may be dragged across it.
     @MainActor
     func testAFinishedSessionDoesNotLift() {
         openPlan(.midWeek)

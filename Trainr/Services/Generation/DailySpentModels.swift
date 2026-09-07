@@ -1,12 +1,8 @@
 import Foundation
 
-// Remembers refusals until the allowance resets, and no longer.
-//
 // Google resets the daily quota at midnight Pacific, so that is the boundary
-// this keeps rather than the device's own midnight: a client in Tokyo whose
-// day rolled over eight hours ago still shares the same spent allowance.
-// Stored rather than held in memory because the allowance outlives the process,
-// and re-learning it after every cold start is what it is here to avoid.
+// kept here rather than the device's own midnight. Stored rather than held in
+// memory, because the allowance outlives the process.
 final class DailySpentModels: SpentModels {
 
     private let defaults: UserDefaults
@@ -28,7 +24,6 @@ final class DailySpentModels: SpentModels {
         defaults.set(current.union([model]).sorted(), forKey: Self.modelsKey)
     }
 
-    // The quota day, as Google counts it.
     private func today() -> String {
         var calendar = Calendar(identifier: .gregorian)
         calendar.timeZone = Self.quotaZone

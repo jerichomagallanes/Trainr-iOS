@@ -9,7 +9,6 @@ struct ExerciseCard<Extras: View>: View {
     var onDeleteSet: (ExerciseSet) -> Void = { _ in }
     @ViewBuilder let extras: Extras
 
-    // A finished exercise turns green throughout: badge, name and rule.
     private var accent: Color { exercise.isCompleted ? .statusCompleted : .slate800 }
 
     var body: some View {
@@ -67,9 +66,8 @@ struct ExerciseCard<Extras: View>: View {
 
             prescription
 
-            // Drawn even with nothing in it. Gating the table on having sets
-            // took the Add set button away with the last row, so deleting every
-            // set left an exercise no way to get one back.
+            // Drawn even with no sets: gating it takes the Add set button away
+            // with the last row, leaving no way to get one back.
             ExerciseSetTable(
                 measure: exercise.measure,
                 sets: exercise.sets,

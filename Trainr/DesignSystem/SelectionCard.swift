@@ -1,7 +1,5 @@
 import SwiftUI
 
-// One choice in a stacked list: title, optional supporting line, and the radio
-// dot pinned to the frame's corner. Selecting inverts the card.
 struct SelectionCard: View {
     let title: String
     var description: String?

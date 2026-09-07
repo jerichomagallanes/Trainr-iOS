@@ -1,9 +1,7 @@
 import Foundation
 
-// Which week a plan is belongs to the plan, not to its name: the app shows
-// "Week 3" from the number it stored. A title that carries its own number
-// contradicts that the moment the week is copied into another one — a repeat of
-// week one would sit at week two still calling itself the first.
+// The week number belongs to the plan, not to its title: a title carrying its
+// own number contradicts the stored one as soon as a week is copied into another.
 extension String {
     nonisolated var withoutWeekNumber: String {
         let weekNumberMark = /\s*[-–—:(\[]?\s*week\s*#?\s*\d+\s*[)\]]?\s*/.ignoresCase()
@@ -12,8 +10,8 @@ extension String {
             .replacing(/\s{2,}/, with: " ")
         let trimmed = stripped.replacing(trailingPunctuation, with: "")
             .trimmingCharacters(in: .whitespaces)
-        // A title that was nothing but its week number keeps what it had, since
-        // an empty one would fail validation and cost the client a retry.
+        // A title that was nothing but its week number keeps what it had: an
+        // empty one fails validation and costs a retry.
         return trimmed.isEmpty ? trimmingCharacters(in: .whitespaces) : trimmed
     }
 }

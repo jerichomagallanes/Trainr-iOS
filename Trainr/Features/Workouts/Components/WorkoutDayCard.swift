@@ -3,14 +3,13 @@ import SwiftUI
 struct WorkoutDayCard: View {
 
     // The equipment line is one AttributedString in two weights, so its label
-    // size is read here rather than applied as a modifier.
+    // size is read here rather than set by a modifier.
     @ScaledMetric(relativeTo: .subheadline) private var labelSize = TextRole.labelMedium.size
     let weekday: String
     let day: WorkoutDay
     var isMissed = false
     let onTap: () -> Void
 
-    // A started workout gets the dark header; one not begun stays light.
     private var headerIsDark: Bool { day.status != .notStarted }
 
     var body: some View {
@@ -20,8 +19,7 @@ struct WorkoutDayCard: View {
                 Divider().overlay(Color.outlineGray)
                 details
             }
-            // Without this the button answers only where its labels have opaque
-            // pixels, leaving a dead strip through the middle of the card.
+            // Without this the button answers only where its labels are opaque.
             .contentShape(.rect)
         }
         .buttonStyle(.plain)

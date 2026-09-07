@@ -1,8 +1,5 @@
 import SwiftUI
 
-// A compact action that sits inside content rather than under it: the timer's
-// controls, and anything else offered beside the thing it acts on. Filled is
-// the brand orange; outlined is white with the outline grey rim.
 struct PillButton: View {
     let title: String
     let systemImage: String

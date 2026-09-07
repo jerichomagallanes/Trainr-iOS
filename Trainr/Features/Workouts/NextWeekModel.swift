@@ -5,23 +5,18 @@ import Observation
 final class NextWeekModel {
 
     private(set) var failure: PlanGenerationFailure?
-    // Counts up on every failure, so a second failure that says the same
-    // thing as the first still registers as a new one.
+    // Counts up so a repeated failure still registers as a new one.
     private(set) var failureCount = 0
-    // Finishing is state rather than a callback: a callback belongs to the view
-    // that made it, so a screen rebuilt mid-generation would never hear that its
-    // week had arrived.
+    // State rather than a callback: a screen rebuilt mid-generation would never
+    // hear a callback made by the one it replaced.
     private(set) var isReady = false
 
     private let dependencies: AppDependencies
-    // One week at a time. Generating takes the better part of a minute, so
-    // without this a second ask — a re-entered screen, an impatient tap — runs
-    // alongside the first and both write a week.
+    // Generating takes the better part of a minute; without this a second ask
+    // runs alongside the first and both write a week.
     private var isWorking = false
-    // Held so an abandoned wait can be called off. The request itself runs to
-    // completion either way — it is a network call with no cancellation point
-    // of its own — but a cancelled run must not write the week that nobody is
-    // waiting for any more.
+    // The request runs to completion either way, having no cancellation point
+    // of its own; cancelling only stops the week being written.
     private var run: Task<Void, Never>?
 
     init(dependencies: AppDependencies) {
@@ -29,7 +24,7 @@ final class NextWeekModel {
     }
 
     // The finished week seeds the request, so the model progresses from what
-    // was actually lifted instead of restarting from the intake answers.
+    // was lifted rather than the intake answers.
     func generateNextWeek() {
         guard !isWorking else { return }
         isWorking = true
@@ -41,15 +36,9 @@ final class NextWeekModel {
         }
     }
 
-    // Running the same week again: the sessions and their loads as they were
-    // written, with every log cleared. Sound coaching after a week that was not
-    // finished, or one where the prescribed weights never went up — and it asks
-    // nothing of the network, so it is the way through when the model cannot be
-    // reached. It is offered, never substituted.
-    // Any week can be run again, not only the newest: a block that went well is
-    // worth another turn whether it was last week or months ago. The copy joins
-    // the plan at the end and takes its dates from there, so repeating an old
-    // week never reaches back into weeks already trained.
+    // The same sessions and loads with every log cleared, asking nothing of the
+    // network. The copy joins the plan at the end and takes its dates from
+    // there, so repeating an old week never reaches into weeks already trained.
     func repeatWeek(numbered sourceWeekNumber: Int? = nil) {
         guard !isWorking else { return }
         isWorking = true
@@ -68,22 +57,16 @@ final class NextWeekModel {
         let source = sourceWeekNumber
             .flatMap { number in plans.first { $0.weekNumber == number } } ?? latest
         let copy = Self.repeated(source, weekNumber: latest.weekNumber + 1, startingOn: startAfter(latest))
-        // Ready means a week was written. Announcing it from a defer said so
-        // even when the guard above turned the copy down, and a caller that
-        // moves the client on trusts this to tell it apart.
+        // Ready means a week was written, so it cannot be announced from a
+        // defer: the guard above can turn the copy down.
         guard dependencies.attempt("savePlan", { try dependencies.store.savePlan(copy) }) != nil
         else { return }
         isReady = true
     }
 
-    // Replacing the week you are in rather than adding one after it: the number
-    // and the dates stay, only the training inside them changes. The complement
-    // of the rule that adds a week — you may rewrite the week you are still in,
-    // and once it is behind you it is a record.
-    //
-    // Written the safe way round. The model is asked first and the old week goes
-    // only once a replacement exists, so a generation that fails leaves the week
-    // it could not improve exactly where it was.
+    // Replaces the week you are in rather than adding one after it: the number
+    // and the dates stay. The model is asked first and the old week goes only
+    // once a replacement exists.
     func regenerateThisWeek() {
         guard !isWorking else { return }
         isWorking = true
@@ -95,24 +78,20 @@ final class NextWeekModel {
         }
     }
 
-    // This model outlives any one generation, where Android's is built fresh
-    // per screen. Without clearing the flags a second visit would report a week
-    // ready before it had asked for one.
+    // The model outlives any one generation, so without this a second visit
+    // reports a week ready before it has asked for one.
     private func beginRun() {
         failure = nil
         isReady = false
     }
 
-    // Giving up on the wait: what has been asked for cannot be unasked, but its
-    // answer stops being written.
     func cancelRun() {
         run?.cancel()
         run = nil
     }
 
     private func generate() async {
-        // Nothing to build on, or the week is already there: either way the
-        // client is where they wanted to be.
+        // Nothing to build on, or the week is already there: either way, ready.
         guard let (user, latest) = nextWeekSource() else {
             isReady = true
             return
@@ -127,10 +106,6 @@ final class NextWeekModel {
             )
         )
 
-        // Repeating the finished week used to stand in here. It is the same
-        // dishonesty as a sample week: the client is told next week is ready
-        // when the coach never wrote it, and repeating a week is a decision they
-        // should get to make.
         guard !Task.isCancelled else { return }
         guard case .generated(let plan) = result else {
             if case .failure(let reason) = result {
@@ -160,7 +135,7 @@ final class NextWeekModel {
                 startDate: current.startDate ?? WorkoutWeek.startOfDay(),
                 languageCode: dependencies.languageCode,
                 // The week before this one, so a replacement still progresses
-                // from what was actually lifted.
+                // from what was lifted.
                 previousWeek: plans.first { $0.weekNumber == current.weekNumber - 1 }
             )
         )
@@ -173,22 +148,18 @@ final class NextWeekModel {
             }
             return
         }
-        // Only now. One week per number, so the old one goes to make room — and
-        // it goes with a replacement already in hand.
+        // Only now: one week per number, so the old goes with the new in hand.
         dependencies.attempt("deletePlan", { try dependencies.store.deletePlan(id: current.id) })
         dependencies.attempt("savePlan", { try dependencies.store.savePlan(plan) })
         isReady = true
     }
 
-    // The user and the week to build on, or nothing when there is neither — and
-    // nothing to do when the week after this one already exists, so revisiting
-    // the completion screen cannot stack duplicates.
+    // Nothing when the next week already exists, so revisiting the completion
+    // screen cannot stack duplicates.
     private func nextWeekSource() -> (UserProfile, WeeklyPlan)? {
         guard let user = dependencies.attempt("currentUser", { try dependencies.store.currentUser() }),
               let plans = dependencies.attempt("plans", { try dependencies.store.plans(for: user.id) }),
               let latest = plans.max(by: { $0.weekNumber < $1.weekNumber }),
-              // The plan takes one week at a time, and the rule is enforced here
-              // as well as shown: a screen may forget to ask, the write must not.
               latest.isReadyForTheNextWeek(),
               dependencies.attempt("plan", {
                   try dependencies.store.plan(for: user.id, weekNumber: latest.weekNumber + 1)
@@ -197,9 +168,7 @@ final class NextWeekModel {
         return (user, latest)
     }
 
-    // Never overlapping the week it follows, and never starting in the past:
-    // someone coming back a fortnight late begins today, not on a date that has
-    // already gone.
+    // Never overlapping the week it follows, and never starting in the past.
     private func startAfter(_ previous: WeeklyPlan) -> Date {
         let today = WorkoutWeek.startOfDay()
         guard let start = previous.startDate else { return today }
@@ -208,7 +177,6 @@ final class NextWeekModel {
         )
     }
 
-    // The same week over again: nothing carried across but the plan itself.
     static func repeated(
         _ previous: WeeklyPlan, weekNumber: Int, startingOn startDate: Date
     ) -> WeeklyPlan {

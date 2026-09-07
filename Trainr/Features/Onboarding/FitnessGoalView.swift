@@ -1,20 +1,11 @@
 import SwiftUI
 
-// Goal and style are two different questions — the outcome wanted, and the kind
-// of training wanted to get there — but they are the same kind of question, and
-// the review shows them on one card. They are asked together so the card's Edit
-// can reach both: style used to be collected on the limitations screen, which
-// left it displayed under a button that could not change it.
 struct FitnessGoalView: View {
     var isEditing = false
     let onNext: (FitnessGoal, WorkoutType) -> Void
     let onBack: () -> Void
 
     @State private var selectedGoal: FitnessGoal?
-
-    // Nothing is pre-chosen. The profile would fall back to mixed, but a list
-    // that opens already answered is the app deciding and the client agreeing
-    // by default, so the answer has to be given rather than accepted.
     @State private var selectedStyle: WorkoutType?
 
     init(
@@ -52,8 +43,6 @@ struct FitnessGoalView: View {
                 Subtitle(text: L10n.goalDescription)
                 Spacer().frame(height: Spacing.large)
 
-                // Titled with the same words the review uses for the row it
-                // fills in, so the screen answers the line that was tapped.
                 FormSection(title: L10n.mainGoalLabel) {
                     VStack(spacing: Spacing.card) {
                         goalCard("flame.fill", L10n.loseWeight,

@@ -17,9 +17,8 @@ nonisolated enum SetFormatting {
         return "\(minutes):" + String(format: "%02d", seconds)
     }
 
-    // Time is typed like a microwave timer: digits fill in from the seconds end
-    // ("500" is 5:00), shown as m:ss to match the exercise timer, stored as
-    // seconds.
+    // Typed like a microwave timer: digits fill in from the seconds end, so
+    // "500" is 5:00.
     static func durationDigits(_ total: Int) -> String {
         let minutes = total / Constants.Workout.secondsPerMinute
         let seconds = total % Constants.Workout.secondsPerMinute
@@ -36,8 +35,7 @@ nonisolated enum SetFormatting {
         return minutes * Constants.Workout.secondsPerMinute + seconds
     }
 
-    // What was actually done last time, in the shape of this row's own columns;
-    // a set that was prescribed but never logged shows a dash, not its target.
+    // A set prescribed but never logged shows a dash, not its target.
     static func previousCell(
         measure: ExerciseMeasure,
         previous: ExerciseSet?,

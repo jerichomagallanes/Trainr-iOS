@@ -20,7 +20,6 @@ struct SetFormattingTests {
         #expect(SetFormatting.secondsFromDigits("500") == 300)
         #expect(SetFormatting.secondsFromDigits("130") == 90)
         #expect(SetFormatting.secondsFromDigits("") == nil)
-        // Only the last four digits count, and leading zeros fall away.
         #expect(SetFormatting.secondsFromDigits("00130") == 90)
     }
 
@@ -47,7 +46,6 @@ struct SetFormattingTests {
             == "25kg × 12")
         #expect(SetFormatting.previousCell(measure: .reps, previous: logged) == "12")
 
-        // Prescribed but never logged is a dash, not the target.
         let untouched = ExerciseSet(setNumber: 1, targetReps: 10, targetWeightKg: 20)
         #expect(SetFormatting.previousCell(measure: .weightAndReps, previous: untouched)
             == SetFormatting.noPrevious)

@@ -1,7 +1,6 @@
 import SwiftUI
 
-// A selection card with the option's symbol leading it. The frames export every
-// option icon in the brand orange, whatever the card's state.
+// The frames export every option icon in the brand orange, whatever the state.
 struct IconCard: View {
     let symbol: String
     let title: String
