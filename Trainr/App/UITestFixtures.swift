@@ -118,6 +118,7 @@ enum UITestFixtures {
     }
 
     static let failureArgument = "-generationFails"
+    static let slowArgument = "-slowGeneration"
 
     static func failingGeneratorIfRequested() -> (any PlanGenerator)? {
         let arguments = ProcessInfo.processInfo.arguments
@@ -130,6 +131,26 @@ enum UITestFixtures {
         default: .failed
         }
         return FailingPlanGenerator(reason: reason)
+    }
+
+    // A coach that answers correctly but takes its time, so a test can watch
+    // what a screen does while the real one would still be thinking.
+    static func slowGeneratorIfRequested() -> (any PlanGenerator)? {
+        let arguments = ProcessInfo.processInfo.arguments
+        guard let index = arguments.firstIndex(of: slowArgument),
+              arguments.indices.contains(index + 1),
+              let seconds = Double(arguments[index + 1])
+        else { return nil }
+        return SlowPlanGenerator(seconds: seconds)
+    }
+
+    private struct SlowPlanGenerator: PlanGenerator {
+        let seconds: Double
+
+        func generate(_ request: PlanRequest) async -> PlanGenerationResult {
+            try? await Task.sleep(for: .seconds(seconds))
+            return await CannedPlanGenerator().generate(request)
+        }
     }
 
     private struct FailingPlanGenerator: PlanGenerator {

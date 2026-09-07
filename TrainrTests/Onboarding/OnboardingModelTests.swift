@@ -223,4 +223,28 @@ struct OnboardingModelTests {
         #expect(after.id == user.id)
         #expect(try store.plans(for: user.id).map(\.weekNumber) == before)
     }
+
+    private struct SlowGenerator: PlanGenerator {
+        func generate(_ request: PlanRequest) async -> PlanGenerationResult {
+            try? await Task.sleep(for: .milliseconds(400))
+            return await CannedPlanGenerator().generate(request)
+        }
+    }
+
+    // The model outlives every screen that uses it, so a second run must not
+    // start wearing the first one's result: the wait reads isCompleted to decide
+    // it is over, and a stale true sends the client back before a plan exists.
+    @Test("Asking for another plan stops claiming the last one is ready")
+    func aSecondRunDoesNotInheritTheFirstResult() async throws {
+        let dependencies = try dependencies(SlowGenerator())
+        let model = OnboardingModel(dependencies: dependencies)
+        answerEverything(model)
+        model.saveUserProfile()
+        await settle(model)
+        #expect(model.isCompleted)
+
+        model.saveUserProfile()
+
+        #expect(!model.isCompleted)
+    }
 }

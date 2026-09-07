@@ -90,6 +90,7 @@ final class AppDependencies {
     private static func makePlanGenerator(breadcrumbs: any Breadcrumbs) -> any PlanGenerator {
         #if DEBUG
         if let failing = UITestFixtures.failingGeneratorIfRequested() { return failing }
+        if let slow = UITestFixtures.slowGeneratorIfRequested() { return slow }
         let canned = ProcessInfo.processInfo.arguments.contains("-cannedGeneration")
             || FirebaseApp.app() == nil
         if canned { return CannedPlanGenerator() }
