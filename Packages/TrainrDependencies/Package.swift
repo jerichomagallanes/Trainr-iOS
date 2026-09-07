@@ -22,6 +22,10 @@ let package = Package(
             dependencies: [
                 .product(name: "FirebaseAILogic", package: "firebase-ios-sdk"),
                 .product(name: "FirebaseAppCheck", package: "firebase-ios-sdk"),
+                // Re-exported by Exports.swift and imported by name in the app.
+                // It resolved transitively before, so a restructuring upstream
+                // would have broken the app with nothing here to point at.
+                .product(name: "FirebaseCore", package: "firebase-ios-sdk"),
                 .product(name: "FirebaseCrashlytics", package: "firebase-ios-sdk"),
                 .product(name: "YouTubePlayerKit", package: "YouTubePlayerKit")
             ]
