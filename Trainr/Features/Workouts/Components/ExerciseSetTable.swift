@@ -251,5 +251,14 @@ private struct DurationCell: View {
         }
         .padding(.horizontal, Spacing.extraSmall)
         .onAppear { text = seconds.map(SetFormatting.seconds) ?? "" }
+        // Starting the session over, or ticking the exercise, rewrites the
+        // stored seconds without rebuilding the row, because the set keeps its
+        // id. Reading only on appear left the old time on screen, and the next
+        // keystroke wrote that stale value back. Only when the two disagree, so
+        // a write-back never interrupts typing.
+        .onChange(of: seconds) { _, latest in
+            let formatted = latest.map(SetFormatting.seconds) ?? ""
+            if formatted != text { text = formatted }
+        }
     }
 }
