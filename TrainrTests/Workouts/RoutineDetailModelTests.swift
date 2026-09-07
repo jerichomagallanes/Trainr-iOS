@@ -365,4 +365,18 @@ struct RoutineDetailModelTests {
 
         #expect(model.state.expandedVideo == nil)
     }
+
+    // The model outlives the view, so nothing else stops the loop: without this
+    // it kept counting, and writing, for a screen nobody was looking at.
+    @Test("Leaving the screen stops the clock advancing")
+    func theScreenGoingAwayStopsTheTimer() async throws {
+        let model = loaded(day: firstDayNumber)
+        model.startTimer(for: try #require(model.state.routine.exercises.first))
+        model.screenWentAway()
+        let atRest = try #require(model.state.timer).remainingSeconds
+
+        try? await Task.sleep(for: .milliseconds(1200))
+
+        #expect(model.state.timer?.remainingSeconds == atRest)
+    }
 }

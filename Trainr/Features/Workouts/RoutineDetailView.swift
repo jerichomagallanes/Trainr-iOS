@@ -57,6 +57,7 @@ struct RoutineDetailView: View {
             guard !model.state.isLoaded else { return }
             model.load()
         }
+        .onDisappear { model.screenWentAway() }
         .onChange(of: CompletionKey(state), initial: true) { _, _ in
             // Keyed on loading as well as completion: on iOS 26 the initial
             // call lands before the routine loads, and an unloaded routine is
