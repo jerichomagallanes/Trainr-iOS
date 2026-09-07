@@ -18,7 +18,7 @@ struct VideoTutorial: View {
                     Text(isExpanded ? L10n.hideVideoTutorial : L10n.showVideoTutorial)
                         .font(.labelLarge)
                     Image(systemName: "chevron.up")
-                        .font(.system(size: 14, weight: .semibold))
+                        .font(.oneOff(14, .semibold))
                         .rotationEffect(.degrees(isExpanded ? 0 : 180))
                 }
                 .foregroundStyle(Color.slate800)

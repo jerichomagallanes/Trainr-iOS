@@ -230,7 +230,7 @@ struct WeeklyPlanView: View {
             }
         } label: {
             Image(systemName: "ellipsis")
-                .font(.system(size: 18, weight: .semibold))
+                .font(.oneOff(18, .semibold))
                 .foregroundStyle(Color.slate800)
                 .frame(width: 44, height: 44, alignment: .trailing)
         }
@@ -305,7 +305,7 @@ struct WeeklyPlanView: View {
             Button(L10n.aboutTheApp) { showAbout = true }
         } label: {
             Image(systemName: "person.crop.circle")
-                .font(.system(size: 22))
+                .font(.oneOff(22))
                 .foregroundStyle(Color.slate800)
                 .frame(width: 44, height: 44)
         }

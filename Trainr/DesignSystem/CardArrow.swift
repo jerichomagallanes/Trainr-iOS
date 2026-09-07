@@ -6,7 +6,7 @@ import SwiftUI
 struct CardArrow: View {
     var body: some View {
         Image(systemName: "arrow.forward")
-            .font(.system(size: 14, weight: .semibold))
+            .font(.oneOff(14, .semibold))
             .foregroundStyle(Color.arrowInk)
             .frame(width: 30, height: 30)
             .background(Color.white, in: .circle)

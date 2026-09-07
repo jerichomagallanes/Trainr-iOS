@@ -1,6 +1,10 @@
 import SwiftUI
 
 struct WorkoutDayCard: View {
+
+    // The equipment line is one AttributedString in two weights, so its label
+    // size is read here rather than applied as a modifier.
+    @ScaledMetric(relativeTo: .subheadline) private var labelSize = TextRole.labelMedium.size
     let weekday: String
     let day: WorkoutDay
     var isMissed = false
@@ -84,7 +88,7 @@ struct WorkoutDayCard: View {
     // expresses in one Text rather than two that could wrap apart from each other.
     private var equipmentLine: AttributedString {
         var label = AttributedString(L10n.equipmentLabel + " ")
-        label.font = .labelMedium
+        label.font = TextRole.labelMedium.font(at: labelSize)
         return label + AttributedString(day.equipment.joined(separator: ", "))
     }
 }

@@ -22,7 +22,7 @@ struct ExerciseTimer: View {
     private func clock(_ timer: ExerciseTimerUi) -> some View {
         VStack(spacing: Spacing.tight) {
             Text(timer.display)
-                .font(.system(size: 24, weight: .semibold))
+                .font(.oneOff(24, .semibold))
                 .foregroundStyle(Color.orange500)
                 // The digits are read as one changing value rather than
                 // announced character by character as they tick.

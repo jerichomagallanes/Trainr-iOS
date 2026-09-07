@@ -12,9 +12,16 @@ struct PrimaryButton: View {
         Button(action: action) {
             Text(title.uppercased())
                 .font(.buttonTitle)
+                .multilineTextAlignment(.center)
                 .foregroundStyle(titleColor)
+                .padding(.horizontal, Spacing.small)
+                .padding(.vertical, Spacing.tight)
                 .frame(maxWidth: .infinity)
-                .frame(height: ComponentHeight.large)
+                // A floor rather than a fixed height: at the design size the
+                // title is one line and the button is exactly as tall as it
+                // was, and at a reader's larger setting it grows instead of
+                // truncating the one action on the screen.
+                .frame(minHeight: ComponentHeight.large)
         }
         .background(fill, in: RoundedRectangle(cornerRadius: CornerRadius.medium))
         .overlay {

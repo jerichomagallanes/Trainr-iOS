@@ -21,7 +21,7 @@ struct DropdownField: View {
                     .foregroundStyle(selectedValue.isBlank ? Color.textMuted : .slate800)
                 Spacer()
                 Image(systemName: "chevron.up.chevron.down")
-                    .font(.system(size: 12))
+                    .font(.oneOff(12))
                     .foregroundStyle(Color.textMuted)
             }
             .padding(.horizontal, Spacing.medium)

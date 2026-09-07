@@ -2,6 +2,11 @@ import SwiftUI
 
 struct WeekProgressCard: View {
     let week: WeekProgressUi
+
+    // The title is one AttributedString in two weights, so its sizes are read
+    // here rather than applied as a modifier.
+    @ScaledMetric(relativeTo: .body) private var numberSize = TextRole.body16.size
+    @ScaledMetric(relativeTo: .subheadline) private var rangeSize = TextRole.body14.size
     let dateRange: String
     let onTap: () -> Void
 
@@ -46,9 +51,9 @@ struct WeekProgressCard: View {
     // so one line says which week and when without reading as two things.
     private var title: AttributedString {
         var number = AttributedString(L10n.weekNumberFormat(week.weekNumber) + " ")
-        number.font = .body16.weight(.medium)
+        number.font = TextRole.body16.font(at: numberSize).weight(.medium)
         var range = AttributedString(L10n.weekRangeParens(dateRange))
-        range.font = .body14
+        range.font = TextRole.body14.font(at: rangeSize)
         return number + range
     }
 
