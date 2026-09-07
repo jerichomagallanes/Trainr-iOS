@@ -146,4 +146,88 @@ struct OnboardingModelTests {
         #expect(again.generationFailure == .failed)
         #expect(try store.plans(for: user.id).map(\.id) == before.map(\.id))
     }
+
+    // MARK: - Which forms come back filled in
+
+    // A step is seeded with what the client typed once they have answered it,
+    // so stepping back shows their answers. Before that it stays blank: the
+    // profile's defaults are real values and would read as choices nobody made.
+    @Test("A step offers nothing back until it has been answered")
+    func anUnansweredStepIsNotSeeded() throws {
+        let model = OnboardingModel(dependencies: try dependencies())
+
+        #expect(model.filled(for: .basicInfo, editing: false) == nil)
+
+        model.updateBasicInfo(firstName: "Alex", age: 30, gender: .male, experience: .beginner)
+
+        #expect(model.filled(for: .basicInfo, editing: false)?.firstName == "Alex")
+        #expect(model.filled(for: .bodyMetrics, editing: false) == nil)
+    }
+
+    // Editing from the review is not a first run: the answers are already saved,
+    // so every form opens on them however the client got there.
+    @Test("Editing seeds a step that was never answered in this run")
+    func editingAlwaysSeeds() throws {
+        let model = OnboardingModel(dependencies: try dependencies())
+
+        #expect(model.filled(for: .setup, editing: true) != nil)
+    }
+
+    @Test("Answered steps accumulate rather than replace one another")
+    func answeredStepsAddUp() throws {
+        let model = OnboardingModel(dependencies: try dependencies())
+
+        model.updateBasicInfo(firstName: "Alex", age: 30, gender: .male, experience: .beginner)
+        model.updateFitnessGoal(.muscleGain, workoutType: .strength)
+
+        #expect(model.answeredSteps == [.basicInfo, .goals])
+    }
+
+    // MARK: - Returning to a saved profile
+
+    @Test("A returning client starts from the profile they saved")
+    func aStoredProfileIsLoadedOnInit() async throws {
+        let dependencies = try dependencies()
+        let first = OnboardingModel(dependencies: dependencies)
+        answerEverything(first)
+        first.saveUserProfile()
+        await settle(first)
+
+        let returning = OnboardingModel(dependencies: dependencies)
+
+        #expect(returning.profile.firstName == "Alex")
+        #expect(returning.hasCompletedOnboarding())
+    }
+
+    @Test("A client with nothing saved has not completed onboarding")
+    func afreshInstallHasNoProfile() throws {
+        let model = OnboardingModel(dependencies: try dependencies())
+
+        #expect(!model.hasCompletedOnboarding())
+    }
+
+    // Editing the profile from the plan must leave training history alone:
+    // saveUserProfile's replace would carry every stored week away.
+    @Test("Updating the profile alone keeps the weeks already trained")
+    func updatingTheProfileKeepsThePlan() async throws {
+        let dependencies = try dependencies()
+        let first = OnboardingModel(dependencies: dependencies)
+        answerEverything(first)
+        first.saveUserProfile()
+        await settle(first)
+        let store = dependencies.store
+        let user = try #require(try store.currentUser())
+        let before = try store.plans(for: user.id).map(\.weekNumber)
+
+        let editing = OnboardingModel(dependencies: dependencies)
+        editing.updateBasicInfo(firstName: "Sam", age: 31, gender: .male, experience: .advanced)
+        var done = false
+        editing.updateProfileOnly { done = true }
+        for _ in 0..<100 where !done { try? await Task.sleep(for: .milliseconds(20)) }
+
+        let after = try #require(try store.currentUser())
+        #expect(after.firstName == "Sam")
+        #expect(after.id == user.id)
+        #expect(try store.plans(for: user.id).map(\.weekNumber) == before)
+    }
 }
