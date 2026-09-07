@@ -60,12 +60,20 @@ struct RootView: View {
                 onStartWorkout: {
                     path.append(.routineDetail(dayNumber: $0.dayNumber, weekNumber: nil))
                 },
-                onLeavePlanConfirmed: { phase = .welcome },
+                // The profile is already answered, so building another plan
+                // starts from it rather than from the first question again.
+                // The plan stays underneath, which is what makes the review's
+                // close button a real way back out of regenerating.
+                onLeavePlanConfirmed: {
+                    path.append(.review(fromPlan: true, profileOnly: false))
+                },
                 onUpdateProfile: { path.append(.review(fromPlan: true, profileOnly: true)) },
                 onStartNextWeek: { path.append(.generatingNextWeek) },
                 onRepeatWeek: { nextWeek?.repeatWeek() },
                 onRegenerateWeek: { path.append(.regeneratingWeek) },
-                onCreatePlan: { phase = .welcome }
+                onCreatePlan: {
+                    path.append(.review(fromPlan: true, profileOnly: false))
+                }
             )
             // A plan rebuilt from nothing is a different plan, so the screen
             // that shows it starts over too rather than keeping the week it
