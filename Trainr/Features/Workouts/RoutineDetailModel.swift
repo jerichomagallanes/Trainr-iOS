@@ -71,18 +71,14 @@ final class RoutineDetailModel {
         // History stops at this day's own completion, so a finished day
         // reviewed later still shows what "previous" meant at the time.
         let before = day.completedAt ?? .distantFuture
-        var previousByKey: [String: [ExerciseSet]] = [:]
-        for exercise in day.exercises where !exercise.exerciseKey.isEmpty {
-            let sets = dependencies.attempt("previousSets", {
-                try store.previousSets(
-                    userID: user.id,
-                    exerciseKey: exercise.exerciseKey,
-                    excludingDayID: day.id,
-                    before: before
-                )
-            }) ?? []
-            if !sets.isEmpty { previousByKey[exercise.exerciseKey] = sets }
-        }
+        let previousByKey = dependencies.attempt("previousSets", {
+            try store.previousSets(
+                userID: user.id,
+                exerciseKeys: day.exercises.map(\.exerciseKey),
+                excludingDayID: day.id,
+                before: before
+            )
+        }) ?? [:]
 
         state = RoutineDetailState(
             routine: day.toRoutineUi(previousByKey: previousByKey, units: units),
