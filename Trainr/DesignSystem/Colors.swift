@@ -3,7 +3,9 @@ import SwiftUI
 // Values taken from the Figma mockups. The design has no Figma variables, so
 // this file is the single source of truth for them. The palette is deliberately
 // light-only: the design has no dark variant yet, so following the system would
-// show unstyled dark surfaces.
+// show unstyled dark surfaces. Info.plist pins UIUserInterfaceStyle to Light so
+// the parts the app does not paint — alerts, menus, the keyboard — agree with
+// it; without that the screens stayed white and the system chrome went dark.
 extension Color {
 
     // Brand
