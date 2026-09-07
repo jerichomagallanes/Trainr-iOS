@@ -307,9 +307,10 @@ struct RootView: View {
                 failure: nextWeek.failure,
                 failureCount: nextWeek.failureCount,
                 onRetry: start,
-                // The plan they already have is still there to go back to.
+                // The plan they already have is still there to go back to, so
+                // this asks to stop waiting rather than offering somewhere new.
                 onGiveUp: pop,
-                giveUpLabel: L10n.backToWorkoutPlan
+                giveUpLabel: L10n.cancel
             )
         }
     }

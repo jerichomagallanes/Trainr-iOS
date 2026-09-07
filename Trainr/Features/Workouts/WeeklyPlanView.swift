@@ -115,8 +115,12 @@ struct WeeklyPlanView: View {
         } message: {
             Text(L10n.regenerateWeekMessageTrained(loggedWorkouts, state.days.count))
         }
+        // Not destructive, deliberately. The sibling dialog above is: rewriting
+        // the week you are in throws away sessions you have logged. Leaving the
+        // plan asks the same question the app opened with, and Android marks it
+        // in the brand colour rather than the warning one for that reason.
         .alert(L10n.leavePlanTitle, isPresented: $showLeaveDialog) {
-            Button(L10n.leavePlanConfirm, role: .destructive, action: onLeavePlanConfirmed)
+            Button(L10n.leavePlanConfirm, action: onLeavePlanConfirmed)
             Button(L10n.cancel, role: .cancel) {}
         } message: {
             Text(L10n.leavePlanMessage)
@@ -187,7 +191,11 @@ struct WeeklyPlanView: View {
             // belongs on whichever week that is. Building the next week and
             // starting over are about the plan's future, and stay on home,
             // which is where they have somewhere to go afterwards.
-            if isHome || state.canAddWeek {
+            // The current week opened from Weekly Progress keeps its menu even
+            // while it is still being trained: it is the week that can be
+            // written again, and dropping the browsed-week term left it as the
+            // one week in the plan with nothing behind the button.
+            if state.hasPlan && (isHome || state.canAddWeek || !isBrowsedWeek) {
                 planMenu
             }
         }
@@ -226,7 +234,7 @@ struct WeeklyPlanView: View {
                 }
             }
             if isHome {
-                Button(L10n.regeneratePlan, role: .destructive) { showLeaveDialog = true }
+                Button(L10n.regeneratePlan) { showLeaveDialog = true }
             }
         } label: {
             Image(systemName: "ellipsis")
