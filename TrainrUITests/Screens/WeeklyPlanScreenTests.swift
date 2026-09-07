@@ -113,14 +113,21 @@ final class WeeklyPlanScreenTests: XCTestCase {
         XCTAssertTrue(app.staticTexts["YOUR WEEKLY WORKOUT PLAN"].exists)
     }
 
+    // The profile is already answered, so another plan is built from it rather
+    // than from the first question again — and the plan stays underneath, so
+    // closing the review is a way back to it.
     @MainActor
-    func testConfirmingANewPlanLeavesForOnboarding() {
+    func testConfirmingANewPlanOpensTheSavedProfile() {
         openPlan(.midWeek)
         app.buttons["Workout plan options"].tap()
         app.buttons["Start a new workout plan"].tap()
         app.buttons["Start new plan"].tap()
 
-        XCTAssertTrue(app.buttons["GET STARTED"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["YOUR FITNESS PROFILE"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["GENERATE MY WORKOUT PLAN"].exists)
+
+        app.buttons["Close"].tap()
+        XCTAssertTrue(app.staticTexts["YOUR WEEKLY WORKOUT PLAN"].waitForExistence(timeout: 5))
     }
 
     // With the week behind you there are two sound ways on: progress from what
