@@ -198,14 +198,33 @@ final class TrainingStore {
         excludingDayID: UUID,
         before: Date
     ) throws -> [ExerciseSet] {
-        let key = exerciseKey
+        try previousSets(
+            userID: userID, exerciseKeys: [exerciseKey], excludingDayID: excludingDayID,
+            before: before
+        )[exerciseKey] ?? []
+    }
+
+    // Every key the screen is about to ask for, in one pass. Asked one key at a
+    // time it was a fetch across the whole exercise table per exercise, each
+    // faulting in its day, plan and user to filter them out again — work that
+    // grew with the client's history and ran on the main actor while the screen
+    // waited for it.
+    func previousSets(
+        userID: UUID,
+        exerciseKeys: [String],
+        excludingDayID: UUID,
+        before: Date
+    ) throws -> [String: [ExerciseSet]] {
+        let keys = Set(exerciseKeys.filter { !$0.isEmpty })
+        guard !keys.isEmpty else { return [:] }
+
         let candidates = try context.fetch(
             FetchDescriptor<WorkoutExerciseRecord>(
-                predicate: #Predicate { $0.exerciseKey == key }
+                predicate: #Predicate { keys.contains($0.exerciseKey) }
             )
         )
 
-        let performance = candidates
+        let usable = candidates
             .filter { record in
                 guard let day = record.day,
                       let completedAt = day.completedAt,
@@ -221,21 +240,24 @@ final class TrainingStore {
             // performance. Comparing the times alone left the answer to the
             // order the fetch happened to return, so the PREVIOUS column could
             // read differently from one launch to the next.
-            .max { lhs, rhs in
-                (
-                    lhs.day?.completedAt ?? .distantPast,
-                    lhs.day?.plan?.weekNumber ?? 0,
-                    lhs.day?.dayNumber ?? 0
-                ) < (
-                    rhs.day?.completedAt ?? .distantPast,
-                    rhs.day?.plan?.weekNumber ?? 0,
-                    rhs.day?.dayNumber ?? 0
-                )
-            }
 
-        return performance?.sets
-            .sorted { $0.setNumber < $1.setNumber }
-            .map(\.set) ?? []
+        return Dictionary(grouping: usable, by: \.exerciseKey).compactMapValues { records in
+            records
+                .max { lhs, rhs in
+                    (
+                        lhs.day?.completedAt ?? .distantPast,
+                        lhs.day?.plan?.weekNumber ?? 0,
+                        lhs.day?.dayNumber ?? 0
+                    ) < (
+                        rhs.day?.completedAt ?? .distantPast,
+                        rhs.day?.plan?.weekNumber ?? 0,
+                        rhs.day?.dayNumber ?? 0
+                    )
+                }?
+                .sets
+                .sorted { $0.setNumber < $1.setNumber }
+                .map(\.set)
+        }
     }
 
     // MARK: - Progress
