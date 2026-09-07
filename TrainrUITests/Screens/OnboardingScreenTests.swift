@@ -318,4 +318,40 @@ final class OnboardingScreenTests: XCTestCase {
         XCTAssertTrue(app.staticTexts["YOUR WEEKLY WORKOUT PLAN"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.button(containing: "Full Body Strength, Completed").exists)
     }
+
+    // A caret left in a field that has just been re-scaled sits in a value the
+    // client did not type, in a field that now rejects most of what they press.
+    @MainActor
+    func testSwitchingUnitsTakesTheCaretOutOfTheField() {
+        app = .launchedFresh()
+        app.startOnboarding()
+        app.fillBasicInfo()
+
+        let height = app.textFields["170"]
+        height.tap()
+        XCTAssertTrue(app.keyboards.firstMatch.waitForExistence(timeout: 3))
+
+        app.buttons["Imperial"].tap()
+
+        XCTAssertFalse(app.keyboards.firstMatch.waitForExistence(timeout: 2))
+    }
+
+    // A rejected 300 cm and 2 kg still produced a BMI of 0.2 labelled
+    // "Underweight", which is a verdict on a body drawn from refused numbers.
+    @MainActor
+    func testMeasurementsTheScreenRefusesGetNoBodyMassVerdict() {
+        app = .launchedFresh()
+        app.startOnboarding()
+        app.fillBasicInfo()
+
+        let height = app.textFields["170"]
+        height.tap()
+        height.typeText("300")
+        let weight = app.textFields["70"]
+        weight.tap()
+        weight.typeText("2")
+
+        XCTAssertFalse(app.text(containing: "Underweight").exists)
+        XCTAssertFalse(app.text(containing: "Normal weight").exists)
+    }
 }
