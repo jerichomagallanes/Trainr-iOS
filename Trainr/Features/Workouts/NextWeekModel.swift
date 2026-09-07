@@ -49,10 +49,7 @@ final class NextWeekModel {
         guard !isWorking else { return }
         isWorking = true
         beginRun()
-        defer {
-            isWorking = false
-            isReady = true
-        }
+        defer { isWorking = false }
 
         guard let user = dependencies.attempt("currentUser", { try dependencies.store.currentUser() }),
               let plans = dependencies.attempt("plans", { try dependencies.store.plans(for: user.id) }),
@@ -66,7 +63,12 @@ final class NextWeekModel {
         let source = sourceWeekNumber
             .flatMap { number in plans.first { $0.weekNumber == number } } ?? latest
         let copy = Self.repeated(source, weekNumber: latest.weekNumber + 1, startingOn: startAfter(latest))
-        dependencies.attempt("savePlan", { try dependencies.store.savePlan(copy) })
+        // Ready means a week was written. Announcing it from a defer said so
+        // even when the guard above turned the copy down, and a caller that
+        // moves the client on trusts this to tell it apart.
+        guard dependencies.attempt("savePlan", { try dependencies.store.savePlan(copy) }) != nil
+        else { return }
+        isReady = true
     }
 
     // Replacing the week you are in rather than adding one after it: the number
