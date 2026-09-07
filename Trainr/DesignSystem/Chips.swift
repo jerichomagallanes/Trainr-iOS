@@ -115,6 +115,11 @@ struct CheckboxChip: View {
             RoundedRectangle(cornerRadius: CornerRadius.medium)
                 .strokeBorder(Color.outlineGray, lineWidth: 1)
         }
+        // .isSelected rather than .isToggle, though these chips are many-of-many
+        // and a toggle is what they are: .isToggle reclassifies the element as a
+        // switch, and every screen that reaches a chip by name finds a button.
+        // The state is still announced; what is lost is the hint that a second
+        // tap turns it off, which is not worth that.
         .accessibilityAddTraits(isChecked ? .isSelected : [])
     }
 }

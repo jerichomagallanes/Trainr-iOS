@@ -25,9 +25,9 @@ final class OnboardingScreenTests: XCTestCase {
         app = .launchedFresh()
         app.startOnboarding()
 
-        let progress = app.otherElements["Setup progress"]
+        let progress = app.otherElements["stepProgress"]
         XCTAssertTrue(progress.exists)
-        XCTAssertEqual(progress.value as? String, "Step 1 of 7")
+        XCTAssertEqual(progress.value as? String, "14%")
     }
 
     // MARK: - Basic info
@@ -268,7 +268,7 @@ final class OnboardingScreenTests: XCTestCase {
         app = .launchedFresh()
         app.reachReview()
 
-        XCTAssertEqual(app.otherElements["Setup progress"].value as? String, "Step 6 of 7")
+        XCTAssertEqual(app.otherElements["stepProgress"].value as? String, "86%")
         XCTAssertTrue(app.staticTexts["Alex"].exists)
         XCTAssertTrue(app.staticTexts["30 years old"].exists)
         XCTAssertTrue(app.staticTexts["Build Muscle"].exists)
@@ -305,7 +305,7 @@ final class OnboardingScreenTests: XCTestCase {
         app.buttons.matching(identifier: "Edit").element(boundBy: 0).tap()
         XCTAssertTrue(app.textFields["Enter your name"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.buttons["Close"].exists)
-        XCTAssertFalse(app.otherElements["Setup progress"].exists)
+        XCTAssertFalse(app.otherElements["stepProgress"].exists)
         XCTAssertTrue(app.buttons["SAVE"].exists)
 
         app.buttons["SAVE"].tap()
@@ -326,7 +326,7 @@ final class OnboardingScreenTests: XCTestCase {
         XCTAssertTrue(app.staticTexts["Your next generated week will use these details."].exists)
         XCTAssertTrue(app.buttons["Close"].exists)
         XCTAssertFalse(app.buttons["Back"].exists)
-        XCTAssertFalse(app.otherElements["Setup progress"].exists)
+        XCTAssertFalse(app.otherElements["stepProgress"].exists)
         XCTAssertFalse(app.buttons["GENERATE MY WORKOUT PLAN"].exists)
         XCTAssertFalse(app.staticTexts["AI Workout Plan"].exists)
         XCTAssertFalse(app.text(containing: "not medical advice").exists)
