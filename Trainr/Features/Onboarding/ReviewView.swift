@@ -188,8 +188,10 @@ private struct AIPreviewCard: View {
     var body: some View {
         VStack(spacing: 0) {
             HStack(alignment: .top, spacing: Spacing.small) {
-                Image(systemName: "brain.head.profile")
-                    .font(.oneOff(24))
+                Image(.smartToy)
+                    .renderingMode(.template)
+                    .resizable()
+                    .frame(width: 24, height: 24)
                     .foregroundStyle(Color.white)
                     .accessibilityHidden(true)
                 VStack(alignment: .leading, spacing: Spacing.extraSmall) {
