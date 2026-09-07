@@ -10,7 +10,7 @@ struct RootView: View {
         case home
     }
 
-    @State private var dependencies = AppDependencies.live()
+    @State private var dependencies = AppDependencies.shared
     @State private var onboarding: OnboardingModel?
     @State private var phase = Phase.splash
     @State private var path: [Route] = []

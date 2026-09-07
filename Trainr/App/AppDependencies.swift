@@ -46,6 +46,13 @@ final class AppDependencies {
         }
     }
 
+    // Built once for the process. `live()` opens a database container and seeds
+    // the UI-test fixtures, and it used to sit in a @State initialiser, whose
+    // expression runs on every initialisation of the view that holds it. Every
+    // result but the first was thrown away, each having opened a store that
+    // stayed open until it deallocated.
+    static let shared = live()
+
     static func live() -> AppDependencies {
         let container: ModelContainer
         do {
