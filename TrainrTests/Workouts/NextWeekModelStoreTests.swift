@@ -2,8 +2,6 @@ import Foundation
 import Testing
 @testable import Trainr
 
-// Writing the week that follows, replacing the one being trained, and copying
-// one that went well: what each leaves in the store, and what each refuses.
 @MainActor
 @Suite("Next week, against the store")
 struct NextWeekModelStoreTests {
@@ -98,8 +96,6 @@ struct NextWeekModelStoreTests {
         #expect(try storedWeeks() == [1, 2])
     }
 
-    // Repeating the finished week used to stand in here, which told the client
-    // next week was ready when the coach never wrote it.
     @Test("A refused generation writes nothing and says why")
     func aFailedGenerationSavesNothing() async throws {
         try save(week: 1, days: [day(1, .completed)])
@@ -161,7 +157,6 @@ struct NextWeekModelStoreTests {
         #expect(try storedWeeks() == [1])
     }
 
-    // Any week is worth another turn, not only the newest one.
     @Test("An older week can be the one repeated")
     func anOlderWeekCanBeCopied() throws {
         try save(week: 1, days: [day(1, .completed)], startingDaysAgo: 16)

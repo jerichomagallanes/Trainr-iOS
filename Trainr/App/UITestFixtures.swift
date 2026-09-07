@@ -1,11 +1,8 @@
 #if DEBUG
 import Foundation
 
-// Known states a UI test can launch straight into, so a screen can be tested
-// without first driving the whole first run to reach it. Seeded only into a
-// store that vanishes with the process, so no fixture can ever touch real data.
-// The names are the contract with TrainrUITests; changing one breaks tests on
-// purpose rather than by surprise.
+// Seeded only into a store that vanishes with the process, so no fixture can
+// touch real data. The names are the contract with TrainrUITests.
 enum UITestFixtures {
 
     static let argument = "-seedFixture"
@@ -45,14 +42,9 @@ enum UITestFixtures {
     }
 
     private enum Shape {
-        // The sample week as written: first day done, today's in progress, the
-        // last still to come.
         case midWeek
         case finished
-        // Nothing done yet. Started today it is a week ahead; started two days
-        // ago its first day is missed.
         case fresh
-        // Every day done but the last, whose date is today.
         case lastDayLeft
 
         func status(for day: WorkoutDay, at index: Int, of count: Int) -> WorkoutStatus {
@@ -79,9 +71,6 @@ enum UITestFixtures {
         return user
     }
 
-    // The sample week, re-dated so "today" falls on its middle day, and made
-    // self-consistent: a finished day's exercises and sets say so, an unstarted
-    // day's say nothing, whatever the sample happened to store.
     private static func week(
         _ number: Int, for user: UserProfile, startingDaysAgo: Int, shape: Shape
     ) -> WeeklyPlan {
@@ -128,7 +117,6 @@ enum UITestFixtures {
         return plan
     }
 
-    // The wait screen has three ways to fail, and a test needs each on demand.
     static let failureArgument = "-generationFails"
 
     static func failingGeneratorIfRequested() -> (any PlanGenerator)? {
@@ -147,9 +135,8 @@ enum UITestFixtures {
     private struct FailingPlanGenerator: PlanGenerator {
         let reason: PlanGenerationFailure
 
-        // A moment before answering, as a real request takes. Answering within
-        // the same turn it was asked in let the failure go nil and back before
-        // the screen looked, so a retry that failed again showed nothing.
+        // A moment before answering: a failure raised in the same turn it was
+        // asked in goes nil and back before the screen looks.
         func generate(_ request: PlanRequest) async -> PlanGenerationResult {
             try? await Task.sleep(for: .milliseconds(300))
             return .failure(reason)

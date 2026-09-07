@@ -24,8 +24,6 @@ struct TrainingStoreTests {
         try #require(try store.plan(for: userID, weekNumber: week))
     }
 
-    // The whole path the generated routines travel: plan -> days -> exercises
-    // -> sets, and back again.
     @Test func aPlanSurvivesTheRoundTripWithItsSets() throws {
         let (userID, seeded) = try seedSamplePlan()
 
@@ -54,7 +52,6 @@ struct TrainingStoreTests {
         #expect(plank.sets.map(\.targetSeconds) == [45, 45, 45])
     }
 
-    // Sets come back in order, and a logged set keeps what was written on it.
     @Test func aLoggedSetIsStoredAndReadBackInOrder() throws {
         let (userID, _) = try seedSamplePlan()
         let exercise = try #require(try storedPlan(userID).workoutDays
@@ -180,8 +177,6 @@ struct TrainingStoreTests {
         #expect(previous.first?.actualReps == 10)
     }
 
-    // Sliding a routine complete logs nothing; that day must not shadow the
-    // older day whose numbers the PREVIOUS column exists to show.
     @Test func aCompletedDayWithNothingLoggedDoesNotHideOlderLogs() throws {
         let (userID, _) = try seedSamplePlan()
         let planID = try storedPlan(userID).id
@@ -230,8 +225,6 @@ struct TrainingStoreTests {
         #expect(!reread.sets.map(\.id).contains(exercise.sets[1].id))
     }
 
-    // Redoing onboarding replaces the profile, which must carry the old plan
-    // away so the reseed starts clean instead of leaving two week ones.
     @Test func replacingAUserCarriesAwayTheirOldPlan() throws {
         let (userID, _) = try seedSamplePlan()
 
@@ -242,7 +235,6 @@ struct TrainingStoreTests {
         #expect(try store.plan(for: userID, weekNumber: 1) == nil)
     }
 
-    // An edit is not a fresh start: updating the profile keeps the plans.
     @Test func editingAUserKeepsTheirPlan() throws {
         let (userID, _) = try seedSamplePlan()
 
@@ -254,9 +246,7 @@ struct TrainingStoreTests {
         #expect(try store.plan(for: userID, weekNumber: 1) != nil)
     }
 
-    // Generating runs for the better part of a minute, so two runs could both
-    // pass a "does this week exist yet" check before either saved. The store
-    // holds the line whatever the callers do.
+    // Two runs can both pass a "does this week exist yet" check before either saves.
     @Test func aClientCannotEndUpWithTwoOfTheSameWeek() throws {
         let (userID, _) = try seedSamplePlan()
         var weekTwo = SampleWorkoutData.weekOne

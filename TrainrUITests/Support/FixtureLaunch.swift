@@ -1,28 +1,20 @@
 import XCTest
 
-// The states a screen test can start from. Each name is seeded by
-// UITestFixtures in the app on launch, into a store that dies with the process.
+// Each name is seeded by UITestFixtures on launch, into a store that dies with the process.
 enum Fixture: String {
-    // A client with no plan: the way in is to create one.
     case noPlan
-    // The sample week, re-dated so today is its middle day: first day done,
-    // today's in progress, the last still to come.
+    // The sample week re-dated onto today: first day done, today's in progress.
     case midWeek
-    // Every day of the week done, so the plan is ready for another.
     case finishedWeek
     // A finished week behind a week in progress.
     case twoWeeks
-    // Nothing done yet, starting today.
     case freshWeek
-    // Nothing done yet, and the first day's date has passed.
     case missedDay
-    // Every day done but today's, the last of the week.
     case lastDayLeft
 }
 
 extension XCUIApplication {
 
-    // Launches into the given state and waits for the splash to hand over.
     @MainActor
     static func launched(_ fixture: Fixture) -> XCUIApplication {
         let app = XCUIApplication()
@@ -33,8 +25,7 @@ extension XCUIApplication {
         return app
     }
 
-    // Scrolls until the element can be pressed, dragging along the left margin
-    // so the gesture never lands on a text field or a swipeable row.
+    // Dragged along the left margin so the gesture never lands on a text field or a swipeable row.
     @MainActor
     func scrollUntilHittable(_ element: XCUIElement, attempts: Int = 12) {
         var remaining = attempts
@@ -49,7 +40,6 @@ extension XCUIApplication {
         Thread.sleep(forTimeInterval: 0.4)
     }
 
-    // Launches into the first run, with generation set to fail the given way.
     @MainActor
     static func launchedToFail(_ reason: String) -> XCUIApplication {
         let app = XCUIApplication()
@@ -58,8 +48,7 @@ extension XCUIApplication {
         return app
     }
 
-    // Taps a choice and insists it took: the selection state is the truth, not
-    // the synthesized event.
+    // Insists the tap took: the selection state is the truth, not the synthesized event.
     @MainActor
     func select(_ element: XCUIElement) {
         scrollUntilHittable(element)

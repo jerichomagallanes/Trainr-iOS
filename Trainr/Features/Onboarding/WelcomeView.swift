@@ -43,8 +43,7 @@ struct WelcomeView: View {
         .toolbar(.hidden, for: .navigationBar)
     }
 
-    // The design measures the heading 151pt from the physical screen top with
-    // the status bar floating inside that margin.
+    // The design measures the heading 151pt from the physical screen top, status bar inside it.
     private func header(topInset: CGFloat) -> some View {
         VStack(spacing: Spacing.small) {
             HStack(alignment: .center, spacing: Spacing.small) {
@@ -76,8 +75,6 @@ struct WelcomeView: View {
                 .resizable()
                 .scaledToFit()
                 .frame(width: width * 0.65, height: width * 0.65)
-                // The art says what the line beneath it says; announcing the
-                // asset name as well only got in the way.
                 .accessibilityHidden(true)
             Text(page.title)
                 .font(.sectionTitle)
@@ -96,7 +93,6 @@ struct WelcomeView: View {
                     .frame(width: 10, height: 10)
             }
         }
-        // Three stops with nothing to read at any of them.
         .accessibilityHidden(true)
     }
 }

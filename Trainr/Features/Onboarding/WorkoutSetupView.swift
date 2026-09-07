@@ -7,9 +7,6 @@ struct WorkoutSetupView: View {
 
     @State private var selectedLocation: WorkoutLocation?
     @State private var selectedEquipment: Set<Equipment>
-    // Nothing starts chosen. These used to open on three days, forty five
-    // minutes and the morning, which a client could walk past without ever
-    // deciding, and the plan would then be built around answers nobody gave.
     @State private var selectedDays: Int?
     @State private var selectedDuration: Int?
     @State private var selectedTime: WorkoutTime?
@@ -32,16 +29,12 @@ struct WorkoutSetupView: View {
         _selectedLiftingUnits = State(initialValue: initial?.liftingUnitSystem)
     }
 
-    // Only worth asking when there is something with a number written on it.
-    // A bodyweight setup has no plates to read, so the question would be about
-    // nothing, and it stays unanswered rather than being given a value.
+    // Bodyweight has no plates to read, so the units question stays unasked and unanswered.
     private var hasLoadedEquipment: Bool {
         !selectedEquipment.isDisjoint(with: Equipment.loaded)
     }
 
-    // Every question on this screen has to be answered. Equipment counts:
-    // "bodyweight only" is one of the choices, so an empty set means
-    // unanswered rather than "nothing available".
+    // An empty equipment set means unanswered: "bodyweight only" is itself one of the choices.
     private var isFormValid: Bool {
         selectedLocation != nil
             && !selectedEquipment.isEmpty
@@ -54,9 +47,6 @@ struct WorkoutSetupView: View {
     var body: some View {
         ScreenScaffold(onBack: onBack, closeInsteadOfBack: isEditing) {
             PrimaryButton(title: isEditing ? L10n.save : L10n.next, isEnabled: isFormValid) {
-                // No stand-ins. An empty equipment set used to be sent on as
-                // "bodyweight only", which answered the question for the
-                // client instead of waiting for them to.
                 guard let location = selectedLocation, let days = selectedDays,
                       let duration = selectedDuration, let time = selectedTime
                 else { return }
@@ -119,10 +109,8 @@ struct WorkoutSetupView: View {
 
                 FormSection(title: L10n.workoutDaysPerWeek,
                             verticalPadding: 0, titleGap: Spacing.card) {
-                    // Matched by position rather than by reading the number
-                    // back out of the label: the label is prose, and prose in
-                    // another language need not put a space after the digit —
-                    // or a digit where English puts one.
+                    // Matched by position: another language need not put a digit
+                    // where English does.
                     let dayOptions = Constants.Workout.daysPerWeekOptions
                     let dayLabels = dayOptions.map { L10n.workoutDaysOption($0) }
                     DropdownField(
@@ -143,9 +131,7 @@ struct WorkoutSetupView: View {
                             verticalPadding: 0, titleGap: Spacing.card) {
                     HStack(spacing: Spacing.card) {
                         ForEach(Constants.Workout.durationOptions, id: \.self) { duration in
-                            // Equal shares rather than the frame's fixed 80pt:
-                            // four fixed chips overflow narrower phones, and
-                            // any padding turns "90 mins" into "90...".
+                            // Equal shares, not the fixed 80pt frame: four fixed chips overflow narrow phones.
                             ToggleChip(
                                 text: L10n.minutes(duration),
                                 isSelected: selectedDuration == duration,
@@ -196,7 +182,6 @@ struct WorkoutSetupView: View {
         }
     }
 
-    // Ordered for the confirm callback the way the options are shown.
     private var equipmentList: [Equipment] {
         equipmentOptions.map(\.0).filter(selectedEquipment.contains)
     }

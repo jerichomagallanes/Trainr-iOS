@@ -35,8 +35,6 @@ final class WeeklyProgressScreenTests: XCTestCase {
         XCTAssertTrue(app.text(containing: "Week 2:").exists)
     }
 
-    // A week is a good deal more than a set, so the swipe asks before it
-    // deletes, and a refusal leaves the list as it was.
     @MainActor
     func testSwipingAWeekAsksBeforeDeletingAndCancelKeepsIt() {
         openProgress(.twoWeeks)
@@ -49,7 +47,6 @@ final class WeeklyProgressScreenTests: XCTestCase {
         XCTAssertTrue(app.button(startingWith: "Week 1").exists)
     }
 
-    // Training that was actually done is named before it goes.
     @MainActor
     func testDeletingATrainedWeekNamesWhatItCosts() {
         openProgress(.twoWeeks)
@@ -60,8 +57,6 @@ final class WeeklyProgressScreenTests: XCTestCase {
         app.buttons["Cancel"].tap()
     }
 
-    // Deleting from the middle closes the gap: the numbers are the plan's
-    // running order, not a record of anything.
     @MainActor
     func testDeletingAWeekRenumbersTheRest() {
         openProgress(.twoWeeks)
@@ -74,7 +69,6 @@ final class WeeklyProgressScreenTests: XCTestCase {
         XCTAssertTrue(app.button(containing: "In Progress, 1/3 days completed (33%)").exists)
     }
 
-    // Progress against no plan is not a place to stand.
     @MainActor
     func testDeletingTheLastWeekHandsBackToThePlan() {
         openProgress(.midWeek)

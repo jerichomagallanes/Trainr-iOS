@@ -1,8 +1,7 @@
 import SwiftUI
 
-// A week is coarser than a workout: it can also be missed entirely (skipped),
-// ended part-done (notCompleted), or generated ahead of its start date
-// (upcoming) — none of which WorkoutStatus expresses.
+// Distinct from WorkoutStatus: a week can also be skipped, end part-done, or be
+// generated ahead of its start date.
 nonisolated enum WeekStatus: Sendable {
     case completed
     case inProgress
@@ -21,11 +20,8 @@ nonisolated enum WeekStatus: Sendable {
     }
 }
 
-// The palette lives on the main actor, so what a status looks like does too;
-// what a status IS stays free of it.
+// The palette is main-actor, so this cannot be nonisolated as the enum is.
 extension WeekStatus {
-    // Five labels, three colours: the design shows missed, part-done and
-    // not-yet-started weeks alike.
     var chipColor: Color {
         switch self {
         case .completed: .statusCompleted

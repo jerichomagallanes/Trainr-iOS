@@ -149,9 +149,6 @@ struct OnboardingModelTests {
 
     // MARK: - Which forms come back filled in
 
-    // A step is seeded with what the client typed once they have answered it,
-    // so stepping back shows their answers. Before that it stays blank: the
-    // profile's defaults are real values and would read as choices nobody made.
     @Test("A step offers nothing back until it has been answered")
     func anUnansweredStepIsNotSeeded() throws {
         let model = OnboardingModel(dependencies: try dependencies())
@@ -164,8 +161,6 @@ struct OnboardingModelTests {
         #expect(model.filled(for: .bodyMetrics, editing: false) == nil)
     }
 
-    // Editing from the review is not a first run: the answers are already saved,
-    // so every form opens on them however the client got there.
     @Test("Editing seeds a step that was never answered in this run")
     func editingAlwaysSeeds() throws {
         let model = OnboardingModel(dependencies: try dependencies())
@@ -206,8 +201,6 @@ struct OnboardingModelTests {
         #expect(!model.hasCompletedOnboarding())
     }
 
-    // Editing the profile from the plan must leave training history alone:
-    // saveUserProfile's replace would carry every stored week away.
     @Test("Updating the profile alone keeps the weeks already trained")
     func updatingTheProfileKeepsThePlan() async throws {
         let dependencies = try dependencies()

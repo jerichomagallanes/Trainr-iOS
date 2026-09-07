@@ -27,10 +27,7 @@ struct BodyMetricsView: View {
         self.onNext = onNext
         self.onBack = onBack
 
-        // The profile is stored in centimetres and kilograms whichever units
-        // were typed, so the stored numbers have to be converted before they
-        // are put back in front of a client who reads pounds. Seeding them raw
-        // showed a kilogram weight under a label saying lbs.
+        // The profile is stored in cm and kg whatever was typed, so the fields are seeded converted.
         let startsImperial = initial?.bodyUnitSystem == .imperial
         let storedHeight = (initial?.height).flatMap { $0 > 0 ? String(Int($0)) : nil } ?? ""
         _height = State(initialValue: startsImperial
@@ -45,10 +42,7 @@ struct BodyMetricsView: View {
         _useMetric = State(initialValue: !startsImperial)
     }
 
-    // Validated on what the text parses to, not on whether anything was typed.
-    // The imperial field's own filter makes the apostrophe optional, so "595"
-    // reaches it happily and parses to a height of zero, which is what the
-    // model would then have planned around.
+    // Validated on what the text parses to: "595" passes the imperial filter and parses to zero.
     private var parsed: (heightCm: Double, weightKg: Double) {
         BodyMetricsConverter.parseMetrics(height: height, weight: weight, useMetric: useMetric)
     }
@@ -65,9 +59,6 @@ struct BodyMetricsView: View {
 
     private var isFormValid: Bool { heightIsUsable && weightIsUsable }
 
-    // The bounds, in the units on screen. An error that carries an example
-    // weight reads as the weight that was expected, which is not something to
-    // put in front of somebody about their own body; a range is a limit.
     private var heightBounds: (String, String) {
         let minCm = Int(Constants.Workout.minHeightCentimetres)
         let maxCm = Int(Constants.Workout.maxHeightCentimetres)
@@ -117,10 +108,7 @@ struct BodyMetricsView: View {
 
                 Spacer().frame(height: Spacing.extraLarge)
 
-                // Only for measurements that were accepted. A rejected 300 cm
-                // and 2 kg still produced a BMI of 0.2 labelled "Underweight",
-                // which is a verdict on a body, drawn from numbers the screen
-                // had just refused.
+                // Only for accepted measurements: a refused 300 cm and 2 kg still yields a labelled BMI.
                 if isFormValid,
                    let bmi = BodyMetricsConverter.calculateBMI(
                     height: height, weight: weight, useMetric: useMetric) {
@@ -180,8 +168,7 @@ struct BodyMetricsView: View {
             )
             .focused($focusedField, equals: .weight)
             .onChange(of: weight) { oldValue, newValue in
-                // Four digits: the upper bound is 650 kg, which is
-                // 1433 lbs, and three digits could not reach it.
+                // Four digits: the 650 kg upper bound is 1433 lbs.
                 if newValue.wholeMatch(of: /^\d{0,4}(\.\d{0,1})?$/) == nil {
                     weight = oldValue
                 }
@@ -194,11 +181,7 @@ struct BodyMetricsView: View {
         }
     }
 
-    // Switching units rewrites both field values and changes which input each
-    // field accepts. Focus is cleared first so the user is never left with a
-    // caret sitting in a value they did not type, in a field that now silently
-    // rejects most keystrokes. Re-selecting the unit already in use is a no-op,
-    // so it does not steal focus.
+    // Focus is cleared first: no caret left in a rewritten value, in a field that now rejects it.
     private func switchUnits(toMetric: Bool) {
         guard toMetric != useMetric else { return }
         focusedField = nil
@@ -212,12 +195,6 @@ struct BodyMetricsView: View {
         useMetric = toMetric
     }
 
-    // Missing and unusable are different complaints, and neither is worth
-    // making before the client has left the field alone.
-    //
-    // An empty field is told what to do; a filled one is told the rule it
-    // broke. Both forms are the GOV.UK Design System's, which is also where
-    // "valid", "invalid" and "please" come from being absent.
     private func fieldMessage(
         label: String, missing: String, value: String,
         touched: Bool, usable: Bool, bounds: (String, String)
@@ -232,8 +209,6 @@ struct BodyMetricsView: View {
     }
 }
 
-// The frames draw the unit switch as tabs: square-bottomed segments that sit
-// on the fields they control, not free-floating chips.
 private struct UnitTab: View {
     let text: String
     let isSelected: Bool

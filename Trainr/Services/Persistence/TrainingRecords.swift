@@ -1,9 +1,8 @@
 import Foundation
 import SwiftData
 
-// The stored shape of the domain. Enum-typed fields are kept as raw strings so
-// a value written by a build that no longer exists degrades to a fallback
-// instead of refusing to load, the same way unknown JSON from the model does.
+// Enum-typed fields are stored as raw strings, so a value written by a build
+// that no longer exists degrades to a fallback instead of refusing to load.
 
 @Model
 final class UserRecord {
@@ -26,8 +25,6 @@ final class UserRecord {
     var liftingUnitSystem: String?
     var createdAt: Date
 
-    // The client's plans go with the client: redoing onboarding replaces the
-    // profile, and a reseed that left the old week one behind would show two.
     @Relationship(deleteRule: .cascade, inverse: \WeeklyPlanRecord.user)
     var plans: [WeeklyPlanRecord] = []
 

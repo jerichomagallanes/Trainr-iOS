@@ -11,8 +11,6 @@ struct BasicInfoView: View {
     @State private var selectedGender: Gender?
     @State private var selectedExperience: ExperienceLevel?
 
-    // Required is only reported once a field has been left, never while it is
-    // still being filled in.
     @State private var nameTouched = false
     @State private var ageTouched = false
     @FocusState private var focusedField: Field?
@@ -56,9 +54,6 @@ struct BasicInfoView: View {
                 onNext(firstName, Int(age) ?? 0, gender, experience)
             }
         } content: {
-            // The bar counts the way through first-time setup. Coming back
-            // to change one answer is not a seventh of anything, so it says
-            // nothing then.
             if !isEditing {
                 StepProgressBar(currentStep: 1, totalSteps: 7)
                     .padding(.horizontal, Spacing.large)
@@ -74,9 +69,7 @@ struct BasicInfoView: View {
                     AppTextField(placeholder: L10n.enterYourFirstName, text: $firstName)
                         .focused($focusedField, equals: .name)
 
-                    // Nothing beyond "there is something here". A name is
-                    // whatever its owner says it is, and rules about their
-                    // shape lock real people out of the product.
+                    // Blank is the only rule: name-shape rules lock real people out.
                     FieldError(
                         message: firstName.isBlank && nameTouched ? L10n.errorEnterName : nil
                     )
@@ -91,8 +84,6 @@ struct BasicInfoView: View {
                             }
                         }
 
-                    // States the bound rather than showing a specimen age. An
-                    // example in an error reads as the answer that was wanted.
                     FieldError(message: ageError)
                 }
 
@@ -114,10 +105,7 @@ struct BasicInfoView: View {
                 }
             }
         }
-        // A field has been "touched" once it has been left, not while it is
-        // being filled in. Complaining that something is required while the
-        // client is still on their way to typing it is the form arguing with
-        // them mid-sentence.
+        // Touched once the field has been left, not while it is still being filled in.
         .onChange(of: focusedField) { oldValue, _ in
             if oldValue == .name { nameTouched = true }
             if oldValue == .age { ageTouched = true }

@@ -1,8 +1,6 @@
 import SwiftUI
 
-// The vertical padding insets the scrolling area rather than sitting inside
-// it, so a scrolled screen never butts its text straight against whatever is
-// above with nothing between them.
+// The vertical padding insets the scrolling area rather than sitting inside it.
 struct ScreenContent<Content: View>: View {
     @ViewBuilder let content: Content
 

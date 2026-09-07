@@ -61,7 +61,6 @@ struct RoutineUiTests {
         let whole = half.updating(second, at: 1)
         #expect(whole.exercises[0].isCompleted)
 
-        // Adding a set that has not been done reopens the exercise.
         #expect(!whole.addingSet(at: 1).exercises[0].isCompleted)
     }
 

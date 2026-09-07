@@ -1,6 +1,5 @@
-// The shape a generated weekly plan arrives in. The generator writes only
-// these fields; everything else on the domain model is app state or derived.
-// docs/generation-contract.md is the annotated version of this file.
+// The shape a generated weekly plan arrives in; everything else on the domain
+// model is app state or derived. docs/generation-contract.md annotates it.
 nonisolated struct GeneratedPlan: Codable {
     var title: String
     var days: [GeneratedDay]

@@ -31,8 +31,6 @@ nonisolated struct RoutineUi: Equatable, Sendable {
         }
     }
 
-    // A new set repeats the last one's target: the most likely next thing to do
-    // is what you just did.
     func addingSet(at position: Int) -> RoutineUi {
         mapping(position) { exercise in
             var updated = exercise
@@ -49,10 +47,8 @@ nonisolated struct RoutineUi: Equatable, Sendable {
         }
     }
 
-    // The remaining sets renumber so the table never shows 1, 3. Matching is by
-    // set number rather than instance: a reload replaces every instance with an
-    // equal-looking one, and the row that reports the swipe may be holding the
-    // old one.
+    // Matched by set number, not instance: a reload replaces every instance, so
+    // the row reporting the swipe may hold the old one.
     func removingSet(numbered setNumber: Int, at position: Int) -> RoutineUi {
         mapping(position) { exercise in
             var updated = exercise
@@ -74,12 +70,8 @@ nonisolated struct RoutineUi: Equatable, Sendable {
         return completed
     }
 
-    // Back to a session nobody has started. The logged numbers go and the
-    // prescription stays, which costs nothing to do because the two were never
-    // the same field: logging only ever wrote to the actuals.
-    //
-    // Sets added or deleted by hand are left as they are. Restoring those would
-    // be undo, which is a different promise than this one makes.
+    // Logs go, prescriptions stay, and sets added or deleted by hand are left
+    // alone: this is not undo.
     func clearingProgress() -> RoutineUi {
         var cleared = self
         cleared.exercises = exercises.map { exercise in
@@ -98,8 +90,6 @@ nonisolated struct RoutineUi: Equatable, Sendable {
         return cleared
     }
 
-    // Whether there is anything to clear. A session nobody has touched must not
-    // offer to undo work that does not exist.
     var hasProgress: Bool {
         exercises.contains { exercise in
             exercise.isCompleted || exercise.sets.contains {
@@ -118,10 +108,9 @@ nonisolated struct RoutineUi: Equatable, Sendable {
 
 private nonisolated extension ExerciseUi {
 
-    // Ticking an exercise off says its prescription was done, so a set left
-    // blank records what was asked for. Without this a finished day is stored
-    // with nothing on its sets: the PREVIOUS column has nothing to show, and
-    // next week's prompt reads the whole session back as "did: skipped".
+    // A blank set records what was asked for: otherwise a finished day stores
+    // nothing, and the PREVIOUS column and next week's prompt read it as
+    // skipped.
     func loggedAsPrescribed() -> ExerciseUi {
         var logged = self
         logged.isCompleted = true
@@ -136,8 +125,7 @@ private nonisolated extension ExerciseUi {
         return logged
     }
 
-    // Un-ticking clears the marks and leaves the numbers: they are logs, and
-    // hand-typed ones would be thrown away with them.
+    // The marks clear and the numbers stay: hand-typed logs must survive.
     func notLogged() -> ExerciseUi {
         var open = self
         open.isCompleted = false
@@ -149,10 +137,7 @@ private nonisolated extension ExerciseUi {
         return open
     }
 
-    // An exercise is done when its sets are: ticking off the last one finishes
-    // it there and then, and adding a set that has not been done reopens it.
-    // Kept beside the edits themselves so no later one can leave the two
-    // disagreeing — which is what left a finished exercise looking untouched.
+    // Called by every set edit, so an exercise and its sets can never disagree.
     func tickedFromItsSets() -> ExerciseUi {
         var ticked = self
         ticked.isCompleted = !sets.isEmpty && sets.allSatisfy(\.isCompleted)

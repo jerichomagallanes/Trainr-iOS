@@ -2,10 +2,8 @@ import FirebaseAILogic
 import Foundation
 import OSLog
 
-// Generation goes through Firebase AI Logic rather than straight to the Gemini
-// endpoint, so the key never ships inside the app. Every request carries an App
-// Check token proving it came from this app on a genuine device; a key lifted
-// out of the bundle buys nothing without one.
+// Through Firebase AI Logic rather than the Gemini endpoint, so no key ships in
+// the app; App Check proves each request came from this app on a real device.
 struct FirebaseAIPlanModelClient: PlanModelClient {
 
     func generate(
@@ -21,11 +19,8 @@ struct FirebaseAIPlanModelClient: PlanModelClient {
                 responseSchema: GeneratedPlanSchema.schema
             ),
             systemInstruction: ModelContent(parts: systemInstruction),
-            // Capped, because a model that has not answered in this long is not
-            // about to. Without it the SDK waits its own much longer timeout,
-            // and with five models in the chain a client can sit through five
-            // of those in a row before anything is asked that will actually
-            // answer.
+            // Capped: without it the SDK waits its own much longer timeout, and
+            // a client can sit through five of those before anything answers.
             requestOptions: RequestOptions(timeout: Self.callTimeoutSeconds)
         )
 
@@ -33,10 +28,8 @@ struct FirebaseAIPlanModelClient: PlanModelClient {
             let response = try await generativeModel.generateContent(userPrompt)
             return response.text.map(GeminiResponse.text) ?? .failed
         } catch {
-            // Development runs have no crash report to read the trail from, so
-            // the coach's refusal goes to the console instead: the one place a
-            // 403 for a disabled API or an unregistered App Check token was
-            // otherwise invisible. Release keeps to the breadcrumbs.
+            // Development has no crash report to read the trail from, and a 403
+            // for a disabled API is otherwise invisible; release uses breadcrumbs.
             #if DEBUG
             Logger(subsystem: "com.jericx.trainr", category: "generation")
                 .error("\(model, privacy: .public) refused: \(String(describing: error), privacy: .public)")
@@ -49,27 +42,22 @@ struct FirebaseAIPlanModelClient: PlanModelClient {
         if case GenerateContentError.internalError(let underlying) = error {
             return response(reading: underlying as NSError)
         }
-        // A blocked prompt or an answer that stopped early is an answer we were
-        // given and could not use.
+        // A blocked prompt or an answer that stopped early is one we cannot use.
         if error is GenerateContentError { return .failed }
         return response(reading: error as NSError)
     }
 
     private static func response(reading error: NSError) -> GeminiResponse {
         if error.domain == NSURLErrorDomain {
-            // Too slow now, but no reason to think it will be tomorrow, so it
-            // is not remembered. Everything else from the URL layer is no route
-            // to anything, rather than a quarrel with one model: no other model
-            // will do better, so it stops the list.
+            // A timeout is this model being slow now; anything else from the URL
+            // layer is no route at all, so no other model will do better.
             return error.code == NSURLErrorTimedOut ? .modelUnavailable : .unreachable
         }
         if error.domain.hasPrefix(Self.backendErrorDomain) {
             switch error.code {
-            // Its allowance for the day is spent; the next model has its own,
-            // and this one will keep saying so until the quota resets.
+            // Its allowance for the day is spent; the next model has its own.
             case 429: return .quotaSpent
-            // Not this model's answer but the door's: the caller was turned
-            // away, and would be at every model down the list.
+            // The door, not the model: every model down the list turns us away.
             case 401, 403: return .refused
             // Overloaded or retired — someone else may answer.
             default: return .modelUnavailable
@@ -85,7 +73,6 @@ struct FirebaseAIPlanModelClient: PlanModelClient {
 
     private static let backendErrorDomain = "com.google.firebase.firebaseai"
 
-    // Low enough for disciplined programming, high enough for varied plans.
     // A whole week normally lands in twenty to thirty seconds.
     private static let callTimeoutSeconds: TimeInterval = 45
 

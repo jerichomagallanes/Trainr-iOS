@@ -8,8 +8,7 @@ struct GeneratedPlanParserTests {
     private let userID = UUID()
     private let startDate = Date(timeIntervalSince1970: 1_753_056_000)
 
-    // Days arrive out of order and carry a key the schema doesn't know, to pin
-    // that ordering is ours and unknown keys are ignored.
+    // Deliberately out of order and carrying an unknown key: ordering is ours, extras ignored.
     private let goodJSON = """
         {
           "title": "Week 1",

@@ -5,33 +5,23 @@ nonisolated enum Constants {
     enum Workout {
         static let defaultDuration = 45
         static let defaultDaysPerWeek = 3
-        // The length of a plan week, which is the calendar's, not the client's:
-        // a three-day week still spans Monday to Sunday.
+        // The calendar's week, not the client's: a three-day week still spans Mon-Sun.
         static let daysPerWeek = 7
         static let secondsPerMinute = 60
 
-        // BMI category boundaries.
         static let bmiUnderweightThreshold = 18.5
         static let bmiNormalThreshold = 25.0
         static let bmiOverweightThreshold = 30.0
 
-        // 13 is a legal floor rather than a claim about who can train: it is
-        // the line COPPA and the app stores' child-safety policies draw around
-        // collecting personal data, and this app asks for an age, a height and
-        // a weight.
+        // A legal floor, not a claim about who can train: the line COPPA and the
+        // stores' child-safety policies draw around collecting personal data.
         static let minAge = 13
 
         // Above the oldest person ever verified, who reached 122.
         static let maxAge = 125
 
         // Set outside every human on record, so the check refuses typos and
-        // never a person. Bounds any tighter exclude people who exist: adults
-        // with dwarfism, the tallest man alive at 251 cm, and anyone above
-        // 300 kg, who are exactly the people a fitness app should not be
-        // turning away.
-        //
-        // Verified extremes: tallest ever 272 cm, shortest ever measured
-        // 54.6 cm, heaviest ever 635 kg.
+        // never a person: any tighter and it excludes people who exist.
         static let minHeightCentimetres = 50.0
         static let maxHeightCentimetres = 275.0
         static let minWeightKilograms = 20.0

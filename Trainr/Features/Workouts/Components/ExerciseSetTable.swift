@@ -1,7 +1,7 @@
 import SwiftUI
 
-// The row's design height, kept as a floor rather than a fixed size so a
-// reader's larger setting grows the row instead of clipping the number in it.
+// A floor rather than a fixed size, so larger text grows the row instead of
+// clipping the number in it.
 private let setRowHeight: CGFloat = 34
 private let setColumnWidth: CGFloat = 34
 
@@ -16,15 +16,12 @@ struct ExerciseSetTable: View {
 
     private static let checkSize: CGFloat = 24
 
-    // No column at all without history: a week-one card looks exactly like the
-    // design, which has no PREVIOUS.
     private var showsPrevious: Bool { !previousSets.isEmpty }
 
     var body: some View {
         VStack(spacing: Spacing.small) {
-            // Column headings over nothing are noise, so an emptied table is
-            // just its Add set button. The button itself is never conditional:
-            // deleting the last set has to leave a way back.
+            // The Add set button below is never conditional: deleting the last
+            // set has to leave a way back.
             if !sets.isEmpty {
                 headings
             }
@@ -48,8 +45,8 @@ struct ExerciseSetTable: View {
                         )
                     }
                 )
-                // Keyed to the set itself, so a renumbered survivor cannot
-                // inherit a dismissed row's state.
+                // Keyed to the set, so a renumbered survivor cannot inherit a
+                // dismissed row's state.
                 .id(set.id)
             }
             addSetButton
@@ -209,8 +206,8 @@ private struct NumberCell: View {
             .padding(.horizontal, Spacing.extraSmall)
             .onAppear { text = value ?? "" }
             .onChange(of: value) { _, latest in
-                // Only when the model disagrees with what is on screen, so a
-                // write-back never interrupts typing.
+                // Only when the model disagrees, so a write-back never
+                // interrupts typing.
                 if latest ?? "" != text { text = latest ?? "" }
             }
             .onChange(of: text) { _, typed in
@@ -228,8 +225,7 @@ private struct DurationCell: View {
     let placeholderSeconds: Int?
     let onChange: (Int?) -> Void
 
-    // The field's own text, rewritten after every keystroke. A computed
-    // binding was not enough: the field kept what was typed and showed
+    // Own state, not a computed binding: that keeps what was typed and shows
     // "5:50000" for a five typed into the middle of "5:00".
     @State private var text = ""
 
@@ -254,11 +250,9 @@ private struct DurationCell: View {
         }
         .padding(.horizontal, Spacing.extraSmall)
         .onAppear { text = seconds.map(SetFormatting.seconds) ?? "" }
-        // Starting the session over, or ticking the exercise, rewrites the
-        // stored seconds without rebuilding the row, because the set keeps its
-        // id. Reading only on appear left the old time on screen, and the next
-        // keystroke wrote that stale value back. Only when the two disagree, so
-        // a write-back never interrupts typing.
+        // The row keeps its id when the stored seconds are rewritten, so
+        // onAppear alone leaves a stale time. Only on disagreement, so a
+        // write-back never interrupts typing.
         .onChange(of: seconds) { _, latest in
             let formatted = latest.map(SetFormatting.seconds) ?? ""
             if formatted != text { text = formatted }

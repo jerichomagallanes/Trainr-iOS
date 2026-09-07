@@ -49,9 +49,6 @@ struct CannedPlanGeneratorTests {
         case expectedGenerated
     }
 
-    // The parser rejects a week with the wrong number of days, and so does the
-    // generator's own check, so a canned week that ignored the profile would
-    // fail the same way a bad answer from the model does.
     @Test func itHonoursTheNumberOfDaysAsked() async throws {
         for days in 1...7 {
             #expect(try await plan(daysPerWeek: days).workoutDays.count == days)
@@ -66,13 +63,10 @@ struct CannedPlanGeneratorTests {
         #expect(slots.allSatisfy { (1...7).contains($0) })
     }
 
-    // Every key has to be one the catalog knows, or the tutorials that make a
-    // development build worth looking at simply do not render.
     @Test func everyExerciseUsesAKeyTheCatalogKnows() async throws {
         let keys = try await plan().workoutDays.flatMap(\.exercises).map(\.exerciseKey)
 
         #expect(!keys.isEmpty)
-        // The same movement recurs across days, so compare the distinct set.
         #expect(Set(keys).isSubset(of: Set(ExerciseVideoCatalog.videoIDs.keys)))
     }
 
@@ -84,8 +78,6 @@ struct CannedPlanGeneratorTests {
         #expect(plan.userID == userID)
     }
 
-    // A canned week that never moved would make progression impossible to look
-    // at while building the screens that show it.
     @Test func itProgressesFromTheWeekBefore() async throws {
         let first = try await plan()
         let second = try await plan(previousWeek: first, weekNumber: 2)
@@ -107,9 +99,6 @@ struct CannedPlanGeneratorTests {
         }
     }
 
-    // The day header states the requested length and the routine adds its own
-    // exercises up. The two disagreeing reads as a bug on every screen that
-    // shows either, so a canned week has to add up as well.
     @Test func itFillsTheSessionLengthThatWasAskedFor() async throws {
         for requested in [30, 45, 60, 90] {
             let day = try #require(await plan(duration: requested).workoutDays.first)
@@ -119,8 +108,6 @@ struct CannedPlanGeneratorTests {
         }
     }
 
-    // A bodyweight profile being handed goblet squats is exactly what a canned
-    // week is meant to let you notice, so it must not be the source of it.
     @Test func itOnlyPrescribesMovementsTheClientHasTheKitFor() async throws {
         let keys = Set(try await plan(equipment: [Equipment.none])
             .workoutDays.flatMap(\.exercises).map(\.exerciseKey))
@@ -136,8 +123,6 @@ struct CannedPlanGeneratorTests {
         #expect(keys.contains("bent_over_row"))
     }
 
-    // The card names the kit to bring, so it lists what this day needs rather
-    // than everything the client happens to own.
     @Test func itNamesOnlyTheEquipmentTheDayActuallyNeeds() async throws {
         let loaded = try #require(
             await plan(equipment: [.dumbbells, .squatRack]).workoutDays.first)

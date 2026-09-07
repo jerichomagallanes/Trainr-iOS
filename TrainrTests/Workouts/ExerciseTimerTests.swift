@@ -16,7 +16,6 @@ struct ExerciseTimerTests {
         let afterOne = timer.advance(to: after(1))
         #expect(afterOne)
         #expect(timer.remainingSeconds == 59)
-        // A tick that arrives late does not lose the seconds it missed.
         let afterTwelve = timer.advance(to: after(12.4))
         #expect(afterTwelve)
         #expect(timer.remainingSeconds == 48)
@@ -49,7 +48,6 @@ struct ExerciseTimerTests {
         #expect(!timer.isRunning)
         #expect(timer.remainingSeconds == 40)
         #expect(timer.endsAt == nil)
-        // Time spent paused does not count.
         #expect(timer.remaining(at: after(500)) == 40)
 
         timer.resume(at: after(500))

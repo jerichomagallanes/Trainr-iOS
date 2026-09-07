@@ -28,8 +28,6 @@ struct WeeklyProgressView: View {
         }
         .background(Color.white)
         .toolbar(.hidden, for: .navigationBar)
-        // Coming back from a routine re-reads the plans, so a day completed
-        // there is reflected here.
         .onAppear { reload() }
         .alert(deleteTitle, isPresented: deleteBinding, presenting: weekToDelete) { week in
             Button(L10n.deleteWeekConfirm, role: .destructive) {
@@ -38,8 +36,6 @@ struct WeeklyProgressView: View {
             }
             Button(L10n.cancel, role: .cancel) {}
         } message: { week in
-            // Training that was actually done is named before it goes, so the
-            // choice is made knowing what it costs.
             Text(
                 week.hasTraining
                     ? L10n.deleteWeekMessageTrained(week.completedDays, week.totalDays)
@@ -59,9 +55,8 @@ struct WeeklyProgressView: View {
                     .fill(Color.dividerGray)
                     .frame(height: 1)
 
-                // Every week slides aside; the dialog is where the weight of it
-                // lands. A week is a good deal more than a set, so the swipe
-                // asks before it deletes.
+                // The swipe asks before it deletes: a week is a good deal more
+                // than a set.
                 ForEach(model.weeks) { week in
                     SwipeToDelete(
                         label: L10n.deleteWeekConfirm,
@@ -90,11 +85,8 @@ struct WeeklyProgressView: View {
         leaveIfNothingLeft()
     }
 
-    // Delete the last week and this screen is a list of nothing. Progress
-    // against no plan is not a place to stand, so it hands back to the one
-    // screen that has something to say about having no plan — and something to
-    // do about it. Asked right after a read rather than watched, so an empty
-    // list that only means "not read yet" can never send the screen away.
+    // Asked right after a read rather than watched, so an empty list that only
+    // means "not read yet" can never send the screen away.
     private func leaveIfNothingLeft() {
         guard model.hasLoaded, model.weeks.isEmpty else { return }
         onLastWeekDeleted()

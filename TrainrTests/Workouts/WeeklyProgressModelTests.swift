@@ -70,7 +70,6 @@ struct WeeklyProgressModelTests {
         )
         #expect(progress(ahead, daysLater: 1).status == .upcoming)
 
-        // Training ahead of schedule still counts as started.
         let early = plan(
             [day(1, .completed), day(3, .notStarted)],
             start: calendar.date(byAdding: .day, value: 7, to: monday)!

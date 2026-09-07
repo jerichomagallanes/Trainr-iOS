@@ -1,7 +1,6 @@
 import Foundation
 
-// The fields speak whichever units the client chose; the profile is stored in
-// centimetres and kilograms regardless. Everything between the two lives here.
+// The fields speak the client's chosen units; the profile is stored in centimetres and kilograms.
 nonisolated enum BodyMetricsConverter {
 
     static func parseMetrics(
@@ -45,8 +44,7 @@ nonisolated enum BodyMetricsConverter {
         return cm > 0 ? String(Int(cm.rounded())) : ""
     }
 
-    // A kilogram value that has been through a pounds round trip is a long
-    // decimal; the field it goes back into is one a client types into.
+    // A kilogram round-tripped through pounds is a long decimal, and this field is typed into.
     static func formatKilograms(_ kg: Double) -> String {
         if kg.truncatingRemainder(dividingBy: 1) == 0 {
             String(Int(kg))

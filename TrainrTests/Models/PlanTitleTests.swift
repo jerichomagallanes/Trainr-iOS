@@ -3,8 +3,6 @@ import Testing
 
 struct PlanTitleTests {
 
-    // The model writes the week number into the title often enough that copying
-    // a week would leave the second one calling itself the first.
     @Test func aTrailingWeekNumberIsDropped() {
         #expect("Beginner Muscle Building - Week 1".withoutWeekNumber
             == "Beginner Muscle Building")
@@ -21,13 +19,11 @@ struct PlanTitleTests {
 
     @Test func aTitleWithoutANumberIsLeftAlone() {
         #expect("Beginner Muscle Building".withoutWeekNumber == "Beginner Muscle Building")
-        // "Week" without a number is a word like any other.
         #expect("Week of Power".withoutWeekNumber == "Week of Power")
         #expect("Weekend Warrior".withoutWeekNumber == "Weekend Warrior")
     }
 
-    // Blank titles fail validation, so a title that was nothing but its number
-    // keeps what it had rather than costing the client a retry.
+    // Stripping it to nothing would fail validation and cost the client a retry.
     @Test func aTitleThatIsOnlyANumberKeepsIt() {
         #expect("Week 2".withoutWeekNumber == "Week 2")
     }

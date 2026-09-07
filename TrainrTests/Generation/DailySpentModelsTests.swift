@@ -2,9 +2,6 @@ import Foundation
 import Testing
 @testable import Trainr
 
-// Backed by UserDefaults because surviving a cold start is the property that
-// matters: the allowance outlives the process, so relearning it every launch
-// is exactly what this exists to avoid.
 struct DailySpentModelsTests {
 
     // A throwaway suite per test, so tests cannot see each other's writes.
@@ -34,8 +31,6 @@ struct DailySpentModelsTests {
         #expect(store.spentToday() == ["gemini-3.6-flash", "gemini-3.5-flash"])
     }
 
-    // A new instance reads what the last one wrote. This is the whole reason it
-    // is on disk rather than in memory.
     @Test func aFreshInstanceSeesWhatAnEarlierOneRecorded() {
         let defaults = freshDefaults()
         DailySpentModels(defaults: defaults).markSpent("gemini-3.6-flash")
@@ -43,9 +38,6 @@ struct DailySpentModelsTests {
         #expect(!DailySpentModels(defaults: defaults).spentToday().isEmpty)
     }
 
-    // Yesterday's refusals say nothing about today's allowance, and the day is
-    // Google's rather than the device's: a client in Tokyo whose date rolled
-    // over hours ago still shares the same quota window.
     @Test func yesterdaysRefusalsAreForgotten() {
         let defaults = freshDefaults()
         var pretendNow = Date(timeIntervalSince1970: 1_577_865_600) // 2020-01-01 Pacific
@@ -58,9 +50,7 @@ struct DailySpentModelsTests {
         #expect(store.spentToday().isEmpty)
     }
 
-    // The boundary is Google's midnight, not the device's. 07:59 UTC and
-    // 08:01 UTC straddle midnight in Los Angeles (winter, UTC-8): the first
-    // still belongs to yesterday's allowance, the second to today's.
+    // The boundary is Google's midnight: 07:59 and 08:01 UTC straddle it in Los Angeles (UTC-8).
     @Test func theDayRollsOverAtMidnightPacific() {
         let defaults = freshDefaults()
         var pretendNow = Date(timeIntervalSince1970: 1_577_951_940) // 07:59 UTC

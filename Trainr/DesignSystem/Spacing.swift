@@ -1,8 +1,6 @@
 import Foundation
 
 nonisolated enum Spacing {
-    // The two the chips and cards sit on, each used in four places before it
-    // had a name.
     static let hairline: CGFloat = 3
     static let extraSmall: CGFloat = 4
     static let snug: CGFloat = 5

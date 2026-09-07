@@ -1,7 +1,5 @@
 import SwiftUI
 
-// Where the app decides what it is showing: the splash while it reads the
-// store, then onboarding for a first run or the plan for a returning client.
 struct RootView: View {
 
     private enum Phase {
@@ -15,8 +13,7 @@ struct RootView: View {
     @State private var phase = Phase.splash
     @State private var path: [Route] = []
     @State private var nextWeek: NextWeekModel?
-    // Bumped whenever the plan is replaced wholesale, to give home a new
-    // identity and with it a model that reads the new plan.
+    // Bumped to give home a new identity, and with it a model that re-reads.
     @State private var planGeneration = 0
 
     var body: some View {
@@ -25,9 +22,6 @@ struct RootView: View {
                 .navigationDestination(for: Route.self) { route in
                     destination(for: route)
                         .onAppear {
-                            // The route taken, so a crash report says which
-                            // screen the client was on rather than only which
-                            // line failed.
                             dependencies.breadcrumbs.record("screen: \(route.breadcrumbName)")
                         }
                 }
@@ -37,8 +31,6 @@ struct RootView: View {
             let model = OnboardingModel(dependencies: dependencies)
             onboarding = model
             try? await Task.sleep(for: .seconds(Self.splashSeconds))
-            // A returning user lands on their plan; onboarding is for the
-            // first run.
             nextWeek = NextWeekModel(dependencies: dependencies)
             phase = model.hasCompletedOnboarding() ? .home : .welcome
         }
@@ -60,10 +52,8 @@ struct RootView: View {
                 onStartWorkout: {
                     path.append(.routineDetail(dayNumber: $0.dayNumber, weekNumber: nil))
                 },
-                // The profile is already answered, so building another plan
-                // starts from it rather than from the first question again.
-                // The plan stays underneath, which is what makes the review's
-                // close button a real way back out of regenerating.
+                // Starts from the answered profile, with the plan left underneath
+                // so the review's close button is a real way back out.
                 onLeavePlanConfirmed: {
                     path.append(.review(fromPlan: true, profileOnly: false))
                 },
@@ -75,22 +65,16 @@ struct RootView: View {
                     path.append(.review(fromPlan: true, profileOnly: false))
                 }
             )
-            // A plan rebuilt from nothing is a different plan, so the screen
-            // that shows it starts over too rather than keeping the week it
-            // had already read.
             .id(planGeneration)
         }
     }
 
-    // The new plan is a fresh start whichever door led here, so the whole
-    // stack goes with it.
     private func restartOnHome() {
         planGeneration += 1
         phase = .home
         path = []
     }
 
-    // Two seconds, unless a UI test asks for longer so it can read the splash.
     private static var splashSeconds: Double {
         #if DEBUG
         let arguments = ProcessInfo.processInfo.arguments
@@ -182,8 +166,6 @@ struct RootView: View {
                 isProfileUpdate: profileOnly,
                 onConfirm: {
                     if profileOnly {
-                        // The plan and its history stay exactly as they are;
-                        // the edited profile shapes the next week.
                         onboarding.updateProfileOnly { path = [] }
                     } else {
                         path.append(.generating)
@@ -201,9 +183,8 @@ struct RootView: View {
                 failure: onboarding.generationFailure,
                 failureCount: onboarding.failureCount,
                 onRetry: { onboarding.saveUserProfile() },
-                // Nothing was written, so the way out is back to the profile
-                // the plan would have been built from — and the run they walked
-                // away from stops writing one.
+                // Nothing was written yet, and cancelRun stops the abandoned
+                // run from writing one.
                 onGiveUp: {
                     onboarding.cancelRun()
                     pop()
@@ -216,8 +197,6 @@ struct RootView: View {
         }
     }
 
-    // The workout surface, kept apart from the questions that lead into it:
-    // they are two flows that happen to share a stack.
     @ViewBuilder
     private func workoutDestination(for route: Route) -> some View {
         switch route {
@@ -236,8 +215,6 @@ struct RootView: View {
                 dayNumber: dayNumber,
                 onBack: pop,
                 onViewProgress: { path.append(.weeklyProgress) },
-                // The session is over, so the way on is the plan itself rather
-                // than the routine that led here.
                 onBackToPlan: restartOnHome
             )
 
@@ -254,8 +231,6 @@ struct RootView: View {
                 dependencies: dependencies,
                 onBack: pop,
                 onWeekTap: { path.append(.weekPlan(weekNumber: $0.weekNumber)) },
-                // Nothing left to show progress against, so the plan screen
-                // takes over: it is the one that can offer to build another.
                 onLastWeekDeleted: restartOnHome
             )
 
@@ -265,9 +240,6 @@ struct RootView: View {
         case .regeneratingWeek:
             generating(start: { nextWeek?.regenerateThisWeek() })
 
-        // A week opened from Weekly Progress: the same screen, given a way back
-        // and a particular week to read. Whether it is live or a record is the
-        // week's own business, so the screen decides that from what it finds.
         case .weekPlan(let weekNumber):
             WeeklyPlanView(
                 dependencies: dependencies,
@@ -282,10 +254,8 @@ struct RootView: View {
                         .routineDetail(dayNumber: $0.dayNumber, weekNumber: weekNumber)
                     )
                 },
-                // The copy joins the plan at the end, so the week being
-                // trained is no longer the one on screen. Refreshing here would
-                // re-read the same old week and look like nothing happened, so
-                // the way on is home, where the copy now lives.
+                // The copy joins the plan at the end, so refreshing here would
+                // re-read the old week; home is where the copy now lives.
                 onRepeatWeek: {
                     nextWeek?.repeatWeek(numbered: weekNumber)
                     if nextWeek?.isReady == true { restartOnHome() }
@@ -293,14 +263,11 @@ struct RootView: View {
                 onBack: pop
             )
 
-        // The onboarding routes never reach here; they are answered above.
         default:
             EmptyView()
         }
     }
 
-    // Both ways of writing a week wear the same wait: the difference is which
-    // week is being written, and the client is watching the same thing happen.
     @ViewBuilder
     private func generating(start: @escaping () -> Void) -> some View {
         if let nextWeek {
@@ -311,8 +278,6 @@ struct RootView: View {
                 failure: nextWeek.failure,
                 failureCount: nextWeek.failureCount,
                 onRetry: start,
-                // The plan they already have is still there to go back to, so
-                // this asks to stop waiting rather than offering somewhere new.
                 onGiveUp: {
                     nextWeek.cancelRun()
                     pop()
@@ -338,9 +303,6 @@ struct RootView: View {
 struct SplashView: View {
     var body: some View {
         VStack(spacing: Spacing.medium) {
-            // The wordmark rather than the app's name in text: it is the same
-            // mark the top bar carries, so the first screen and every screen
-            // after it agree about what this app looks like.
             Image("Wordmark")
                 .resizable()
                 .scaledToFit()

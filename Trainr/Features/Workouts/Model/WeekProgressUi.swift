@@ -11,9 +11,6 @@ nonisolated struct WeekProgressUi: Identifiable, Equatable, Sendable {
 
     var id: UUID { planID }
 
-    // Training already done is still the client's to throw away — the app asks
-    // first and says what goes, rather than deciding for them. Whether anything
-    // was logged only changes how firmly it asks.
     var hasTraining: Bool { completedDays > 0 }
 
     var completionPercentage: Int {

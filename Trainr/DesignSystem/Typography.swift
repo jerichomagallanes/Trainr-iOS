@@ -1,39 +1,25 @@
 import SwiftUI
 
-// The scale used by the Figma mockups. The system font stands in for Android's
-// Roboto default — each platform's own face, same sizes and weights — and the
-// two brand faces travel with the app.
-//
-// Every role scales with the reader's text size, the way Android's sp sizes do.
-// A bare Font.system(size:) does not take part in Dynamic Type at all: only
-// Font.custom's relativeTo: does, which is why the screen title used to grow
-// while every word around it stayed put.
+// The scale used by the Figma mockups. Every role scales with the reader's text
+// size: a bare Font.system(size:) does not take part in Dynamic Type at all.
 enum TextRole {
 
-    // Wordmark
     case screenTitle
 
-    // Field and section labels
     case fieldLabel
-    // Selected chips, card weekday
     case sectionTitle
 
     case body16
     case body14
     case body12
 
-    // Emphasised small text: links, chips, primary actions
     case labelLarge
     case labelMedium
     case labelSmall
 
-    // Primary action buttons
     case buttonTitle
 
-    // A size the mockups use in one place only. Kept apart from the roles above
-    // so a one-off never reads as a shared decision, and named so that adding
-    // one is a visible choice rather than a Font.system that quietly opts out
-    // of scaling.
+    // Named so a one-off never reads as a shared decision, and still scales.
     case oneOff(CGFloat, Font.Weight = .regular)
 
     var size: CGFloat {
@@ -58,8 +44,6 @@ enum TextRole {
         }
     }
 
-    // The brand faces, which carry their own name; everything else is the
-    // system font.
     var face: String? {
         switch self {
         case .screenTitle: "Rubik-Bold"
@@ -67,8 +51,6 @@ enum TextRole {
         }
     }
 
-    // What the size grows in step with. Chosen by what the size is nearest to,
-    // so a caption grows like a caption rather than like a headline.
     var textStyle: Font.TextStyle {
         switch self {
         case .screenTitle: .title3
@@ -87,9 +69,8 @@ enum TextRole {
 
 private struct RoleFont: ViewModifier {
 
-    // Scaled here rather than in the Font, because a Font value is fixed once
-    // made: this is the piece that reads the reader's setting and re-reads it
-    // when they change it.
+    // Scaled here rather than in the Font: a Font value is fixed once made, so
+    // only a modifier re-reads the reader's setting when it changes.
     @ScaledMetric private var size: CGFloat
     private let role: TextRole
 
@@ -102,8 +83,8 @@ private struct RoleFont: ViewModifier {
         content.font(font)
     }
 
-    // fixedSize for the brand faces: the size handed over has already been
-    // scaled, and Font.custom(_:size:) would scale it a second time.
+    // fixedSize: the size is already scaled, and Font.custom(_:size:) would
+    // scale it a second time.
     private var font: Font {
         if let face = role.face {
             Font.custom(face, fixedSize: size)
@@ -115,17 +96,13 @@ private struct RoleFont: ViewModifier {
 
 extension View {
 
-    // Reads as the SwiftUI modifier it stands in for, so a role is applied the
-    // same way a Font is: .font(.body16).
     func font(_ role: TextRole) -> some View {
         modifier(RoleFont(role))
     }
 }
 
-// A run inside an AttributedString carries a Font rather than a modifier, so it
-// cannot read the reader's setting itself. The view holds the scaled size and
-// hands it back here, which keeps the role the single place the face and weight
-// are decided.
+// A Font inside an AttributedString run cannot scale itself, so the view holds
+// the scaled size and hands it back here.
 extension TextRole {
 
     func font(at scaledSize: CGFloat) -> Font {

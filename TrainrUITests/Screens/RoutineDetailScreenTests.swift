@@ -1,7 +1,5 @@
 import XCTest
 
-// One session, opened from the plan: what it shows, what ticking and timing do
-// to it, and the two ways it ends.
 final class RoutineDetailScreenTests: XCTestCase {
 
     private var app: XCUIApplication!
@@ -10,7 +8,6 @@ final class RoutineDetailScreenTests: XCTestCase {
         continueAfterFailure = false
     }
 
-    // The last day of the sample week: nothing done, four exercises.
     @MainActor
     private func openUnstartedDay() {
         app = .launched(.midWeek)
@@ -19,7 +16,6 @@ final class RoutineDetailScreenTests: XCTestCase {
         XCTAssertTrue(app.staticTexts["LOWER BODY POWER"].waitForExistence(timeout: 5))
     }
 
-    // The first day of the sample week: everything done.
     @MainActor
     private func openFinishedDay() {
         app = .launched(.midWeek)
@@ -47,7 +43,6 @@ final class RoutineDetailScreenTests: XCTestCase {
         XCTAssertEqual(app.buttons.matching(NSPredicate(format: "label == %@", "Start timer")).count, 4)
     }
 
-    // A finished exercise has nothing left to time.
     @MainActor
     func testOnlyTheUnfinishedExercisesOfferATimer() {
         openFinishedDay()
@@ -87,8 +82,6 @@ final class RoutineDetailScreenTests: XCTestCase {
         XCTAssertFalse(app.staticTexts["Timer paused"].exists)
     }
 
-    // Resetting is preparing to go again, not going again: the clock goes back
-    // to the top and holds there.
     @MainActor
     func testATimerCanBeResetWithoutBeingAbandoned() {
         openUnstartedDay()
@@ -133,7 +126,6 @@ final class RoutineDetailScreenTests: XCTestCase {
         XCTAssertTrue(app.buttons["Show video tutorial"].firstMatch.waitForExistence(timeout: 3))
     }
 
-    // A slide that was not finished did not ask for anything.
     @MainActor
     func testAPartialSlideLeavesTheRoutineAlone() {
         openUnstartedDay()
@@ -150,8 +142,6 @@ final class RoutineDetailScreenTests: XCTestCase {
         XCTAssertFalse(app.text(containing: "COMPLETED").exists)
     }
 
-    // Finishing the last outstanding day of an unfinished week ends the day,
-    // and the day says so.
     @MainActor
     func testSlidingToTheEndFinishesTheDay() {
         openUnstartedDay()
@@ -169,8 +159,6 @@ final class RoutineDetailScreenTests: XCTestCase {
         XCTAssertTrue(app.buttons["BACK TO MY WORKOUT PLAN"].exists)
     }
 
-    // The foot of the screen holds exactly one action: the slide while there is
-    // something to finish, the way back once there is not.
     @MainActor
     func testAFinishedWorkoutOffersTheWayBackInstead() {
         openFinishedDay()

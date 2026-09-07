@@ -2,8 +2,6 @@ import Foundation
 import Testing
 @testable import Trainr
 
-// Every string with a count in it, at one and at many, including the ones that
-// count on an argument other than their first.
 @Suite("Plurals")
 struct PluralsTests {
 

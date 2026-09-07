@@ -1,19 +1,10 @@
 import Foundation
 
-// Development runs never call the model. The free allowance is counted per
-// day and a day of building an app exhausts it long before a user would, so
-// development answers from here instead: instantly, offline, and predictably,
-// which is what makes a UI change legible.
-//
-// It is not a fixture. It reads the request the way the model is asked to, so
-// what comes back has the shape the parser and the screens expect: the number
-// of days asked for, a session as long as the one requested, movements the
-// client owns the equipment for, canonical keys the video catalog knows, and
-// loads that move on from the previous week when there is one.
-//
-// What it deliberately does not read is goal, workout style and injuries. Those
-// change which movements a coach would pick, which is a judgement, and a canned
-// answer that pretended to make it would be a worse lie than an obvious one.
+// Development runs never call the model: the free allowance is counted per day
+// and a day of building an app exhausts it long before a user would. Not a
+// fixture — it reads the request the way the model is asked to, so what comes
+// back has the shape the parser and the screens expect. Goal, style and injuries
+// it deliberately ignores rather than fake a coaching judgement.
 struct CannedPlanGenerator: PlanGenerator {
 
     func generate(_ request: PlanRequest) async -> PlanGenerationResult {
@@ -35,9 +26,6 @@ struct CannedPlanGenerator: PlanGenerator {
         )
     }
 
-    // Only movements the client can actually perform. A bodyweight-only profile
-    // being handed goblet squats is exactly the kind of thing a development
-    // build is supposed to let you notice, so it must not be this inventing it.
     private func exercises(for user: UserProfile) -> [WorkoutExercise] {
         let usable = Self.pool.filter { $0.isPossible(with: user.availableEquipment) }
         let minutes = minutes(requested: user.workoutDuration, available: usable.count)
@@ -49,9 +37,8 @@ struct CannedPlanGenerator: PlanGenerator {
         }
     }
 
-    // The session is as long as the one that was asked for, to the minute: the
-    // day header states the requested length and the routine adds its own
-    // exercises up, so the two disagreeing reads as a bug on every screen.
+    // Must sum to the requested length to the minute: the day header states it
+    // and the routine adds its own exercises up beside it.
     private func minutes(requested: Int, available: Int) -> [Int] {
         let warmUp = min(Self.warmUpMinutes, requested)
         let rest = requested - warmUp
@@ -83,8 +70,6 @@ struct CannedPlanGenerator: PlanGenerator {
         )
     }
 
-    // What this day needs, not everything the client owns: the card names the
-    // kit to bring, and listing a squat rack for a session of planks is noise.
     private func equipment(for exercises: [WorkoutExercise], user: UserProfile) -> [String] {
         var used: [String] = []
         for exercise in exercises {
@@ -99,8 +84,6 @@ struct CannedPlanGenerator: PlanGenerator {
         return used.isEmpty ? [Self.bodyweight] : used
     }
 
-    // A canned week that never moved would make progression impossible to look
-    // at, so loads step up the way the prompt asks the model to step them up.
     private func progressed(
         _ exercise: WorkoutExercise,
         from previous: WeeklyPlan?,
@@ -126,8 +109,7 @@ struct CannedPlanGenerator: PlanGenerator {
         return progressed
     }
 
-    // A movement and the kit that would let you do it. An empty set is
-    // bodyweight, which everybody has.
+    // An empty needs set is bodyweight, which everybody has.
     private struct Candidate {
         let needs: Set<Equipment>
         let exercise: WorkoutExercise
@@ -158,8 +140,8 @@ struct CannedPlanGenerator: PlanGenerator {
         }
     }
 
-    // Which weekdays each plan length lands on, spacing the sessions the way
-    // the prompt asks for: never two hard days back to back where it fits.
+    // Which weekdays each plan length lands on, spaced so hard days avoid
+    // landing back to back.
     private static let daySlots: [[Int]] = [
         [1],
         [1, 4],
@@ -180,9 +162,8 @@ struct CannedPlanGenerator: PlanGenerator {
         "Full Body Finisher"
     ]
 
-    // Keys the video catalog knows, so tutorials render in development too. The
-    // warm up leads and the core work trails, so a session that fills only part
-    // of the pool still reads like a session.
+    // Keys the video catalog knows. Ordered warm-up first and core last, so a
+    // session that fills only part of the pool still reads like one.
     private static let pool = [
         Candidate(
             needs: [],

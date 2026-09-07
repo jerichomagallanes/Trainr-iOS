@@ -96,8 +96,6 @@ struct PlanPromptBuilderTests {
         #expect(prompt.contains("Skipped Day (skipped)"))
     }
 
-    // A near-duplicate key (dumbbell_goblet_squat next to goblet_squat) splits
-    // history and loses the tutorial, so the vocabulary must reach the brief.
     @Test func theCanonicalVocabularyIsPinnedInTheBrief() {
         let brief = PlanPromptBuilder(canonicalKeys: ["goblet_squat", "plank"])
             .systemInstruction()
@@ -107,11 +105,7 @@ struct PlanPromptBuilderTests {
         #expect(!PlanPromptBuilder().systemInstruction().contains("near-duplicate"))
     }
 
-    // Anchors of the coaching brief the plans' quality hangs on; if one of
-    // these leaves the system prompt it should be a deliberate decision.
-    // A client lifting in pounds owns 5 lb steps, so a 2.5% rise on 20 kg lands
-    // back on the same 45 lb and the progression vanishes where it is read. The
-    // brief has to name the increment for the model to avoid that.
+    // 2.27 kg is 5 lb: unnamed, a 2.5% rise on 20 kg lands back on the same 45 lb.
     @Test func theBriefNamesTheIncrementTheClientCanActuallyLoad() {
         let metric = PlanPromptBuilder().userPrompt(request(units: .metric))
         #expect(metric.contains("Reads weights in kilograms"))

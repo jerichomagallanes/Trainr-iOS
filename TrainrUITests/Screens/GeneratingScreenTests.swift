@@ -1,6 +1,5 @@
 import XCTest
 
-// The wait for the coach, and each way it can end badly.
 final class GeneratingScreenTests: XCTestCase {
 
     private var app: XCUIApplication!
@@ -42,8 +41,6 @@ final class GeneratingScreenTests: XCTestCase {
         XCTAssertFalse(app.text(containing: "Trainr is offline").exists)
     }
 
-    // The client can ask again, and can give up back to the profile they
-    // would have generated from, with their answers intact.
     @MainActor
     func testTheClientCanAskAgainOrGoBackToTheirProfile() {
         app = .launchedToFail("offline")
@@ -59,7 +56,6 @@ final class GeneratingScreenTests: XCTestCase {
         XCTAssertTrue(app.staticTexts["Alex"].exists)
     }
 
-    // A button the app already knows will fail is worse than no button.
     @MainActor
     func testTheDailyLimitGetsItsOwnWordsAndOffersNoRetry() {
         app = .launchedToFail("dailyLimit")

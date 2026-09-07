@@ -5,8 +5,6 @@ nonisolated struct YouTubeVideo: Equatable, Sendable {
         self.id = id
     }
 
-    // Whatever shape a URL hands back: watch links, short links, embeds,
-    // Shorts, with or without trailing timestamps and tracking parameters.
     static func from(_ url: String?) -> YouTubeVideo? {
         guard let url, !url.isBlank else { return nil }
 

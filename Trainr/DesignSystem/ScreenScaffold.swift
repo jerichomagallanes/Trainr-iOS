@@ -1,11 +1,9 @@
 import SwiftUI
 
-// The frame every flow screen sits in: the brand bar above, the one action
-// pinned below the content, and the content free to scroll between them.
 struct ScreenScaffold<Content: View, BottomButton: View>: View {
     var onBack: (() -> Void)?
-    // A close is a way OUT of a detour, where a back arrow would promise a
-    // step backwards through a flow that is not there.
+    // A close is the way out of a detour, where a back arrow would promise a
+    // step that is not there.
     var closeInsteadOfBack = false
     var showLogo = true
     @ViewBuilder let bottomButton: BottomButton
@@ -30,8 +28,6 @@ struct TopBar<Trailing: View>: View {
     var onBack: (() -> Void)?
     var closeInsteadOfBack = false
     var showLogo = true
-    // What belongs to the screen as a whole rather than to its content: home
-    // hangs the account here, and every other screen leaves it empty.
     @ViewBuilder var trailing: Trailing
 
     var body: some View {

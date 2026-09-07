@@ -1,8 +1,5 @@
 import XCTest
 
-// Each onboarding screen on its own: what it asks, what it refuses, and what
-// it hands on. The whole journey is proved elsewhere; these are the rules of
-// each step.
 final class OnboardingScreenTests: XCTestCase {
 
     private var app: XCUIApplication!
@@ -58,13 +55,10 @@ final class OnboardingScreenTests: XCTestCase {
 
         let chips = ["Male", "Female", "Other"].map { app.buttons[$0] }
         for chip in chips { XCTAssertTrue(chip.isHittable) }
-        // Equal shares of the row, none squeezed to an ellipsis.
         let widths = chips.map(\.frame.width)
         XCTAssertEqual(widths.min()!, widths.max()!, accuracy: 2)
     }
 
-    // Missing and unusable are different complaints, and neither is worth
-    // making before the client has left the field alone.
     @MainActor
     func testAnUntouchedFieldSaysNothingAndAnEmptiedOneAsks() {
         app = .launchedFresh()
@@ -136,8 +130,6 @@ final class OnboardingScreenTests: XCTestCase {
         XCTAssertTrue(values.contains("154"), "\(values)")
     }
 
-    // An empty field is told what to do; a filled one is told the rule it
-    // broke.
     @MainActor
     func testMeasurementsOutsideTheLimitsNameTheLimitsAndCannotBeSubmitted() {
         app = .launchedFresh()
@@ -156,7 +148,6 @@ final class OnboardingScreenTests: XCTestCase {
         XCTAssertFalse(app.text(containing: "BMI:").exists)
     }
 
-    // Read back in the units they were entered in, and reopened the same way.
     @MainActor
     func testImperialMeasurementsReadBackAndReopenInPounds() {
         app = .launchedFresh()
@@ -226,7 +217,6 @@ final class OnboardingScreenTests: XCTestCase {
         XCTAssertFalse(app.buttons["NEXT"].isEnabled)
     }
 
-    // Four equal chips, each label inside its own border.
     @MainActor
     func testEveryDurationChipShowsItsWholeLabel() {
         app = .launchedFresh()
@@ -279,8 +269,6 @@ final class OnboardingScreenTests: XCTestCase {
         XCTAssertFalse(app.buttons["Close"].exists)
     }
 
-    // The card promises a routine about to be written, and says what it is
-    // written from; the disclaimer comes before the plan, never after.
     @MainActor
     func testTheReviewPreviewsThePlanAndCarriesTheDisclaimer() {
         app = .launchedFresh()
@@ -295,8 +283,6 @@ final class OnboardingScreenTests: XCTestCase {
         XCTAssertTrue(app.buttons["GENERATE MY WORKOUT PLAN"].exists)
     }
 
-    // Changing one answer later is not setup again: it opens with a close, no
-    // progress, and a save.
     @MainActor
     func testEditingAnAnswerFromTheReviewOpensJustThatStep() {
         app = .launchedFresh()
@@ -312,9 +298,6 @@ final class OnboardingScreenTests: XCTestCase {
         XCTAssertTrue(app.staticTexts["YOUR FITNESS PROFILE"].waitForExistence(timeout: 5))
     }
 
-    // Updating the profile from the plan saves instead of generating: no
-    // preview, no disclaimer, a close rather than a back, and the plan's
-    // history left alone.
     @MainActor
     func testUpdatingTheProfileFromThePlanSavesInsteadOfGenerating() {
         app = .launched(.midWeek)

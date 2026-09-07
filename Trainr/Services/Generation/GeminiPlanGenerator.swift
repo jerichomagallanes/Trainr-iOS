@@ -1,9 +1,7 @@
 import Foundation
 
-// Generation is a conversation with a deadline: ask, validate, and when the
-// answer breaks the contract, ask again quoting every problem. After that,
-// report why it could not be done — never ship a plan that failed validation,
-// and never let the caller mistake a failure for a plan.
+// Ask, validate, and on an answer that breaks the contract ask again quoting
+// every problem. Never ship a plan that failed validation.
 struct GeminiPlanGenerator: PlanGenerator {
 
     private let client: any PlanModelClient
@@ -31,37 +29,24 @@ struct GeminiPlanGenerator: PlanGenerator {
     func generate(_ request: PlanRequest) async -> PlanGenerationResult {
         let basePrompt = promptBuilder.userPrompt(request)
         var feedback: [String] = []
-        // Whatever went wrong last is what the client hears about. A failure to
-        // reach the model at all is worth saying plainly, so it survives the
-        // loop rather than being flattened into "something went wrong".
         var failure = PlanGenerationFailure.failed
 
-        // Two budgets, deliberately separate. Attempts are answers we were
-        // given and could not use, and there are few of them because each one
-        // costs a request from a small daily allowance. Walking the model list
-        // costs nothing from that budget: a model that will not answer has not
-        // answered, and the free allowance is counted per model, so the next
-        // one has its own.
-        // Models already known to be out of allowance today are not asked at
-        // all. Each one would cost a full round trip to be told what it told us
-        // this morning, and with five in the chain that is where a client's
-        // minutes of waiting went.
+        // Two budgets, deliberately separate. Attempts are answers we could not
+        // use and each costs a request from a small daily allowance; walking the
+        // model list costs nothing from that budget, because the allowance is
+        // counted per model. Models known to be spent today are not asked at all.
         let spent = spentModels.spentToday()
         breadcrumbs.state(key: "week", value: String(request.weekNumber))
         breadcrumbs.state(key: "models_spent_today", value: String(spent.count))
         var models = PlanModelChain.models.filter { !spent.contains($0) }
         if models.isEmpty {
-            // Everything is spent, so there is nothing to skip to. Ask anyway
-            // rather than refusing offline: the reset may have just passed, or
-            // the record may be wrong, and one wasted call beats telling a
-            // client the app is broken.
+            // Nothing left to skip to, so ask anyway: the reset may have just
+            // passed, and one wasted call beats claiming the app is broken.
             models = PlanModelChain.models
         }
 
-        // Only worth reporting when the allowance is the whole story. A run
-        // that also hit a bad answer or an overloaded model has an ordinary
-        // failure to report, and telling that client to come back tomorrow
-        // would send them away from something a retry would fix.
+        // Only worth reporting when the allowance is the whole story: a run that
+        // also hit a bad answer has an ordinary failure a retry would fix.
         var refusedOnQuota = 0
 
         var modelIndex = 0
@@ -92,15 +77,12 @@ struct GeminiPlanGenerator: PlanGenerator {
                 breadcrumbs.record("generation: nothing reachable")
                 return .failure(.offline)
 
-            // Turned away at the door. Asking the next model would only be
-            // turned away again, and the client is not offline: something
-            // about this build or its App Check standing is wrong.
+            // Turned away at the door: the next model would be too.
             case .refused:
                 breadcrumbs.record("generation: refused by the backend")
                 return .failure(.failed)
 
-            // Out of allowance for the day. Remembered, so the next
-            // generation skips it instead of learning this again.
+            // Remembered, so the next generation skips this model.
             case .quotaSpent:
                 breadcrumbs.record("generation: \(models[modelIndex]) out of allowance")
                 spentModels.markSpent(models[modelIndex])
@@ -109,19 +91,15 @@ struct GeminiPlanGenerator: PlanGenerator {
                 modelIndex += 1
                 continue
 
-            // Retired, overloaded or too slow. Ask the next model, and do
-            // not count it against the attempts: asking again is the one
-            // thing guaranteed not to help. Not remembered, because this
-            // one may answer perfectly well in a minute.
+            // Not counted against the attempts — asking again cannot help — and
+            // not remembered, since this one may answer in a minute.
             case .modelUnavailable:
                 breadcrumbs.record("generation: \(models[modelIndex]) unavailable")
                 failure = .failed
                 modelIndex += 1
                 continue
 
-            // An unusable answer is transient (congestion, a dropped
-            // connection) as often as it is fatal, so it spends an attempt,
-            // not all of them.
+            // As often transient as fatal, so it spends an attempt, not all of them.
             case .failed:
                 breadcrumbs.record("generation: \(models[modelIndex]) gave no usable answer")
                 failure = .failed
@@ -142,9 +120,6 @@ struct GeminiPlanGenerator: PlanGenerator {
                     breadcrumbs.record("generation: plan accepted")
                     return .generated(plan)
                 }
-                // The count, not the client's schedule: how many days came
-                // back is the model's answer, and comparing it to what was
-                // asked is the whole point of the check.
                 breadcrumbs.record("generation: wrong number of days back")
                 feedback = [
                     "plan: has \(plan.workoutDays.count) days but the client "
@@ -153,18 +128,16 @@ struct GeminiPlanGenerator: PlanGenerator {
                 failure = .failed
 
             case .invalid(let errors):
-                // How many problems, never what they were: a validation
-                // message can quote the model's own text back, and that text
-                // was written from the profile.
+                // How many problems, never what they were: a validation message
+                // can quote the model's own text, written from the profile.
                 breadcrumbs.record("generation: answer rejected, \(errors.count) problems")
                 feedback = errors
                 failure = .failed
             }
         }
 
-        // Every model that was asked refused on allowance, and nothing else
-        // went wrong: the day's budget is the reason, and saying so is worth
-        // more to the client than a retry that cannot succeed.
+        // Nothing but the day's allowance went wrong, so a retry cannot succeed
+        // and saying so is worth more than offering one.
         if refusedOnQuota == models.count {
             breadcrumbs.record("generation: every model out of allowance")
             return .failure(.dailyLimitReached)

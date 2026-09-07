@@ -1,16 +1,13 @@
 import SwiftUI
 
-// A compact either-or choice. The frames keep the outline on selected chips too.
+// The frames keep the outline on selected chips too.
 struct ToggleChip: View {
     let text: String
     let isSelected: Bool
     var height: CGFloat = ComponentHeight.chip
     var horizontalPadding: CGFloat = Spacing.large
-    // Takes an equal share of the row it is in, the way the frames lay out the
-    // duration and units choices. It has to be the LABEL that fills, not the
-    // chip: a button hugs its label, and the fill and border hug the button, so
-    // widening the chip from outside leaves the paint at label width with the
-    // text spilling past it.
+    // The LABEL fills, not the chip: a button hugs its label, so widening from
+    // outside leaves the paint at label width with the text spilling past it.
     var fillsWidth = false
     let action: () -> Void
 
@@ -21,8 +18,6 @@ struct ToggleChip: View {
                 .fontWeight(.medium)
                 .foregroundStyle(isSelected ? Color.white : .slate800)
                 .lineLimit(1)
-                // Phones narrower than the design frame get a smaller label,
-                // never an ellipsis.
                 .minimumScaleFactor(0.75)
                 .padding(.horizontal, horizontalPadding)
                 .frame(maxWidth: fillsWidth ? .infinity : nil)
@@ -42,7 +37,6 @@ struct ToggleChip: View {
     }
 }
 
-// A full-width option row with the radio dot at its trailing edge.
 struct RadioChip: View {
     let text: String
     let isSelected: Bool
@@ -84,7 +78,6 @@ struct RadioChip: View {
     }
 }
 
-// A full-width row that can be on together with its neighbours.
 struct CheckboxChip: View {
     let text: String
     @Binding var isChecked: Bool
@@ -115,11 +108,8 @@ struct CheckboxChip: View {
             RoundedRectangle(cornerRadius: CornerRadius.medium)
                 .strokeBorder(Color.outlineGray, lineWidth: 1)
         }
-        // .isSelected rather than .isToggle, though these chips are many-of-many
-        // and a toggle is what they are: .isToggle reclassifies the element as a
-        // switch, and every screen that reaches a chip by name finds a button.
-        // The state is still announced; what is lost is the hint that a second
-        // tap turns it off, which is not worth that.
+        // .isSelected rather than .isToggle: .isToggle reclassifies the element
+        // as a switch, and every screen reaching a chip by name finds a button.
         .accessibilityAddTraits(isChecked ? .isSelected : [])
     }
 }

@@ -1,7 +1,6 @@
 import Foundation
 
-// A finished-looking week for previews and tests, written in the shape a
-// generated plan arrives in so the screens map it the same way either source.
+// A week for previews and tests, in the shape a generated plan arrives in.
 // dayNumber is the ISO day of week.
 nonisolated enum SampleWorkoutData {
 
@@ -11,13 +10,10 @@ nonisolated enum SampleWorkoutData {
 
     static var weekEnd: Date { date(of: 7) }
 
-    // Read per call rather than cached: the current time zone can change while
-    // the app runs, which would otherwise freeze a stale date.
+    // Read per call: a cached date would freeze if the time zone changed.
     static func date(of dayNumber: Int) -> Date {
-        // Built in the Gregorian calendar because the components are Gregorian:
-        // asked of a device set to another, the same year, month and day may
-        // name no date at all, and this is reached from the plan screen in a
-        // Release build.
+        // Gregorian explicitly: on a device set to another calendar these
+        // components may name no date at all.
         var calendar = Calendar(identifier: .gregorian)
         calendar.timeZone = Calendar.current.timeZone
         let components = DateComponents(year: 2025, month: 7, day: 21)
@@ -117,7 +113,6 @@ nonisolated enum SampleWorkoutData {
                     status: .inProgress,
                     duration: 28,
                     exerciseCount: 5,
-                    // Jogging, intervals and three floor exercises: a mat, nothing else.
                     equipment: ["Yoga Mat"],
                     exercises: [
                         WorkoutExercise(

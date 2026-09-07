@@ -3,8 +3,6 @@ import SwiftUI
 struct ReviewView: View {
     let profile: UserProfile
     var isRegenerating = false
-    // Saving the profile on its own: no plan is generated, so the button says
-    // what it does and the subtitle explains when the change lands.
     var isProfileUpdate = false
     let onConfirm: () -> Void
     let onBack: () -> Void
@@ -13,16 +11,10 @@ struct ReviewView: View {
     var body: some View {
         ScreenScaffold(
             onBack: onBack,
-            // Entered from the plan this is a detour, not a flow: X leads
-            // back out; during onboarding the arrow steps back as usual.
             closeInsteadOfBack: isRegenerating || isProfileUpdate
         ) {
             VStack(spacing: Spacing.small) {
-                // Sits with the button rather than at the end of the scroll: a
-                // client who taps generate without reading the cards would
-                // never reach it down there, and the moment it matters is the
-                // moment a plan is about to be written for their body.
-                // Saving a profile writes no plan, so it says nothing then.
+                // With the button rather than at the end of the scroll: this is the moment it matters.
                 if !isProfileUpdate {
                     Text(L10n.healthDisclaimer)
                         .font(.body12)
@@ -34,8 +26,6 @@ struct ReviewView: View {
                 )
             }
         } content: {
-            // Reached from the plan — to change a detail or to start over —
-            // there is no seven-step run to be six sevenths of.
             if !isRegenerating && !isProfileUpdate {
                 StepProgressBar(currentStep: 6, totalSteps: 7)
                     .padding(.horizontal, Spacing.large)
@@ -49,8 +39,6 @@ struct ReviewView: View {
                     ? L10n.reviewProfileDescription : L10n.reviewDescription)
                 Spacer().frame(height: Spacing.extraLarge)
 
-                // One card per step of the flow, so every Edit opens exactly
-                // the screen that collects what the card shows.
                 ProfileSection(
                     title: L10n.personalInformation,
                     items: [
@@ -106,8 +94,6 @@ struct ReviewView: View {
 
                 Spacer().frame(height: Spacing.extraLarge)
 
-                // The card promises a routine about to be written; saving the
-                // profile alone writes none.
                 if !isProfileUpdate {
                     AIPreviewCard(profile: profile)
                     Spacer().frame(height: Spacing.medium)
@@ -116,9 +102,7 @@ struct ReviewView: View {
         }
     }
 
-    // Read back in the units they were entered in. The profile is stored in
-    // centimetres and kilograms whichever was typed, so a client in pounds was
-    // being shown their own weight converted into a number they had not used.
+    // Read back in the units they were entered in; the profile is stored in cm and kg either way.
     private var heightText: String {
         if profile.bodyUnitSystem == .imperial {
             BodyMetricsConverter.convertHeightToImperial(String(Int(profile.height)))
@@ -141,8 +125,6 @@ struct ReviewView: View {
             (L10n.locationLabel, profile.workoutLocation.displayName),
             (L10n.equipmentLabelFull, equipmentText)
         ]
-        // Shown only when it was asked, so the card and the screen its Edit
-        // opens always agree on which questions exist.
         if let liftingUnits = profile.liftingUnitSystem {
             items.append((
                 L10n.weightsInLabel,

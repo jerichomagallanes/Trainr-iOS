@@ -24,8 +24,6 @@ struct ExerciseTimer: View {
             Text(timer.display)
                 .font(.oneOff(24, .semibold))
                 .foregroundStyle(Color.orange500)
-                // The digits are read as one changing value rather than
-                // announced character by character as they tick.
                 .monospacedDigit()
                 .accessibilityLabel(timer.display)
             Text(timer.isRunning ? L10n.exerciseInProgress : L10n.timerPaused)

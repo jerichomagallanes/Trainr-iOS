@@ -4,7 +4,7 @@ struct WeekProgressCard: View {
     let week: WeekProgressUi
 
     // The title is one AttributedString in two weights, so its sizes are read
-    // here rather than applied as a modifier.
+    // here rather than set by a modifier.
     @ScaledMetric(relativeTo: .body) private var numberSize = TextRole.body16.size
     @ScaledMetric(relativeTo: .subheadline) private var rangeSize = TextRole.body14.size
     let dateRange: String
@@ -13,7 +13,6 @@ struct WeekProgressCard: View {
     var body: some View {
         Button(action: onTap) {
             HStack(spacing: 0) {
-                // The spine that marks a week apart from the one below it.
                 Color.slate800.frame(width: 12)
 
                 VStack(spacing: Spacing.screen) {
@@ -47,8 +46,6 @@ struct WeekProgressCard: View {
         }
     }
 
-    // The number carries the week; its dates ride along in the lighter weight,
-    // so one line says which week and when without reading as two things.
     private var title: AttributedString {
         var number = AttributedString(L10n.weekNumberFormat(week.weekNumber) + " ")
         number.font = TextRole.body16.font(at: numberSize).weight(.medium)

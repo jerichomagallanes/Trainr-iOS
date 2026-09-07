@@ -1,18 +1,10 @@
 import SwiftUI
 
-// The animation covers the wait; it must not create one. Generating starts
-// with the screen rather than after a timer, and the screen stays only long
-// enough to be read when the answer comes back at once.
 struct GeneratingView: View {
     let isReady: Bool
     let onStart: () -> Void
     let onDone: () -> Void
-    // Non-nil when there is no plan and there will not be one until something
-    // changes. The animation stays behind the dialog rather than pretending to
-    // still be working.
     var failure: PlanGenerationFailure?
-    // Changes on every failure where the failure itself may not: a retry that
-    // fails the same way must still bring the alert back.
     var failureCount = 0
     var onRetry: () -> Void = {}
     var onGiveUp: () -> Void = {}
@@ -20,9 +12,7 @@ struct GeneratingView: View {
 
     @State private var activeIndicator = 0
     @State private var shownAt = Date()
-    // Owned here rather than derived: an alert driven by a constant binding is
-    // dismissed by its own button and then never shown again, so a retry that
-    // failed the same way left the client staring at the wait screen.
+    // Owned and re-armed by failureCount: an alert on a constant binding never reappears once dismissed.
     @State private var isShowingFailure = false
 
     private static let totalIndicators = 14
@@ -76,12 +66,8 @@ struct GeneratingView: View {
             failure == .dailyLimitReached ? L10n.generationLimitTitle : L10n.generationFailedTitle,
             isPresented: $isShowingFailure
         ) {
-            // Retrying a spent allowance cannot work, so that dialog does not
-            // offer it. A button the app already knows will fail is worse than
-            // no button: it invites the client to keep tapping and keep failing.
+            // Retrying a spent allowance cannot work, so that dialog does not offer it.
             if failure == .dailyLimitReached {
-                // The only thing left to do is leave, so it reads as an
-                // acknowledgement rather than as giving up on something.
                 Button(L10n.gotIt, action: onGiveUp)
             } else {
                 Button(L10n.tryAgain, action: onRetry)

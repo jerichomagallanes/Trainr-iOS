@@ -6,9 +6,7 @@ struct VideoTutorial: View {
     let isExpanded: Bool
     let onToggle: () -> Void
 
-    // YouTube serves 16:9; the design's 352x174 rectangle is 2.02:1, and
-    // matching it would letterbox the player. Held from the moment the section
-    // opens so the list does not jump as the player finds its own size.
+    // 16:9 rather than the design's 2.02:1, which would letterbox the player.
     private static let aspectRatio: CGFloat = 16 / 9
 
     var body: some View {
@@ -35,14 +33,12 @@ struct VideoTutorial: View {
         }
     }
 
-    // A player is built only while the section is open, and goes with it. One
-    // that outlived the screen would keep playing with the app in the
-    // background, which the stores treat as substituting for a subscription.
+    // Built only while the section is open: a player that outlived it would
+    // keep playing in the background, which the stores treat as a subscription.
     private var player: some View {
         YouTubePlayerView(
-            // Cued rather than loaded: cueing shows YouTube's own poster frame
-            // and its own play button, and waits to be asked. Loading would
-            // start playing the moment the section opened.
+            // Cued, not loaded: loading starts playing the moment the section
+            // opens.
             YouTubePlayer(
                 source: .video(id: video.id),
                 parameters: .init(autoPlay: false)

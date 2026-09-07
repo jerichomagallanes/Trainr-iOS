@@ -1,9 +1,8 @@
 import SwiftUI
 import UIKit
 
-// The list idiom, for a row that is not in a List: swiping left reveals the
-// delete, and carrying the swipe past the row's middle commits it. SwiftUI's
-// own swipeActions only exist inside a List, and these rows live inside a card.
+// Swipe-to-delete for a row inside a card: SwiftUI's own swipeActions exist
+// only inside a List.
 struct SwipeToDelete<Content: View>: View {
 
     var label: String
@@ -23,17 +22,12 @@ struct SwipeToDelete<Content: View>: View {
                 .offset(x: offset)
                 .gesture(
                     HorizontalPan(
-                        // Leftwards only: a row that slid right would reveal
-                        // nothing.
                         onChanged: { offset = min($0, 0) },
                         onEnded: settle
                     )
                 )
         }
-        // The same promise without the gesture, for anyone driving the screen
-        // by voice, switch or keyboard.
         .accessibilityAction(named: label, delete)
-        // Back at rest, the row can be asked again.
         .onChange(of: offset) { _, now in
             if now == 0 { committed = false }
         }
@@ -66,10 +60,8 @@ struct SwipeToDelete<Content: View>: View {
         }
     }
 
-    // Exactly once per swipe: a gesture that ends past the threshold and a tap
-    // on the revealed button are the same request. The row then returns to
-    // rest, so one that survives the question the delete asks is not left
-    // hanging open.
+    // Exactly once per swipe: a gesture past the threshold and a tap on the
+    // revealed button are the same request.
     private func delete() {
         guard !committed else { return }
         committed = true
@@ -78,13 +70,9 @@ struct SwipeToDelete<Content: View>: View {
     }
 }
 
-// A pan that answers only to sideways movement. Built on UIKit rather than
-// DragGesture because a DragGesture cannot give a touch up once it has it: as
-// a high-priority gesture it took every vertical drag and the page stopped
-// scrolling, and as a simultaneous one the swipe reached the row's button as
-// a tap, opening what was being deleted. A UIKit recogniser that fails on
-// vertical movement hands the touch to the scroll view, and one that
-// recognises cancels the touch for everything beneath it.
+// UIKit rather than DragGesture, which cannot give a touch back: high-priority
+// it swallows vertical drags and the page stops scrolling, simultaneous it lets
+// the swipe reach the row's button as a tap.
 private struct HorizontalPan: UIGestureRecognizerRepresentable {
     let onChanged: (CGFloat) -> Void
     let onEnded: (CGFloat) -> Void
