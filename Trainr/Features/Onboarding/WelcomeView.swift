@@ -76,6 +76,9 @@ struct WelcomeView: View {
                 .resizable()
                 .scaledToFit()
                 .frame(width: width * 0.65, height: width * 0.65)
+                // The art says what the line beneath it says; announcing the
+                // asset name as well only got in the way.
+                .accessibilityHidden(true)
             Text(page.title)
                 .font(.sectionTitle)
                 .foregroundStyle(Color.slate800)
@@ -93,6 +96,8 @@ struct WelcomeView: View {
                     .frame(width: 10, height: 10)
             }
         }
+        // Three stops with nothing to read at any of them.
+        .accessibilityHidden(true)
     }
 }
 
