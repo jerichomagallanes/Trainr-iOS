@@ -31,8 +31,11 @@ cyclomatic_complexity:
   warning: 15
   error: 20
 
-# The onboarding answers travel together — six questions, one callback — the
-# same shape the Android app hands them around in.
+# A screen takes what it draws and one callback per thing it can be asked to
+# do, and the plan screen has nine of those. Counting them is not a smell worth
+# a warning: the alternative is a bag of closures that hides which are handled.
+# (The threshold was justified by onboarding's six answers and one callback,
+# which is a smaller shape than the one that actually sets it.)
 function_parameter_count:
   warning: 7
   error: 9

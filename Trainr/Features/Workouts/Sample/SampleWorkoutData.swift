@@ -14,9 +14,17 @@ nonisolated enum SampleWorkoutData {
     // Read per call rather than cached: the current time zone can change while
     // the app runs, which would otherwise freeze a stale date.
     static func date(of dayNumber: Int) -> Date {
-        let calendar = Calendar.current
-        let base = calendar.date(from: DateComponents(year: 2025, month: 7, day: 21))!
-        return calendar.date(byAdding: .day, value: dayNumber - 1, to: base)!
+        // Built in the Gregorian calendar because the components are Gregorian:
+        // asked of a device set to another, the same year, month and day may
+        // name no date at all, and this is reached from the plan screen in a
+        // Release build.
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = Calendar.current.timeZone
+        let components = DateComponents(year: 2025, month: 7, day: 21)
+        guard let base = calendar.date(from: components),
+              let day = calendar.date(byAdding: .day, value: dayNumber - 1, to: base)
+        else { return Date(timeIntervalSince1970: 0) }
+        return day
     }
 
     static func day(for dayNumber: Int) -> WorkoutDay {

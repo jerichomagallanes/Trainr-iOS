@@ -26,7 +26,7 @@ struct SelectionCard: View {
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.leading, 5)
-                .padding(.vertical, 5)
+                .padding(.vertical, Spacing.snug)
                 .padding(.trailing, Spacing.extraLarge)
             }
             .padding(Spacing.tight)

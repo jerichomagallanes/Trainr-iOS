@@ -11,7 +11,7 @@ struct WorkoutStatusChip: View {
             .font(.labelSmall)
             .foregroundStyle(Color.white)
             .padding(.horizontal, Spacing.small)
-            .padding(.vertical, 3)
+            .padding(.vertical, Spacing.hairline)
             .background(
                 isMissed ? Color.statusNotStarted : status.chipColor,
                 in: .rect(cornerRadius: CornerRadius.small)
@@ -27,7 +27,7 @@ struct WeekStatusChip: View {
             .font(.labelSmall)
             .foregroundStyle(Color.white)
             .padding(.horizontal, Spacing.small)
-            .padding(.vertical, 3)
+            .padding(.vertical, Spacing.hairline)
             .background(status.chipColor, in: .rect(cornerRadius: CornerRadius.small))
     }
 }

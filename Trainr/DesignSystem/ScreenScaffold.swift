@@ -20,10 +20,7 @@ struct ScreenScaffold<Content: View, BottomButton: View>: View {
         .safeAreaInset(edge: .bottom, spacing: 0) {
             bottomButton
                 .padding(Spacing.large)
-                .background(
-                    Color.white
-                        .shadow(.drop(color: .black.opacity(0.08), radius: 4, y: -2))
-                )
+                .background(.pinnedBar)
         }
         .toolbar(.hidden, for: .navigationBar)
     }

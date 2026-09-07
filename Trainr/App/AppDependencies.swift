@@ -62,8 +62,18 @@ final class AppDependencies {
             // to. In-memory keeps the session alive so the crash report that
             // explains the broken database can actually be written.
             CrashlyticsBreadcrumbs().record("store: persistent container failed, using memory")
-            // swiftlint:disable:next force_try
-            container = try! TrainingStore.container(inMemory: true)
+            do {
+                container = try TrainingStore.container(inMemory: true)
+            } catch {
+                // Both failed, so it is the schema that cannot be loaded rather
+                // than the file that cannot be read, and nothing the app does
+                // works without a store. Stopping here with the reason named is
+                // what puts that reason in the crash report; the forced try it
+                // replaces left an unwrap and no cause, which is the opposite
+                // of what this fallback exists for.
+                CrashlyticsBreadcrumbs().record("store: memory container failed too: \(error)")
+                fatalError("Trainr cannot open a data store: \(error)")
+            }
         }
         let store = TrainingStore(container: container)
         #if DEBUG

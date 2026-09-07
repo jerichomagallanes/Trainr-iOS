@@ -146,9 +146,7 @@ struct RoutineDetailView: View {
     }
 
     private var equipmentLine: AttributedString {
-        var label = AttributedString(L10n.equipmentLabel + " ")
-        label.font = TextRole.labelMedium.font(at: labelSize)
-        return label + AttributedString(state.equipment.joined(separator: ", "))
+        EquipmentLine.text(state.equipment, labelFont: TextRole.labelMedium.font(at: labelSize))
     }
 
     private var exercises: some View {

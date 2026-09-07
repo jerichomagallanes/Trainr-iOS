@@ -300,9 +300,7 @@ struct WeeklyPlanView: View {
         content()
             .padding(.horizontal, Spacing.screen)
             .padding(.vertical, Spacing.medium)
-            .background(
-                Color.white.shadow(.drop(color: .black.opacity(0.08), radius: 4, y: -2))
-            )
+            .background(.pinnedBar)
     }
 
     // Who you are and what the app is: the two things that are about the client

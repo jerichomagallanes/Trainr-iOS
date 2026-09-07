@@ -202,8 +202,12 @@ struct RootView: View {
                 failureCount: onboarding.failureCount,
                 onRetry: { onboarding.saveUserProfile() },
                 // Nothing was written, so the way out is back to the profile
-                // the plan would have been built from.
-                onGiveUp: pop,
+                // the plan would have been built from — and the run they walked
+                // away from stops writing one.
+                onGiveUp: {
+                    onboarding.cancelRun()
+                    pop()
+                },
                 giveUpLabel: L10n.backToProfile
             )
 
@@ -309,7 +313,10 @@ struct RootView: View {
                 onRetry: start,
                 // The plan they already have is still there to go back to, so
                 // this asks to stop waiting rather than offering somewhere new.
-                onGiveUp: pop,
+                onGiveUp: {
+                    nextWeek.cancelRun()
+                    pop()
+                },
                 giveUpLabel: L10n.cancel
             )
         }

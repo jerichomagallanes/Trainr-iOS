@@ -39,6 +39,10 @@ final class OnboardingModel {
     // the screen, so a regeneration would otherwise begin already "complete"
     // from the run before it and walk straight past the wait.
     private var isWorking = false
+    // Held so a wait the client walked away from can be called off. The request
+    // still finishes — it has no cancellation point of its own — but a run
+    // nobody is waiting for must not write a profile or a plan.
+    private var run: Task<Void, Never>?
 
     init(dependencies: AppDependencies) {
         self.dependencies = dependencies
@@ -105,6 +109,13 @@ final class OnboardingModel {
         profile.injuries = injuries
     }
 
+    // Giving up on the wait: what has been asked for cannot be unasked, but its
+    // answer stops being written.
+    func cancelRun() {
+        run?.cancel()
+        run = nil
+    }
+
     func hasCompletedOnboarding() -> Bool {
         dependencies.attempt("hasUsers", { try store.hasUsers() }) ?? false
     }
@@ -129,7 +140,7 @@ final class OnboardingModel {
     func saveUserProfile(onSuccess: @escaping () -> Void = {}) {
         guard !isWorking else { return }
         isWorking = true
-        Task {
+        run = Task {
             defer { isWorking = false }
             isLoading = true
             isCompleted = false
@@ -178,6 +189,7 @@ final class OnboardingModel {
                 return
             }
 
+            guard !Task.isCancelled else { return }
             do {
                 try store.saveUser(toSave)
                 plan.userID = toSave.id
