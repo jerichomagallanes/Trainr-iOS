@@ -278,7 +278,14 @@ struct RootView: View {
                         .routineDetail(dayNumber: $0.dayNumber, weekNumber: weekNumber)
                     )
                 },
-                onRepeatWeek: { nextWeek?.repeatWeek(numbered: weekNumber) },
+                // The copy joins the plan at the end, so the week being
+                // trained is no longer the one on screen. Refreshing here would
+                // re-read the same old week and look like nothing happened, so
+                // the way on is home, where the copy now lives.
+                onRepeatWeek: {
+                    nextWeek?.repeatWeek(numbered: weekNumber)
+                    if nextWeek?.isReady == true { restartOnHome() }
+                },
                 onBack: pop
             )
 
