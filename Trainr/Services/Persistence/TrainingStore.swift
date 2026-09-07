@@ -128,10 +128,6 @@ final class TrainingStore {
         try context.save()
     }
 
-    func day(id: UUID) throws -> WorkoutDay? {
-        try dayRecord(id: id)?.day
-    }
-
     // The day's own fields; its exercises are written through their own updates.
     func updateDay(_ day: WorkoutDay) throws {
         guard let record = try dayRecord(id: day.id) else { return }
@@ -260,46 +256,7 @@ final class TrainingStore {
         }
     }
 
-    // MARK: - Progress
-
-    func weeklyProgress(userID: UUID, weekNumber: Int) throws -> WeeklyProgress? {
-        guard let plan = try userRecord(id: userID)?.plans
-            .first(where: { $0.weekNumber == weekNumber })
-        else { return nil }
-        let dayProgress = Self.progress(of: plan)
-
-        let completed = dayProgress.count { $0.status == .completed }
-        let total = dayProgress.count
-        return WeeklyProgress(
-            weekNumber: weekNumber,
-            completedWorkouts: completed,
-            totalWorkouts: total,
-            completionPercentage: total > 0 ? Double(completed) / Double(total) * 100 : 0,
-            workoutDays: dayProgress
-        )
-    }
-
-    func dayProgress(planID: UUID) throws -> [WorkoutDayProgress] {
-        guard let plan = try planRecord(id: planID) else { return [] }
-        return Self.progress(of: plan)
-    }
-
     // MARK: - Records
-
-    private static func progress(of plan: WeeklyPlanRecord) -> [WorkoutDayProgress] {
-        plan.days.sorted { $0.dayNumber < $1.dayNumber }.map { day in
-            let total = day.exercises.count
-            let completed = day.exercises.count(where: \.isCompleted)
-            return WorkoutDayProgress(
-                dayNumber: day.dayNumber,
-                title: day.title,
-                status: WorkoutStatus(rawValue: day.status) ?? .notStarted,
-                completionPercentage: total > 0 ? Double(completed) / Double(total) * 100 : 0,
-                completedExercises: completed,
-                totalExercises: total
-            )
-        }
-    }
 
     private func dayRecord(_ day: WorkoutDay) -> WorkoutDayRecord {
         let record = WorkoutDayRecord(day)

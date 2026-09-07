@@ -78,20 +78,3 @@ nonisolated enum WorkoutStatus: String, Codable, CaseIterable, Sendable {
     case inProgress
     case completed
 }
-
-nonisolated struct WeeklyProgress: Equatable, Sendable {
-    var weekNumber: Int
-    var completedWorkouts: Int
-    var totalWorkouts: Int
-    var completionPercentage: Double
-    var workoutDays: [WorkoutDayProgress]
-}
-
-nonisolated struct WorkoutDayProgress: Equatable, Sendable {
-    var dayNumber: Int
-    var title: String
-    var status: WorkoutStatus
-    var completionPercentage: Double
-    var completedExercises: Int
-    var totalExercises: Int
-}

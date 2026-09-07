@@ -24,40 +24,6 @@ nonisolated enum SampleWorkoutData {
             ?? weekOne.workoutDays[0]
     }
 
-    // The sample week with nothing done yet, started on the given day and owned
-    // by the given client.
-    static func freshWeekOne(userID: UUID, startDate: Date) -> WeeklyPlan {
-        var plan = weekOne
-        plan.id = UUID()
-        plan.userID = userID
-        plan.startDate = startDate
-        plan.createdAt = Date()
-        plan.updatedAt = plan.createdAt
-        plan.workoutDays = plan.workoutDays.map { day in
-            var fresh = day
-            fresh.id = UUID()
-            fresh.status = .notStarted
-            fresh.completedAt = nil
-            fresh.exercises = fresh.exercises.map { exercise in
-                var reset = exercise
-                reset.id = UUID()
-                reset.isCompleted = false
-                reset.sets = reset.sets.map { set in
-                    var blank = set
-                    blank.id = UUID()
-                    blank.actualReps = nil
-                    blank.actualWeightKg = nil
-                    blank.actualSeconds = nil
-                    blank.isCompleted = false
-                    return blank
-                }
-                return reset
-            }
-            return fresh
-        }
-        return plan
-    }
-
     static var weekOne: WeeklyPlan {
         WeeklyPlan(
             userID: UUID(),
