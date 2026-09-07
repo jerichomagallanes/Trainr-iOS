@@ -6,7 +6,6 @@ nonisolated enum Spacing {
     static let medium: CGFloat = 16
     static let large: CGFloat = 24
     static let extraLarge: CGFloat = 32
-    static let huge: CGFloat = 48
 
     static let tight: CGFloat = 10
     static let card: CGFloat = 15
