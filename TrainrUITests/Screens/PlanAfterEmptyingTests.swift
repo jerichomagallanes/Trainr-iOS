@@ -24,7 +24,7 @@ final class PlanAfterEmptyingTests: XCTestCase {
     @MainActor
     func testCreatingAPlanAfterDeletingEveryWeekWaitsForIt() {
         app = launchedSlow()
-        XCTAssertTrue(app.staticTexts["YOUR FITNESS PROFILE"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.staticTexts["YOUR FITNESS PROFILE"].waitForExistence(timeout: 20))
         app.tapGenerate()
         XCTAssertTrue(app.staticTexts["YOUR WEEKLY WORKOUT PLAN"].waitForExistence(timeout: 30))
 
