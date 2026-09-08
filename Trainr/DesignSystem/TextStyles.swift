@@ -6,7 +6,7 @@ struct ScreenTitle: View {
     var body: some View {
         Text(text)
             .font(.screenTitle)
-            .foregroundStyle(Color.slate800)
+            .foregroundStyle(Color.onSurface)
     }
 }
 
@@ -16,7 +16,7 @@ struct Subtitle: View {
     var body: some View {
         Text(text)
             .font(.body14)
-            .foregroundStyle(Color.textMuted)
+            .foregroundStyle(Color.onSurfaceMuted)
     }
 }
 
@@ -26,6 +26,6 @@ struct SectionTitle: View {
     var body: some View {
         Text(text)
             .font(.sectionTitle)
-            .foregroundStyle(Color.slate800)
+            .foregroundStyle(Color.onSurface)
     }
 }

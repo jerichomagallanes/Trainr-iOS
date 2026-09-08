@@ -219,13 +219,13 @@ private struct UnitTab: View {
             Text(text)
                 .font(.body16)
                 .fontWeight(isSelected ? .bold : .medium)
-                .foregroundStyle(isSelected ? Color.white : .textMuted)
+                .foregroundStyle(isSelected ? Color.onSurfaceSelected : .onSurfaceMuted)
                 .frame(maxWidth: .infinity)
                 .frame(height: ComponentHeight.chipTall)
         }
         .buttonStyle(.plain)
         .background(
-            isSelected ? Color.slate800 : .white,
+            isSelected ? Color.surfaceSelected : .surfaceCard,
             in: UnevenRoundedRectangle(topLeadingRadius: CornerRadius.medium,
                                        topTrailingRadius: CornerRadius.medium)
         )
@@ -233,7 +233,7 @@ private struct UnitTab: View {
             if !isSelected {
                 UnevenRoundedRectangle(topLeadingRadius: CornerRadius.medium,
                                        topTrailingRadius: CornerRadius.medium)
-                    .strokeBorder(Color.outlineGray, lineWidth: 1)
+                    .strokeBorder(Color.outlineControl, lineWidth: 1)
             }
         }
         .accessibilityAddTraits(isSelected ? .isSelected : [])
@@ -245,16 +245,16 @@ private struct BMICard: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.extraSmall) {
-            (Text(L10n.bmiLabel + " ").fontWeight(.semibold).foregroundStyle(Color.slate800)
-                + Text(String(format: "%.1f", bmi)).bold().foregroundStyle(Color.orange500))
+            (Text(L10n.bmiLabel + " ").fontWeight(.semibold).foregroundStyle(Color.onSurface)
+                + Text(String(format: "%.1f", bmi)).bold().foregroundStyle(Color.brandStrong))
                 .font(.body16)
             Text(category)
                 .font(.fieldLabel)
-                .foregroundStyle(Color.orange500)
+                .foregroundStyle(Color.brandStrong)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(Spacing.medium)
-        .background(Color.gray100, in: RoundedRectangle(cornerRadius: CornerRadius.medium))
+        .background(Color.surfaceSunken, in: RoundedRectangle(cornerRadius: CornerRadius.medium))
     }
 
     private var category: String {

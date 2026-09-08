@@ -8,11 +8,11 @@ struct WorkoutStatusChip: View {
     var body: some View {
         Text(isMissed ? L10n.missed : status.label)
             .font(.labelSmall)
-            .foregroundStyle(Color.white)
+            .foregroundStyle(Color.onStatus)
             .padding(.horizontal, Spacing.small)
             .padding(.vertical, Spacing.hairline)
             .background(
-                isMissed ? Color.statusNotStarted : status.chipColor,
+                isMissed ? Color.statusIdle : status.chipColor,
                 in: .rect(cornerRadius: CornerRadius.small)
             )
     }
@@ -24,7 +24,7 @@ struct WeekStatusChip: View {
     var body: some View {
         Text(status.label)
             .font(.labelSmall)
-            .foregroundStyle(Color.white)
+            .foregroundStyle(Color.onStatus)
             .padding(.horizontal, Spacing.small)
             .padding(.vertical, Spacing.hairline)
             .background(status.chipColor, in: .rect(cornerRadius: CornerRadius.small))

@@ -6,7 +6,7 @@ struct PillButton: View {
     var filled = true
     let action: () -> Void
 
-    private var content: Color { filled ? .white : .slate800 }
+    private var content: Color { filled ? .onBrand : .onSurface }
 
     var body: some View {
         Button(action: action) {
@@ -22,13 +22,13 @@ struct PillButton: View {
             .padding(.trailing, Spacing.card)
             .frame(height: ComponentHeight.pill)
             .background(
-                filled ? Color.orange500 : Color.white,
+                filled ? Color.brandStrong : Color.surfaceRaised,
                 in: .rect(cornerRadius: CornerRadius.medium)
             )
             .overlay {
                 if !filled {
                     RoundedRectangle(cornerRadius: CornerRadius.medium)
-                        .strokeBorder(Color.outlineGray, lineWidth: 1.5)
+                        .strokeBorder(Color.outlineControl, lineWidth: 1.5)
                 }
             }
             .contentShape(.rect(cornerRadius: CornerRadius.medium))

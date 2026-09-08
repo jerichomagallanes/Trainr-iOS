@@ -16,7 +16,7 @@ struct WorkoutDayCard: View {
         Button(action: onTap) {
             VStack(spacing: 0) {
                 header
-                Divider().overlay(Color.outlineGray)
+                Divider().overlay(Color.outlineControl)
                 details
             }
             // Without this the button answers only where its labels are opaque.
@@ -26,7 +26,7 @@ struct WorkoutDayCard: View {
         .clipShape(.rect(cornerRadius: CornerRadius.medium))
         .overlay {
             RoundedRectangle(cornerRadius: CornerRadius.medium)
-                .strokeBorder(Color.outlineGray, lineWidth: 1)
+                .strokeBorder(Color.outlineControl, lineWidth: 1)
         }
         .accessibilityElement(children: .combine)
     }
@@ -39,13 +39,18 @@ struct WorkoutDayCard: View {
                 Text(day.title)
                     .font(.body14)
             }
-            .foregroundStyle(headerIsDark ? Color.white : Color.slate800)
+            .foregroundStyle(headerIsDark ? Color.onSurfaceEmphasis : Color.onSurface)
             .frame(maxWidth: .infinity, alignment: .leading)
 
             WorkoutStatusChip(status: day.status, isMissed: isMissed)
         }
         .padding(Spacing.card)
-        .background(headerIsDark ? Color.slate800 : Color.white)
+        .background(headerIsDark ? Color.surfaceEmphasis : Color.surfaceCard)
+        .overlay(alignment: .top) {
+            if headerIsDark {
+                Rectangle().fill(Color.accentRule).frame(height: 3)
+            }
+        }
     }
 
     private var details: some View {
@@ -54,24 +59,24 @@ struct WorkoutDayCard: View {
                 Label {
                     Text(L10n.minutes(day.duration))
                         .font(.body14)
-                        .foregroundStyle(Color.black)
+                        .foregroundStyle(Color.onSurfaceStrong)
                 } icon: {
                     Image(systemName: "clock")
-                        .foregroundStyle(Color.slate800)
+                        .foregroundStyle(Color.onSurface)
                 }
                 .font(.body14)
 
                 Text(L10n.exercisesCount(day.exerciseCount))
                     .font(.labelLarge)
-                    .foregroundStyle(Color.slate800)
+                    .foregroundStyle(Color.onSurface)
                     .padding(.horizontal, Spacing.small)
                     .padding(.vertical, Spacing.hairline)
-                    .background(Color.gray100, in: .rect(cornerRadius: CornerRadius.small))
+                    .background(Color.surfaceSunken, in: .rect(cornerRadius: CornerRadius.small))
 
                 if !day.equipment.isEmpty {
                     Text(equipmentLine)
                         .font(.body14)
-                        .foregroundStyle(Color.slate800)
+                        .foregroundStyle(Color.onSurface)
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -79,7 +84,7 @@ struct WorkoutDayCard: View {
             CardArrow()
         }
         .padding(Spacing.card)
-        .background(Color.white)
+        .background(Color.surfaceCard)
     }
 
     private var equipmentLine: AttributedString {

@@ -7,7 +7,7 @@ struct FieldError: View {
         if let message {
             Text(message)
                 .font(.body12)
-                .foregroundStyle(Color.redError)
+                .foregroundStyle(Color.dangerInk)
                 .padding(.top, Spacing.small)
         }
     }

@@ -7,7 +7,7 @@ struct RadioDot: View {
     var color: Color?
 
     var body: some View {
-        let dotColor = color ?? (isSelected ? Color.white : .outlineGray)
+        let dotColor = color ?? (isSelected ? Color.onSurfaceSelected : .outlineControl)
         Circle()
             .strokeBorder(dotColor, lineWidth: 2)
             .frame(width: 20, height: 20)

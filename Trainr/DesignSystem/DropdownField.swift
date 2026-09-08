@@ -15,18 +15,18 @@ struct DropdownField: View {
             HStack {
                 Text(selectedValue.isBlank ? placeholder : selectedValue)
                     .font(.labelMedium)
-                    .foregroundStyle(selectedValue.isBlank ? Color.textMuted : .slate800)
+                    .foregroundStyle(selectedValue.isBlank ? Color.onSurfaceMuted : .onSurface)
                 Spacer()
                 Image(systemName: "chevron.up.chevron.down")
                     .font(.oneOff(12))
-                    .foregroundStyle(Color.textMuted)
+                    .foregroundStyle(Color.onSurfaceMuted)
             }
             .padding(.horizontal, Spacing.medium)
             .frame(height: ComponentHeight.medium)
-            .background(Color.white, in: RoundedRectangle(cornerRadius: CornerRadius.medium))
+            .background(Color.surfaceCard, in: RoundedRectangle(cornerRadius: CornerRadius.medium))
             .overlay {
                 RoundedRectangle(cornerRadius: CornerRadius.medium)
-                    .strokeBorder(Color.outlineGray, lineWidth: 1)
+                    .strokeBorder(Color.outlineControl, lineWidth: 1)
             }
             .contentShape(RoundedRectangle(cornerRadius: CornerRadius.medium))
         }

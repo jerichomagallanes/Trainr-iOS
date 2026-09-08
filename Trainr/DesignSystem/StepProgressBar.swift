@@ -7,9 +7,9 @@ struct StepProgressBar: View {
     var body: some View {
         GeometryReader { geometry in
             ZStack(alignment: .leading) {
-                Capsule().fill(Color.outlineGray)
+                Capsule().fill(Color.trackEmpty)
                 Capsule()
-                    .fill(Color.slate800)
+                    .fill(Color.surfaceSelected)
                     .frame(width: geometry.size.width * CGFloat(currentStep) / CGFloat(totalSteps))
             }
         }

@@ -19,10 +19,10 @@ struct VideoTutorial: View {
                         .font(.oneOff(14, .semibold))
                         .rotationEffect(.degrees(isExpanded ? 0 : 180))
                 }
-                .foregroundStyle(Color.slate800)
+                .foregroundStyle(Color.onSurface)
                 .padding(.horizontal, Spacing.tight)
                 .frame(height: 27)
-                .background(Color.gray100, in: .rect(cornerRadius: CornerRadius.medium))
+                .background(Color.surfaceSunken, in: .rect(cornerRadius: CornerRadius.medium))
                 .contentShape(.rect)
             }
             .buttonStyle(.plain)

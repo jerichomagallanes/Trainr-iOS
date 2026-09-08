@@ -19,13 +19,13 @@ struct WeekStatusTests {
     func fiveLabelsCollapseToThreeColours() {
         #expect(WeekStatus.notCompleted.chipColor == WeekStatus.skipped.chipColor)
         #expect(WeekStatus.skipped.chipColor == WeekStatus.upcoming.chipColor)
-        #expect(WeekStatus.upcoming.chipColor == .statusNotStarted)
+        #expect(WeekStatus.upcoming.chipColor == .statusIdle)
     }
 
     @Test("A finished week and one in progress each keep their own colour")
     func theTwoLiveStatusesAreDistinct() {
-        #expect(WeekStatus.completed.chipColor == .statusCompleted)
-        #expect(WeekStatus.inProgress.chipColor == .statusInProgress)
+        #expect(WeekStatus.completed.chipColor == .statusDone)
+        #expect(WeekStatus.inProgress.chipColor == .statusActive)
         #expect(WeekStatus.completed.chipColor != WeekStatus.inProgress.chipColor)
         #expect(WeekStatus.completed.chipColor != WeekStatus.notCompleted.chipColor)
     }

@@ -30,7 +30,7 @@ struct GeneratingView: View {
 
             Text(L10n.generatingYourWorkoutRoutine)
                 .font(.sectionTitle)
-                .foregroundStyle(Color.slate800)
+                .foregroundStyle(Color.onSurface)
                 .multilineTextAlignment(.center)
 
             Spacer().frame(height: Spacing.extraLarge)
@@ -39,7 +39,7 @@ struct GeneratingView: View {
         }
         .padding(Spacing.large)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color.white)
+        .background(Color.surfacePage)
         .toolbar(.hidden, for: .navigationBar)
         .navigationBarBackButtonHidden()
         .task {
@@ -95,7 +95,7 @@ struct GeneratingView: View {
             ForEach(0..<Self.totalIndicators, id: \.self) { index in
                 let isActive = index <= activeIndicator
                 RoundedRectangle(cornerRadius: 2)
-                    .fill(isActive ? Color.orange500 : Color(rgb: 0xCCCCCC))
+                    .fill(isActive ? Color.brand : Color.barIdle)
                     .frame(width: 12, height: 24)
                     .opacity(alpha(for: index))
             }

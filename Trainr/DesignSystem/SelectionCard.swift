@@ -14,11 +14,11 @@ struct SelectionCard: View {
                     Text(title)
                         .font(.body16)
                         .fontWeight(isSelected ? .bold : .medium)
-                        .foregroundStyle(isSelected ? Color.white : .slate800)
+                        .foregroundStyle(isSelected ? Color.onSurfaceSelected : .onSurface)
                     if let description {
                         Text(description)
                             .font(.body14)
-                            .foregroundStyle(isSelected ? Color.white : .textMuted)
+                            .foregroundStyle(isSelected ? Color.onSurfaceSelected : .onSurfaceMuted)
                             .multilineTextAlignment(.leading)
                     }
                 }
@@ -32,12 +32,12 @@ struct SelectionCard: View {
         }
         .buttonStyle(.plain)
         .background(
-            isSelected ? Color.slate800 : .white,
+            isSelected ? Color.surfaceSelected : .surfaceCard,
             in: RoundedRectangle(cornerRadius: CornerRadius.medium)
         )
         .overlay {
             RoundedRectangle(cornerRadius: CornerRadius.medium)
-                .strokeBorder(Color.outlineGray, lineWidth: 1)
+                .strokeBorder(Color.outlineControl, lineWidth: 1)
         }
         .accessibilityAddTraits(isSelected ? .isSelected : [])
     }

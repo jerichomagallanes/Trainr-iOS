@@ -2,6 +2,7 @@ import SwiftUI
 
 struct WeeklyPlanView: View {
 
+    @Environment(AppearancePreference.self) private var appearance
     // Owned here, so a screen rebuilt around it keeps the week it read.
     @State private var model: WeeklyPlanModel
     private let versionName: String
@@ -80,7 +81,7 @@ struct WeeklyPlanView: View {
                 Spacer()
             }
         }
-        .background(Color.white)
+        .background(Color.surfacePage)
         .toolbar(.hidden, for: .navigationBar)
         .onAppear { model.refresh() }
         .alert(L10n.aboutTheApp, isPresented: $showAbout) {
@@ -118,7 +119,7 @@ struct WeeklyPlanView: View {
                 // An explicit rule, not a Divider: a list row lays out
                 // horizontally, so a Divider draws as a vertical hairline.
                 Rectangle()
-                    .fill(Color.dividerGray)
+                    .fill(Color.outlineDivider)
                     .frame(height: 1)
                 weekRange
                 if isHome {
@@ -156,7 +157,7 @@ struct WeeklyPlanView: View {
         HStack(alignment: .firstTextBaseline) {
             Text(L10n.yourWeeklyWorkoutPlan)
                 .font(.screenTitle)
-                .foregroundStyle(Color.slate800)
+                .foregroundStyle(Color.onSurface)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
             // The last term keeps the menu on the current week opened from
@@ -200,7 +201,7 @@ struct WeeklyPlanView: View {
         } label: {
             Image(systemName: "ellipsis")
                 .font(.oneOff(18, .semibold))
-                .foregroundStyle(Color.slate800)
+                .foregroundStyle(Color.onSurface)
                 .frame(width: 44, height: 44, alignment: .trailing)
         }
         .accessibilityLabel(L10n.planOptions)
@@ -213,10 +214,10 @@ struct WeeklyPlanView: View {
                 WorkoutDateFormatter.weekRange(from: state.weekStart, to: state.weekEnd)
             ))
             .font(.body16)
-            .foregroundStyle(Color.slate800)
+            .foregroundStyle(Color.onSurface)
         } icon: {
             Image(systemName: "calendar")
-                .foregroundStyle(Color.slate800)
+                .foregroundStyle(Color.onSurface)
         }
         .font(.body14)
     }
@@ -229,7 +230,7 @@ struct WeeklyPlanView: View {
             } icon: {
                 Image(systemName: "chart.line.uptrend.xyaxis")
             }
-            .foregroundStyle(Color.orange500)
+            .foregroundStyle(Color.brandStrong)
             .frame(maxWidth: .infinity, alignment: .leading)
             .contentShape(.rect)
         }
@@ -259,17 +260,23 @@ struct WeeklyPlanView: View {
         content()
             .padding(.horizontal, Spacing.screen)
             .padding(.vertical, Spacing.medium)
-            .background(.pinnedBar)
+            .pinnedBar()
     }
 
     private var profileMenu: some View {
-        Menu {
+        @Bindable var preference = appearance
+        return Menu {
             Button(L10n.updateProfile, action: onUpdateProfile)
+            Picker(L10n.appearance, selection: $preference.mode) {
+                ForEach(AppearanceMode.allCases, id: \.self) { mode in
+                    Label(mode.label, systemImage: mode.symbol).tag(mode)
+                }
+            }
             Button(L10n.aboutTheApp) { showAbout = true }
         } label: {
             Image(systemName: "person.crop.circle")
                 .font(.oneOff(22))
-                .foregroundStyle(Color.slate800)
+                .foregroundStyle(Color.onSurface)
                 .frame(width: 44, height: 44)
         }
         .accessibilityLabel(L10n.profileAndApp)
@@ -280,12 +287,12 @@ struct WeeklyPlanView: View {
             Spacer()
             Text(L10n.noPlanTitle)
                 .font(.screenTitle)
-                .foregroundStyle(Color.slate800)
+                .foregroundStyle(Color.onSurface)
                 .multilineTextAlignment(.center)
             Spacer().frame(height: Spacing.small)
             Text(L10n.noPlanMessage)
                 .font(.body16)
-                .foregroundStyle(Color.textMuted)
+                .foregroundStyle(Color.onSurfaceMuted)
                 .multilineTextAlignment(.center)
             Spacer().frame(height: Spacing.sectionGap)
             PrimaryButton(title: L10n.createMyPlan, action: onCreatePlan)
@@ -307,4 +314,5 @@ struct WeeklyPlanView: View {
     NavigationStack {
         WeeklyPlanView(dependencies: .preview, versionName: "1.0.0")
     }
+    .environment(AppearancePreference())
 }
