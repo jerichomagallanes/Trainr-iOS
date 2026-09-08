@@ -84,20 +84,20 @@ extension Color {
     static let scrim = Color(light: UIColor(rgb: 0x000000, alpha: 0.3),
                              dark: UIColor(rgb: 0x000000, alpha: 0.7))
 
-    // Both sides are resolved before the closure so it only picks one. Converting
-    // a Color to a UIColor inside it traps: SwiftUI resolves colours off the main
-    // thread, and that conversion is main-actor work.
-    init(light: UIColor, dark: UIColor) {
+    // Nonisolated because the target is main-actor by default, which would isolate
+    // this closure, and UIKit resolves a trait provider off the main thread. Both
+    // sides are resolved up front so the closure only picks one.
+    nonisolated init(light: UIColor, dark: UIColor) {
         self.init(uiColor: UIColor { $0.userInterfaceStyle == .dark ? dark : light })
     }
 
-    private static func themed(_ light: UInt32, _ dark: UInt32) -> Color {
+    private nonisolated static func themed(_ light: UInt32, _ dark: UInt32) -> Color {
         Color(light: UIColor(rgb: light), dark: UIColor(rgb: dark))
     }
 }
 
 private extension UIColor {
-    convenience init(rgb: UInt32, alpha: CGFloat = 1) {
+    nonisolated convenience init(rgb: UInt32, alpha: CGFloat = 1) {
         self.init(
             red: CGFloat((rgb >> 16) & 0xFF) / 255,
             green: CGFloat((rgb >> 8) & 0xFF) / 255,
