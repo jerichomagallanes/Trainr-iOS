@@ -41,6 +41,85 @@ enum UITestFixtures {
         }
     }
 
+    static let stepArgument = "-startAtStep"
+
+    // A screen a test can start on, with the answers before it already given.
+    // Retyping five screens of answers into a hosted simulator is what made the
+    // UI suite slow.
+    enum Start: String {
+        case bodyMetrics
+        case goals
+        case setup
+        case limitations
+        case review
+
+        fileprivate var answeredBefore: [OnboardingStep] {
+            switch self {
+            case .bodyMetrics: [.basicInfo]
+            case .goals: [.basicInfo, .bodyMetrics]
+            case .setup: [.basicInfo, .bodyMetrics, .goals]
+            case .limitations: [.basicInfo, .bodyMetrics, .goals, .setup]
+            case .review: [.basicInfo, .bodyMetrics, .goals, .setup, .limitations]
+            }
+        }
+
+        // Every earlier screen stays on the stack, so back behaves as it would
+        // have if the answers had been typed.
+        fileprivate var path: [Route] {
+            let walked: [Route] = [
+                .basicInfo(editing: false),
+                .bodyMetrics(editing: false),
+                .fitnessGoal(editing: false),
+                .workoutSetup(editing: false),
+                .limitations(editing: false)
+            ]
+            switch self {
+            case .bodyMetrics: return Array(walked.prefix(2))
+            case .goals: return Array(walked.prefix(3))
+            case .setup: return Array(walked.prefix(4))
+            case .limitations: return walked
+            case .review: return walked + [.review(fromPlan: false, profileOnly: false)]
+            }
+        }
+    }
+
+    static func requestedStart() -> Start? {
+        let arguments = ProcessInfo.processInfo.arguments
+        guard let index = arguments.firstIndex(of: stepArgument),
+              arguments.indices.contains(index + 1)
+        else { return nil }
+        return Start(rawValue: arguments[index + 1])
+    }
+
+    static func path(for start: Start) -> [Route] { start.path }
+
+    // The same answers the drivers used to type.
+    static func seedAnswers(for start: Start, into model: OnboardingModel) {
+        for step in start.answeredBefore {
+            switch step {
+            case .basicInfo:
+                model.updateBasicInfo(
+                    firstName: "Alex", age: 30, gender: .male, experience: .beginner
+                )
+            case .bodyMetrics:
+                model.updateBodyMetrics(height: 175, weight: 72, units: .metric)
+            case .goals:
+                model.updateFitnessGoal(.muscleGain, workoutType: .strength)
+            case .setup:
+                model.updateWorkoutSetup(
+                    location: .home,
+                    equipment: [.dumbbells],
+                    liftingUnits: .metric,
+                    daysPerWeek: 3,
+                    duration: 45,
+                    preferredTime: .morning
+                )
+            case .limitations:
+                model.updateLimitations(injuries: ["Lower Back Pain"])
+            }
+        }
+    }
+
     private enum Shape {
         case midWeek
         case finished

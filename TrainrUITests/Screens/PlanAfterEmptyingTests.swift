@@ -14,7 +14,9 @@ final class PlanAfterEmptyingTests: XCTestCase {
     @MainActor
     private func launchedSlow() -> XCUIApplication {
         let app = XCUIApplication()
-        app.launchArguments = ["-inMemoryStore", "-slowGeneration", "4"]
+        app.launchArguments = [
+            "-inMemoryStore", "-slowGeneration", "4", "-splashSeconds", "0", "-startAtStep", "review"
+        ]
         app.launch()
         return app
     }
@@ -22,7 +24,7 @@ final class PlanAfterEmptyingTests: XCTestCase {
     @MainActor
     func testCreatingAPlanAfterDeletingEveryWeekWaitsForIt() {
         app = launchedSlow()
-        app.reachReview()
+        XCTAssertTrue(app.staticTexts["YOUR FITNESS PROFILE"].waitForExistence(timeout: 10))
         app.tapGenerate()
         XCTAssertTrue(app.staticTexts["YOUR WEEKLY WORKOUT PLAN"].waitForExistence(timeout: 30))
 
