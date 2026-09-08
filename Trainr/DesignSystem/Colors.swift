@@ -33,8 +33,8 @@ extension Color {
     // in dark.
     static let cardEdge = themed(0x243036, 0x82979F)
     static let cardRule = themed(0x243036, 0x414E57)
-    static let raisedEdge = Color(light: .clear, dark: Color(rgb: 0x414E57))
-    static let accentRule = Color(light: .clear, dark: Color(rgb: 0xE8963A))
+    static let raisedEdge = Color(light: .clear, dark: UIColor(rgb: 0x414E57))
+    static let accentRule = Color(light: .clear, dark: UIColor(rgb: 0xE8963A))
     static let focus = themed(0xD37200, 0xFFA23C)
     static let trackEmpty = themed(0xB0BEC5, 0x414E57)
     static let barIdle = themed(0xCCCCCC, 0x414E57)
@@ -78,26 +78,31 @@ extension Color {
     static let trophyGold = themed(0xDAB900, 0xDAB900)
 
     static let shadowSpot = Color(light: .black, dark: .clear)
-    static let shadowSpotSoft = Color(light: .black.opacity(0.05), dark: .clear)
-    static let shadowSpotBrand = Color(light: Color(rgb: 0xD37200).opacity(0.15), dark: .clear)
-    static let shadowSpotBar = Color(light: .black.opacity(0.08), dark: .clear)
-    static let scrim = Color(light: .black.opacity(0.3), dark: .black.opacity(0.7))
+    static let shadowSpotSoft = Color(light: UIColor(rgb: 0x000000, alpha: 0.05), dark: .clear)
+    static let shadowSpotBrand = Color(light: UIColor(rgb: 0xD37200, alpha: 0.15), dark: .clear)
+    static let shadowSpotBar = Color(light: UIColor(rgb: 0x000000, alpha: 0.08), dark: .clear)
+    static let scrim = Color(light: UIColor(rgb: 0x000000, alpha: 0.3),
+                             dark: UIColor(rgb: 0x000000, alpha: 0.7))
 
-    init(rgb: UInt32) {
-        self.init(
-            red: Double((rgb >> 16) & 0xFF) / 255,
-            green: Double((rgb >> 8) & 0xFF) / 255,
-            blue: Double(rgb & 0xFF) / 255
-        )
-    }
-
-    init(light: Color, dark: Color) {
-        self.init(uiColor: UIColor { trait in
-            UIColor(trait.userInterfaceStyle == .dark ? dark : light)
-        })
+    // Both sides are resolved before the closure so it only picks one. Converting
+    // a Color to a UIColor inside it traps: SwiftUI resolves colours off the main
+    // thread, and that conversion is main-actor work.
+    init(light: UIColor, dark: UIColor) {
+        self.init(uiColor: UIColor { $0.userInterfaceStyle == .dark ? dark : light })
     }
 
     private static func themed(_ light: UInt32, _ dark: UInt32) -> Color {
-        Color(light: Color(rgb: light), dark: Color(rgb: dark))
+        Color(light: UIColor(rgb: light), dark: UIColor(rgb: dark))
+    }
+}
+
+private extension UIColor {
+    convenience init(rgb: UInt32, alpha: CGFloat = 1) {
+        self.init(
+            red: CGFloat((rgb >> 16) & 0xFF) / 255,
+            green: CGFloat((rgb >> 8) & 0xFF) / 255,
+            blue: CGFloat(rgb & 0xFF) / 255,
+            alpha: alpha
+        )
     }
 }
