@@ -145,10 +145,8 @@ struct BodyMetricsView: View {
             )
             .focused($focusedField, equals: .height)
             .onChange(of: height) { oldValue, newValue in
-                let accepted = useMetric
-                    ? newValue.wholeMatch(of: /^\d{0,3}(\.\d{0,1})?$/) != nil
-                    : newValue.wholeMatch(of: /^\d{0,1}'?\d{0,2}"?$/) != nil
-                if !accepted { height = oldValue }
+                height = BodyMetricsConverter.acceptedHeight(newValue, useMetric: useMetric)
+                    ?? oldValue
             }
 
             FieldError(message: fieldMessage(

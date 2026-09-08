@@ -110,6 +110,24 @@ final class OnboardingScreenTests: XCTestCase {
         XCTAssertTrue(next.isEnabled)
     }
 
+    // The keyboard substitutes curly quotes as they are typed, and the field used to
+    // drop them: "5'10\"" arrived as "510", which parses to no height at all.
+    @MainActor
+    func testTypingFeetAndInchesWithTheQuotesTheKeyboardInserts() {
+        app = .launched(startingAt: "bodyMetrics")
+        XCTAssertTrue(app.staticTexts["YOUR MEASUREMENTS"].waitForExistence(timeout: 10))
+        app.buttons["Imperial"].tap()
+        let height = app.textFields["5'10\""]
+        XCTAssertTrue(height.waitForExistence(timeout: 5))
+        height.tap()
+        height.typeText("5\u{2019}10\u{201D}")
+        // Waited for rather than read: the hosted simulator can deliver the last
+        // keystrokes after typeText returns.
+        let reads = expectation(for: NSPredicate(format: "value == %@", "5'10\""),
+                                evaluatedWith: height)
+        wait(for: [reads], timeout: 5)
+    }
+
     @MainActor
     func testSwitchingToImperialRelabelsAndConvertsWhatWasTyped() {
         app = .launched(startingAt: "bodyMetrics")

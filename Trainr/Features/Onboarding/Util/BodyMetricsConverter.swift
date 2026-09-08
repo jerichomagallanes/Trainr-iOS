@@ -14,8 +14,32 @@ nonisolated enum BodyMetricsConverter {
         }
     }
 
+    // Smart punctuation turns a typed apostrophe into U+2019 and a quote into
+    // U+201D, and a pasted measurement often carries the prime marks instead.
+    // The filter and the parser both speak straight quotes.
+    static func straightenQuotes(_ text: String) -> String {
+        var straightened = text
+        for curly in ["\u{2018}", "\u{2019}", "\u{2032}"] {
+            straightened = straightened.replacingOccurrences(of: curly, with: "'")
+        }
+        for curly in ["\u{201C}", "\u{201D}", "\u{2033}"] {
+            straightened = straightened.replacingOccurrences(of: curly, with: "\"")
+        }
+        return straightened
+    }
+
+    // The accepted text, or nil when the field should keep what it had. Imperial
+    // allows a part-typed measurement, so "5" and "5'" pass on the way to "5'10\"".
+    static func acceptedHeight(_ text: String, useMetric: Bool) -> String? {
+        if useMetric {
+            return text.wholeMatch(of: /^\d{0,3}(\.\d{0,1})?$/) != nil ? text : nil
+        }
+        let straightened = straightenQuotes(text)
+        return straightened.wholeMatch(of: /^\d{0,1}'?\d{0,2}"?$/) != nil ? straightened : nil
+    }
+
     static func parseImperialHeight(_ height: String) -> Double {
-        let parts = height.replacingOccurrences(of: "\"", with: "").split(
+        let parts = straightenQuotes(height).replacingOccurrences(of: "\"", with: "").split(
             separator: "'", omittingEmptySubsequences: false)
         guard parts.count == 2 else { return 0 }
         let feet = Double(Int(parts[0]) ?? 0)
