@@ -17,6 +17,39 @@ struct BodyMetricsConverterTests {
         #expect(BodyMetricsConverter.parseImperialHeight("") == 0)
     }
 
+    // The bug this covers: every keystroke was rejected, so the field stayed empty.
+    @Test("The quotes iOS actually inserts are accepted, and stored straight")
+    func smartQuotesReachTheField() {
+        #expect(BodyMetricsConverter.acceptedHeight("5\u{2019}", useMetric: false) == "5'")
+        #expect(BodyMetricsConverter.acceptedHeight("5\u{2019}10\u{201D}", useMetric: false) == "5'10\"")
+        #expect(BodyMetricsConverter.acceptedHeight("5\u{2032}10\u{2033}", useMetric: false) == "5'10\"")
+        #expect(close(BodyMetricsConverter.parseImperialHeight("5\u{2019}10\u{201D}"), 177.8))
+    }
+
+    @Test("A part-typed imperial height is allowed through on its way to being whole")
+    func imperialHeightIsTypeable() {
+        for typed in ["", "5", "5'", "5'1", "5'10", "5'10\""] {
+            #expect(BodyMetricsConverter.acceptedHeight(typed, useMetric: false) == typed)
+        }
+    }
+
+    @Test("The imperial field refuses what it cannot parse")
+    func imperialHeightRejectsTheRest() {
+        for typed in ["a", "5'10\"x", "55'10\"", "5'100\"", "5.10", "-5"] {
+            #expect(BodyMetricsConverter.acceptedHeight(typed, useMetric: false) == nil)
+        }
+    }
+
+    @Test("The metric field takes centimetres to one decimal and nothing else")
+    func metricHeightFilter() {
+        for typed in ["", "1", "175", "175.5"] {
+            #expect(BodyMetricsConverter.acceptedHeight(typed, useMetric: true) == typed)
+        }
+        for typed in ["1755", "175.55", "5'10\"", "abc"] {
+            #expect(BodyMetricsConverter.acceptedHeight(typed, useMetric: true) == nil)
+        }
+    }
+
     @Test("Centimetres read back as feet and inches, rounded to the inch")
     func heightToImperial() {
         #expect(BodyMetricsConverter.convertHeightToImperial("183") == "6'0\"")
