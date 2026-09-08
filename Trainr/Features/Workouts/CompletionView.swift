@@ -3,7 +3,7 @@ import SwiftUI
 struct CompletionView: View {
     let systemImage: String
     let iconSize: CGFloat
-    var iconColor = Color.orange500
+    var iconColor = Color.brand
     let title: String
     let message: String
     let secondaryTitle: String
@@ -28,14 +28,14 @@ struct CompletionView: View {
 
                 Text(title)
                     .font(.oneOff(20, .semibold))
-                    .foregroundStyle(Color.slate800)
+                    .foregroundStyle(Color.onSurface)
                     .multilineTextAlignment(.center)
                     .padding(.top, Spacing.screen)
 
                 Text(message)
                     .font(.body16)
                     .lineSpacing(6)
-                    .foregroundStyle(Color.slate800)
+                    .foregroundStyle(Color.onSurface)
                     .multilineTextAlignment(.center)
                     .padding(.top, Spacing.card)
 
@@ -51,7 +51,7 @@ struct CompletionView: View {
             .padding(.horizontal, Spacing.screen)
             .padding(.vertical, Spacing.section * 2)
         }
-        .background(Color.white)
+        .background(Color.surfacePage)
         .toolbar(.hidden, for: .navigationBar)
     }
 }

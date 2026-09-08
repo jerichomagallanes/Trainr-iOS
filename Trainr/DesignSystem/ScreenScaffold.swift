@@ -14,11 +14,11 @@ struct ScreenScaffold<Content: View, BottomButton: View>: View {
             TopBar(onBack: onBack, closeInsteadOfBack: closeInsteadOfBack, showLogo: showLogo)
             content
         }
-        .background(Color.white)
+        .background(Color.surfacePage)
         .safeAreaInset(edge: .bottom, spacing: 0) {
             bottomButton
                 .padding(Spacing.large)
-                .background(.pinnedBar)
+                .pinnedBar()
         }
         .toolbar(.hidden, for: .navigationBar)
     }
@@ -44,7 +44,7 @@ struct TopBar<Trailing: View>: View {
                     Button(action: onBack) {
                         Image(systemName: closeInsteadOfBack ? "xmark" : "chevron.backward")
                             .font(.oneOff(18, .semibold))
-                            .foregroundStyle(Color.slate800)
+                            .foregroundStyle(Color.onSurface)
                             .frame(width: 44, height: 44)
                     }
                     .accessibilityLabel(closeInsteadOfBack ? L10n.close : L10n.back)
@@ -55,7 +55,7 @@ struct TopBar<Trailing: View>: View {
             .padding(.horizontal, Spacing.extraSmall)
         }
         .frame(height: 56)
-        .background(Color.white)
+        .background(Color.surfacePage)
     }
 }
 
@@ -64,5 +64,12 @@ extension TopBar where Trailing == EmptyView {
         self.init(
             onBack: onBack, closeInsteadOfBack: closeInsteadOfBack, showLogo: showLogo
         ) { EmptyView() }
+    }
+}
+
+extension View {
+    func pinnedBar() -> some View {
+        background(Color.surfaceRaised.shadow(.drop(color: .shadowSpotBar, radius: 4, y: -2)))
+            .overlay(alignment: .top) { Rectangle().fill(Color.raisedEdge).frame(height: 1) }
     }
 }

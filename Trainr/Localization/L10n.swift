@@ -26,6 +26,10 @@ nonisolated enum L10n {
     static func appVersionFormat(_ p1: String) -> String {
         String.localizedStringWithFormat(String(localized: "app_version_format"), p1)
     }
+    static var appearance: String { String(localized: "appearance") }
+    static var appearanceDark: String { String(localized: "appearance_dark") }
+    static var appearanceLight: String { String(localized: "appearance_light") }
+    static var appearanceSystem: String { String(localized: "appearance_system") }
     static var availableEquipment: String { String(localized: "available_equipment") }
     static var back: String { String(localized: "back") }
     static var backToProfile: String { String(localized: "back_to_profile") }

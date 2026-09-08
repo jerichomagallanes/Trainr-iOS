@@ -18,7 +18,7 @@ struct SwipeToDelete<Content: View>: View {
         ZStack(alignment: .trailing) {
             deleteAction
             content
-                .background(Color.white)
+                .background(Color.surfaceCard)
                 .offset(x: offset)
                 .gesture(
                     HorizontalPan(
@@ -37,10 +37,10 @@ struct SwipeToDelete<Content: View>: View {
         Button(action: delete) {
             Image(systemName: "trash")
                 .font(.oneOff(16, .semibold))
-                .foregroundStyle(Color.white)
+                .foregroundStyle(Color.onDanger)
                 .frame(width: Self.actionWidth)
                 .frame(maxHeight: .infinity)
-                .background(Color.redError)
+                .background(Color.danger)
                 .contentShape(.rect)
         }
         .buttonStyle(.plain)

@@ -24,9 +24,9 @@ nonisolated enum WeekStatus: Sendable {
 extension WeekStatus {
     var chipColor: Color {
         switch self {
-        case .completed: .statusCompleted
-        case .inProgress: .statusInProgress
-        case .notCompleted, .skipped, .upcoming: .statusNotStarted
+        case .completed: .statusDone
+        case .inProgress: .statusActive
+        case .notCompleted, .skipped, .upcoming: .statusIdle
         }
     }
 }
@@ -44,9 +44,9 @@ nonisolated extension WorkoutStatus {
 extension WorkoutStatus {
     var chipColor: Color {
         switch self {
-        case .completed: .statusCompleted
-        case .inProgress: .statusInProgress
-        case .notStarted: .statusNotStarted
+        case .completed: .statusDone
+        case .inProgress: .statusActive
+        case .notStarted: .statusIdle
         }
     }
 }

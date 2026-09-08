@@ -18,7 +18,7 @@ struct ReviewView: View {
                 if !isProfileUpdate {
                     Text(L10n.healthDisclaimer)
                         .font(.body12)
-                        .foregroundStyle(Color.textMuted)
+                        .foregroundStyle(Color.onSurfaceMuted)
                 }
                 PrimaryButton(
                     title: isProfileUpdate ? L10n.saveProfile : L10n.generateMyWorkoutPlan,
@@ -160,24 +160,24 @@ private struct ProfileSection: View {
                 Spacer()
                 Button(L10n.edit, action: onEdit)
                     .font(.labelLarge)
-                    .foregroundStyle(Color.orange500)
+                    .foregroundStyle(Color.brandStrong)
             }
             ForEach(items, id: \.0) { label, value in
                 HStack(alignment: .top, spacing: Spacing.card) {
                     Text(label)
                         .font(.body16)
                         .fontWeight(.medium)
-                        .foregroundStyle(Color.textMuted)
+                        .foregroundStyle(Color.onSurfaceMuted)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     Text(value)
                         .font(.body16)
-                        .foregroundStyle(Color.slate800)
+                        .foregroundStyle(Color.onSurface)
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
             }
         }
         .padding(Spacing.card)
-        .background(Color.gray100.opacity(0.5),
+        .background(Color.surfacePanel,
                     in: RoundedRectangle(cornerRadius: CornerRadius.medium))
     }
 }
@@ -192,12 +192,12 @@ private struct AIPreviewCard: View {
                     .renderingMode(.template)
                     .resizable()
                     .frame(width: 24, height: 24)
-                    .foregroundStyle(Color.white)
+                    .foregroundStyle(Color.onSurfaceEmphasis)
                     .accessibilityHidden(true)
                 VStack(alignment: .leading, spacing: Spacing.extraSmall) {
                     Text(L10n.aiRoutinePreviewLabel)
                         .font(.fieldLabel)
-                        .foregroundStyle(Color.white)
+                        .foregroundStyle(Color.onSurfaceEmphasis)
                     Text(L10n.aiRoutineDescription(
                         profile.workoutDaysPerWeek == 0
                             ? L10n.flexibleSchedule
@@ -206,14 +206,14 @@ private struct AIPreviewCard: View {
                         profile.fitnessGoal.focusPhrase
                     ))
                     .font(.body14)
-                    .foregroundStyle(Color.white.opacity(0.9))
+                    .foregroundStyle(Color.onSurfaceEmphasis.opacity(0.9))
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
             .padding(Spacing.medium)
-            .background(Color.slate800)
+            .background(Color.surfaceEmphasis)
 
-            Rectangle().fill(Color.orange500).frame(height: 4)
+            Rectangle().fill(Color.brand).frame(height: 4)
         }
         .clipShape(RoundedRectangle(cornerRadius: CornerRadius.medium))
     }

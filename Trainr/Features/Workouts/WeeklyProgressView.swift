@@ -26,7 +26,7 @@ struct WeeklyProgressView: View {
             TopBar(onBack: onBack)
             weeks
         }
-        .background(Color.white)
+        .background(Color.surfacePage)
         .toolbar(.hidden, for: .navigationBar)
         .onAppear { reload() }
         .alert(deleteTitle, isPresented: deleteBinding, presenting: weekToDelete) { week in
@@ -49,10 +49,10 @@ struct WeeklyProgressView: View {
             VStack(alignment: .leading, spacing: Spacing.screen) {
                 Text(L10n.weeklyProgress)
                     .font(.screenTitle)
-                    .foregroundStyle(Color.slate800)
+                    .foregroundStyle(Color.onSurface)
 
                 Rectangle()
-                    .fill(Color.dividerGray)
+                    .fill(Color.outlineDivider)
                     .frame(height: 1)
 
                 // The swipe asks before it deletes: a week is a good deal more

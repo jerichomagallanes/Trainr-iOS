@@ -13,7 +13,7 @@ struct WeekProgressCard: View {
     var body: some View {
         Button(action: onTap) {
             HStack(spacing: 0) {
-                Color.slate800.frame(width: 12)
+                Color.surfaceEmphasis.frame(width: 12)
 
                 VStack(spacing: Spacing.screen) {
                     heading
@@ -30,7 +30,7 @@ struct WeekProgressCard: View {
         .clipShape(.rect(cornerRadius: CornerRadius.medium))
         .overlay {
             RoundedRectangle(cornerRadius: CornerRadius.medium)
-                .strokeBorder(Color.outlineGray, lineWidth: 1)
+                .strokeBorder(Color.outlineControl, lineWidth: 1)
         }
         .accessibilityElement(children: .combine)
     }
@@ -40,7 +40,7 @@ struct WeekProgressCard: View {
             Text(title)
                 .lineLimit(1)
                 .truncationMode(.tail)
-                .foregroundStyle(Color.slate800)
+                .foregroundStyle(Color.onSurface)
                 .frame(maxWidth: .infinity, alignment: .leading)
             WeekStatusChip(status: week.status)
         }
@@ -60,10 +60,10 @@ struct WeekProgressCard: View {
                 week.completedDays, week.totalDays, week.completionPercentage
             ))
             .font(.labelMedium)
-            .foregroundStyle(Color.slate800)
+            .foregroundStyle(Color.onSurface)
             .padding(.horizontal, Spacing.card)
             .padding(.vertical, Spacing.snug)
-            .background(Color.gray100, in: .rect(cornerRadius: CornerRadius.medium))
+            .background(Color.surfaceSunken, in: .rect(cornerRadius: CornerRadius.medium))
             .frame(maxWidth: .infinity, alignment: .leading)
 
             CardArrow()

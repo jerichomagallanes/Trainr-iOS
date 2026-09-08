@@ -9,13 +9,17 @@ struct ExerciseCard<Extras: View>: View {
     var onDeleteSet: (ExerciseSet) -> Void = { _ in }
     @ViewBuilder let extras: Extras
 
-    private var accent: Color { exercise.isCompleted ? .statusCompleted : .slate800 }
+    private var accentInk: Color { exercise.isCompleted ? .statusDoneInk : .onSurface }
+    private var accentOutline: Color { exercise.isCompleted ? .statusDoneEdge : .cardEdge }
+    private var accentDivider: Color { exercise.isCompleted ? .statusDoneEdge : .cardRule }
+    private var accentFill: Color { exercise.isCompleted ? .statusDone : .surfaceEmphasis }
+    private var onAccentFill: Color { exercise.isCompleted ? .onStatus : .onSurfaceEmphasis }
 
     var body: some View {
         VStack(spacing: 0) {
             header
             Rectangle()
-                .fill(accent)
+                .fill(accentDivider)
                 .frame(height: 1)
                 .padding(.top, Spacing.card)
             body(padding: Spacing.tight)
@@ -23,7 +27,7 @@ struct ExerciseCard<Extras: View>: View {
         .clipShape(.rect(cornerRadius: CornerRadius.medium))
         .overlay {
             RoundedRectangle(cornerRadius: CornerRadius.medium)
-                .strokeBorder(accent, lineWidth: 1)
+                .strokeBorder(accentOutline, lineWidth: 1)
         }
     }
 
@@ -31,19 +35,19 @@ struct ExerciseCard<Extras: View>: View {
         HStack(spacing: Spacing.small) {
             Text("\(exercise.position)")
                 .font(.labelLarge)
-                .foregroundStyle(Color.white)
+                .foregroundStyle(onAccentFill)
                 .frame(width: 20, height: 20)
-                .background(accent, in: .circle)
+                .background(accentFill, in: .circle)
 
             Text(exercise.name)
                 .font(.sectionTitle)
-                .foregroundStyle(accent)
+                .foregroundStyle(accentInk)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
             Button(action: onToggleCompleted) {
                 Image(systemName: exercise.isCompleted ? "checkmark.square.fill" : "square")
                     .font(.oneOff(26))
-                    .foregroundStyle(exercise.isCompleted ? Color.statusCompleted : Color.outlineGray)
+                    .foregroundStyle(exercise.isCompleted ? Color.statusDoneInk : Color.outlineControl)
                     .frame(width: 30, height: 30)
                     .contentShape(.rect)
             }
@@ -61,7 +65,7 @@ struct ExerciseCard<Extras: View>: View {
             Text(exercise.description)
                 .font(.body14)
                 .lineSpacing(4)
-                .foregroundStyle(Color.slate800)
+                .foregroundStyle(Color.onSurface)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
             prescription
@@ -89,16 +93,16 @@ struct ExerciseCard<Extras: View>: View {
         HStack(spacing: Spacing.extraSmall) {
             Image(systemName: "clock")
                 .font(.oneOff(15))
-                .foregroundStyle(Color.slate800)
+                .foregroundStyle(Color.onSurface)
             Text(L10n.minutes(exercise.minutes))
                 .font(.body14)
-                .foregroundStyle(Color.slate800)
+                .foregroundStyle(Color.onSurface)
             Text(exercise.detail)
                 .font(.body14)
-                .foregroundStyle(Color.white)
+                .foregroundStyle(Color.onSurfaceEmphasis)
                 .padding(.horizontal, Spacing.tight)
                 .padding(.vertical, Spacing.hairline)
-                .background(Color.slate800, in: .rect(cornerRadius: CornerRadius.medium))
+                .background(Color.surfaceEmphasis, in: .rect(cornerRadius: CornerRadius.medium))
                 .padding(.leading, Spacing.extraSmall)
         }
         .frame(maxWidth: .infinity, alignment: .leading)

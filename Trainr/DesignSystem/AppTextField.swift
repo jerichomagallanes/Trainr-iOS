@@ -11,20 +11,20 @@ struct AppTextField: View {
         TextField(
             placeholder,
             text: $text,
-            prompt: Text(placeholder).foregroundStyle(Color.textMuted.opacity(0.6))
+            prompt: Text(placeholder).foregroundStyle(Color.placeholder)
         )
             .font(.body16)
-            .foregroundStyle(Color.slate800)
+            .foregroundStyle(Color.onSurface)
             .keyboardType(keyboard)
             .focused($isFocused)
             .padding(.horizontal, Spacing.tight)
             .frame(height: ComponentHeight.field)
-            .background(Color.white, in: RoundedRectangle(cornerRadius: CornerRadius.medium))
+            .background(Color.surfaceCard, in: RoundedRectangle(cornerRadius: CornerRadius.medium))
             .overlay {
                 RoundedRectangle(cornerRadius: CornerRadius.medium)
-                    .strokeBorder(isFocused ? Color.orange500 : .outlineGray, lineWidth: 1)
+                    .strokeBorder(isFocused ? Color.focus : .outlineControl, lineWidth: 1)
             }
-            .tint(.orange500)
+            .tint(.focus)
     }
 }
 

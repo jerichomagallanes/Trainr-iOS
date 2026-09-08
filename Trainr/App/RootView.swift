@@ -9,6 +9,7 @@ struct RootView: View {
     }
 
     @State private var dependencies = AppDependencies.shared
+    @State private var appearance = AppearancePreference()
     @State private var onboarding: OnboardingModel?
     @State private var phase = Phase.splash
     @State private var path: [Route] = []
@@ -27,6 +28,8 @@ struct RootView: View {
                 }
         }
         .environment(dependencies)
+        .environment(appearance)
+        .preferredColorScheme(appearance.mode.colorScheme)
         .task {
             let model = OnboardingModel(dependencies: dependencies)
             onboarding = model
@@ -310,10 +313,10 @@ struct SplashView: View {
                 .accessibilityLabel(L10n.appName)
             Text(L10n.versionFormat(Self.version))
                 .font(.body14)
-                .foregroundStyle(Color.slate800)
+                .foregroundStyle(Color.onSurface)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color.white)
+        .background(Color.surfacePage)
     }
 
     private static var version: String { RootView.version }

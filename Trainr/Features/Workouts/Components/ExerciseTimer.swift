@@ -23,18 +23,18 @@ struct ExerciseTimer: View {
         VStack(spacing: Spacing.tight) {
             Text(timer.display)
                 .font(.oneOff(24, .semibold))
-                .foregroundStyle(Color.orange500)
+                .foregroundStyle(Color.brandStrong)
                 .monospacedDigit()
                 .accessibilityLabel(timer.display)
             Text(timer.isRunning ? L10n.exerciseInProgress : L10n.timerPaused)
                 .font(.body12)
-                .foregroundStyle(Color.textMuted)
+                .foregroundStyle(Color.onSurfaceMuted)
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, Spacing.card)
         .overlay {
             RoundedRectangle(cornerRadius: CornerRadius.medium)
-                .strokeBorder(Color.orange500, lineWidth: 2)
+                .strokeBorder(Color.brand, lineWidth: 2)
         }
     }
 

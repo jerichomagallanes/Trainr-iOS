@@ -16,7 +16,7 @@ struct ToggleChip: View {
             Text(text)
                 .font(.body16)
                 .fontWeight(.medium)
-                .foregroundStyle(isSelected ? Color.white : .slate800)
+                .foregroundStyle(isSelected ? Color.onSurfaceSelected : .onSurface)
                 .lineLimit(1)
                 .minimumScaleFactor(0.75)
                 .padding(.horizontal, horizontalPadding)
@@ -26,12 +26,12 @@ struct ToggleChip: View {
         }
         .buttonStyle(.plain)
         .background(
-            isSelected ? Color.slate800 : .white,
+            isSelected ? Color.surfaceSelected : .surfaceCard,
             in: RoundedRectangle(cornerRadius: CornerRadius.medium)
         )
         .overlay {
             RoundedRectangle(cornerRadius: CornerRadius.medium)
-                .strokeBorder(Color.outlineGray, lineWidth: 1)
+                .strokeBorder(Color.outlineControl, lineWidth: 1)
         }
         .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
@@ -63,18 +63,18 @@ struct RadioChip: View {
         }
         .buttonStyle(.plain)
         .background(
-            isSelected ? Color.slate800 : .white,
+            isSelected ? Color.surfaceSelected : .surfaceCard,
             in: RoundedRectangle(cornerRadius: CornerRadius.medium)
         )
         .overlay {
             RoundedRectangle(cornerRadius: CornerRadius.medium)
-                .strokeBorder(Color.outlineGray, lineWidth: 1)
+                .strokeBorder(Color.outlineControl, lineWidth: 1)
         }
         .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
 
     private var labelColor: Color {
-        if isSelected { .white } else if mutedWhenUnselected { .textMuted } else { .slate800 }
+        if isSelected { .onSurfaceSelected } else if mutedWhenUnselected { .onSurfaceMuted } else { .onSurface }
     }
 }
 
@@ -90,23 +90,23 @@ struct CheckboxChip: View {
                 Text(text)
                     .font(.body16)
                     .fontWeight(.medium)
-                    .foregroundStyle(isChecked ? Color.white : .slate800)
+                    .foregroundStyle(isChecked ? Color.onSurfaceSelected : .onSurface)
                 Spacer(minLength: Spacing.small)
                 Image(systemName: isChecked ? "checkmark.square.fill" : "square")
                     .font(.oneOff(20))
-                    .foregroundStyle(isChecked ? Color.white : .outlineGray)
+                    .foregroundStyle(isChecked ? Color.onSurfaceSelected : .outlineControl)
             }
             .padding(Spacing.card)
             .contentShape(RoundedRectangle(cornerRadius: CornerRadius.medium))
         }
         .buttonStyle(.plain)
         .background(
-            isChecked ? Color.slate800 : .white,
+            isChecked ? Color.surfaceSelected : .surfaceCard,
             in: RoundedRectangle(cornerRadius: CornerRadius.medium)
         )
         .overlay {
             RoundedRectangle(cornerRadius: CornerRadius.medium)
-                .strokeBorder(Color.outlineGray, lineWidth: 1)
+                .strokeBorder(Color.outlineControl, lineWidth: 1)
         }
         // .isSelected rather than .isToggle: .isToggle reclassifies the element
         // as a switch, and every screen reaching a chip by name finds a button.

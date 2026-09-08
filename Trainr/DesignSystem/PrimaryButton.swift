@@ -23,11 +23,11 @@ struct PrimaryButton: View {
         .overlay {
             if !isPrimary {
                 RoundedRectangle(cornerRadius: CornerRadius.medium)
-                    .strokeBorder(Color.slate800, lineWidth: 2)
+                    .strokeBorder(Color.onSurface, lineWidth: 2)
             }
         }
         .shadow(
-            color: isPrimary && isEnabled ? Color.orange500.opacity(0.15) : .clear,
+            color: isPrimary && isEnabled ? Color.shadowSpotBrand : .clear,
             radius: 4, y: 2
         )
         .scaleEffect(isEnabled ? 1 : 0.97)
@@ -37,18 +37,18 @@ struct PrimaryButton: View {
 
     private var fill: Color {
         switch (isPrimary, isEnabled) {
-        case (true, true): .orange500
-        case (true, false): .orange500.opacity(0.5)
-        case (false, true): .white
-        case (false, false): .white.opacity(0.7)
+        case (true, true): .brandLarge
+        case (true, false): .brandDisabled
+        case (false, _): .surfacePage
         }
     }
 
     private var titleColor: Color {
         switch (isPrimary, isEnabled) {
-        case (true, true): .white
-        case (true, false): .white.opacity(0.7)
-        case (false, _): .orange500
+        case (true, true): .onBrand
+        case (true, false): .onBrandDisabled
+        case (false, true): .brandLarge
+        case (false, false): .brandStrongDisabled
         }
     }
 }

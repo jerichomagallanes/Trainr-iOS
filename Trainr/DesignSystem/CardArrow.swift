@@ -6,8 +6,8 @@ struct CardArrow: View {
             .font(.oneOff(14, .semibold))
             .foregroundStyle(Color.arrowInk)
             .frame(width: 30, height: 30)
-            .background(Color.white, in: .circle)
-            .overlay { Circle().strokeBorder(Color.outlineGray, lineWidth: 1) }
+            .background(Color.arrowDisc, in: .circle)
+            .overlay { Circle().strokeBorder(Color.arrowEdge, lineWidth: 1) }
             .accessibilityHidden(true)
     }
 }

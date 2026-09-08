@@ -39,7 +39,7 @@ struct WelcomeView: View {
                     .padding(.bottom, Spacing.large)
             }
         }
-        .background(Color.white)
+        .background(Color.surfacePage)
         .toolbar(.hidden, for: .navigationBar)
     }
 
@@ -49,7 +49,7 @@ struct WelcomeView: View {
             HStack(alignment: .center, spacing: Spacing.small) {
                 Text(L10n.welcomeTo)
                     .font(.custom("FugazOne-Regular", size: 30, relativeTo: .largeTitle))
-                    .foregroundStyle(Color.slate800)
+                    .foregroundStyle(Color.onSurface)
                 Image("Wordmark")
                     .resizable()
                     .scaledToFit()
@@ -57,11 +57,11 @@ struct WelcomeView: View {
                     .accessibilityLabel(L10n.trainr)
             }
             (Text(L10n.your + " ")
-                + Text(L10n.aiPowered).foregroundStyle(Color.orange500).bold()
+                + Text(L10n.aiPowered).foregroundStyle(Color.brandStrong).bold()
                 + Text(" " + L10n.personalTrainer))
                 .font(.body16)
                 .fontWeight(.medium)
-                .foregroundStyle(Color.slate800)
+                .foregroundStyle(Color.onSurface)
                 .multilineTextAlignment(.center)
         }
         .frame(maxWidth: .infinity)
@@ -78,7 +78,7 @@ struct WelcomeView: View {
                 .accessibilityHidden(true)
             Text(page.title)
                 .font(.sectionTitle)
-                .foregroundStyle(Color.slate800)
+                .foregroundStyle(Color.onSurface)
                 .multilineTextAlignment(.center)
                 .frame(width: width * 0.9)
         }
@@ -89,7 +89,7 @@ struct WelcomeView: View {
         HStack(spacing: Spacing.tight) {
             ForEach(0..<pages.count, id: \.self) { index in
                 Circle()
-                    .fill(Color.slate800.opacity(index == currentPage ? 1 : 0.3))
+                    .fill(index == currentPage ? Color.onSurface : Color.dotInactive)
                     .frame(width: 10, height: 10)
             }
         }

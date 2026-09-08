@@ -73,7 +73,7 @@ struct ExerciseSetTable: View {
         Button(action: onAddSet) {
             Text(L10n.addSet)
                 .font(.labelLarge)
-                .foregroundStyle(Color.slate800)
+                .foregroundStyle(Color.onSurface)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, Spacing.small)
                 .contentShape(.rect)
@@ -81,7 +81,7 @@ struct ExerciseSetTable: View {
         .buttonStyle(.plain)
         .overlay {
             RoundedRectangle(cornerRadius: CornerRadius.medium)
-                .strokeBorder(Color.outlineGray, lineWidth: 1)
+                .strokeBorder(Color.outlineControl, lineWidth: 1)
         }
     }
 }
@@ -94,7 +94,7 @@ private struct ColumnLabel: View {
     var body: some View {
         Text(text)
             .font(.labelSmall)
-            .foregroundStyle(Color.textMuted)
+            .foregroundStyle(Color.onSurfaceMuted)
             .multilineTextAlignment(.center)
     }
 }
@@ -110,13 +110,13 @@ private struct SetRow: View {
         HStack(spacing: 0) {
             Text("\(set.setNumber)")
                 .font(.labelLarge)
-                .foregroundStyle(Color.slate800)
+                .foregroundStyle(Color.onSurface)
                 .frame(minWidth: setColumnWidth)
 
             if let previousText {
                 Text(previousText)
                     .font(.body12)
-                    .foregroundStyle(Color.textMuted)
+                    .foregroundStyle(Color.onSurfaceMuted)
                     .multilineTextAlignment(.center)
                     .frame(maxWidth: .infinity)
             }
@@ -146,7 +146,7 @@ private struct SetRow: View {
             } label: {
                 Image(systemName: set.isCompleted ? "checkmark.square.fill" : "square")
                     .font(.oneOff(20))
-                    .foregroundStyle(set.isCompleted ? Color.statusCompleted : Color.outlineGray)
+                    .foregroundStyle(set.isCompleted ? Color.statusDoneInk : Color.outlineControl)
                     .frame(width: 24, height: 24)
                     .contentShape(.rect)
             }
@@ -194,14 +194,14 @@ private struct NumberCell: View {
     var body: some View {
         TextField(placeholder ?? "", text: $text)
             .font(.body14)
-            .foregroundStyle(Color.slate800)
+            .foregroundStyle(Color.onSurface)
             .multilineTextAlignment(.center)
             .keyboardType(isDecimal ? .decimalPad : .numberPad)
             .frame(minHeight: setRowHeight)
             .frame(maxWidth: .infinity)
             .overlay {
                 RoundedRectangle(cornerRadius: CornerRadius.small)
-                    .strokeBorder(Color.outlineGray, lineWidth: 1)
+                    .strokeBorder(Color.outlineControl, lineWidth: 1)
             }
             .padding(.horizontal, Spacing.extraSmall)
             .onAppear { text = value ?? "" }
@@ -239,14 +239,14 @@ private struct DurationCell: View {
                 onChange(total)
             }
         .font(.body14)
-        .foregroundStyle(Color.slate800)
+        .foregroundStyle(Color.onSurface)
         .multilineTextAlignment(.center)
         .keyboardType(.numberPad)
         .frame(minHeight: setRowHeight)
         .frame(maxWidth: .infinity)
         .overlay {
             RoundedRectangle(cornerRadius: CornerRadius.small)
-                .strokeBorder(Color.outlineGray, lineWidth: 1)
+                .strokeBorder(Color.outlineControl, lineWidth: 1)
         }
         .padding(.horizontal, Spacing.extraSmall)
         .onAppear { text = seconds.map(SetFormatting.seconds) ?? "" }

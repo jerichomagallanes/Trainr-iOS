@@ -15,12 +15,12 @@ struct SlideToConfirm: View {
         GeometryReader { proxy in
             let travel = max(proxy.size.width - Spacing.tight * 2 - Self.thumbSize, 0)
             ZStack(alignment: .leading) {
-                label(Color.orange500)
+                label(Color.brandLarge)
                 // The same strip in inverse colours, clipped where the thumb
                 // has reached: that is what changes the word's colour mid-word.
-                label(Color.white)
+                label(Color.onBrand)
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
-                    .background(Color.orange500)
+                    .background(Color.brandLarge)
                     .mask(alignment: .leading) {
                         // The inset eases in over the first pixels, so the
                         // paint stays a continuous function of the offset.
@@ -32,11 +32,11 @@ struct SlideToConfirm: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .frame(height: Self.trackHeight)
-        .background(Color.white)
+        .background(Color.surfaceRaised)
         .clipShape(.rect(cornerRadius: CornerRadius.medium))
         .overlay {
             RoundedRectangle(cornerRadius: CornerRadius.medium)
-                .strokeBorder(Color.orange500, lineWidth: 3)
+                .strokeBorder(Color.brand, lineWidth: 3)
         }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(title)
@@ -56,7 +56,7 @@ struct SlideToConfirm: View {
         Image(systemName: "arrow.forward.circle.fill")
             .resizable()
             .frame(width: Self.thumbSize, height: Self.thumbSize)
-            .foregroundStyle(Color.orange500)
+            .foregroundStyle(Color.brand)
             .padding(.horizontal, Spacing.tight)
             .offset(x: offset)
             .gesture(

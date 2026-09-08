@@ -46,7 +46,7 @@ struct RoutineDetailView: View {
                 Spacer()
             }
         }
-        .background(Color.white)
+        .background(Color.surfacePage)
         .toolbar(.hidden, for: .navigationBar)
         .task {
             guard !model.state.isLoaded else { return }
@@ -98,10 +98,10 @@ struct RoutineDetailView: View {
         Label {
             Text(WorkoutDateFormatter.fullDate(state.date))
                 .font(.body16)
-                .foregroundStyle(Color.slate800)
+                .foregroundStyle(Color.onSurface)
         } icon: {
             Image(systemName: "calendar")
-                .foregroundStyle(Color.slate800)
+                .foregroundStyle(Color.onSurface)
         }
         .font(.body14)
     }
@@ -110,16 +110,16 @@ struct RoutineDetailView: View {
         HStack(alignment: .firstTextBaseline, spacing: Spacing.small) {
             Text(routine.title.uppercased())
                 .font(.screenTitle)
-                .foregroundStyle(Color.slate800)
+                .foregroundStyle(Color.onSurface)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
             Label {
                 Text(L10n.minutes(routine.totalMinutes))
                     .font(.labelLarge)
-                    .foregroundStyle(Color.slate800)
+                    .foregroundStyle(Color.onSurface)
             } icon: {
                 Image(systemName: "clock")
-                    .foregroundStyle(Color.slate800)
+                    .foregroundStyle(Color.onSurface)
             }
             .font(.body14)
             .labelStyle(.titleAndIcon)
@@ -130,7 +130,7 @@ struct RoutineDetailView: View {
     private var equipment: some View {
         Text(equipmentLine)
             .font(.body16)
-            .foregroundStyle(Color.slate800)
+            .foregroundStyle(Color.onSurface)
             .padding(.top, Spacing.section)
     }
 
@@ -182,7 +182,7 @@ struct RoutineDetailView: View {
         } else if routine.hasProgress {
             Button(L10n.startWorkoutOver) { showStartOver = true }
                 .font(.sectionTitle)
-                .foregroundStyle(Color.slate800)
+                .foregroundStyle(Color.onSurface)
                 .frame(maxWidth: .infinity)
                 .padding(.top, Spacing.section + Spacing.tight)
         }
