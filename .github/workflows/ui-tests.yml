@@ -6,12 +6,13 @@ name: UI tests
 # read the result, re-run if it looks like a flake, investigate if it doesn't.
 # The nightly run on main catches anything that slipped through.
 #
-# The suite takes 37-46 minutes on a hosted runner against the 19 it takes on a
-# development machine, so the limit is set well clear of it: at 45 the nightly
-# run was killed mid-suite and reported as cancelled, which reads like someone
-# stopped it rather than like a result. A test that fails is given one more
-# attempt, because typing into a text field is where the hosted simulator
-# stalls; a test that fails twice still fails the job.
+# Split three ways because one job took 47 minutes of test time, and balanced by
+# measured duration rather than test count: onboarding alone held a third of it.
+# Each shard runs serially on its own runner. Running clones side by side inside
+# one job bought about 1.35x and cost a class of failure of its own, where a
+# clone dies and reports every test in a file as failed. A test that fails is
+# given one more attempt, because typing into a text field is where the hosted
+# simulator stalls; a test that fails twice still fails the job.
 on:
   pull_request:
     branches: [main]
@@ -35,24 +36,41 @@ env:
 
 jobs:
   ui-tests:
-    name: UI tests
+    name: UI tests (${{ matrix.shard }})
     runs-on: macos-26
-    timeout-minutes: 75
+    timeout-minutes: 45
     permissions:
       contents: read
       checks: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - shard: onboarding
+            classes: OnboardingScreenTests OnboardingFlowTests SplashAndOrientationTests TrainrUITests
+          - shard: routine
+            classes: RoutineDetailScreenTests ExerciseSetTableScreenTests CompletionScreenTests
+          - shard: plan
+            classes: WeeklyPlanScreenTests WeeklyProgressScreenTests GeneratingScreenTests PlanAfterEmptyingTests
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Run UI tests
+        env:
+          CLASSES: ${{ matrix.classes }}
         run: |
           set -o pipefail
+          only=()
+          for class in $CLASSES; do
+            only+=("-only-testing:TrainrUITests/$class")
+          done
           xcodebuild test \
             -project Trainr.xcodeproj \
             -scheme Trainr \
             -destination "$DESTINATION" \
-            -only-testing:TrainrUITests \
+            "${only[@]}" \
             -resultBundlePath UITestResults.xcresult \
+            -parallel-testing-enabled NO \
             -retry-tests-on-failure \
             -test-iterations 2 \
             | xcbeautify --report junit --report-path build/reports
@@ -62,7 +80,7 @@ jobs:
         uses: mikepenz/action-junit-report@a9170d5795813c01ab4901ffb045b52bab4ab09d # v6.5.0
         with:
           report_paths: build/reports/junit.xml
-          check_name: UI test results
+          check_name: UI test results (${{ matrix.shard }})
           detailed_summary: true
           include_passed: false
           job_summary: true
@@ -72,6 +90,6 @@ jobs:
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: ui-test-results
+          name: ui-test-results-${{ matrix.shard }}
           path: UITestResults.xcresult
           retention-days: 14

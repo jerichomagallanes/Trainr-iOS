@@ -5,7 +5,20 @@ extension XCUIApplication {
     @MainActor
     static func launchedFresh() -> XCUIApplication {
         let app = XCUIApplication()
-        app.launchArguments = ["-cannedGeneration", "-inMemoryStore"]
+        app.launchArguments = ["-cannedGeneration", "-inMemoryStore", "-splashSeconds", "0"]
+        app.launch()
+        return app
+    }
+
+    // Opens straight onto the named screen with the earlier answers already given,
+    // for a test whose subject is that one screen rather than the walk to it.
+    @MainActor
+    static func launched(startingAt step: String) -> XCUIApplication {
+        let app = XCUIApplication()
+        app.launchArguments = [
+            "-cannedGeneration", "-inMemoryStore", "-splashSeconds", "0",
+            "-startAtStep", step
+        ]
         app.launch()
         return app
     }

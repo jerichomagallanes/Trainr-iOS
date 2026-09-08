@@ -33,6 +33,15 @@ struct RootView: View {
         .task {
             let model = OnboardingModel(dependencies: dependencies)
             onboarding = model
+            #if DEBUG
+            if let start = UITestFixtures.requestedStart() {
+                UITestFixtures.seedAnswers(for: start, into: model)
+                nextWeek = NextWeekModel(dependencies: dependencies)
+                phase = .welcome
+                path = UITestFixtures.path(for: start)
+                return
+            }
+            #endif
             try? await Task.sleep(for: .seconds(Self.splashSeconds))
             nextWeek = NextWeekModel(dependencies: dependencies)
             phase = model.hasCompletedOnboarding() ? .home : .welcome
