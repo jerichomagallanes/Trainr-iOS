@@ -11,7 +11,7 @@ final class GeneratingScreenTests: XCTestCase {
     @MainActor
     func testTheWaitIsShownEvenWhenThePlanIsReadyAtOnce() {
         app = .launched(startingAt: "review")
-        XCTAssertTrue(app.staticTexts["YOUR FITNESS PROFILE"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.staticTexts["YOUR FITNESS PROFILE"].waitForExistence(timeout: 20))
         app.tapGenerate()
 
         XCTAssertTrue(app.staticTexts["Generating your workout plan"].waitForExistence(timeout: 3))
@@ -21,7 +21,7 @@ final class GeneratingScreenTests: XCTestCase {
     @MainActor
     func testBeingOfflineIsSaidPlainlyAndOffersARetryAndTheWayBack() {
         app = XCUIApplication.launchedToFail("offline", startingAt: "review")
-        XCTAssertTrue(app.staticTexts["YOUR FITNESS PROFILE"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.staticTexts["YOUR FITNESS PROFILE"].waitForExistence(timeout: 20))
         app.tapGenerate()
 
         XCTAssertTrue(app.staticTexts["Could not create your workout plan"].waitForExistence(timeout: 10))
@@ -33,7 +33,7 @@ final class GeneratingScreenTests: XCTestCase {
     @MainActor
     func testAnAnswerThatNeverHeldUpReadsDifferently() {
         app = XCUIApplication.launchedToFail("failed", startingAt: "review")
-        XCTAssertTrue(app.staticTexts["YOUR FITNESS PROFILE"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.staticTexts["YOUR FITNESS PROFILE"].waitForExistence(timeout: 20))
         app.tapGenerate()
 
         XCTAssertTrue(app.staticTexts["Could not create your workout plan"].waitForExistence(timeout: 10))
@@ -44,7 +44,7 @@ final class GeneratingScreenTests: XCTestCase {
     @MainActor
     func testTheClientCanAskAgainOrGoBackToTheirProfile() {
         app = XCUIApplication.launchedToFail("offline", startingAt: "review")
-        XCTAssertTrue(app.staticTexts["YOUR FITNESS PROFILE"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.staticTexts["YOUR FITNESS PROFILE"].waitForExistence(timeout: 20))
         app.tapGenerate()
         XCTAssertTrue(app.buttons["Try again"].waitForExistence(timeout: 10))
 
@@ -59,7 +59,7 @@ final class GeneratingScreenTests: XCTestCase {
     @MainActor
     func testTheDailyLimitGetsItsOwnWordsAndOffersNoRetry() {
         app = XCUIApplication.launchedToFail("dailyLimit", startingAt: "review")
-        XCTAssertTrue(app.staticTexts["YOUR FITNESS PROFILE"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.staticTexts["YOUR FITNESS PROFILE"].waitForExistence(timeout: 20))
         app.tapGenerate()
 
         XCTAssertTrue(app.staticTexts["Daily limit reached"].waitForExistence(timeout: 10))

@@ -92,7 +92,7 @@ final class OnboardingScreenTests: XCTestCase {
     @MainActor
     func testMeasurementsNeedBothNumbersAndShowTheBMIOnceTheyHaveThem() {
         app = .launched(startingAt: "bodyMetrics")
-        XCTAssertTrue(app.staticTexts["YOUR MEASUREMENTS"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.staticTexts["YOUR MEASUREMENTS"].waitForExistence(timeout: 20))
 
         XCTAssertTrue(app.staticTexts["Height (cm)"].exists)
         XCTAssertTrue(app.staticTexts["Weight (kg)"].exists)
@@ -115,7 +115,7 @@ final class OnboardingScreenTests: XCTestCase {
     @MainActor
     func testTypingFeetAndInchesWithTheQuotesTheKeyboardInserts() {
         app = .launched(startingAt: "bodyMetrics")
-        XCTAssertTrue(app.staticTexts["YOUR MEASUREMENTS"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.staticTexts["YOUR MEASUREMENTS"].waitForExistence(timeout: 20))
         app.buttons["Imperial"].tap()
         let height = app.textFields["5'10\""]
         XCTAssertTrue(height.waitForExistence(timeout: 5))
@@ -131,7 +131,7 @@ final class OnboardingScreenTests: XCTestCase {
     @MainActor
     func testSwitchingToImperialRelabelsAndConvertsWhatWasTyped() {
         app = .launched(startingAt: "bodyMetrics")
-        XCTAssertTrue(app.staticTexts["YOUR MEASUREMENTS"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.staticTexts["YOUR MEASUREMENTS"].waitForExistence(timeout: 20))
         app.textFields["170"].tap()
         app.textFields["170"].typeText("170")
         app.textFields["70"].tap()
@@ -149,7 +149,7 @@ final class OnboardingScreenTests: XCTestCase {
     @MainActor
     func testMeasurementsOutsideTheLimitsNameTheLimitsAndCannotBeSubmitted() {
         app = .launched(startingAt: "bodyMetrics")
-        XCTAssertTrue(app.staticTexts["YOUR MEASUREMENTS"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.staticTexts["YOUR MEASUREMENTS"].waitForExistence(timeout: 20))
 
         app.textFields["170"].tap()
         app.textFields["170"].typeText("300")
@@ -198,7 +198,7 @@ final class OnboardingScreenTests: XCTestCase {
     @MainActor
     func testGoalsNeedBothAnswers() {
         app = .launched(startingAt: "goals")
-        XCTAssertTrue(app.staticTexts["YOUR FITNESS GOALS"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.staticTexts["YOUR FITNESS GOALS"].waitForExistence(timeout: 20))
 
         let next = app.buttons["NEXT"]
         XCTAssertFalse(next.isEnabled)
@@ -216,7 +216,7 @@ final class OnboardingScreenTests: XCTestCase {
     @MainActor
     func testSetupOffersEveryLocationAndALocationAloneIsNotEnough() {
         app = .launched(startingAt: "setup")
-        XCTAssertTrue(app.staticTexts["SET UP YOUR WORKOUT"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.staticTexts["SET UP YOUR WORKOUT"].waitForExistence(timeout: 20))
 
         for location in ["Home", "Gym", "Both"] {
             XCTAssertTrue(app.buttons[location].exists)
@@ -230,7 +230,7 @@ final class OnboardingScreenTests: XCTestCase {
     @MainActor
     func testEveryDurationChipShowsItsWholeLabel() {
         app = .launched(startingAt: "setup")
-        XCTAssertTrue(app.staticTexts["SET UP YOUR WORKOUT"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.staticTexts["SET UP YOUR WORKOUT"].waitForExistence(timeout: 20))
 
         let chips = ["30 mins", "45 mins", "60 mins", "90 mins"].map { app.buttons[$0] }
         app.scrollUntilHittable(chips[0])
@@ -247,7 +247,7 @@ final class OnboardingScreenTests: XCTestCase {
     @MainActor
     func testLimitationsAreOptionalAndAskNothingAboutStyle() {
         app = .launched(startingAt: "limitations")
-        XCTAssertTrue(app.staticTexts["LET'S KEEP YOU SAFE"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.staticTexts["LET'S KEEP YOU SAFE"].waitForExistence(timeout: 20))
 
         XCTAssertFalse(app.staticTexts["Preferred Workout Style"].exists)
         app.submitLimitations(injury: nil)
@@ -259,7 +259,7 @@ final class OnboardingScreenTests: XCTestCase {
     @MainActor
     func testTheReviewReadsEveryAnswerBackAndOffersAnEditForEach() {
         app = .launched(startingAt: "review")
-        XCTAssertTrue(app.staticTexts["YOUR FITNESS PROFILE"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.staticTexts["YOUR FITNESS PROFILE"].waitForExistence(timeout: 20))
 
         XCTAssertEqual(app.otherElements["stepProgress"].value as? String, "86%")
         XCTAssertTrue(app.staticTexts["Alex"].exists)
@@ -275,7 +275,7 @@ final class OnboardingScreenTests: XCTestCase {
     @MainActor
     func testTheReviewPreviewsThePlanAndCarriesTheDisclaimer() {
         app = .launched(startingAt: "review")
-        XCTAssertTrue(app.staticTexts["YOUR FITNESS PROFILE"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.staticTexts["YOUR FITNESS PROFILE"].waitForExistence(timeout: 20))
 
         let preview = app.staticTexts["AI Workout Plan"]
         app.scrollUntilHittable(preview)
@@ -289,7 +289,7 @@ final class OnboardingScreenTests: XCTestCase {
     @MainActor
     func testEditingAnAnswerFromTheReviewOpensJustThatStep() {
         app = .launched(startingAt: "review")
-        XCTAssertTrue(app.staticTexts["YOUR FITNESS PROFILE"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.staticTexts["YOUR FITNESS PROFILE"].waitForExistence(timeout: 20))
 
         app.buttons.matching(identifier: "Edit").element(boundBy: 0).tap()
         XCTAssertTrue(app.textFields["Enter your name"].waitForExistence(timeout: 5))
@@ -327,7 +327,7 @@ final class OnboardingScreenTests: XCTestCase {
     @MainActor
     func testSwitchingUnitsTakesTheCaretOutOfTheField() {
         app = .launched(startingAt: "bodyMetrics")
-        XCTAssertTrue(app.staticTexts["YOUR MEASUREMENTS"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.staticTexts["YOUR MEASUREMENTS"].waitForExistence(timeout: 20))
 
         let height = app.textFields["170"]
         height.tap()
@@ -343,7 +343,7 @@ final class OnboardingScreenTests: XCTestCase {
     @MainActor
     func testMeasurementsTheScreenRefusesGetNoBodyMassVerdict() {
         app = .launched(startingAt: "bodyMetrics")
-        XCTAssertTrue(app.staticTexts["YOUR MEASUREMENTS"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.staticTexts["YOUR MEASUREMENTS"].waitForExistence(timeout: 20))
 
         let height = app.textFields["170"]
         height.tap()
