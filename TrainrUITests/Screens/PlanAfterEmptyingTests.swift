@@ -15,7 +15,8 @@ final class PlanAfterEmptyingTests: XCTestCase {
     private func launchedSlow() -> XCUIApplication {
         let app = XCUIApplication()
         app.launchArguments = [
-            "-inMemoryStore", "-slowGeneration", "4", "-splashSeconds", "0", "-startAtStep", "review"
+            "-inMemoryStore", "-slowGeneration", "4", "-splashSeconds", "0",
+            "-startAtStep", "review", "-proUnlocked"
         ]
         app.launch()
         return app

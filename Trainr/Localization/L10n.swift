@@ -229,6 +229,82 @@ nonisolated enum L10n {
     static var preferredWorkoutStyle: String { String(localized: "preferred_workout_style") }
     static var preferredWorkoutTime: String { String(localized: "preferred_workout_time") }
     static var previousColumn: String { String(localized: "previous_column") }
+    static var proAndMore: String { String(localized: "pro_and_more") }
+    static var proBenefitFreshPlan: String { String(localized: "pro_benefit_fresh_plan") }
+    static var proBenefitNextWeek: String { String(localized: "pro_benefit_next_week") }
+    static var proBenefitRegenerate: String { String(localized: "pro_benefit_regenerate") }
+    static var proBestValue: String { String(localized: "pro_best_value") }
+    static var proBilledAnnually: String { String(localized: "pro_billed_annually") }
+    static var proBilledMonthly: String { String(localized: "pro_billed_monthly") }
+    static var proBuyLifetime: String { String(localized: "pro_buy_lifetime") }
+    static var proCancelAnytime: String { String(localized: "pro_cancel_anytime") }
+    static var proCompareFree: String { String(localized: "pro_compare_free") }
+    static var proCompareFresh: String { String(localized: "pro_compare_fresh") }
+    static var proCompareGenerated: String { String(localized: "pro_compare_generated") }
+    static var proCompareHistory: String { String(localized: "pro_compare_history") }
+    static var proCompareLogging: String { String(localized: "pro_compare_logging") }
+    static var proCompareOne: String { String(localized: "pro_compare_one") }
+    static var proComparePro: String { String(localized: "pro_compare_pro") }
+    static var proCompareRepeat: String { String(localized: "pro_compare_repeat") }
+    static var proCompareRewrite: String { String(localized: "pro_compare_rewrite") }
+    static var proCompareTimer: String { String(localized: "pro_compare_timer") }
+    static var proCompareTitle: String { String(localized: "pro_compare_title") }
+    static var proCompareUnlimited: String { String(localized: "pro_compare_unlimited") }
+    static var proContinue: String { String(localized: "pro_continue") }
+    static var proFaqCancelA: String { String(localized: "pro_faq_cancel_a") }
+    static var proFaqCancelQ: String { String(localized: "pro_faq_cancel_q") }
+    static var proFaqDevicesA: String { String(localized: "pro_faq_devices_a") }
+    static var proFaqDevicesQ: String { String(localized: "pro_faq_devices_q") }
+    static var proFaqFreeA: String { String(localized: "pro_faq_free_a") }
+    static var proFaqFreeQ: String { String(localized: "pro_faq_free_q") }
+    static var proFaqHumanA: String { String(localized: "pro_faq_human_a") }
+    static var proFaqHumanQ: String { String(localized: "pro_faq_human_q") }
+    static var proFaqIncludesA: String { String(localized: "pro_faq_includes_a") }
+    static var proFaqIncludesQ: String { String(localized: "pro_faq_includes_q") }
+    static var proFaqRenewA: String { String(localized: "pro_faq_renew_a") }
+    static var proFaqRenewQ: String { String(localized: "pro_faq_renew_q") }
+    static var proFeatureFreshBody: String { String(localized: "pro_feature_fresh_body") }
+    static var proFeatureFreshTitle: String { String(localized: "pro_feature_fresh_title") }
+    static var proFeatureNextWeekBody: String { String(localized: "pro_feature_next_week_body") }
+    static var proFeatureNextWeekTitle: String { String(localized: "pro_feature_next_week_title") }
+    static var proFeatureRewriteBody: String { String(localized: "pro_feature_rewrite_body") }
+    static var proFeatureRewriteTitle: String { String(localized: "pro_feature_rewrite_title") }
+    static var proFeatureSupportBody: String { String(localized: "pro_feature_support_body") }
+    static var proFeatureSupportTitle: String { String(localized: "pro_feature_support_title") }
+    static var proFreeLimit: String { String(localized: "pro_free_limit") }
+    static var proFreeNote: String { String(localized: "pro_free_note") }
+    static var proFullAccess: String { String(localized: "pro_full_access") }
+    static var proHeadline: String { String(localized: "pro_headline") }
+    static var proLifetime: String { String(localized: "pro_lifetime") }
+    static var proMonthly: String { String(localized: "pro_monthly") }
+    static var proName: String { String(localized: "pro_name") }
+    static var proNotNow: String { String(localized: "pro_not_now") }
+    static var proNothingToRestore: String { String(localized: "pro_nothing_to_restore") }
+    static var proPayOnce: String { String(localized: "pro_pay_once") }
+    static var proPrivacy: String { String(localized: "pro_privacy") }
+    static var proPromptFresh: String { String(localized: "pro_prompt_fresh") }
+    static var proPromptNextWeek: String { String(localized: "pro_prompt_next_week") }
+    static var proPromptRewrite: String { String(localized: "pro_prompt_rewrite") }
+    static var proQuestions: String { String(localized: "pro_questions") }
+    static var proRenewalApple: String { String(localized: "pro_renewal_apple") }
+    static var proRenewalGoogle: String { String(localized: "pro_renewal_google") }
+    static var proRestore: String { String(localized: "pro_restore") }
+    static var proRestored: String { String(localized: "pro_restored") }
+    static func proSavePercent(_ p1: Int) -> String {
+        String.localizedStringWithFormat(String(localized: "pro_save_percent"), p1)
+    }
+    static var proSubscribe: String { String(localized: "pro_subscribe") }
+    static func proSubscribeTo(_ p1: String) -> String {
+        String.localizedStringWithFormat(String(localized: "pro_subscribe_to"), p1)
+    }
+    static var proSupportTrouble: String { String(localized: "pro_support_trouble") }
+    static var proTerms: String { String(localized: "pro_terms") }
+    static func proTrialThen(_ p1: String, _ p2: String) -> String {
+        String.localizedStringWithFormat(String(localized: "pro_trial_then"), p1, p2)
+    }
+    static var proUnavailable: String { String(localized: "pro_unavailable") }
+    static var proUpgradeTitle: String { String(localized: "pro_upgrade_title") }
+    static var proYearly: String { String(localized: "pro_yearly") }
     static var profileAndApp: String { String(localized: "profile_and_app") }
     static var programCardio: String { String(localized: "program_cardio") }
     static var programFlexibility: String { String(localized: "program_flexibility") }

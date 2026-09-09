@@ -10,12 +10,15 @@ struct RootView: View {
 
     @State private var dependencies = AppDependencies.shared
     @State private var appearance = AppearancePreference()
+    @State private var entitlements = Entitlements(breadcrumbs: AppDependencies.shared.breadcrumbs)
+    private let allowance: any FreeGenerationAllowance = StoredGenerationAllowance()
     @State private var onboarding: OnboardingModel?
     @State private var phase = Phase.splash
     @State private var path: [Route] = []
     @State private var nextWeek: NextWeekModel?
     // Bumped to give home a new identity, and with it a model that re-reads.
     @State private var planGeneration = 0
+    @State private var prompt: PaywallReason?
 
     var body: some View {
         NavigationStack(path: $path) {
@@ -29,8 +32,22 @@ struct RootView: View {
         }
         .environment(dependencies)
         .environment(appearance)
+        .environment(entitlements)
         .preferredColorScheme(appearance.mode.colorScheme)
+        // Reading the entitlement is a network round trip, so it runs beside
+        // startup rather than in front of it. Nothing on the first screen depends
+        // on it, and the paywall refreshes again when it opens.
+        .sheet(item: $prompt) { reason in
+            ProPromptSheet(reason: reason) {
+                prompt = nil
+                path.append(.paywall(reason: reason))
+            } onDismiss: {
+                prompt = nil
+            }
+        }
+        .task { await entitlements.refresh() }
         .task {
+            entitlements.configure()
             let model = OnboardingModel(dependencies: dependencies)
             onboarding = model
             #if DEBUG
@@ -70,14 +87,34 @@ struct RootView: View {
                     path.append(.review(fromPlan: true, profileOnly: false))
                 },
                 onUpdateProfile: { path.append(.review(fromPlan: true, profileOnly: true)) },
-                onStartNextWeek: { path.append(.generatingNextWeek) },
+                onStartNextWeek: { ask(.nextWeek, toReach: .generatingNextWeek) },
                 onRepeatWeek: { nextWeek?.repeatWeek() },
-                onRegenerateWeek: { path.append(.regeneratingWeek) },
+                onRegenerateWeek: { ask(.rewrite, toReach: .regeneratingWeek) },
                 onCreatePlan: {
                     path.append(.review(fromPlan: true, profileOnly: false))
                 }
             )
             .id(planGeneration)
+        }
+    }
+
+    // A week already generated is never taken away, so only the act of writing a
+    // new one asks for Pro.
+    // Spent on a week that arrived, never on one that failed: a model that
+    // refused has taken nothing.
+    private func spendFreeGeneration() {
+        guard !entitlements.isPro else { return }
+        allowance.markUsed()
+    }
+
+    // A week already generated is never taken away, so only writing a new one
+    // asks for Pro, and it asks where the tap happened rather than by replacing
+    // the screen.
+    private func ask(_ reason: PaywallReason, toReach route: Route) {
+        if entitlements.isPro || !allowance.hasBeenUsed() {
+            path.append(route)
+        } else {
+            prompt = reason
         }
     }
 
@@ -180,7 +217,11 @@ struct RootView: View {
                     if profileOnly {
                         onboarding.updateProfileOnly { path = [] }
                     } else {
-                        path.append(.generating)
+                        if fromPlan {
+                            ask(.freshPlan, toReach: .generating)
+                        } else {
+                            path.append(.generating)
+                        }
                     }
                 },
                 onBack: pop,
@@ -191,7 +232,10 @@ struct RootView: View {
             GeneratingView(
                 isReady: onboarding.isCompleted,
                 onStart: { onboarding.saveUserProfile() },
-                onDone: restartOnHome,
+                onDone: {
+                    spendFreeGeneration()
+                    restartOnHome()
+                },
                 failure: onboarding.generationFailure,
                 failureCount: onboarding.failureCount,
                 onRetry: { onboarding.saveUserProfile() },
@@ -235,7 +279,7 @@ struct RootView: View {
                 weekNumber: weekNumber,
                 onBack: pop,
                 onViewProgress: { path.append(.weeklyProgress) },
-                onGenerateNextWeek: { path.append(.generatingNextWeek) }
+                onGenerateNextWeek: { ask(.nextWeek, toReach: .generatingNextWeek) }
             )
 
         case .weeklyProgress:
@@ -245,6 +289,9 @@ struct RootView: View {
                 onWeekTap: { path.append(.weekPlan(weekNumber: $0.weekNumber)) },
                 onLastWeekDeleted: restartOnHome
             )
+
+        case .paywall(let reason):
+            ProPaywallView(reason: reason) { path.removeLast() }
 
         case .generatingNextWeek:
             generating(start: { nextWeek?.generateNextWeek() })

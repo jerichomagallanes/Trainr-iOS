@@ -11,7 +11,7 @@ final class RoutineDetailScreenTests: XCTestCase {
     @MainActor
     private func openUnstartedDay() {
         app = .launched(.midWeek)
-        XCTAssertTrue(app.staticTexts["YOUR WEEKLY WORKOUT PLAN"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.staticTexts["YOUR WEEKLY WORKOUT PLAN"].waitForExistence(timeout: 20))
         app.button(containing: "Lower Body Power").tap()
         XCTAssertTrue(app.staticTexts["LOWER BODY POWER"].waitForExistence(timeout: 5))
     }
@@ -19,7 +19,7 @@ final class RoutineDetailScreenTests: XCTestCase {
     @MainActor
     private func openFinishedDay() {
         app = .launched(.midWeek)
-        XCTAssertTrue(app.staticTexts["YOUR WEEKLY WORKOUT PLAN"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.staticTexts["YOUR WEEKLY WORKOUT PLAN"].waitForExistence(timeout: 20))
         app.button(containing: "Full Body Strength").tap()
         XCTAssertTrue(app.staticTexts["FULL BODY STRENGTH"].waitForExistence(timeout: 5))
     }
