@@ -24,7 +24,7 @@ final class PaywallGateTests: XCTestCase {
 
     @MainActor
     private func assertPaywall() {
-        XCTAssertTrue(app.staticTexts["Trainr Pro"].waitForExistence(timeout: 15))
+        XCTAssertTrue(app.staticTexts["Get the full coach"].waitForExistence(timeout: 15))
         XCTAssertFalse(app.staticTexts["Generating your workout plan"].exists)
     }
 
@@ -83,7 +83,7 @@ final class PaywallGateTests: XCTestCase {
         app.buttons["Profile and app"].tap()
         app.buttons["Update profile"].tap()
         XCTAssertTrue(app.staticTexts["YOUR FITNESS PROFILE"].waitForExistence(timeout: 15))
-        XCTAssertFalse(app.staticTexts["Trainr Pro"].exists)
+        XCTAssertFalse(app.staticTexts["Get the full coach"].exists)
     }
 
     // Repeating a week is a local copy, so it must stay free too.
@@ -93,7 +93,7 @@ final class PaywallGateTests: XCTestCase {
         XCTAssertTrue(app.staticTexts["YOUR WEEKLY WORKOUT PLAN"].waitForExistence(timeout: 20))
         app.buttons["Workout plan options"].tap()
         app.buttons["Repeat this week"].tap()
-        XCTAssertFalse(app.staticTexts["Trainr Pro"].waitForExistence(timeout: 3))
+        XCTAssertFalse(app.staticTexts["Get the full coach"].waitForExistence(timeout: 3))
     }
 
     // The very first plan is the free one, so a fresh install must not be asked.
@@ -102,6 +102,6 @@ final class PaywallGateTests: XCTestCase {
         app = .launched(startingAt: "review")
         XCTAssertTrue(app.staticTexts["YOUR FITNESS PROFILE"].waitForExistence(timeout: 20))
         app.tapGenerate()
-        XCTAssertFalse(app.staticTexts["Trainr Pro"].waitForExistence(timeout: 3))
+        XCTAssertFalse(app.staticTexts["Get the full coach"].waitForExistence(timeout: 3))
     }
 }
