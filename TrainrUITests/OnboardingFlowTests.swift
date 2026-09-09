@@ -95,10 +95,13 @@ final class OnboardingFlowTests: XCTestCase {
 
     }
 
+    // Longer than a screen push is given elsewhere: this one waits on the
+    // generation and the first read of a plan that was written a moment ago,
+    // and 15 seconds was enough locally but not on a loaded runner.
     @MainActor
     private func arriveOnThePlan() {
         let heading = app.staticTexts["YOUR WEEKLY WORKOUT PLAN"]
-        XCTAssertTrue(heading.waitForExistence(timeout: 15))
+        XCTAssertTrue(heading.waitForExistence(timeout: 30))
 
         XCTAssertTrue(app.staticTexts.matching(
             NSPredicate(format: "label BEGINSWITH %@", "Week 1:")
@@ -122,7 +125,8 @@ final class OnboardingFlowTests: XCTestCase {
             NSPredicate(format: "label BEGINSWITH %@", "START")
         ).firstMatch.tap()
 
-        XCTAssertTrue(app.staticTexts["Set"].waitForExistence(timeout: 15))
+        // Same reason: the routine is loaded and laid out, not pushed.
+        XCTAssertTrue(app.staticTexts["Set"].waitForExistence(timeout: 30))
         XCTAssertTrue(app.buttons["Add set"].firstMatch.exists)
         XCTAssertTrue(app.buttons["Start timer"].firstMatch.exists)
         XCTAssertTrue(app.staticTexts["Equipment: Dumbbells"].exists)
