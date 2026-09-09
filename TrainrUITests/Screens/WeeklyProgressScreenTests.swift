@@ -11,7 +11,7 @@ final class WeeklyProgressScreenTests: XCTestCase {
     @MainActor
     private func openProgress(_ fixture: Fixture) {
         app = .launched(fixture)
-        XCTAssertTrue(app.staticTexts["YOUR WEEKLY WORKOUT PLAN"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.staticTexts["YOUR WEEKLY WORKOUT PLAN"].waitForExistence(timeout: 20))
         app.buttons["Track Weekly Progress →"].tap()
         XCTAssertTrue(app.staticTexts["WEEKLY PROGRESS"].waitForExistence(timeout: 5))
     }

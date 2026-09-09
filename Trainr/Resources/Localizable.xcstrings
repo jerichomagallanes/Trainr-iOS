@@ -2348,6 +2348,402 @@
         }
       }
     },
+    "pro_billed_annually": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Billed annually"
+          }
+        }
+      }
+    },
+    "pro_billed_monthly": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Billed monthly"
+          }
+        }
+      }
+    },
+    "pro_buy_lifetime": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unlock Pro forever"
+          }
+        }
+      }
+    },
+    "pro_cancel_anytime": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cancel your subscription at any time."
+          }
+        }
+      }
+    },
+    "pro_compare_free": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Free"
+          }
+        }
+      }
+    },
+    "pro_compare_fresh": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start a fresh plan"
+          }
+        }
+      }
+    },
+    "pro_compare_generated": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "AI-written weeks"
+          }
+        }
+      }
+    },
+    "pro_compare_history": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Weekly progress and past weeks"
+          }
+        }
+      }
+    },
+    "pro_compare_logging": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Log every set"
+          }
+        }
+      }
+    },
+    "pro_compare_one": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1"
+          }
+        }
+      }
+    },
+    "pro_compare_pro": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pro"
+          }
+        }
+      }
+    },
+    "pro_compare_repeat": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Repeat a week"
+          }
+        }
+      }
+    },
+    "pro_compare_rewrite": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rewrite a week"
+          }
+        }
+      }
+    },
+    "pro_compare_timer": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rest timer and exercise videos"
+          }
+        }
+      }
+    },
+    "pro_compare_title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Need to compare?"
+          }
+        }
+      }
+    },
+    "pro_compare_unlimited": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unlimited"
+          }
+        }
+      }
+    },
+    "pro_faq_cancel_a": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yes. You keep Pro until the period you have paid for ends, and nothing you have generated or logged is taken away."
+          }
+        }
+      }
+    },
+    "pro_faq_cancel_q": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Can I cancel any time?"
+          }
+        }
+      }
+    },
+    "pro_faq_devices_a": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pro follows your App Store account, not the device. Sign in with the same Apple ID and tap Restore purchase. Trainr has no accounts of its own, so a purchase made on Android does not unlock iOS."
+          }
+        }
+      }
+    },
+    "pro_faq_devices_q": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "What happens if I get a new phone?"
+          }
+        }
+      }
+    },
+    "pro_faq_free_a": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your first AI-written week, every set you log, the rest timer, the video on every exercise, all your past weeks and progress, and repeating a week as often as you like."
+          }
+        }
+      }
+    },
+    "pro_faq_free_q": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "What stays free?"
+          }
+        }
+      }
+    },
+    "pro_faq_human_a": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No. A Gemini model writes it from the answers you gave, and progresses it from the sets you log. Plans are guidance, not medical advice."
+          }
+        }
+      }
+    },
+    "pro_faq_human_q": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Is my plan written by a real trainer?"
+          }
+        }
+      }
+    },
+    "pro_faq_includes_a": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pro unlocks new AI-written weeks: generate next week from what you lifted, rewrite a week that does not suit you, and start a fresh plan whenever your goal changes."
+          }
+        }
+      }
+    },
+    "pro_faq_includes_q": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "What does Trainr Pro include?"
+          }
+        }
+      }
+    },
+    "pro_faq_renew_a": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Monthly and Yearly renew automatically at the end of each period. Lifetime is a single payment that never renews."
+          }
+        }
+      }
+    },
+    "pro_faq_renew_q": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Is Pro a one-time payment or does it renew?"
+          }
+        }
+      }
+    },
+    "pro_feature_fresh_body": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Change your goal, your kit or your days and begin again"
+          }
+        }
+      }
+    },
+    "pro_feature_fresh_title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start a fresh plan"
+          }
+        }
+      }
+    },
+    "pro_feature_next_week_body": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Written from the sets you actually logged"
+          }
+        }
+      }
+    },
+    "pro_feature_next_week_title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A new week, every week"
+          }
+        }
+      }
+    },
+    "pro_feature_rewrite_body": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ask for a different week when one does not suit you"
+          }
+        }
+      }
+    },
+    "pro_feature_rewrite_title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rewrite a week"
+          }
+        }
+      }
+    },
+    "pro_feature_support_body": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Subscriptions pay for the model that writes your plans"
+          }
+        }
+      }
+    },
+    "pro_feature_support_title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Support a one-person team"
+          }
+        }
+      }
+    },
     "pro_free_note": {
       "extractionState": "manual",
       "localizations": {
@@ -2359,6 +2755,17 @@
         }
       }
     },
+    "pro_full_access": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Get the full coach"
+          }
+        }
+      }
+    },
     "pro_headline": {
       "extractionState": "manual",
       "localizations": {
@@ -2366,6 +2773,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Keep the coach writing"
+          }
+        }
+      }
+    },
+    "pro_lifetime": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lifetime"
           }
         }
       }
@@ -2414,6 +2832,17 @@
         }
       }
     },
+    "pro_pay_once": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pay once"
+          }
+        }
+      }
+    },
     "pro_privacy": {
       "extractionState": "manual",
       "localizations": {
@@ -2421,6 +2850,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Privacy Policy"
+          }
+        }
+      }
+    },
+    "pro_questions": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Any questions?"
           }
         }
       }
@@ -2469,6 +2909,17 @@
         }
       }
     },
+    "pro_save_percent": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Save %1$lld%%"
+          }
+        }
+      }
+    },
     "pro_subscribe": {
       "extractionState": "manual",
       "localizations": {
@@ -2476,6 +2927,28 @@
           "stringUnit": {
             "state": "translated",
             "value": "Subscribe"
+          }
+        }
+      }
+    },
+    "pro_subscribe_to": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Subscribe to %1$@ plan"
+          }
+        }
+      }
+    },
+    "pro_support_trouble": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Having trouble with your subscription?"
           }
         }
       }

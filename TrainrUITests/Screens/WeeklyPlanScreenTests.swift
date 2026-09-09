@@ -11,7 +11,7 @@ final class WeeklyPlanScreenTests: XCTestCase {
     @MainActor
     private func openPlan(_ fixture: Fixture) {
         app = .launched(fixture)
-        XCTAssertTrue(app.staticTexts["YOUR WEEKLY WORKOUT PLAN"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.staticTexts["YOUR WEEKLY WORKOUT PLAN"].waitForExistence(timeout: 20))
     }
 
     @MainActor

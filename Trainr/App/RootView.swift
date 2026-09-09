@@ -33,9 +33,12 @@ struct RootView: View {
         .environment(appearance)
         .environment(entitlements)
         .preferredColorScheme(appearance.mode.colorScheme)
+        // Reading the entitlement is a network round trip, so it runs beside
+        // startup rather than in front of it. Nothing on the first screen depends
+        // on it, and the paywall refreshes again when it opens.
+        .task { await entitlements.refresh() }
         .task {
             entitlements.configure()
-            await entitlements.refresh()
             let model = OnboardingModel(dependencies: dependencies)
             onboarding = model
             #if DEBUG

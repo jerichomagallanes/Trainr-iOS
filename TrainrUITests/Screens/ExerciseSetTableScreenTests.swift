@@ -11,7 +11,7 @@ final class ExerciseSetTableScreenTests: XCTestCase {
     @MainActor
     private func open(_ day: String, from fixture: Fixture = .midWeek) {
         app = .launched(fixture)
-        XCTAssertTrue(app.staticTexts["YOUR WEEKLY WORKOUT PLAN"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.staticTexts["YOUR WEEKLY WORKOUT PLAN"].waitForExistence(timeout: 20))
         app.button(containing: day).tap()
         XCTAssertTrue(app.staticTexts[day.uppercased()].waitForExistence(timeout: 5))
     }

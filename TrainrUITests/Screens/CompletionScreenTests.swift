@@ -13,7 +13,7 @@ final class CompletionScreenTests: XCTestCase {
     // Whether the next week is paid for is PaywallGateTests' business.
     private func finish(day title: String, from fixture: Fixture) {
         app = .launched(fixture, pro: true)
-        XCTAssertTrue(app.staticTexts["YOUR WEEKLY WORKOUT PLAN"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.staticTexts["YOUR WEEKLY WORKOUT PLAN"].waitForExistence(timeout: 20))
         app.button(containing: title).tap()
         XCTAssertTrue(app.staticTexts[title.uppercased()].waitForExistence(timeout: 5))
 

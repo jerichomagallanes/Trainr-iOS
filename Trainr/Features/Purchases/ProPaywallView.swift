@@ -6,142 +6,185 @@ struct ProPaywallView: View {
 
     @Environment(Entitlements.self) private var entitlements
     @State private var selected: Package?
+    @State private var openQuestion: String?
     @State private var isWorking = false
     @State private var notice: String?
 
     var body: some View {
         ScreenContent {
             VStack(alignment: .leading, spacing: 0) {
-                Text(L10n.proName)
-                    .font(.screenTitle)
-                    .foregroundStyle(Color.onSurface)
-                Spacer().frame(height: Spacing.extraSmall)
-                Text(L10n.proHeadline)
-                    .font(.body16)
-                    .foregroundStyle(Color.onSurfaceMuted)
-
+                title
                 Spacer().frame(height: Spacing.section)
-                benefits
-                Spacer().frame(height: Spacing.section)
-
-                if let packages = entitlements.offering?.availablePackages, !packages.isEmpty {
-                    choices(packages)
-                } else {
-                    Text(L10n.proUnavailable)
-                        .font(.body14)
-                        .foregroundStyle(Color.onSurfaceMuted)
-                }
-
-                Spacer().frame(height: Spacing.medium)
-                Text(L10n.proFreeNote)
-                    .font(.body12)
-                    .foregroundStyle(Color.onSurfaceMuted)
-
-                Spacer().frame(height: Spacing.large)
-                smallPrint
+                features
+                Spacer().frame(height: Spacing.sectionGap)
+                comparison
+                Spacer().frame(height: Spacing.sectionGap)
+                questions
+                Spacer().frame(height: Spacing.sectionGap)
+                support
                 Spacer().frame(height: Spacing.large)
             }
         }
         .background(Color.surfacePage)
-        .safeAreaInset(edge: .bottom, spacing: 0) {
-            VStack(spacing: Spacing.small) {
-                PrimaryButton(title: L10n.proSubscribe, isEnabled: selected != nil && !isWorking) {
-                    Task { await buy() }
-                }
-                Button(L10n.proNotNow, action: onClose)
-                    .font(.labelMedium)
-                    .foregroundStyle(Color.onSurfaceMuted)
-            }
-            .padding(Spacing.large)
-            .pinnedBar()
-        }
+        .safeAreaInset(edge: .bottom, spacing: 0) { purchaseBar }
         .task {
             await entitlements.refresh()
-            selected = entitlements.offering?.availablePackages.first
+            // Opened before the first entitlement read landed: a subscriber must
+            // not be asked to pay again.
+            if entitlements.isPro {
+                onClose()
+                return
+            }
+            selected = Self.preferred(from: packages)
         }
         .alert(notice ?? "", isPresented: .constant(notice != nil)) {
             Button(L10n.close) { notice = nil }
         }
     }
 
-    private var benefits: some View {
-        VStack(alignment: .leading, spacing: Spacing.small) {
-            benefit(L10n.proBenefitNextWeek)
-            benefit(L10n.proBenefitRegenerate)
-            benefit(L10n.proBenefitFreshPlan)
-        }
-    }
+    private var packages: [Package] { entitlements.offering?.availablePackages ?? [] }
 
-    private func benefit(_ text: String) -> some View {
-        HStack(alignment: .top, spacing: Spacing.small) {
-            Image(systemName: "checkmark")
-                .font(.oneOff(13, .semibold))
-                .foregroundStyle(Color.brandStrong)
-                .frame(width: 20, height: 20)
-            Text(text)
-                .font(.body14)
+    private var title: some View {
+        VStack(alignment: .leading, spacing: Spacing.extraSmall) {
+            Text(L10n.proName.uppercased())
+                .font(.labelSmall)
+                .foregroundStyle(Color.onBrand)
+                .padding(.horizontal, Spacing.extraSmall)
+                .padding(.vertical, 3)
+                .background(Color.brandLarge, in: .rect(cornerRadius: CornerRadius.small))
+            Text(L10n.proFullAccess)
+                .font(.screenTitle)
                 .foregroundStyle(Color.onSurface)
-                .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
 
-    private func choices(_ packages: [Package]) -> some View {
-        VStack(spacing: Spacing.small) {
-            ForEach(packages, id: \.identifier) { package in
-                choice(package)
+    private var features: some View {
+        VStack(alignment: .leading, spacing: Spacing.medium) {
+            feature("sparkles", L10n.proFeatureNextWeekTitle, L10n.proFeatureNextWeekBody)
+            feature("arrow.trianglehead.2.clockwise",
+                    L10n.proFeatureRewriteTitle, L10n.proFeatureRewriteBody)
+            feature("figure.run", L10n.proFeatureFreshTitle, L10n.proFeatureFreshBody)
+            feature("heart.fill", L10n.proFeatureSupportTitle, L10n.proFeatureSupportBody)
+        }
+    }
+
+    private func feature(_ symbol: String, _ heading: String, _ detail: String) -> some View {
+        HStack(alignment: .top, spacing: Spacing.small) {
+            Image(systemName: symbol)
+                .font(.oneOff(18))
+                .foregroundStyle(Color.brandStrong)
+                .frame(width: 28, height: 28)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(heading)
+                    .font(.labelLarge)
+                    .foregroundStyle(Color.onSurface)
+                Text(detail)
+                    .font(.body14)
+                    .foregroundStyle(Color.onSurfaceMuted)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+    }
+
+    private var comparison: some View {
+        VStack(alignment: .leading, spacing: Spacing.small) {
+            Text(L10n.proCompareTitle)
+                .font(.sectionTitle)
+                .foregroundStyle(Color.onSurface)
+            HStack(spacing: 0) {
+                Spacer()
+                Text(L10n.proCompareFree)
+                    .font(.labelSmall)
+                    .foregroundStyle(Color.onSurfaceMuted)
+                    .frame(width: 72)
+                Text(L10n.proComparePro)
+                    .font(.labelSmall)
+                    .foregroundStyle(Color.brandStrong)
+                    .frame(width: 72)
+            }
+            ForEach(Self.rows, id: \.label) { row in
+                comparisonRow(row)
             }
         }
     }
 
-    // The full renewal price is the largest thing on the row, because both stores
-    // require it to outrank any shorter-period figure in size as well as position.
-    private func choice(_ package: Package) -> some View {
-        let isSelected = selected?.identifier == package.identifier
-        return Button { selected = package } label: {
-            HStack(spacing: Spacing.small) {
-                RadioDot(isSelected: isSelected)
-                VStack(alignment: .leading, spacing: 2) {
-                    HStack(spacing: Spacing.extraSmall) {
-                        Text(term(package))
-                            .font(.labelLarge)
-                            .foregroundStyle(isSelected ? Color.onSurfaceSelected : .onSurface)
-                        if package.packageType == .annual {
-                            Text(L10n.proBestValue)
-                                .font(.body12)
-                                .foregroundStyle(Color.onStatus)
-                                .padding(.horizontal, Spacing.extraSmall)
-                                .padding(.vertical, 2)
-                                .background(Color.statusDone, in: .rect(cornerRadius: CornerRadius.small))
-                        }
-                    }
-                    if let trial = trialNote(package) {
-                        Text(trial)
-                            .font(.body12)
-                            .foregroundStyle(isSelected ? Color.onSurfaceSelected : .onSurfaceMuted)
-                    }
+    private func comparisonRow(_ row: Row) -> some View {
+        VStack(spacing: 0) {
+            Rectangle().fill(Color.outlineDivider).frame(height: 1)
+            HStack(spacing: 0) {
+                Text(row.label)
+                    .font(.body14)
+                    .foregroundStyle(Color.onSurface)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                mark(row.free).frame(width: 72)
+                mark(row.pro).frame(width: 72)
+            }
+            .padding(.vertical, Spacing.small)
+        }
+    }
+
+    @ViewBuilder
+    private func mark(_ value: Mark) -> some View {
+        switch value {
+        case .yes:
+            Image(systemName: "checkmark")
+                .font(.oneOff(13, .semibold))
+                .foregroundStyle(Color.statusDoneInk)
+        case .no:
+            Image(systemName: "xmark")
+                .font(.oneOff(13, .semibold))
+                .foregroundStyle(Color.onSurfaceMuted)
+        case .text(let text):
+            Text(text)
+                .font(.body12)
+                .foregroundStyle(Color.onSurfaceMuted)
+        }
+    }
+
+    private var questions: some View {
+        VStack(alignment: .leading, spacing: Spacing.small) {
+            Text(L10n.proQuestions)
+                .font(.sectionTitle)
+                .foregroundStyle(Color.onSurface)
+            ForEach(Self.faq, id: \.question) { entry in
+                question(entry)
+            }
+        }
+    }
+
+    private func question(_ entry: Question) -> some View {
+        let isOpen = openQuestion == entry.question
+        return Button {
+            openQuestion = isOpen ? nil : entry.question
+        } label: {
+            VStack(alignment: .leading, spacing: Spacing.small) {
+                HStack(alignment: .top, spacing: Spacing.small) {
+                    Text(entry.question)
+                        .font(.labelMedium)
+                        .foregroundStyle(Color.onSurface)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    Image(systemName: isOpen ? "chevron.up" : "chevron.down")
+                        .font(.oneOff(12, .semibold))
+                        .foregroundStyle(Color.onSurfaceMuted)
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                Text(package.storeProduct.localizedPriceString)
-                    .font(.sectionTitle)
-                    .foregroundStyle(isSelected ? Color.onSurfaceSelected : .onSurface)
+                if isOpen {
+                    Text(entry.answer)
+                        .font(.body14)
+                        .foregroundStyle(Color.onSurfaceMuted)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
             }
             .padding(Spacing.card)
             .frame(maxWidth: .infinity)
-            .background(
-                isSelected ? Color.surfaceSelected : Color.surfaceCard,
-                in: .rect(cornerRadius: CornerRadius.medium)
-            )
-            .overlay {
-                RoundedRectangle(cornerRadius: CornerRadius.medium)
-                    .strokeBorder(Color.outlineControl, lineWidth: 1)
-            }
+            .background(Color.surfaceSunken, in: .rect(cornerRadius: CornerRadius.medium))
         }
         .buttonStyle(.plain)
+        .animation(.easeInOut(duration: MotionDuration.short), value: isOpen)
     }
 
-    private var smallPrint: some View {
+    private var support: some View {
         VStack(alignment: .leading, spacing: Spacing.small) {
-            Text(L10n.proRenewalApple)
+            Text(L10n.proSupportTrouble)
                 .font(.body12)
                 .foregroundStyle(Color.onSurfaceMuted)
             HStack(spacing: Spacing.medium) {
@@ -154,38 +197,112 @@ struct ProPaywallView: View {
         }
     }
 
-    // Named from the package type rather than assumed, so an offering carrying
-    // anything other than the two we sell is labelled honestly instead of wrongly.
+    private var purchaseBar: some View {
+        VStack(spacing: Spacing.small) {
+            if packages.isEmpty {
+                Text(L10n.proUnavailable)
+                    .font(.body14)
+                    .foregroundStyle(Color.onSurfaceMuted)
+            } else {
+                HStack(spacing: Spacing.small) {
+                    ForEach(packages, id: \.identifier) { planCard($0) }
+                }
+            }
+            PrimaryButton(title: callToAction, isEnabled: selected != nil && !isWorking) {
+                Task { await buy() }
+            }
+            // Only for a renewing plan: a lifetime purchase never renews, and
+            // saying that it does would be a false disclosure.
+            if selected?.packageType != .lifetime {
+                Text(L10n.proCancelAnytime)
+                    .font(.body12)
+                    .foregroundStyle(Color.onSurfaceMuted)
+            }
+            Button(L10n.proNotNow, action: onClose)
+                .font(.labelMedium)
+                .foregroundStyle(Color.onSurfaceMuted)
+        }
+        .padding(Spacing.large)
+        .pinnedBar()
+    }
+
+    private func planCard(_ package: Package) -> some View {
+        let isSelected = selected?.identifier == package.identifier
+        return Button { selected = package } label: {
+            VStack(spacing: 0) {
+                if let saved = saving(on: package) {
+                    Text(L10n.proSavePercent(saved))
+                        .font(.body12)
+                        .foregroundStyle(Color.onBrand)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 3)
+                        .background(Color.brandLarge)
+                }
+                VStack(spacing: 2) {
+                    Text(term(package))
+                        .font(.labelMedium)
+                        .foregroundStyle(isSelected ? Color.onSurfaceSelected : .onSurface)
+                    Text(package.storeProduct.localizedPriceString)
+                        .font(.sectionTitle)
+                        .foregroundStyle(isSelected ? Color.onSurfaceSelected : .onSurface)
+                    Text(billing(package))
+                        .font(.body12)
+                        .foregroundStyle(isSelected ? Color.onSurfaceSelected : .onSurfaceMuted)
+                }
+                .padding(.vertical, Spacing.small)
+                .padding(.horizontal, 4)
+                .frame(maxWidth: .infinity)
+            }
+            .frame(maxWidth: .infinity)
+            .background(isSelected ? Color.surfaceSelected : Color.surfaceCard)
+            .clipShape(.rect(cornerRadius: CornerRadius.medium))
+            .overlay {
+                RoundedRectangle(cornerRadius: CornerRadius.medium)
+                    .strokeBorder(
+                        isSelected ? Color.brandLarge : Color.outlineControl, lineWidth: 1
+                    )
+            }
+        }
+        .buttonStyle(.plain)
+    }
+
+    private var callToAction: String {
+        guard let selected else { return L10n.proSubscribe }
+        return selected.packageType == .lifetime
+            ? L10n.proBuyLifetime
+            : L10n.proSubscribeTo(term(selected))
+    }
+
     private func term(_ package: Package) -> String {
         switch package.packageType {
         case .annual: L10n.proYearly
         case .monthly: L10n.proMonthly
+        case .lifetime: L10n.proLifetime
         default: package.storeProduct.localizedTitle
         }
     }
 
-    private func trialNote(_ package: Package) -> String? {
-        guard let offer = package.storeProduct.introductoryDiscount, offer.price == 0,
-              let period = Self.periodText(offer.subscriptionPeriod)
-        else { return nil }
-        return L10n.proTrialThen(period, package.storeProduct.localizedPriceString)
+    private func billing(_ package: Package) -> String {
+        switch package.packageType {
+        case .annual: L10n.proBilledAnnually
+        case .monthly: L10n.proBilledMonthly
+        case .lifetime: L10n.proPayOnce
+        default: ""
+        }
     }
 
-    // The SDK gives a value and a unit, not words, and the words have to be the
-    // reader's own.
-    private static func periodText(_ period: SubscriptionPeriod) -> String? {
-        var components = DateComponents()
-        switch period.unit {
-        case .day: components.day = period.value
-        case .week: components.day = period.value * 7
-        case .month: components.month = period.value
-        case .year: components.year = period.value
-        @unknown default: return nil
-        }
-        let formatter = DateComponentsFormatter()
-        formatter.unitsStyle = .full
-        formatter.allowedUnits = [.day, .month, .year]
-        return formatter.string(from: components)
+    // Worked out from the prices the store returns rather than written into the
+    // copy, so a price change in App Store Connect needs no release.
+    private func saving(on package: Package) -> Int? {
+        guard package.packageType == .annual,
+              let monthly = packages.first(where: { $0.packageType == .monthly })
+        else { return nil }
+        let full = monthly.storeProduct.price
+        let perMonth = package.storeProduct.price / 12
+        guard full > 0, perMonth < full else { return nil }
+        let saved = ((full - perMonth) / full) * 100
+        let rounded = Int(NSDecimalNumber(decimal: saved).doubleValue.rounded())
+        return rounded > 0 ? rounded : nil
     }
 
     private func buy() async {
@@ -204,6 +321,42 @@ struct ProPaywallView: View {
         if restored { onClose() }
     }
 
+    // The annual plan when there is one, because that is the one being recommended.
+    private static func preferred(from packages: [Package]) -> Package? {
+        packages.first { $0.packageType == .annual } ?? packages.first
+    }
+
+    private struct Row {
+        let label: String
+        let free: Mark
+        let pro: Mark
+    }
+
+    private struct Question {
+        let question: String
+        let answer: String
+    }
+
+    private static let rows: [Row] = [
+        Row(label: L10n.proCompareLogging, free: .yes, pro: .yes),
+        Row(label: L10n.proCompareTimer, free: .yes, pro: .yes),
+        Row(label: L10n.proCompareHistory, free: .yes, pro: .yes),
+        Row(label: L10n.proCompareRepeat, free: .yes, pro: .yes),
+        Row(label: L10n.proCompareGenerated,
+            free: .text(L10n.proCompareOne), pro: .text(L10n.proCompareUnlimited)),
+        Row(label: L10n.proCompareRewrite, free: .no, pro: .yes),
+        Row(label: L10n.proCompareFresh, free: .no, pro: .yes)
+    ]
+
+    private static let faq: [Question] = [
+        Question(question: L10n.proFaqIncludesQ, answer: L10n.proFaqIncludesA),
+        Question(question: L10n.proFaqFreeQ, answer: L10n.proFaqFreeA),
+        Question(question: L10n.proFaqHumanQ, answer: L10n.proFaqHumanA),
+        Question(question: L10n.proFaqRenewQ, answer: L10n.proFaqRenewA),
+        Question(question: L10n.proFaqCancelQ, answer: L10n.proFaqCancelA),
+        Question(question: L10n.proFaqDevicesQ, answer: L10n.proFaqDevicesA)
+    ]
+
     // Apple's standard agreement applies where no custom one is supplied, and the
     // paywall has to link to it.
     private static let terms = URL(
@@ -212,4 +365,10 @@ struct ProPaywallView: View {
     private static let privacy = URL(
         string: "https://jerichomagallanes.github.io/Trainr/privacy-policy"
     )!
+}
+
+private enum Mark {
+    case yes
+    case no
+    case text(String)
 }
