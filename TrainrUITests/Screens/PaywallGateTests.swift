@@ -106,6 +106,38 @@ final class PaywallGateTests: XCTestCase {
         assertNoPrompt()
     }
 
+    // The profile menu is the only way in for someone who has not hit the limit,
+    // and the only way back for someone who has already paid.
+    @MainActor
+    func testTheProfileMenuOpensTheOffer() {
+        app = launchedSpent(.midWeek)
+        XCTAssertTrue(app.staticTexts["YOUR WEEKLY WORKOUT PLAN"].waitForExistence(timeout: 20))
+        app.buttons["Profile and app"].tap()
+        app.buttons["Trainr Pro"].tap()
+        // Straight to the offer: nothing was reached for, so there is no limit
+        // to explain first.
+        XCTAssertTrue(app.staticTexts["Get the full coach"].waitForExistence(timeout: 15))
+        XCTAssertFalse(app.staticTexts["Upgrade to Trainr Pro"].exists)
+    }
+
+    // Without this a subscriber who reinstalls has nowhere to restore from: the
+    // paywall closes itself once the entitlement lands.
+    @MainActor
+    func testTheProfileMenuShowsTheSubscriptionToASubscriber() {
+        app = XCUIApplication()
+        app.launchArguments = [
+            "-cannedGeneration", "-inMemoryStore", "-splashSeconds", "0",
+            "-seedFixture", Fixture.midWeek.rawValue, "-proUnlocked"
+        ]
+        app.launch()
+        XCTAssertTrue(app.staticTexts["YOUR WEEKLY WORKOUT PLAN"].waitForExistence(timeout: 20))
+        app.buttons["Profile and app"].tap()
+        app.buttons["Trainr Pro"].tap()
+        XCTAssertTrue(app.staticTexts["Your subscription is active"].waitForExistence(timeout: 15))
+        XCTAssertTrue(app.buttons["Restore purchase"].exists)
+        XCTAssertFalse(app.staticTexts["Get the full coach"].exists)
+    }
+
     // The very first plan is the free one, so a fresh install must not be asked.
     @MainActor
     func testTheFirstPlanIsNotAskedToPay() {

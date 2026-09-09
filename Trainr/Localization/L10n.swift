@@ -227,6 +227,7 @@ nonisolated enum L10n {
     static var preferredWorkoutStyle: String { String(localized: "preferred_workout_style") }
     static var preferredWorkoutTime: String { String(localized: "preferred_workout_time") }
     static var previousColumn: String { String(localized: "previous_column") }
+    static var proActive: String { String(localized: "pro_active") }
     static var proAndMore: String { String(localized: "pro_and_more") }
     static var proBenefitFreshPlan: String { String(localized: "pro_benefit_fresh_plan") }
     static var proBenefitNextWeek: String { String(localized: "pro_benefit_next_week") }
@@ -274,6 +275,7 @@ nonisolated enum L10n {
     static var proFullAccess: String { String(localized: "pro_full_access") }
     static var proHeadline: String { String(localized: "pro_headline") }
     static var proLifetime: String { String(localized: "pro_lifetime") }
+    static var proManage: String { String(localized: "pro_manage") }
     static var proMonthly: String { String(localized: "pro_monthly") }
     static var proName: String { String(localized: "pro_name") }
     static var proNotNow: String { String(localized: "pro_not_now") }

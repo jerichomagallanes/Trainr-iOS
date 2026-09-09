@@ -2,7 +2,9 @@ import SwiftUI
 import TrainrDependencies
 
 struct ProPaywallView: View {
-    let reason: PaywallReason
+    // Nil when the paywall was opened from the profile menu rather than by
+    // reaching for something paid: there is no reason to lead with.
+    let reason: PaywallReason?
     let onClose: () -> Void
 
     @Environment(Entitlements.self) private var entitlements
@@ -63,26 +65,31 @@ struct ProPaywallView: View {
     // plainly, because this is the moment someone learns the limit exists.
     private var features: some View {
         VStack(alignment: .leading, spacing: Spacing.medium) {
-            VStack(alignment: .leading, spacing: Spacing.extraSmall) {
-                Image(systemName: reason.symbol)
-                    .font(.oneOff(30))
-                    .foregroundStyle(Color.brandStrong)
-                Text(reason.heading)
-                    .font(.sectionTitle)
+            if let reason {
+                VStack(alignment: .leading, spacing: Spacing.extraSmall) {
+                    Image(systemName: reason.symbol)
+                        .font(.oneOff(30))
+                        .foregroundStyle(Color.brandStrong)
+                    Text(reason.heading)
+                        .font(.sectionTitle)
+                        .foregroundStyle(Color.onSurface)
+                    Text(reason.detail)
+                        .font(.body16)
+                        .foregroundStyle(Color.onSurfaceMuted)
+                    Text(L10n.proFreeLimit)
+                        .font(.body12)
+                        .foregroundStyle(Color.onSurfaceMuted)
+                }
+                Spacer().frame(height: Spacing.small)
+                Text(L10n.proAndMore)
+                    .font(.labelMedium)
                     .foregroundStyle(Color.onSurface)
-                Text(reason.detail)
-                    .font(.body16)
-                    .foregroundStyle(Color.onSurfaceMuted)
+            } else {
                 Text(L10n.proFreeLimit)
                     .font(.body12)
                     .foregroundStyle(Color.onSurfaceMuted)
             }
-
-            Spacer().frame(height: Spacing.small)
-            Text(L10n.proAndMore)
-                .font(.labelMedium)
-                .foregroundStyle(Color.onSurface)
-            ForEach(reason.others, id: \.self) { other in
+            ForEach(reason?.others ?? PaywallReason.allCases, id: \.self) { other in
                 feature(other.symbol, other.heading, other.detail)
             }
             feature("heart.fill", L10n.proFeatureSupportTitle, L10n.proFeatureSupportBody)
@@ -218,8 +225,8 @@ struct ProPaywallView: View {
                 .foregroundStyle(Color.onSurfaceMuted)
             HStack(spacing: Spacing.medium) {
                 Button(L10n.proRestore) { Task { await restore() } }
-                Link(L10n.proTerms, destination: Self.terms)
-                Link(L10n.proPrivacy, destination: Self.privacy)
+                Link(L10n.proTerms, destination: ProLinks.terms)
+                Link(L10n.proPrivacy, destination: ProLinks.privacy)
             }
             .font(.body12)
             .foregroundStyle(Color.brandStrong)
@@ -424,14 +431,6 @@ struct ProPaywallView: View {
         Question(question: L10n.proFaqDevicesQ, answer: L10n.proFaqDevicesA)
     ]
 
-    // Apple's standard agreement applies where no custom one is supplied, and the
-    // paywall has to link to it.
-    private static let terms = URL(
-        string: "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/"
-    )!
-    private static let privacy = URL(
-        string: "https://jerichomagallanes.github.io/Trainr/privacy-policy"
-    )!
 }
 
 private enum Mark {
