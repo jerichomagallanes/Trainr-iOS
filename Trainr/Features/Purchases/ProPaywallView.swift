@@ -2,6 +2,7 @@ import SwiftUI
 import TrainrDependencies
 
 struct ProPaywallView: View {
+    let reason: PaywallReason
     let onClose: () -> Void
 
     @Environment(Entitlements.self) private var entitlements
@@ -58,12 +59,32 @@ struct ProPaywallView: View {
         }
     }
 
+    // The reason they arrived leads, at full size and with the free limit stated
+    // plainly, because this is the moment someone learns the limit exists.
     private var features: some View {
         VStack(alignment: .leading, spacing: Spacing.medium) {
-            feature("sparkles", L10n.proFeatureNextWeekTitle, L10n.proFeatureNextWeekBody)
-            feature("arrow.trianglehead.2.clockwise",
-                    L10n.proFeatureRewriteTitle, L10n.proFeatureRewriteBody)
-            feature("figure.run", L10n.proFeatureFreshTitle, L10n.proFeatureFreshBody)
+            VStack(alignment: .leading, spacing: Spacing.extraSmall) {
+                Image(systemName: reason.symbol)
+                    .font(.oneOff(30))
+                    .foregroundStyle(Color.brandStrong)
+                Text(reason.heading)
+                    .font(.sectionTitle)
+                    .foregroundStyle(Color.onSurface)
+                Text(reason.detail)
+                    .font(.body16)
+                    .foregroundStyle(Color.onSurfaceMuted)
+                Text(L10n.proFreeLimit)
+                    .font(.body12)
+                    .foregroundStyle(Color.onSurfaceMuted)
+            }
+
+            Spacer().frame(height: Spacing.small)
+            Text(L10n.proAndMore)
+                .font(.labelMedium)
+                .foregroundStyle(Color.onSurface)
+            ForEach(reason.others, id: \.self) { other in
+                feature(other.symbol, other.heading, other.detail)
+            }
             feature("heart.fill", L10n.proFeatureSupportTitle, L10n.proFeatureSupportBody)
         }
     }

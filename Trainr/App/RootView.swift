@@ -18,6 +18,7 @@ struct RootView: View {
     @State private var nextWeek: NextWeekModel?
     // Bumped to give home a new identity, and with it a model that re-reads.
     @State private var planGeneration = 0
+    @State private var prompt: PaywallReason?
 
     var body: some View {
         NavigationStack(path: $path) {
@@ -36,6 +37,14 @@ struct RootView: View {
         // Reading the entitlement is a network round trip, so it runs beside
         // startup rather than in front of it. Nothing on the first screen depends
         // on it, and the paywall refreshes again when it opens.
+        .sheet(item: $prompt) { reason in
+            ProPromptSheet(reason: reason) {
+                prompt = nil
+                path.append(.paywall(reason: reason))
+            } onDismiss: {
+                prompt = nil
+            }
+        }
         .task { await entitlements.refresh() }
         .task {
             entitlements.configure()
@@ -78,9 +87,9 @@ struct RootView: View {
                     path.append(.review(fromPlan: true, profileOnly: false))
                 },
                 onUpdateProfile: { path.append(.review(fromPlan: true, profileOnly: true)) },
-                onStartNextWeek: { path.append(paidOr(.generatingNextWeek)) },
+                onStartNextWeek: { ask(.nextWeek, toReach: .generatingNextWeek) },
                 onRepeatWeek: { nextWeek?.repeatWeek() },
-                onRegenerateWeek: { path.append(paidOr(.regeneratingWeek)) },
+                onRegenerateWeek: { ask(.rewrite, toReach: .regeneratingWeek) },
                 onCreatePlan: {
                     path.append(.review(fromPlan: true, profileOnly: false))
                 }
@@ -98,8 +107,15 @@ struct RootView: View {
         allowance.markUsed()
     }
 
-    private func paidOr(_ route: Route) -> Route {
-        entitlements.isPro || !allowance.hasBeenUsed() ? route : .paywall
+    // A week already generated is never taken away, so only writing a new one
+    // asks for Pro, and it asks where the tap happened rather than by replacing
+    // the screen.
+    private func ask(_ reason: PaywallReason, toReach route: Route) {
+        if entitlements.isPro || !allowance.hasBeenUsed() {
+            path.append(route)
+        } else {
+            prompt = reason
+        }
     }
 
     private func restartOnHome() {
@@ -201,7 +217,11 @@ struct RootView: View {
                     if profileOnly {
                         onboarding.updateProfileOnly { path = [] }
                     } else {
-                        path.append(fromPlan ? paidOr(.generating) : .generating)
+                        if fromPlan {
+                            ask(.freshPlan, toReach: .generating)
+                        } else {
+                            path.append(.generating)
+                        }
                     }
                 },
                 onBack: pop,
@@ -259,7 +279,7 @@ struct RootView: View {
                 weekNumber: weekNumber,
                 onBack: pop,
                 onViewProgress: { path.append(.weeklyProgress) },
-                onGenerateNextWeek: { path.append(paidOr(.generatingNextWeek)) }
+                onGenerateNextWeek: { ask(.nextWeek, toReach: .generatingNextWeek) }
             )
 
         case .weeklyProgress:
@@ -270,8 +290,8 @@ struct RootView: View {
                 onLastWeekDeleted: restartOnHome
             )
 
-        case .paywall:
-            ProPaywallView { path.removeLast() }
+        case .paywall(let reason):
+            ProPaywallView(reason: reason) { path.removeLast() }
 
         case .generatingNextWeek:
             generating(start: { nextWeek?.generateNextWeek() })

@@ -229,6 +229,7 @@ nonisolated enum L10n {
     static var preferredWorkoutStyle: String { String(localized: "preferred_workout_style") }
     static var preferredWorkoutTime: String { String(localized: "preferred_workout_time") }
     static var previousColumn: String { String(localized: "previous_column") }
+    static var proAndMore: String { String(localized: "pro_and_more") }
     static var proBenefitFreshPlan: String { String(localized: "pro_benefit_fresh_plan") }
     static var proBenefitNextWeek: String { String(localized: "pro_benefit_next_week") }
     static var proBenefitRegenerate: String { String(localized: "pro_benefit_regenerate") }
@@ -249,6 +250,7 @@ nonisolated enum L10n {
     static var proCompareTimer: String { String(localized: "pro_compare_timer") }
     static var proCompareTitle: String { String(localized: "pro_compare_title") }
     static var proCompareUnlimited: String { String(localized: "pro_compare_unlimited") }
+    static var proContinue: String { String(localized: "pro_continue") }
     static var proFaqCancelA: String { String(localized: "pro_faq_cancel_a") }
     static var proFaqCancelQ: String { String(localized: "pro_faq_cancel_q") }
     static var proFaqDevicesA: String { String(localized: "pro_faq_devices_a") }
@@ -269,6 +271,7 @@ nonisolated enum L10n {
     static var proFeatureRewriteTitle: String { String(localized: "pro_feature_rewrite_title") }
     static var proFeatureSupportBody: String { String(localized: "pro_feature_support_body") }
     static var proFeatureSupportTitle: String { String(localized: "pro_feature_support_title") }
+    static var proFreeLimit: String { String(localized: "pro_free_limit") }
     static var proFreeNote: String { String(localized: "pro_free_note") }
     static var proFullAccess: String { String(localized: "pro_full_access") }
     static var proHeadline: String { String(localized: "pro_headline") }
@@ -279,6 +282,9 @@ nonisolated enum L10n {
     static var proNothingToRestore: String { String(localized: "pro_nothing_to_restore") }
     static var proPayOnce: String { String(localized: "pro_pay_once") }
     static var proPrivacy: String { String(localized: "pro_privacy") }
+    static var proPromptFresh: String { String(localized: "pro_prompt_fresh") }
+    static var proPromptNextWeek: String { String(localized: "pro_prompt_next_week") }
+    static var proPromptRewrite: String { String(localized: "pro_prompt_rewrite") }
     static var proQuestions: String { String(localized: "pro_questions") }
     static var proRenewalApple: String { String(localized: "pro_renewal_apple") }
     static var proRenewalGoogle: String { String(localized: "pro_renewal_google") }
@@ -297,6 +303,7 @@ nonisolated enum L10n {
         String.localizedStringWithFormat(String(localized: "pro_trial_then"), p1, p2)
     }
     static var proUnavailable: String { String(localized: "pro_unavailable") }
+    static var proUpgradeTitle: String { String(localized: "pro_upgrade_title") }
     static var proYearly: String { String(localized: "pro_yearly") }
     static var profileAndApp: String { String(localized: "profile_and_app") }
     static var programCardio: String { String(localized: "program_cardio") }

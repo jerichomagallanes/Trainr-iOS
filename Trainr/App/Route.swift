@@ -16,7 +16,7 @@ enum Route: Hashable {
     case weekCompleted(weekNumber: Int)
     case regeneratingWeek
     case generatingNextWeek
-    case paywall
+    case paywall(reason: PaywallReason)
 
     // The pattern only, never the filled-in arguments, so no recorded value can
     // travel into a crash report.

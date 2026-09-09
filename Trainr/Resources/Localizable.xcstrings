@@ -2304,6 +2304,17 @@
         }
       }
     },
+    "pro_and_more": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "And more included with Pro"
+          }
+        }
+      }
+    },
     "pro_benefit_fresh_plan": {
       "extractionState": "manual",
       "localizations": {
@@ -2520,6 +2531,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Unlimited"
+          }
+        }
+      }
+    },
+    "pro_continue": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Continue"
           }
         }
       }
@@ -2744,6 +2766,17 @@
         }
       }
     },
+    "pro_free_limit": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Free limit: one AI-written week"
+          }
+        }
+      }
+    },
     "pro_free_note": {
       "extractionState": "manual",
       "localizations": {
@@ -2850,6 +2883,39 @@
           "stringUnit": {
             "state": "translated",
             "value": "Privacy Policy"
+          }
+        }
+      }
+    },
+    "pro_prompt_fresh": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You have used your free AI-written week. Pro lets you start a fresh plan whenever your goal, your kit or your days change."
+          }
+        }
+      }
+    },
+    "pro_prompt_next_week": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You have used your free AI-written week. Pro writes you a new one each week, from the sets you actually logged."
+          }
+        }
+      }
+    },
+    "pro_prompt_rewrite": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You have used your free AI-written week. Pro lets you ask for a different week whenever one does not suit you."
           }
         }
       }
@@ -2982,6 +3048,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Subscriptions are not available right now. Please try again later."
+          }
+        }
+      }
+    },
+    "pro_upgrade_title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Upgrade to Trainr Pro"
           }
         }
       }
