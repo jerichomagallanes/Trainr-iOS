@@ -55,6 +55,20 @@ extension XCUIApplication {
 
     // Insists the tap took: the selection state is the truth, not the synthesized event.
     @MainActor
+    // Retried rather than waited on. A tap sent while a screen is still
+    // animating can land where the control no longer is, and a tap that never
+    // landed does not arrive later however long the next wait is — which is how
+    // three separate onboarding failures read as timeouts.
+    @discardableResult
+    func tap(_ control: XCUIElement, until arrival: XCUIElement, attempts: Int = 3) -> Bool {
+        for _ in 0..<attempts {
+            guard control.waitForExistence(timeout: 10) else { continue }
+            control.tap()
+            if arrival.waitForExistence(timeout: 10) { return true }
+        }
+        return false
+    }
+
     func select(_ element: XCUIElement) {
         scrollUntilHittable(element)
         element.tap()

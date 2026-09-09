@@ -69,36 +69,29 @@ final class ExerciseSetTableScreenTests: XCTestCase {
         let time = app.textFields.firstMatch
         time.tap()
 
-        type("500", into: time, reading: ["0:05", "0:50", "5:00"])
-        type("1", into: time, reading: ["50:01"])
+        typeTime("500", into: time, reading: "5:00")
+        typeTime("5001", into: time, reading: "50:01")
     }
 
-    // Every digit shifts the ones before it, so a dropped keystroke does not
-    // read as a missing digit but as a different number: typing 500 and losing
-    // one leaves 0:50, which is a perfectly valid time. Nor can a keystroke that
-    // never arrived be waited for. So each digit is confirmed before the next is
-    // sent, and one that did not land is sent again.
+    // Cleared and retyped whole rather than repaired digit by digit. Every digit
+    // shifts the ones before it, so a dropped keystroke reads as a different but
+    // perfectly valid time, and re-sending one digit compounds the damage
+    // instead of fixing it: a 5 that arrives twice turns 0:05 into 0:55.
     @MainActor
-    private func type(_ digits: String, into field: XCUIElement, reading steps: [String]) {
-        for (digit, expected) in zip(digits, steps) {
-            var landed = false
-            for _ in 0..<3 {
-                field.typeText(String(digit))
-                let arrived = XCTNSPredicateExpectation(
-                    predicate: NSPredicate(format: "value == %@", expected),
-                    object: field
-                )
-                if XCTWaiter().wait(for: [arrived], timeout: 2) == .completed {
-                    landed = true
-                    break
-                }
-            }
-            XCTAssertTrue(
-                landed,
-                "typing \(digit) never produced \(expected); the field reads "
-                    + "\(field.value as? String ?? "nothing")"
+    private func typeTime(_ digits: String, into field: XCUIElement, reading expected: String) {
+        for _ in 0..<3 {
+            field.typeText(String(repeating: XCUIKeyboardKey.delete.rawValue, count: 8))
+            field.typeText(digits)
+            let arrived = XCTNSPredicateExpectation(
+                predicate: NSPredicate(format: "value == %@", expected),
+                object: field
             )
+            if XCTWaiter().wait(for: [arrived], timeout: 3) == .completed { return }
         }
+        XCTFail(
+            "typing \(digits) never produced \(expected); the field reads "
+                + "\(field.value as? String ?? "nothing")"
+        )
     }
 
     @MainActor
