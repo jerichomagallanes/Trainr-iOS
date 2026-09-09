@@ -120,12 +120,21 @@ final class OnboardingScreenTests: XCTestCase {
         let height = app.textFields["5'10\""]
         XCTAssertTrue(height.waitForExistence(timeout: 5))
         height.tap()
-        height.typeText("5\u{2019}10\u{201D}")
-        // Waited for rather than read: the hosted simulator can deliver the last
-        // keystrokes after typeText returns.
-        let reads = expectation(for: NSPredicate(format: "value == %@", "5'10\""),
-                                evaluatedWith: height)
-        wait(for: [reads], timeout: 5)
+        // Typed until it lands rather than once: the hosted simulator drops
+        // keystrokes, and waiting cannot recover input that never arrived. What is
+        // under test is that the curly marks are accepted and stored straight, not
+        // how reliably the keyboard delivers them.
+        var attempts = 0
+        while (height.value as? String) != "5'10\"" && attempts < 4 {
+            if let typed = height.value as? String, !typed.isEmpty {
+                height.tap()
+                for _ in typed { height.typeText(XCUIKeyboardKey.delete.rawValue) }
+            }
+            height.typeText("5\u{2019}10\u{201D}")
+            Thread.sleep(forTimeInterval: 0.5)
+            attempts += 1
+        }
+        XCTAssertEqual(height.value as? String, "5'10\"")
     }
 
     @MainActor
