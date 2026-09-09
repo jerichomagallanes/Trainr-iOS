@@ -74,15 +74,21 @@ struct RootView: View {
                     path.append(.review(fromPlan: true, profileOnly: false))
                 },
                 onUpdateProfile: { path.append(.review(fromPlan: true, profileOnly: true)) },
-                onStartNextWeek: { path.append(.generatingNextWeek) },
+                onStartNextWeek: { path.append(paidOr(.generatingNextWeek)) },
                 onRepeatWeek: { nextWeek?.repeatWeek() },
-                onRegenerateWeek: { path.append(.regeneratingWeek) },
+                onRegenerateWeek: { path.append(paidOr(.regeneratingWeek)) },
                 onCreatePlan: {
                     path.append(.review(fromPlan: true, profileOnly: false))
                 }
             )
             .id(planGeneration)
         }
+    }
+
+    // A week already generated is never taken away, so only the act of writing a
+    // new one asks for Pro.
+    private func paidOr(_ route: Route) -> Route {
+        entitlements.isPro ? route : .paywall
     }
 
     private func restartOnHome() {
@@ -239,7 +245,7 @@ struct RootView: View {
                 weekNumber: weekNumber,
                 onBack: pop,
                 onViewProgress: { path.append(.weeklyProgress) },
-                onGenerateNextWeek: { path.append(.generatingNextWeek) }
+                onGenerateNextWeek: { path.append(paidOr(.generatingNextWeek)) }
             )
 
         case .weeklyProgress:
@@ -249,6 +255,9 @@ struct RootView: View {
                 onWeekTap: { path.append(.weekPlan(weekNumber: $0.weekNumber)) },
                 onLastWeekDeleted: restartOnHome
             )
+
+        case .paywall:
+            ProPaywallView { path.removeLast() }
 
         case .generatingNextWeek:
             generating(start: { nextWeek?.generateNextWeek() })

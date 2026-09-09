@@ -229,6 +229,28 @@ nonisolated enum L10n {
     static var preferredWorkoutStyle: String { String(localized: "preferred_workout_style") }
     static var preferredWorkoutTime: String { String(localized: "preferred_workout_time") }
     static var previousColumn: String { String(localized: "previous_column") }
+    static var proBenefitFreshPlan: String { String(localized: "pro_benefit_fresh_plan") }
+    static var proBenefitNextWeek: String { String(localized: "pro_benefit_next_week") }
+    static var proBenefitRegenerate: String { String(localized: "pro_benefit_regenerate") }
+    static var proBestValue: String { String(localized: "pro_best_value") }
+    static var proFreeNote: String { String(localized: "pro_free_note") }
+    static var proHeadline: String { String(localized: "pro_headline") }
+    static var proMonthly: String { String(localized: "pro_monthly") }
+    static var proName: String { String(localized: "pro_name") }
+    static var proNotNow: String { String(localized: "pro_not_now") }
+    static var proNothingToRestore: String { String(localized: "pro_nothing_to_restore") }
+    static var proPrivacy: String { String(localized: "pro_privacy") }
+    static var proRenewalApple: String { String(localized: "pro_renewal_apple") }
+    static var proRenewalGoogle: String { String(localized: "pro_renewal_google") }
+    static var proRestore: String { String(localized: "pro_restore") }
+    static var proRestored: String { String(localized: "pro_restored") }
+    static var proSubscribe: String { String(localized: "pro_subscribe") }
+    static var proTerms: String { String(localized: "pro_terms") }
+    static func proTrialThen(_ p1: String, _ p2: String) -> String {
+        String.localizedStringWithFormat(String(localized: "pro_trial_then"), p1, p2)
+    }
+    static var proUnavailable: String { String(localized: "pro_unavailable") }
+    static var proYearly: String { String(localized: "pro_yearly") }
     static var profileAndApp: String { String(localized: "profile_and_app") }
     static var programCardio: String { String(localized: "program_cardio") }
     static var programFlexibility: String { String(localized: "program_flexibility") }

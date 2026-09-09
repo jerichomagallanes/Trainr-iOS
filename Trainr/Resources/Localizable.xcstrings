@@ -2304,6 +2304,226 @@
         }
       }
     },
+    "pro_benefit_fresh_plan": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start a fresh plan whenever your goal changes"
+          }
+        }
+      }
+    },
+    "pro_benefit_next_week": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A new week each week, written from what you actually lifted"
+          }
+        }
+      }
+    },
+    "pro_benefit_regenerate": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rewrite a week that does not suit you"
+          }
+        }
+      }
+    },
+    "pro_best_value": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Best value"
+          }
+        }
+      }
+    },
+    "pro_free_note": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your first week, every set you log, and repeating a week all stay free."
+          }
+        }
+      }
+    },
+    "pro_headline": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keep the coach writing"
+          }
+        }
+      }
+    },
+    "pro_monthly": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Monthly"
+          }
+        }
+      }
+    },
+    "pro_name": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trainr Pro"
+          }
+        }
+      }
+    },
+    "pro_not_now": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not now"
+          }
+        }
+      }
+    },
+    "pro_nothing_to_restore": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No purchase was found on this account."
+          }
+        }
+      }
+    },
+    "pro_privacy": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Privacy Policy"
+          }
+        }
+      }
+    },
+    "pro_renewal_apple": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Payment is charged to your Apple ID at confirmation. It renews automatically unless you cancel at least 24 hours before the period ends. Manage it in Settings."
+          }
+        }
+      }
+    },
+    "pro_renewal_google": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Payment is charged to your Google Play account at confirmation. It renews automatically unless you cancel at least 24 hours before the period ends. Manage it in Play Store subscriptions."
+          }
+        }
+      }
+    },
+    "pro_restore": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restore purchase"
+          }
+        }
+      }
+    },
+    "pro_restored": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your subscription is back."
+          }
+        }
+      }
+    },
+    "pro_subscribe": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Subscribe"
+          }
+        }
+      }
+    },
+    "pro_terms": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Terms of Use"
+          }
+        }
+      }
+    },
+    "pro_trial_then": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ free, then %2$@"
+          }
+        }
+      }
+    },
+    "pro_unavailable": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Subscriptions are not available right now. Please try again later."
+          }
+        }
+      }
+    },
+    "pro_yearly": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yearly"
+          }
+        }
+      }
+    },
     "profile_and_app": {
       "extractionState": "manual",
       "localizations": {
