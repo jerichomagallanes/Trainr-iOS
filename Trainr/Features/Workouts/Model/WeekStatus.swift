@@ -12,7 +12,7 @@ nonisolated enum WeekStatus: Sendable {
     var label: String {
         switch self {
         case .completed: L10n.completed
-        case .inProgress: L10n.inProgress
+        case .inProgress: L10n.statusInProgress
         case .notCompleted: L10n.notCompleted
         case .skipped: L10n.skipped
         case .upcoming: L10n.upcoming
@@ -35,7 +35,7 @@ nonisolated extension WorkoutStatus {
     var label: String {
         switch self {
         case .completed: L10n.completed
-        case .inProgress: L10n.inProgress
+        case .inProgress: L10n.statusInProgress
         case .notStarted: L10n.notStarted
         }
     }
