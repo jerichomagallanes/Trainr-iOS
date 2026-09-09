@@ -11,6 +11,7 @@ struct RootView: View {
     @State private var dependencies = AppDependencies.shared
     @State private var appearance = AppearancePreference()
     @State private var entitlements = Entitlements(breadcrumbs: AppDependencies.shared.breadcrumbs)
+    private let allowance: any FreeGenerationAllowance = StoredGenerationAllowance()
     @State private var onboarding: OnboardingModel?
     @State private var phase = Phase.splash
     @State private var path: [Route] = []
@@ -87,8 +88,15 @@ struct RootView: View {
 
     // A week already generated is never taken away, so only the act of writing a
     // new one asks for Pro.
+    // Spent on a week that arrived, never on one that failed: a model that
+    // refused has taken nothing.
+    private func spendFreeGeneration() {
+        guard !entitlements.isPro else { return }
+        allowance.markUsed()
+    }
+
     private func paidOr(_ route: Route) -> Route {
-        entitlements.isPro ? route : .paywall
+        entitlements.isPro || !allowance.hasBeenUsed() ? route : .paywall
     }
 
     private func restartOnHome() {
@@ -190,7 +198,7 @@ struct RootView: View {
                     if profileOnly {
                         onboarding.updateProfileOnly { path = [] }
                     } else {
-                        path.append(.generating)
+                        path.append(fromPlan ? paidOr(.generating) : .generating)
                     }
                 },
                 onBack: pop,
@@ -201,7 +209,10 @@ struct RootView: View {
             GeneratingView(
                 isReady: onboarding.isCompleted,
                 onStart: { onboarding.saveUserProfile() },
-                onDone: restartOnHome,
+                onDone: {
+                    spendFreeGeneration()
+                    restartOnHome()
+                },
                 failure: onboarding.generationFailure,
                 failureCount: onboarding.failureCount,
                 onRetry: { onboarding.saveUserProfile() },

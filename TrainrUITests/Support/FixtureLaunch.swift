@@ -16,12 +16,13 @@ enum Fixture: String {
 extension XCUIApplication {
 
     @MainActor
-    static func launched(_ fixture: Fixture) -> XCUIApplication {
+    static func launched(_ fixture: Fixture, pro: Bool = false) -> XCUIApplication {
         let app = XCUIApplication()
         app.launchArguments = [
             "-cannedGeneration", "-inMemoryStore", "-seedFixture", fixture.rawValue,
             "-splashSeconds", "0"
         ]
+        if pro { app.launchArguments += ["-proUnlocked"] }
         app.launch()
         return app
     }

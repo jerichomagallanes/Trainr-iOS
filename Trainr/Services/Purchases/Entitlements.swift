@@ -40,6 +40,15 @@ final class Entitlements {
     }
 
     func refresh() async {
+        #if DEBUG
+        // Lets the paid paths be walked end to end before any product exists in
+        // App Store Connect, and keeps tests about the completion flow from
+        // becoming tests about billing.
+        if ProcessInfo.processInfo.arguments.contains("-proUnlocked") {
+            isPro = true
+            return
+        }
+        #endif
         guard Purchases.isConfigured else { return }
         await readEntitlement()
         await readOffering()

@@ -9,8 +9,10 @@ final class CompletionScreenTests: XCTestCase {
     }
 
     @MainActor
+    // Subscribed, because the subject here is what finishing a week leads to.
+    // Whether the next week is paid for is PaywallGateTests' business.
     private func finish(day title: String, from fixture: Fixture) {
-        app = .launched(fixture)
+        app = .launched(fixture, pro: true)
         XCTAssertTrue(app.staticTexts["YOUR WEEKLY WORKOUT PLAN"].waitForExistence(timeout: 10))
         app.button(containing: title).tap()
         XCTAssertTrue(app.staticTexts[title.uppercased()].waitForExistence(timeout: 5))
