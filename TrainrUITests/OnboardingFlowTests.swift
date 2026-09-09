@@ -121,12 +121,13 @@ final class OnboardingFlowTests: XCTestCase {
 
     @MainActor
     private func trainTheFirstSession() {
-        app.buttons.matching(
+        let start = app.buttons.matching(
             NSPredicate(format: "label BEGINSWITH %@", "START")
-        ).firstMatch.tap()
-
-        // Same reason: the routine is loaded and laid out, not pushed.
-        XCTAssertTrue(app.staticTexts["Set"].waitForExistence(timeout: 30))
+        ).firstMatch
+        XCTAssertTrue(
+            app.tap(start, until: app.staticTexts["Set"]),
+            "the routine never opened from the plan"
+        )
         XCTAssertTrue(app.buttons["Add set"].firstMatch.exists)
         XCTAssertTrue(app.buttons["Start timer"].firstMatch.exists)
         XCTAssertTrue(app.staticTexts["Equipment: Dumbbells"].exists)
@@ -184,12 +185,11 @@ final class OnboardingFlowTests: XCTestCase {
     @MainActor
     func testARangeBreakingAgeIsToldTheRule() {
         launch()
-        let getStarted = app.buttons["GET STARTED"]
-        XCTAssertTrue(getStarted.waitForExistence(timeout: 10))
-        getStarted.tap()
-
         let ageField = app.textFields["Enter your age"]
-        XCTAssertTrue(ageField.waitForExistence(timeout: 5))
+        XCTAssertTrue(
+            app.tap(app.buttons["GET STARTED"], until: ageField),
+            "Basic Info never opened from the welcome screen"
+        )
         ageField.tap()
         ageField.typeText("300")
         // Leaving the field is what surfaces the complaint.
