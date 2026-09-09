@@ -157,7 +157,6 @@ nonisolated enum L10n {
     static var improveEndurance: String { String(localized: "improve_endurance") }
     static var improveEnduranceDescription: String { String(localized: "improve_endurance_description") }
     static var improveEnduranceGoal: String { String(localized: "improve_endurance_goal") }
-    static var inProgress: String { String(localized: "in_progress") }
     static var injuriesConcernsLabel: String { String(localized: "injuries_concerns_label") }
     static var intermediate: String { String(localized: "intermediate") }
     static var intermediateDescription: String { String(localized: "intermediate_description") }
@@ -166,7 +165,6 @@ nonisolated enum L10n {
     static var kneeProblemsInjury: String { String(localized: "knee_problems_injury") }
     static var languageEnglish: String { String(localized: "language_english") }
     static var languageJapanese: String { String(localized: "language_japanese") }
-    static var languageSelection: String { String(localized: "language_selection") }
     static var languageTagalog: String { String(localized: "language_tagalog") }
     static var leavePlanConfirm: String { String(localized: "leave_plan_confirm") }
     static var leavePlanMessage: String { String(localized: "leave_plan_message") }
@@ -348,6 +346,7 @@ nonisolated enum L10n {
     static var startWorkoutOver: String { String(localized: "start_workout_over") }
     static var startWorkoutOverMessage: String { String(localized: "start_workout_over_message") }
     static var startWorkoutOverTitle: String { String(localized: "start_workout_over_title") }
+    static var statusInProgress: String { String(localized: "status_in_progress") }
     static var stopTimer: String { String(localized: "stop_timer") }
     static var strengthTraining: String { String(localized: "strength_training") }
     static var strengthTrainingDescription: String { String(localized: "strength_training_description") }

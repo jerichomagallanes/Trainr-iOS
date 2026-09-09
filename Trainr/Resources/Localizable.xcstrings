@@ -1544,17 +1544,6 @@
         }
       }
     },
-    "in_progress": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "In Progress"
-          }
-        }
-      }
-    },
     "injuries_concerns_label": {
       "extractionState": "manual",
       "localizations": {
@@ -1639,17 +1628,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "日本語"
-          }
-        }
-      }
-    },
-    "language_selection": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Language Selection"
           }
         }
       }
@@ -3521,6 +3499,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Start this workout over?"
+          }
+        }
+      }
+    },
+    "status_in_progress": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "In Progress"
           }
         }
       }
