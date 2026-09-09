@@ -14,7 +14,8 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/firebase/firebase-ios-sdk", exact: "12.18.0"),
-        .package(url: "https://github.com/SvenTiigi/YouTubePlayerKit", exact: "2.0.5")
+        .package(url: "https://github.com/SvenTiigi/YouTubePlayerKit", exact: "2.0.5"),
+        .package(url: "https://github.com/RevenueCat/purchases-ios-spm", exact: "5.88.0")
     ],
     targets: [
         .target(
@@ -27,7 +28,8 @@ let package = Package(
                 // would have broken the app with nothing here to point at.
                 .product(name: "FirebaseCore", package: "firebase-ios-sdk"),
                 .product(name: "FirebaseCrashlytics", package: "firebase-ios-sdk"),
-                .product(name: "YouTubePlayerKit", package: "YouTubePlayerKit")
+                .product(name: "YouTubePlayerKit", package: "YouTubePlayerKit"),
+                .product(name: "RevenueCat", package: "purchases-ios-spm")
             ]
         )
     ]

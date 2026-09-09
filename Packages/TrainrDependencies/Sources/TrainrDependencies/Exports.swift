@@ -5,4 +5,5 @@
 @_exported import FirebaseAppCheck
 @_exported import FirebaseCore
 @_exported import FirebaseCrashlytics
+@_exported import RevenueCat
 @_exported import YouTubePlayerKit

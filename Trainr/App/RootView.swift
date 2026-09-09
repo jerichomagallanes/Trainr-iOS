@@ -10,6 +10,7 @@ struct RootView: View {
 
     @State private var dependencies = AppDependencies.shared
     @State private var appearance = AppearancePreference()
+    @State private var entitlements = Entitlements(breadcrumbs: AppDependencies.shared.breadcrumbs)
     @State private var onboarding: OnboardingModel?
     @State private var phase = Phase.splash
     @State private var path: [Route] = []
@@ -29,8 +30,11 @@ struct RootView: View {
         }
         .environment(dependencies)
         .environment(appearance)
+        .environment(entitlements)
         .preferredColorScheme(appearance.mode.colorScheme)
         .task {
+            entitlements.configure()
+            await entitlements.refresh()
             let model = OnboardingModel(dependencies: dependencies)
             onboarding = model
             #if DEBUG
