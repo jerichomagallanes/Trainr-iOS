@@ -11,6 +11,7 @@ struct WeeklyPlanView: View {
     private let onStartWorkout: (WorkoutDay) -> Void
     private let onLeavePlanConfirmed: () -> Void
     private let onUpdateProfile: () -> Void
+    private let onOpenPro: () -> Void
     private let onStartNextWeek: () -> Void
     private let onRepeatWeek: () -> Void
     private let onRegenerateWeek: () -> Void
@@ -27,6 +28,7 @@ struct WeeklyPlanView: View {
         onStartWorkout: @escaping (WorkoutDay) -> Void = { _ in },
         onLeavePlanConfirmed: @escaping () -> Void = {},
         onUpdateProfile: @escaping () -> Void = {},
+        onOpenPro: @escaping () -> Void = {},
         onStartNextWeek: @escaping () -> Void = {},
         onRepeatWeek: @escaping () -> Void = {},
         onRegenerateWeek: @escaping () -> Void = {},
@@ -42,6 +44,7 @@ struct WeeklyPlanView: View {
         self.onStartWorkout = onStartWorkout
         self.onLeavePlanConfirmed = onLeavePlanConfirmed
         self.onUpdateProfile = onUpdateProfile
+        self.onOpenPro = onOpenPro
         self.onStartNextWeek = onStartNextWeek
         self.onRepeatWeek = onRepeatWeek
         self.onRegenerateWeek = onRegenerateWeek
@@ -267,6 +270,7 @@ struct WeeklyPlanView: View {
         @Bindable var preference = appearance
         return Menu {
             Button(L10n.updateProfile, action: onUpdateProfile)
+            Button(L10n.proName, action: onOpenPro)
             Picker(L10n.appearance, selection: $preference.mode) {
                 ForEach(AppearanceMode.allCases, id: \.self) { mode in
                     Label(mode.label, systemImage: mode.symbol).tag(mode)

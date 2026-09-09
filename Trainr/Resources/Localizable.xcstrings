@@ -2282,6 +2282,17 @@
         }
       }
     },
+    "pro_active": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your subscription is active"
+          }
+        }
+      }
+    },
     "pro_and_more": {
       "extractionState": "manual",
       "localizations": {
@@ -2795,6 +2806,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Lifetime"
+          }
+        }
+      }
+    },
+    "pro_manage": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Manage subscription"
           }
         }
       }

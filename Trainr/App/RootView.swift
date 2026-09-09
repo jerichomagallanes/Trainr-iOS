@@ -87,6 +87,7 @@ struct RootView: View {
                     path.append(.review(fromPlan: true, profileOnly: false))
                 },
                 onUpdateProfile: { path.append(.review(fromPlan: true, profileOnly: true)) },
+                onOpenPro: { path.append(.pro) },
                 onStartNextWeek: { ask(.nextWeek, toReach: .generatingNextWeek) },
                 onRepeatWeek: { nextWeek?.repeatWeek() },
                 onRegenerateWeek: { ask(.rewrite, toReach: .regeneratingWeek) },
@@ -292,6 +293,15 @@ struct RootView: View {
 
         case .paywall(let reason):
             ProPaywallView(reason: reason) { path.removeLast() }
+
+        // One route, because which of the two belongs here is the entitlement's
+        // answer and it can change while the app is open.
+        case .pro:
+            if entitlements.isPro {
+                ProStatusView { path.removeLast() }
+            } else {
+                ProPaywallView(reason: nil) { path.removeLast() }
+            }
 
         case .generatingNextWeek:
             generating(start: { nextWeek?.generateNextWeek() })
