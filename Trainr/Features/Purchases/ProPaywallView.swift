@@ -205,6 +205,14 @@ struct ProPaywallView: View {
 
     private var support: some View {
         VStack(alignment: .leading, spacing: Spacing.small) {
+            // The full disclosure lives here rather than under the button: it
+            // runs to several lines, and the purchase bar is pinned, so putting
+            // it there would push the prices off a small screen.
+            if selected?.packageType != .lifetime {
+                Text(L10n.proRenewalApple)
+                    .font(.body12)
+                    .foregroundStyle(Color.onSurfaceMuted)
+            }
             Text(L10n.proSupportTrouble)
                 .font(.body12)
                 .foregroundStyle(Color.onSurfaceMuted)
@@ -232,12 +240,11 @@ struct ProPaywallView: View {
             PrimaryButton(title: callToAction, isEnabled: selected != nil && !isWorking) {
                 Task { await buy() }
             }
-            // Only for a renewing plan: a lifetime purchase never renews, and
-            // saying that it does would be a false disclosure.
-            if selected?.packageType != .lifetime {
-                Text(L10n.proCancelAnytime)
+            if let note = renewalNote {
+                Text(note)
                     .font(.body12)
                     .foregroundStyle(Color.onSurfaceMuted)
+                    .multilineTextAlignment(.center)
             }
             Button(L10n.proNotNow, action: onClose)
                 .font(.labelMedium)
@@ -285,6 +292,45 @@ struct ProPaywallView: View {
             }
         }
         .buttonStyle(.plain)
+    }
+
+    // Nothing for a lifetime purchase, which never renews, and naming the trial
+    // where one exists: an introductory offer has to say what it costs once it
+    // ends, and the store is the only place that knows whether this buyer is
+    // still eligible for it.
+    private var renewalNote: String? {
+        guard selected?.packageType != .lifetime else { return nil }
+        guard let product = selected?.storeProduct,
+              let offer = product.introductoryDiscount,
+              let period = Self.trialPeriod(offer.subscriptionPeriod)
+        else { return L10n.proCancelAnytime }
+        return L10n.proTrialThen(period, product.localizedPriceString)
+    }
+
+    // Held to the unit the store reported. Left to choose for itself the
+    // formatter rounds a seven day trial up to "1 week", which is not the offer
+    // that was configured and not what the receipt will say.
+    static func trialPeriod(_ period: SubscriptionPeriod) -> String? {
+        var components = DateComponents()
+        let unit: NSCalendar.Unit
+        switch period.unit {
+        case .day:
+            components.day = period.value
+            unit = .day
+        case .week:
+            components.weekOfMonth = period.value
+            unit = .weekOfMonth
+        case .month:
+            components.month = period.value
+            unit = .month
+        case .year:
+            components.year = period.value
+            unit = .year
+        }
+        let formatter = DateComponentsFormatter()
+        formatter.unitsStyle = .full
+        formatter.allowedUnits = [unit]
+        return formatter.string(from: components)
     }
 
     private var callToAction: String {
