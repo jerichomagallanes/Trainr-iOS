@@ -1324,6 +1324,17 @@
         }
       }
     },
+    "hide_how_to_perform": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hide how to perform"
+          }
+        }
+      }
+    },
     "hide_video_tutorial": {
       "extractionState": "manual",
       "localizations": {
@@ -3037,6 +3048,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Shoulder Injury"
+          }
+        }
+      }
+    },
+    "show_how_to_perform": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "How to perform"
           }
         }
       }

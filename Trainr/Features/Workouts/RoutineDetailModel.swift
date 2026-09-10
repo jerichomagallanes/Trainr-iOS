@@ -9,6 +9,7 @@ nonisolated struct RoutineDetailState: Equatable, Sendable {
     // One tutorial open at a time: a player exists for as long as its section
     // is open, not only while playing.
     var expandedVideo: Int?
+    var expandedHowTo: Int?
     var dayNumber = 1
     var weekNumber = 1
     var completesTheWeek = false
@@ -77,7 +78,9 @@ final class RoutineDetailModel {
         }) ?? [:]
 
         state = RoutineDetailState(
-            routine: day.toRoutineUi(previousByKey: previousByKey, units: units),
+            routine: day.toRoutineUi(
+                previousByKey: previousByKey, units: units, catalog: dependencies.catalog
+            ),
             equipment: day.equipment,
             date: plan.startDate.map { WorkoutWeek.date(of: day.dayNumber, startingFrom: $0) }
                 ?? SampleWorkoutData.date(of: day.dayNumber),
@@ -158,6 +161,12 @@ final class RoutineDetailModel {
 
     func toggleVideo(at position: Int) {
         state.expandedVideo = state.expandedVideo == position ? nil : position
+    }
+
+    // Kept apart from the video: collapsing the section should not also lose
+    // the player someone left open inside it.
+    func toggleHowTo(at position: Int) {
+        state.expandedHowTo = state.expandedHowTo == position ? nil : position
     }
 
     // MARK: - Timer
@@ -326,7 +335,7 @@ final class RoutineDetailModel {
         let day = days[index]
 
         return RoutineDetailState(
-            routine: day.toRoutineUi(),
+            routine: day.toRoutineUi(catalog: SampleWorkoutData.catalog),
             equipment: day.equipment,
             date: SampleWorkoutData.date(of: day.dayNumber),
             dayNumber: index + 1,
