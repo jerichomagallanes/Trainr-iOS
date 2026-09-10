@@ -131,6 +131,7 @@
    "equipment": "NONE",
    "measure": "REPS",
    "pattern": "SQUAT",
+   "unilateral": true,
    "staple": false,
    "summary": "A one-legged squat holding a rack for balance.",
    "steps": [
@@ -581,6 +582,7 @@
    "equipment": "BARBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "LUNGE",
+   "unilateral": true,
    "staple": false,
    "summary": "A rear-foot-elevated split squat with the bar on your back.",
    "steps": [
@@ -1087,6 +1089,7 @@
    "equipment": "BARBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "ISOLATION",
+   "unilateral": true,
    "staple": false,
    "summary": "An angled press, gentler on the shoulder than pressing straight up.",
    "steps": [
@@ -1107,6 +1110,7 @@
    "equipment": "BARBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "HINGE",
+   "unilateral": true,
    "staple": false,
    "summary": "A one-legged hinge. Keep both hips facing the floor.",
    "steps": [
@@ -1125,6 +1129,7 @@
    "equipment": "BARBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "ISOLATION",
+   "unilateral": true,
    "staple": false,
    "summary": "One calf at a time under load. Hold a rack for balance.",
    "steps": [
@@ -1880,6 +1885,7 @@
    "equipment": "MACHINE",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "ISOLATION",
+   "unilateral": true,
    "staple": false,
    "summary": "A one-arm rear-delt sweep, which lets you feel the muscle work.",
    "steps": [
@@ -1973,6 +1979,7 @@
    "equipment": "MACHINE",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "ISOLATION",
+   "unilateral": true,
    "staple": false,
    "summary": "A one-arm cable curl, with tension right through the bottom.",
    "steps": [
@@ -1990,6 +1997,7 @@
    "equipment": "MACHINE",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "ISOLATION",
+   "unilateral": true,
    "staple": false,
    "summary": "A one-arm cable raise, easiest place to feel the side delt.",
    "steps": [
@@ -2007,6 +2015,7 @@
    "equipment": "MACHINE",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "ISOLATION",
+   "unilateral": true,
    "staple": false,
    "summary": "A one-arm pushdown, which stops the stronger side taking over.",
    "steps": [
@@ -2078,6 +2087,7 @@
    "equipment": "MACHINE",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "ISOLATION",
+   "unilateral": true,
    "staple": false,
    "summary": "A cable kickback, which holds tension at full extension.",
    "steps": [
@@ -2306,6 +2316,7 @@
    "equipment": "DUMBBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "ISOLATION",
+   "unilateral": true,
    "staple": false,
    "summary": "A seated single-arm curl with the elbow braced on your thigh.",
    "steps": [
@@ -2658,6 +2669,7 @@
    "equipment": "DUMBBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "LUNGE",
+   "unilateral": true,
    "staple": true,
    "summary": "A rear-foot-elevated split squat holding dumbbells.",
    "steps": [
@@ -3362,6 +3374,7 @@
    "equipment": "DUMBBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "CORE",
+   "unilateral": true,
    "staple": false,
    "summary": "A loaded side bend. Hold weight in one hand only.",
    "steps": [
@@ -3379,6 +3392,7 @@
    "equipment": "DUMBBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "ISOLATION",
+   "unilateral": true,
    "staple": false,
    "summary": "A one-arm overhead extension. Hold your elbow to keep it still.",
    "steps": [
@@ -3398,6 +3412,7 @@
    "equipment": "DUMBBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "HINGE",
+   "unilateral": true,
    "staple": false,
    "summary": "A one-legged thrust. Keep your hips square as you lift.",
    "steps": [
@@ -3418,6 +3433,7 @@
    "equipment": "DUMBBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "HINGE",
+   "unilateral": true,
    "staple": false,
    "summary": "A one-legged hinge. Keep both hips pointing at the floor.",
    "steps": [
@@ -3435,6 +3451,7 @@
    "equipment": "DUMBBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "ISOLATION",
+   "unilateral": true,
    "staple": false,
    "summary": "One calf at a time with a dumbbell. Hold something for balance.",
    "steps": [
@@ -3509,6 +3526,7 @@
    "equipment": "DUMBBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "LUNGE",
+   "unilateral": true,
    "staple": false,
    "summary": "A stationary lunge. Both feet stay planted throughout the set.",
    "steps": [
@@ -3585,6 +3603,7 @@
    "equipment": "DUMBBELL",
    "measure": "REPS",
    "pattern": "LUNGE",
+   "unilateral": true,
    "staple": false,
    "summary": "Stepping onto a box. Drive with the top leg, do not push off the floor.",
    "steps": [
@@ -3605,6 +3624,7 @@
    "equipment": "DUMBBELL",
    "measure": "DURATION",
    "pattern": "CARRY",
+   "unilateral": true,
    "staple": false,
    "summary": "A one-sided carry. The work is not tipping over.",
    "steps": [
@@ -3659,6 +3679,7 @@
    "equipment": "DUMBBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "ISOLATION",
+   "unilateral": true,
    "staple": false,
    "summary": "A short-range triceps squeeze. The upper arm never moves.",
    "steps": [
@@ -4089,6 +4110,7 @@
    "equipment": "NONE",
    "measure": "REPS",
    "pattern": "HINGE",
+   "unilateral": true,
    "staple": false,
    "summary": "A direct glute movement. Stop when your lower back wants to arch.",
    "steps": [
@@ -4805,6 +4827,7 @@
    "equipment": "KETTLEBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "CONDITIONING",
+   "unilateral": true,
    "staple": false,
    "summary": "Lying to standing with the bell overhead. Learn it with no weight.",
    "steps": [
@@ -5350,6 +5373,7 @@
    "equipment": "MACHINE",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "HINGE",
+   "unilateral": true,
    "staple": false,
    "summary": "A guided glute kickback. Stop when your back wants to arch.",
    "steps": [
@@ -5827,6 +5851,7 @@
    "equipment": "MACHINE",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "SQUAT",
+   "unilateral": true,
    "staple": false,
    "summary": "A one-legged press, which evens out a side-to-side difference.",
    "steps": [
@@ -5844,6 +5869,7 @@
    "equipment": "MACHINE",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "ISOLATION",
+   "unilateral": true,
    "staple": false,
    "summary": "One calf at a time on the machine, which doubles the load.",
    "steps": [
@@ -6033,6 +6059,7 @@
    "equipment": "NONE",
    "measure": "REPS",
    "pattern": "HORIZONTAL_PUSH",
+   "unilateral": true,
    "staple": false,
    "summary": "A one-arm press. Widen your feet to stop your hips twisting.",
    "steps": [
@@ -6160,6 +6187,7 @@
    "equipment": "NONE",
    "measure": "REPS",
    "pattern": "SQUAT",
+   "unilateral": true,
    "staple": false,
    "summary": "A full one-legged squat. Hold a rack if your balance is not there yet.",
    "steps": [
@@ -6462,6 +6490,7 @@
    "equipment": "DUMBBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "ISOLATION",
+   "unilateral": true,
    "staple": false,
    "summary": "A concentration curl with the palm down, which shifts work to the forearm.",
    "steps": [
@@ -6846,6 +6875,7 @@
    "equipment": "NONE",
    "measure": "REPS",
    "pattern": "CORE",
+   "unilateral": true,
    "staple": false,
    "summary": "A side flexion for the obliques. Bend sideways only, no twisting.",
    "steps": [
@@ -6865,6 +6895,7 @@
    "equipment": "NONE",
    "measure": "DURATION",
    "pattern": "CORE",
+   "unilateral": true,
    "staple": false,
    "summary": "A side brace for the obliques. Stack the hips, do not let them roll.",
    "steps": [
@@ -6884,6 +6915,7 @@
    "equipment": "MACHINE",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "ISOLATION",
+   "unilateral": true,
    "staple": false,
    "summary": "A one-arm crossover, which lets you squeeze right across the midline.",
    "steps": [
@@ -6904,6 +6936,7 @@
    "equipment": "MACHINE",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "HORIZONTAL_PULL",
+   "unilateral": true,
    "staple": false,
    "summary": "A one-arm cable row, which lets the shoulder blade travel further.",
    "steps": [
@@ -6924,6 +6957,7 @@
    "equipment": "MACHINE",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "VERTICAL_PULL",
+   "unilateral": true,
    "staple": false,
    "summary": "A one-arm pulldown, which lets each side work its own range.",
    "steps": [
@@ -6941,6 +6975,7 @@
    "equipment": "MACHINE",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "ISOLATION",
+   "unilateral": true,
    "staple": false,
    "summary": "One quad at a time, which evens out a side-to-side difference.",
    "steps": [
@@ -6960,6 +6995,7 @@
    "equipment": "NONE",
    "measure": "REPS",
    "pattern": "HINGE",
+   "unilateral": true,
    "staple": false,
    "summary": "A one-legged bridge. Keep both hips level as you lift.",
    "steps": [
@@ -6979,6 +7015,7 @@
    "equipment": "NONE",
    "measure": "REPS",
    "pattern": "HINGE",
+   "unilateral": true,
    "staple": false,
    "summary": "A one-legged thrust. Keep the hips square, not tilted.",
    "steps": [
@@ -6996,6 +7033,7 @@
    "equipment": "NONE",
    "measure": "REPS",
    "pattern": "ISOLATION",
+   "unilateral": true,
    "staple": false,
    "summary": "One calf at a time, which doubles the load without any weight.",
    "steps": [
@@ -7438,6 +7476,7 @@
    "equipment": "MACHINE",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "HINGE",
+   "unilateral": true,
    "staple": false,
    "summary": "A cable kickback with an ankle strap. Small range, big squeeze.",
    "steps": [
@@ -7494,6 +7533,7 @@
    "equipment": "OTHER",
    "measure": "REPS",
    "pattern": "LUNGE",
+   "unilateral": true,
    "staple": false,
    "summary": "Stepping onto a box. Drive from the top leg, do not push off below.",
    "steps": [

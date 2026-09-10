@@ -193,6 +193,78 @@ struct ExerciseCatalogIntegrityTests {
         guard let other = try? Data(contentsOf: android) else { return }
         #expect(other == source)
     }
+
+    // Pinned rather than matched on the name, because the name does not settle
+    // it: a walking lunge alternates inside the set and a dumbbell row does not
+    // say which arm. Where the name is ambiguous the movement is left
+    // bilateral, so the chip understates the work rather than doubling it.
+    @Test func onlyTheMovementsReviewedAsPerSideAreMarkedUnilateral() {
+        let marked = catalog.all.filter(\.unilateral).map(\.key).sorted()
+
+        #expect(marked == Self.reviewedUnilateral.sorted())
+    }
+
+    // The load rules only ever run on movements that carry a weight, so the
+    // measure has to be what decides it.
+    @Test func onlyWeightedMovementsAreLoadable() {
+        let loadable = catalog.all.filter(\.isLoadable)
+
+        #expect(!loadable.isEmpty)
+        #expect(Set(loadable.map(\.measure)) == [.weightAndReps])
+        #expect(!catalog.all.filter { $0.key.hasPrefix("assisted_") }.contains { $0.isLoadable })
+    }
+
+    // A clean is tagged conditioning and is still a loaded lift that would be
+    // nonsense prescribed in seconds.
+    @Test func aMovementIsTimedOnlyWhenItIsMeasuredInSeconds() {
+        let timed = catalog.all.filter { $0.role == .timed }
+
+        #expect(Set(timed.map(\.measure)) == [.duration])
+        #expect(catalog["clean"]?.role == .compound)
+    }
+
+    private static let reviewedUnilateral = [
+        "assisted_pistol_squats",
+        "barbell_bulgarian_split_squat",
+        "barbell_single_arm_landmine_press",
+        "barbell_single_leg_romanian_deadlift",
+        "barbell_single_leg_standing_calf_raise",
+        "cable_reverse_fly_single_arm",
+        "cable_single_arm_curl",
+        "cable_single_arm_lateral_raise",
+        "cable_single_arm_triceps_pushdown",
+        "cable_triceps_kickback",
+        "concentration_curl",
+        "dumbbell_bulgarian_split_squat",
+        "dumbbell_side_bend",
+        "dumbbell_single_arm_tricep_extension",
+        "dumbbell_single_leg_hip_thrust",
+        "dumbbell_single_leg_romanian_deadlift",
+        "dumbbell_single_leg_standing_calf_raise",
+        "dumbbell_split_squat",
+        "dumbbell_step_up",
+        "dumbbell_suitcase_carry",
+        "dumbbell_triceps_kickback",
+        "glute_kickback_on_floor",
+        "kettlebell_turkish_get_up",
+        "machine_glute_kickback",
+        "machine_single_leg_press",
+        "machine_single_leg_standing_calf_raise",
+        "one_arm_push_up",
+        "pistol_squat",
+        "reverse_grip_concentration_curl",
+        "side_bend",
+        "side_plank",
+        "single_arm_cable_crossover",
+        "single_arm_cable_row",
+        "single_arm_lat_pulldown",
+        "single_leg_extensions",
+        "single_leg_glute_bridge",
+        "single_leg_hip_thrust",
+        "single_leg_standing_calf_raise",
+        "standing_cable_glute_kickbacks",
+        "step_up"
+    ]
 }
 
 private final class BundleToken {}
