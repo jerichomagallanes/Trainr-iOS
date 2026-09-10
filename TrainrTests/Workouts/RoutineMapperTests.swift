@@ -89,4 +89,31 @@ struct RoutineMapperTests {
         let routine = day([exercise("Goblet Squats", weightKg: 12)]).toRoutineUi(units: .metric)
         #expect(routine.exercises[0].sets[0].targetWeightKg == 12)
     }
+
+    // The muscles and the how-to belong to the catalog, not to the model that
+    // wrote the week: a plan carries only the key.
+    @Test func theCatalogSuppliesWhatEachMovementTrainsAndHowToPerformIt() {
+        let day = SampleWorkoutData.day(for: SampleWorkoutData.defaultDayNumber)
+
+        let withCatalog = day.toRoutineUi(catalog: SampleWorkoutData.catalog)
+        let without = day.toRoutineUi()
+
+        let described = withCatalog.exercises.filter { !$0.primaryMuscle.isEmpty }
+        #expect(!described.isEmpty)
+        #expect(described.contains { !$0.steps.isEmpty })
+        #expect(without.exercises.allSatisfy { $0.primaryMuscle.isEmpty && $0.steps.isEmpty })
+    }
+
+    // LOWER_BACK is Lower Back, not lowerBack and not LOWER_BACK.
+    @Test func muscleNamesReadAsWordsRatherThanConstants() {
+        let day = SampleWorkoutData.day(for: SampleWorkoutData.defaultDayNumber)
+
+        let named = day.toRoutineUi(catalog: SampleWorkoutData.catalog)
+            .exercises.flatMap { [$0.primaryMuscle] + $0.secondaryMuscles }
+            .filter { !$0.isEmpty }
+
+        #expect(!named.isEmpty)
+        #expect(named.allSatisfy { !$0.contains("_") })
+        #expect(named.allSatisfy { $0.first?.isUppercase == true })
+    }
 }

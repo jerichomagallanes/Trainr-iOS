@@ -14,6 +14,11 @@ nonisolated struct ExerciseUi: Identifiable, Equatable, Sendable {
     // history.
     var previousSets: [ExerciseSet] = []
     var videoURL: String?
+    // What the movement trains and how to perform it, both owned by the
+    // catalog rather than the model that wrote the week.
+    var primaryMuscle = ""
+    var secondaryMuscles: [String] = []
+    var steps: [String] = []
     var isCompleted = false
 
     var id: Int { position }

@@ -159,12 +159,21 @@ struct RoutineDetailView: View {
                                 onReset: model.resetTimer,
                                 onStop: model.stopTimer
                             )
-                            if let video = YouTubeVideo.from(exercise.videoURL) {
-                                VideoTutorial(
-                                    video: video,
-                                    isExpanded: state.expandedVideo == exercise.position,
-                                    onToggle: { model.toggleVideo(at: exercise.position) }
-                                )
+                            let video = YouTubeVideo.from(exercise.videoURL)
+                            if !exercise.steps.isEmpty || video != nil {
+                                HowToSection(
+                                    steps: exercise.steps,
+                                    isExpanded: state.expandedHowTo == exercise.position,
+                                    onToggle: { model.toggleHowTo(at: exercise.position) }
+                                ) {
+                                    if let video {
+                                        VideoTutorial(
+                                            video: video,
+                                            isExpanded: state.expandedVideo == exercise.position,
+                                            onToggle: { model.toggleVideo(at: exercise.position) }
+                                        )
+                                    }
+                                }
                             }
                         }
                     }

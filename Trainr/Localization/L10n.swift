@@ -137,6 +137,7 @@ nonisolated enum L10n {
     static var heightLabel: String { String(localized: "height_label") }
     static var heightPlaceholderCm: String { String(localized: "height_placeholder_cm") }
     static var heightPlaceholderImperial: String { String(localized: "height_placeholder_imperial") }
+    static var hideHowToPerform: String { String(localized: "hide_how_to_perform") }
     static var hideVideoTutorial: String { String(localized: "hide_video_tutorial") }
     static var hipProblemsInjury: String { String(localized: "hip_problems_injury") }
     static var home: String { String(localized: "home") }
@@ -304,6 +305,7 @@ nonisolated enum L10n {
     static var setColumn: String { String(localized: "set_column") }
     static var setUpYourWorkout: String { String(localized: "set_up_your_workout") }
     static var shoulderInjuryInjury: String { String(localized: "shoulder_injury_injury") }
+    static var showHowToPerform: String { String(localized: "show_how_to_perform") }
     static var showVideoTutorial: String { String(localized: "show_video_tutorial") }
     static var skipped: String { String(localized: "skipped") }
     static var slideToCompleteRoutine: String { String(localized: "slide_to_complete_routine") }
