@@ -114,13 +114,15 @@ struct GeneratedPlanParserTests {
     }
 
     // Five minutes of jogging, then two sets of twenty at three seconds a rep
-    // with thirty seconds between them: eight minutes, whatever the model
-    // would have claimed.
+    // with thirty seconds between them: eight minutes of work, plus the minute
+    // spent walking from one to the other, whatever the model would have
+    // claimed.
     @Test func aDaysNumbersAreDerivedNotAccepted() throws {
         let cardio = try #require(parseGood().workoutDays.first { $0.dayNumber == 3 })
 
-        #expect(cardio.duration == 8)
+        #expect(cardio.duration == 9)
         #expect(cardio.exerciseCount == 2)
+        #expect(cardio.duration == cardio.exercises.reduce(0) { $0 + $1.durationMinutes } + 1)
     }
 
     @Test func anExerciseArrivesWithEverythingItsCardShows() throws {

@@ -113,7 +113,7 @@ nonisolated struct GeneratedPlanParser {
                     + "\(limits.maxSetsPerSession), warm-up included"
             )
         }
-        let dayMinutes = day.exercises.reduce(0) { $0 + minutes(of: $1) }
+        let dayMinutes = SessionMinutes.forDay(day.exercises.map { minutes(of: $0) })
         if limits.sessionCeilingMinutes > 0, dayMinutes > limits.sessionCeilingMinutes {
             errors.append(
                 "\(location): runs about \(dayMinutes) minutes of work and rest, and the "
@@ -210,14 +210,19 @@ nonisolated struct GeneratedPlanParser {
     // How long the exercise takes is arithmetic on what was prescribed, not a
     // fourth number for the model to keep in agreement with the other three.
     // A rep is about three seconds at the moderate velocity ACSM asks for.
+    // Shared with the budgeting side so a plan can never be built that its own
+    // ceiling check then rejects.
     private func minutes(of exercise: GeneratedExercise) -> Int {
-        let secondsPerRep = 3
-        let work = switch resolvedMeasure(of: exercise) {
-        case .duration: exercise.sets.reduce(0) { $0 + ($1.seconds ?? 0) }
-        default: exercise.sets.reduce(0) { $0 + ($1.reps ?? 0) * secondsPerRep }
-        }
-        let rest = (exercise.restSeconds ?? 0) * max(0, exercise.sets.count - 1)
-        return max(1, Int((Double(work + rest) / 60).rounded(.up)))
+        let measure = resolvedMeasure(of: exercise)
+        let perSet = measure == .duration
+            ? exercise.sets.map { $0.seconds ?? 0 }
+            : exercise.sets.map { $0.reps ?? 0 }
+        return SessionMinutes.forExercise(
+            measure: measure,
+            perSet: perSet,
+            restSeconds: exercise.restSeconds ?? 0,
+            unilateral: catalog[exercise.exerciseKey]?.unilateral == true
+        )
     }
 
     // Bounds, not tastes: a number outside these is one no client could
@@ -244,7 +249,7 @@ nonisolated struct GeneratedPlanParser {
         return WorkoutDay(
             dayNumber: generated.dayNumber,
             title: generated.title,
-            duration: generated.exercises.reduce(0) { $0 + minutes(of: $1) },
+            duration: SessionMinutes.forDay(generated.exercises.map { minutes(of: $0) }),
             exerciseCount: generated.exercises.count,
             equipment: kit,
             exercises: generated.exercises.map(exercise)
