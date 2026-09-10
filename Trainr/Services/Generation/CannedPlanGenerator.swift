@@ -167,7 +167,7 @@ struct CannedPlanGenerator: PlanGenerator {
         Candidate(
             needs: [],
             exercise: WorkoutExercise(
-                exerciseKey: "warm_up_jog",
+                exerciseKey: "warm_up",
                 name: "Warm-up Jog in Place",
                 measure: .duration,
                 sets: [ExerciseSet(setNumber: 1, targetSeconds: 300)],
@@ -207,7 +207,7 @@ struct CannedPlanGenerator: PlanGenerator {
         Candidate(
             needs: [.dumbbell, .barbell],
             exercise: WorkoutExercise(
-                exerciseKey: "bent_over_row",
+                exerciseKey: "barbell_bent_over_row",
                 name: "Bent Over Row",
                 measure: .weightAndReps,
                 sets: (1...3).map {
@@ -221,7 +221,7 @@ struct CannedPlanGenerator: PlanGenerator {
         Candidate(
             needs: [.dumbbell, .barbell],
             exercise: WorkoutExercise(
-                exerciseKey: "romanian_deadlift",
+                exerciseKey: "barbell_romanian_deadlift",
                 name: "Romanian Deadlift",
                 measure: .weightAndReps,
                 sets: (1...3).map {
@@ -235,7 +235,7 @@ struct CannedPlanGenerator: PlanGenerator {
         Candidate(
             needs: [.dumbbell, .barbell],
             exercise: WorkoutExercise(
-                exerciseKey: "overhead_press",
+                exerciseKey: "barbell_overhead_press",
                 name: "Overhead Press",
                 measure: .weightAndReps,
                 sets: (1...3).map {

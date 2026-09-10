@@ -10,8 +10,8 @@ struct PlanPromptBuilderTests {
         equipment: Equipment = Equipment.none
     ) -> CatalogExercise {
         CatalogExercise(
-            key: key, name: key, nameJa: key, muscle: muscle,
-            equipment: equipment, measure: measure, pattern: pattern, staple: true
+            key: key, name: key, nameJa: key, primary: muscle, secondary: [],
+            equipment: equipment, measure: measure, pattern: pattern, staple: true, summary: key, steps: []
         )
     }
 

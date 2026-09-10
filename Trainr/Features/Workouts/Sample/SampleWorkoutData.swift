@@ -65,7 +65,7 @@ nonisolated enum SampleWorkoutData {
                             isCompleted: true
                         ),
                         WorkoutExercise(
-                            exerciseKey: "bent_over_row",
+                            exerciseKey: "barbell_bent_over_row",
                             name: "Bent-Over Rows",
                             measure: .weightAndReps,
                             sets: repSets(3, reps: 12, weightKg: 18, done: true),
@@ -75,7 +75,7 @@ nonisolated enum SampleWorkoutData {
                             isCompleted: true
                         ),
                         WorkoutExercise(
-                            exerciseKey: "overhead_press",
+                            exerciseKey: "barbell_overhead_press",
                             name: "Overhead Press",
                             measure: .weightAndReps,
                             sets: repSets(3, reps: 10, weightKg: 12, done: true),
@@ -85,7 +85,7 @@ nonisolated enum SampleWorkoutData {
                             isCompleted: true
                         ),
                         WorkoutExercise(
-                            exerciseKey: "romanian_deadlift",
+                            exerciseKey: "barbell_romanian_deadlift",
                             name: "Romanian Deadlifts",
                             measure: .weightAndReps,
                             sets: repSets(3, reps: 12, weightKg: 24, done: true),
@@ -116,7 +116,7 @@ nonisolated enum SampleWorkoutData {
                     equipment: ["Yoga Mat"],
                     exercises: [
                         WorkoutExercise(
-                            exerciseKey: "warm_up_jog",
+                            exerciseKey: "warm_up",
                             name: "Warm-up jog",
                             measure: .duration,
                             sets: timedSets(1, seconds: 300, done: true),
@@ -126,7 +126,7 @@ nonisolated enum SampleWorkoutData {
                             isCompleted: true
                         ),
                         WorkoutExercise(
-                            exerciseKey: "high_intensity_intervals",
+                            exerciseKey: "hiit",
                             name: "High-Intensity Intervals",
                             measure: .duration,
                             sets: timedSets(5, seconds: 60),
@@ -146,7 +146,7 @@ nonisolated enum SampleWorkoutData {
                                 + "target abs and obliques."
                         ),
                         WorkoutExercise(
-                            exerciseKey: "russian_twist",
+                            exerciseKey: "bodyweight_russian_twist",
                             name: "Russian Twists",
                             measure: .reps,
                             sets: repSets(3, reps: 15),
@@ -155,7 +155,7 @@ nonisolated enum SampleWorkoutData {
                             instructions: "Seated core exercise involving torso rotation to engage abs and obliques."
                         ),
                         WorkoutExercise(
-                            exerciseKey: "leg_raise",
+                            exerciseKey: "lying_leg_raise",
                             name: "Leg Raises",
                             measure: .reps,
                             sets: repSets(3, reps: 12),

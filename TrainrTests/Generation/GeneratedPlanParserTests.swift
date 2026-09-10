@@ -9,7 +9,8 @@ private func catalogExercise(
 ) -> CatalogExercise {
     CatalogExercise(
         key: key, name: key.replacingOccurrences(of: "_", with: " "), nameJa: key,
-        muscle: muscle, equipment: equipment, measure: measure, pattern: pattern, staple: true
+        primary: muscle, secondary: [], equipment: equipment, measure: measure, pattern: pattern, staple: true,
+        summary: key, steps: []
     )
 }
 

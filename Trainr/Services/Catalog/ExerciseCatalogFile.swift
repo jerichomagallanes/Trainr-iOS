@@ -11,7 +11,10 @@ private nonisolated struct CatalogEntry: Decodable {
     var key = ""
     var name = ""
     var nameJa = ""
-    var muscle = ""
+    var primary = ""
+    var secondary: [String] = []
+    var summary = ""
+    var steps: [String] = []
     var equipment = ""
     var measure = ""
     var pattern = ""
@@ -29,14 +32,16 @@ nonisolated enum ExerciseCatalogReader {
 
     private static func exercise(_ entry: CatalogEntry) -> CatalogExercise? {
         guard !entry.key.isEmpty, !entry.name.isEmpty,
-              let muscle = MuscleGroup(rawValue: entry.muscle),
+              let prime = MuscleGroup(rawValue: entry.primary),
               let measure = ExerciseMeasure(rawValue: entry.measure),
               let pattern = MovementPattern(rawValue: entry.pattern)
         else { return nil }
         guard let kit = Equipment.fromCatalog(entry.equipment) else { return nil }
         return CatalogExercise(
-            key: entry.key, name: entry.name, nameJa: entry.nameJa, muscle: muscle,
-            equipment: kit, measure: measure, pattern: pattern, staple: entry.staple
+            key: entry.key, name: entry.name, nameJa: entry.nameJa, primary: prime,
+            secondary: entry.secondary.compactMap(MuscleGroup.init(rawValue:)),
+            equipment: kit, measure: measure, pattern: pattern, staple: entry.staple,
+            summary: entry.summary, steps: entry.steps
         )
     }
 }

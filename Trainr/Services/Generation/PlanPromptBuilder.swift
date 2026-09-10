@@ -158,7 +158,7 @@ nonisolated struct PlanPromptBuilder {
             lines.append("")
             lines.append(heading(for: measure))
             for muscle in MuscleGroup.allCases {
-                let named = group.filter { $0.muscle == muscle }
+                let named = group.filter { $0.primary == muscle }
                 guard !named.isEmpty else { continue }
                 lines.append("  \(muscle.rawValue): " + named.map(\.key).joined(separator: ", "))
             }
