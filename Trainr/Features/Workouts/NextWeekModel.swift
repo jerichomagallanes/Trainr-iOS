@@ -101,7 +101,6 @@ final class NextWeekModel {
                 user: user,
                 weekNumber: latest.weekNumber + 1,
                 startDate: startAfter(latest),
-                languageCode: dependencies.languageCode,
                 previousWeek: latest
             )
         )
@@ -133,7 +132,6 @@ final class NextWeekModel {
                 user: user,
                 weekNumber: current.weekNumber,
                 startDate: current.startDate ?? WorkoutWeek.startOfDay(),
-                languageCode: dependencies.languageCode,
                 // The week before this one, so a replacement still progresses
                 // from what was lifted.
                 previousWeek: plans.first { $0.weekNumber == current.weekNumber - 1 }

@@ -53,7 +53,7 @@ struct GeminiPlanGeneratorTests {
 
     private let catalog = InMemoryExerciseCatalog([
         CatalogExercise(
-            key: "goblet_squat", name: "Goblet Squat", nameJa: "ゴブレットスクワット",
+            key: "goblet_squat", name: "Goblet Squat",
             primary: .quadriceps, secondary: [], equipment: Equipment.none,
             measure: .weightAndReps, pattern: .squat, staple: true, summary: "Goblet Squat", steps: []
         )
@@ -80,8 +80,7 @@ struct GeminiPlanGeneratorTests {
             user: UserProfile(id: userID, firstName: "Jericho", age: 30,
                               workoutDaysPerWeek: daysPerWeek),
             weekNumber: 1,
-            startDate: Date(timeIntervalSince1970: 1),
-            languageCode: "en"
+            startDate: Date(timeIntervalSince1970: 1)
         )
     }
 
@@ -318,7 +317,7 @@ struct GeminiPlanGeneratorTests {
 
         _ = await generator(client, breadcrumbs: trail).generate(
             PlanRequest(user: profile, weekNumber: 1,
-                        startDate: Date(timeIntervalSince1970: 0), languageCode: "en")
+                        startDate: Date(timeIntervalSince1970: 0))
         )
 
         let trailText = trail.everything().joined(separator: " ")

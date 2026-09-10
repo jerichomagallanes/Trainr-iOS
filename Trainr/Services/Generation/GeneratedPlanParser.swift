@@ -8,7 +8,6 @@ nonisolated struct PlanLimits {
     // tests: a real request always has a shortlist.
     var allowedKeys: Set<String> = []
     var requiredPatterns: Set<PatternRequirement> = []
-    var languageCode = "en"
 
     static let unbounded = PlanLimits(maxSetsPerSession: .max)
 }
@@ -55,7 +54,7 @@ nonisolated struct GeneratedPlanParser {
                 startDate: startDate,
                 workoutDays: generated.days
                     .sorted { $0.dayNumber < $1.dayNumber }
-                    .map { day($0, languageCode: limits.languageCode) }
+                    .map(day)
             )
         )
     }
@@ -223,7 +222,7 @@ nonisolated struct GeneratedPlanParser {
     // The day's kit is the union of what its movements need, which the
     // catalog already knows; asking a model to restate it only gave it a way
     // to name equipment the client does not own.
-    private func day(_ generated: GeneratedDay, languageCode: String) -> WorkoutDay {
+    private func day(_ generated: GeneratedDay) -> WorkoutDay {
         var kit: [String] = []
         for item in generated.exercises.compactMap({ catalog[$0.exerciseKey] })
             .map(\.equipment).filter({ $0 != Equipment.none })
@@ -236,15 +235,15 @@ nonisolated struct GeneratedPlanParser {
             duration: generated.exercises.reduce(0) { $0 + minutes(of: $1) },
             exerciseCount: generated.exercises.count,
             equipment: kit,
-            exercises: generated.exercises.map { exercise($0, languageCode: languageCode) }
+            exercises: generated.exercises.map(exercise)
         )
     }
 
-    private func exercise(_ generated: GeneratedExercise, languageCode: String) -> WorkoutExercise {
+    private func exercise(_ generated: GeneratedExercise) -> WorkoutExercise {
         let measure = resolvedMeasure(of: generated)
         return WorkoutExercise(
             exerciseKey: generated.exerciseKey,
-            name: catalog[generated.exerciseKey]?.displayName(languageCode) ?? generated.exerciseKey,
+            name: catalog[generated.exerciseKey]?.name ?? generated.exerciseKey,
             measure: measure,
             sets: generated.sets.enumerated().map { index, set in
                 self.set(set, number: index + 1, measuredBy: measure)

@@ -1632,39 +1632,6 @@
         }
       }
     },
-    "language_english": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "English"
-          }
-        }
-      }
-    },
-    "language_japanese": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "日本語"
-          }
-        }
-      }
-    },
-    "language_tagalog": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tagalog"
-          }
-        }
-      }
-    },
     "leave_plan_confirm": {
       "extractionState": "manual",
       "localizations": {

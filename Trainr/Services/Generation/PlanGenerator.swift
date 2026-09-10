@@ -4,7 +4,6 @@ nonisolated struct PlanRequest: Sendable {
     var user: UserProfile
     var weekNumber: Int
     var startDate: Date
-    var languageCode: String
     var previousWeek: WeeklyPlan?
 }
 
