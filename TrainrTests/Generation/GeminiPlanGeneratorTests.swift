@@ -54,7 +54,7 @@ struct GeminiPlanGeneratorTests {
     private let catalog = InMemoryExerciseCatalog([
         CatalogExercise(
             key: "goblet_squat", name: "Goblet Squat", nameJa: "ゴブレットスクワット",
-            muscle: .quadriceps, requires: [.none],
+            muscle: .quadriceps, equipment: Equipment.none,
             measure: .weightAndReps, pattern: .squat, staple: true
         )
     ])

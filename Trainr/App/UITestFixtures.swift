@@ -108,7 +108,7 @@ enum UITestFixtures {
             case .setup:
                 model.updateWorkoutSetup(
                     location: .home,
-                    equipment: [.dumbbells],
+                    equipment: [.dumbbell],
                     liftingUnits: .metric,
                     daysPerWeek: 3,
                     duration: 45,
@@ -143,7 +143,7 @@ enum UITestFixtures {
         user.height = 175
         user.weight = 72
         user.fitnessGoal = .muscleGain
-        user.availableEquipment = [.dumbbells]
+        user.availableEquipment = [.dumbbell]
         user.workoutDaysPerWeek = 3
         user.workoutDuration = 45
         user.liftingUnitSystem = .metric

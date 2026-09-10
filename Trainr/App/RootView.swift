@@ -187,6 +187,7 @@ struct RootView: View {
 
         case .workoutSetup(let editing):
             WorkoutSetupView(
+                stockedEquipment: onboarding.stockedEquipment,
                 initial: onboarding.filled(for: .setup, editing: editing),
                 isEditing: editing,
                 onNext: { location, equipment, liftingUnits, days, duration, time in

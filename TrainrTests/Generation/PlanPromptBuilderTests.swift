@@ -7,17 +7,17 @@ struct PlanPromptBuilderTests {
     private func catalogExercise(
         _ key: String, _ muscle: MuscleGroup,
         _ measure: ExerciseMeasure, _ pattern: MovementPattern,
-        requires: Set<Equipment> = [.none]
+        equipment: Equipment = Equipment.none
     ) -> CatalogExercise {
         CatalogExercise(
             key: key, name: key, nameJa: key, muscle: muscle,
-            requires: requires, measure: measure, pattern: pattern, staple: true
+            equipment: equipment, measure: measure, pattern: pattern, staple: true
         )
     }
 
     private var shortlist: [CatalogExercise] {
         [
-            catalogExercise("goblet_squat", .quadriceps, .weightAndReps, .squat, requires: [.dumbbells]),
+            catalogExercise("goblet_squat", .quadriceps, .weightAndReps, .squat, equipment: Equipment.dumbbell),
             catalogExercise("push_up", .chest, .reps, .horizontalPush),
             catalogExercise("plank", .abdominals, .duration, .core)
         ]
@@ -36,7 +36,7 @@ struct PlanPromptBuilderTests {
                 height: 170,
                 weight: 70,
                 fitnessGoal: .muscleGain,
-                availableEquipment: [.dumbbells, .pullUpBar],
+                availableEquipment: [.dumbbell, .machine],
                 workoutDaysPerWeek: 3,
                 workoutDuration: 45,
                 injuries: [.lowerBack],
@@ -53,7 +53,7 @@ struct PlanPromptBuilderTests {
         let prompt = builder.userPrompt(request(), shortlist: shortlist)
 
         #expect(prompt.contains("build muscle"))
-        #expect(prompt.contains("dumbbells, pull-up bar"))
+        #expect(prompt.contains("dumbbells, machines and cables"))
         #expect(prompt.contains("3 (plan EXACTLY this many days)"))
         #expect(prompt.contains("about 45 minutes"))
         #expect(prompt.contains("lower back pain"))

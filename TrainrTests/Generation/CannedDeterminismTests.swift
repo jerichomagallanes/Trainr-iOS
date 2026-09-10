@@ -23,7 +23,7 @@ struct CannedDeterminismTests {
 
     @Test("The same profile gets the same week every time")
     func deterministic() async throws {
-        let user = profile(duration: 45, equipment: [.dumbbells])
+        let user = profile(duration: 45, equipment: [.dumbbell])
         let first = try #require(await plan(user))
         let second = try #require(await plan(user))
 
@@ -38,7 +38,7 @@ struct CannedDeterminismTests {
     @Test("A session is as long as the one that was asked for")
     func sessionMatchesTheRequestedLength() async throws {
         for requested in Constants.Workout.durationOptions {
-            let built = try #require(await plan(profile(duration: requested, equipment: [.dumbbells])))
+            let built = try #require(await plan(profile(duration: requested, equipment: [.dumbbell])))
             let day = built.workoutDays[0]
             #expect(day.duration == requested, "asked for \(requested)")
             #expect(day.exercises.reduce(0) { $0 + $1.durationMinutes } == requested)

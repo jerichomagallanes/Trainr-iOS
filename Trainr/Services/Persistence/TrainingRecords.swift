@@ -60,7 +60,7 @@ final class UserRecord {
             fitnessGoal: FitnessGoal(rawValue: fitnessGoal) ?? .generalFitness,
             experienceLevel: ExperienceLevel(rawValue: experienceLevel) ?? .beginner,
             workoutLocation: WorkoutLocation(rawValue: workoutLocation) ?? .home,
-            availableEquipment: availableEquipment.compactMap(Equipment.init(rawValue:)),
+            availableEquipment: availableEquipment.compactMap(Equipment.stored),
             workoutDaysPerWeek: workoutDaysPerWeek,
             workoutDuration: workoutDuration,
             preferredWorkoutTime: WorkoutTime(rawValue: preferredWorkoutTime) ?? .anytime,

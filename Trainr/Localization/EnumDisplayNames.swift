@@ -83,18 +83,14 @@ extension Equipment {
     var displayName: String {
         switch self {
         case .none: L10n.bodyweightOnly
-        case .dumbbells: L10n.dumbbells
-        case .barbell: L10n.barbellPlates
-        case .bench: L10n.bench
-        case .resistanceBands: L10n.resistanceBands
-        case .pullUpBar: L10n.pullUpBar
-        case .kettlebells: L10n.kettlebells
-        case .squatRack: L10n.squatRack
-        case .cableMachine: L10n.cableMachine
-        case .machines: L10n.weightMachines
-        case .cardioMachines: L10n.cardioEquipment
-        case .mat: L10n.exerciseMat
-        case .jumpRope: L10n.jumpRope
+        case .barbell: L10n.equipmentBarbell
+        case .dumbbell: L10n.equipmentDumbbell
+        case .kettlebell: L10n.equipmentKettlebell
+        case .machine: L10n.equipmentMachine
+        case .plate: L10n.equipmentPlate
+        case .resistanceBand: L10n.equipmentResistanceBand
+        case .suspensionBand: L10n.equipmentSuspensionBand
+        case .other: L10n.equipmentOther
         }
     }
 }

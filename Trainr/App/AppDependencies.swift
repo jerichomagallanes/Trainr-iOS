@@ -8,13 +8,20 @@ final class AppDependencies {
     let store: TrainingStore
     let planGenerator: any PlanGenerator
     let breadcrumbs: any Breadcrumbs
+    let catalog: any ExerciseCatalog
     // English-only: the plan's display copy must match the shipped English UI.
     let languageCode = "en"
 
-    init(store: TrainingStore, planGenerator: any PlanGenerator, breadcrumbs: any Breadcrumbs) {
+    init(
+        store: TrainingStore,
+        planGenerator: any PlanGenerator,
+        breadcrumbs: any Breadcrumbs,
+        catalog: any ExerciseCatalog = BundleExerciseCatalog()
+    ) {
         self.store = store
         self.planGenerator = planGenerator
         self.breadcrumbs = breadcrumbs
+        self.catalog = catalog
     }
 
     // Reported with the action's name and never its subject.

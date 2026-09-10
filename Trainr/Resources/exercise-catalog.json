@@ -1,40 +1,24 @@
 {
- "version": 1,
+ "version": 2,
  "exercises": [
   {
-   "key": "adductor_rockback",
-   "name": "Adductor Rockback",
-   "nameJa": "内転筋ストレッチ",
-   "muscle": "OTHER",
-   "requires": [
-    "MAT"
-   ],
+   "key": "ab_wheel",
+   "name": "Ab Wheel",
+   "nameJa": "アブローラー",
+   "muscle": "ABDOMINALS",
+   "equipment": "OTHER",
+   "measure": "REPS",
+   "pattern": "CORE",
+   "staple": false
+  },
+  {
+   "key": "air_bike",
+   "name": "Air Bike",
+   "nameJa": "エアバイク",
+   "muscle": "CARDIO",
+   "equipment": "MACHINE",
    "measure": "DURATION",
-   "pattern": "MOBILITY",
-   "staple": false
-  },
-  {
-   "key": "archer_push_up",
-   "name": "Archer Push-Up",
-   "nameJa": "アーチャープッシュアップ",
-   "muscle": "CHEST",
-   "requires": [
-    "NONE"
-   ],
-   "measure": "REPS",
-   "pattern": "HORIZONTAL_PUSH",
-   "staple": false
-  },
-  {
-   "key": "arm_circle",
-   "name": "Arm Circle",
-   "nameJa": "アームサークル",
-   "muscle": "OTHER",
-   "requires": [
-    "NONE"
-   ],
-   "measure": "REPS",
-   "pattern": "MOBILITY",
+   "pattern": "CONDITIONING",
    "staple": false
   },
   {
@@ -42,72 +26,69 @@
    "name": "Arnold Press (Dumbbell)",
    "nameJa": "アーノルドプレス",
    "muscle": "SHOULDERS",
-   "requires": [
-    "DUMBBELLS"
-   ],
+   "equipment": "DUMBBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "VERTICAL_PUSH",
    "staple": false
   },
   {
-   "key": "back_extension",
-   "name": "Back Extension",
-   "nameJa": "バックエクステンション",
-   "muscle": "LOWER_BACK",
-   "requires": [
-    "MACHINES"
-   ],
-   "measure": "REPS",
-   "pattern": "HINGE",
+   "key": "around_the_world",
+   "name": "Around The World",
+   "nameJa": "Around The World",
+   "muscle": "CHEST",
+   "equipment": "DUMBBELL",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "ISOLATION",
    "staple": false
   },
   {
-   "key": "band_assisted_pull_up",
-   "name": "Band-Assisted Pull-Up",
-   "nameJa": "バンドアシストプルアップ",
+   "key": "assisted_chin_up",
+   "name": "Chin Up (Assisted)",
+   "nameJa": "チンアップアシスト",
    "muscle": "LATS",
-   "requires": [
-    "PULL_UP_BAR",
-    "RESISTANCE_BANDS"
-   ],
+   "equipment": "MACHINE",
    "measure": "REPS",
    "pattern": "VERTICAL_PULL",
    "staple": false
   },
   {
-   "key": "band_bent_over_row",
-   "name": "Bent-Over Row (Band)",
-   "nameJa": "バンドベントオーバーロウ",
-   "muscle": "UPPER_BACK",
-   "requires": [
-    "RESISTANCE_BANDS"
-   ],
+   "key": "assisted_pull_up",
+   "name": "Pull Up (Assisted)",
+   "nameJa": "プルアップアシスト",
+   "muscle": "LATS",
+   "equipment": "MACHINE",
    "measure": "REPS",
-   "pattern": "HORIZONTAL_PULL",
+   "pattern": "VERTICAL_PULL",
    "staple": false
   },
   {
-   "key": "band_biceps_curl",
-   "name": "Biceps Curl (Band)",
-   "nameJa": "チューブカール",
-   "muscle": "BICEPS",
-   "requires": [
-    "RESISTANCE_BANDS"
-   ],
-   "measure": "WEIGHT_AND_REPS",
-   "pattern": "ISOLATION",
-   "staple": true
+   "key": "assisted_triceps_dip",
+   "name": "Triceps Dip (Assisted)",
+   "nameJa": "Triceps Dip (Assisted)",
+   "muscle": "TRICEPS",
+   "equipment": "MACHINE",
+   "measure": "REPS",
+   "pattern": "VERTICAL_PUSH",
+   "staple": false
   },
   {
-   "key": "band_calf_raise",
-   "name": "Standing Calf Raise (Resistance Band)",
-   "nameJa": "チューブカーフレイズ",
-   "muscle": "CALVES",
-   "requires": [
-    "RESISTANCE_BANDS"
-   ],
-   "measure": "WEIGHT_AND_REPS",
-   "pattern": "ISOLATION",
+   "key": "ball_slams",
+   "name": "Ball Slams",
+   "nameJa": "Ball Slams",
+   "muscle": "FULL_BODY",
+   "equipment": "OTHER",
+   "measure": "REPS",
+   "pattern": "CONDITIONING",
+   "staple": false
+  },
+  {
+   "key": "band_bent_over_row",
+   "name": "Bent Over Row (Band)",
+   "nameJa": "バンドベントオーバーロウ",
+   "muscle": "UPPER_BACK",
+   "equipment": "RESISTANCE_BAND",
+   "measure": "REPS",
+   "pattern": "HORIZONTAL_PULL",
    "staple": false
   },
   {
@@ -115,9 +96,7 @@
    "name": "Chest Fly (Band)",
    "nameJa": "チューブチェストフライ",
    "muscle": "CHEST",
-   "requires": [
-    "RESISTANCE_BANDS"
-   ],
+   "equipment": "RESISTANCE_BAND",
    "measure": "REPS",
    "pattern": "ISOLATION",
    "staple": false
@@ -127,33 +106,27 @@
    "name": "Chest Press (Band)",
    "nameJa": "チューブチェストプレス",
    "muscle": "CHEST",
-   "requires": [
-    "RESISTANCE_BANDS"
-   ],
+   "equipment": "RESISTANCE_BAND",
    "measure": "REPS",
    "pattern": "HORIZONTAL_PUSH",
    "staple": false
   },
   {
-   "key": "band_external_rotation",
-   "name": "External Rotation (Band)",
-   "nameJa": "バンドエクスターナルローテーション",
-   "muscle": "SHOULDERS",
-   "requires": [
-    "RESISTANCE_BANDS"
-   ],
+   "key": "band_deadlift",
+   "name": "Deadlift (Band)",
+   "nameJa": "デッドリフトバンド",
+   "muscle": "GLUTES",
+   "equipment": "RESISTANCE_BAND",
    "measure": "REPS",
-   "pattern": "ISOLATION",
+   "pattern": "HINGE",
    "staple": false
   },
   {
-   "key": "band_face_pull",
-   "name": "Face Pull (Band)",
-   "nameJa": "バンドフェイスプル",
+   "key": "band_front_raise",
+   "name": "Front Raise (Band)",
+   "nameJa": "フロントレイズバンド",
    "muscle": "SHOULDERS",
-   "requires": [
-    "RESISTANCE_BANDS"
-   ],
+   "equipment": "RESISTANCE_BAND",
    "measure": "REPS",
    "pattern": "ISOLATION",
    "staple": false
@@ -163,337 +136,97 @@
    "name": "Hammer Curl (Band)",
    "nameJa": "チューブハンマーカール",
    "muscle": "BICEPS",
-   "requires": [
-    "RESISTANCE_BANDS"
-   ],
-   "measure": "WEIGHT_AND_REPS",
+   "equipment": "RESISTANCE_BAND",
+   "measure": "REPS",
    "pattern": "ISOLATION",
    "staple": false
   },
   {
-   "key": "band_lat_pulldown",
-   "name": "Lat Pulldown (Band, Kneeling)",
-   "nameJa": "バンドラットプルダウン",
+   "key": "band_lat_pulldown_v2",
+   "name": "Lat Pulldown (Band)",
+   "nameJa": "ラットプルダウンバンド",
    "muscle": "LATS",
-   "requires": [
-    "RESISTANCE_BANDS"
-   ],
+   "equipment": "RESISTANCE_BAND",
    "measure": "REPS",
    "pattern": "VERTICAL_PULL",
    "staple": false
   },
   {
-   "key": "band_lateral_raise",
-   "name": "Lateral Raise (Band)",
-   "nameJa": "バンドサイドレイズ",
+   "key": "band_pullaparts",
+   "name": "Band Pullaparts",
+   "nameJa": "Band Pullaparts",
    "muscle": "SHOULDERS",
-   "requires": [
-    "RESISTANCE_BANDS"
-   ],
-   "measure": "REPS",
-   "pattern": "ISOLATION",
-   "staple": false
-  },
-  {
-   "key": "band_leg_extension",
-   "name": "Leg Extension (Resistance Band)",
-   "nameJa": "チューブレッグエクステンション",
-   "muscle": "QUADRICEPS",
-   "requires": [
-    "RESISTANCE_BANDS"
-   ],
-   "measure": "WEIGHT_AND_REPS",
-   "pattern": "ISOLATION",
-   "staple": false
-  },
-  {
-   "key": "band_overhead_press",
-   "name": "Overhead Press (Band)",
-   "nameJa": "バンドショルダープレス",
-   "muscle": "SHOULDERS",
-   "requires": [
-    "RESISTANCE_BANDS"
-   ],
-   "measure": "REPS",
-   "pattern": "VERTICAL_PUSH",
-   "staple": false
-  },
-  {
-   "key": "band_overhead_triceps_extension",
-   "name": "Overhead Triceps Extension (Band)",
-   "nameJa": "チューブフレンチプレス",
-   "muscle": "TRICEPS",
-   "requires": [
-    "RESISTANCE_BANDS"
-   ],
-   "measure": "REPS",
-   "pattern": "ISOLATION",
-   "staple": false
-  },
-  {
-   "key": "band_pallof_press",
-   "name": "Pallof Press (Band)",
-   "nameJa": "パロフプレス",
-   "muscle": "ABDOMINALS",
-   "requires": [
-    "RESISTANCE_BANDS"
-   ],
-   "measure": "REPS",
-   "pattern": "CORE",
-   "staple": false
-  },
-  {
-   "key": "band_pull_apart",
-   "name": "Band Pull-Apart",
-   "nameJa": "バンドプルアパート",
-   "muscle": "SHOULDERS",
-   "requires": [
-    "RESISTANCE_BANDS"
-   ],
-   "measure": "REPS",
-   "pattern": "ISOLATION",
-   "staple": true
-  },
-  {
-   "key": "band_push_up",
-   "name": "Band-Resisted Push-Up",
-   "nameJa": "バンドプッシュアップ",
-   "muscle": "CHEST",
-   "requires": [
-    "RESISTANCE_BANDS"
-   ],
-   "measure": "REPS",
-   "pattern": "HORIZONTAL_PUSH",
-   "staple": false
-  },
-  {
-   "key": "band_reverse_curl",
-   "name": "Reverse Curl (Band)",
-   "nameJa": "チューブリバースカール",
-   "muscle": "FOREARMS",
-   "requires": [
-    "RESISTANCE_BANDS"
-   ],
-   "measure": "WEIGHT_AND_REPS",
-   "pattern": "ISOLATION",
-   "staple": false
-  },
-  {
-   "key": "band_reverse_wrist_curl",
-   "name": "Reverse Wrist Curl (Band)",
-   "nameJa": "チューブリバースリストカール",
-   "muscle": "FOREARMS",
-   "requires": [
-    "RESISTANCE_BANDS"
-   ],
-   "measure": "WEIGHT_AND_REPS",
-   "pattern": "ISOLATION",
-   "staple": false
-  },
-  {
-   "key": "band_seated_row",
-   "name": "Seated Row (Band)",
-   "nameJa": "バンドシーテッドロウ",
-   "muscle": "UPPER_BACK",
-   "requires": [
-    "RESISTANCE_BANDS"
-   ],
+   "equipment": "RESISTANCE_BAND",
    "measure": "REPS",
    "pattern": "HORIZONTAL_PULL",
    "staple": false
   },
   {
-   "key": "band_shoulder_pass_through",
-   "name": "Shoulder Pass-Through (Band)",
-   "nameJa": "ショルダーパススルー",
-   "muscle": "OTHER",
-   "requires": [
-    "RESISTANCE_BANDS"
-   ],
-   "measure": "REPS",
-   "pattern": "MOBILITY",
-   "staple": false
-  },
-  {
-   "key": "band_shrug",
-   "name": "Shrug (Band)",
-   "nameJa": "バンドシュラッグ",
-   "muscle": "TRAPS",
-   "requires": [
-    "RESISTANCE_BANDS"
-   ],
-   "measure": "REPS",
-   "pattern": "ISOLATION",
-   "staple": false
-  },
-  {
-   "key": "band_squat",
-   "name": "Squat (Resistance Band)",
-   "nameJa": "チューブスクワット",
-   "muscle": "QUADRICEPS",
-   "requires": [
-    "RESISTANCE_BANDS"
-   ],
+   "key": "barbell_21s_bicep_curl",
+   "name": "21s Bicep Curl",
+   "nameJa": "21sバイセップカール",
+   "muscle": "BICEPS",
+   "equipment": "BARBELL",
    "measure": "WEIGHT_AND_REPS",
-   "pattern": "SQUAT",
-   "staple": false
-  },
-  {
-   "key": "band_triceps_pushdown",
-   "name": "Triceps Pushdown (Band)",
-   "nameJa": "チューブプレスダウン",
-   "muscle": "TRICEPS",
-   "requires": [
-    "RESISTANCE_BANDS"
-   ],
-   "measure": "REPS",
    "pattern": "ISOLATION",
    "staple": false
   },
   {
-   "key": "band_wrist_curl",
-   "name": "Wrist Curl (Band)",
-   "nameJa": "チューブリストカール",
+   "key": "barbell_behind_the_back_wrist_curl",
+   "name": "Behind the Back Wrist Curl (Barbell)",
+   "nameJa": "Behind the Back Wrist Curl (Barbell)",
    "muscle": "FOREARMS",
-   "requires": [
-    "RESISTANCE_BANDS"
-   ],
+   "equipment": "BARBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "ISOLATION",
    "staple": false
-  },
-  {
-   "key": "banded_glute_bridge",
-   "name": "Glute Bridge (Band)",
-   "nameJa": "バンドヒップリフト",
-   "muscle": "GLUTES",
-   "requires": [
-    "RESISTANCE_BANDS"
-   ],
-   "measure": "REPS",
-   "pattern": "HINGE",
-   "staple": false
-  },
-  {
-   "key": "banded_glute_kickback",
-   "name": "Standing Glute Kickback (Band)",
-   "nameJa": "バンドヒップキックバック",
-   "muscle": "GLUTES",
-   "requires": [
-    "RESISTANCE_BANDS"
-   ],
-   "measure": "REPS",
-   "pattern": "ISOLATION",
-   "staple": false
-  },
-  {
-   "key": "banded_good_morning",
-   "name": "Good Morning (Band)",
-   "nameJa": "バンドグッドモーニング",
-   "muscle": "HAMSTRINGS",
-   "requires": [
-    "RESISTANCE_BANDS"
-   ],
-   "measure": "REPS",
-   "pattern": "HINGE",
-   "staple": false
-  },
-  {
-   "key": "banded_hip_adduction",
-   "name": "Standing Hip Adduction (Band)",
-   "nameJa": "バンドヒップアダクション",
-   "muscle": "ADDUCTORS",
-   "requires": [
-    "RESISTANCE_BANDS"
-   ],
-   "measure": "REPS",
-   "pattern": "ISOLATION",
-   "staple": false
-  },
-  {
-   "key": "banded_lateral_walk",
-   "name": "Lateral Band Walk",
-   "nameJa": "バンドサイドウォーク",
-   "muscle": "ABDUCTORS",
-   "requires": [
-    "RESISTANCE_BANDS"
-   ],
-   "measure": "REPS",
-   "pattern": "ISOLATION",
-   "staple": false
-  },
-  {
-   "key": "banded_leg_curl",
-   "name": "Lying Leg Curl (Band)",
-   "nameJa": "バンドレッグカール",
-   "muscle": "HAMSTRINGS",
-   "requires": [
-    "RESISTANCE_BANDS"
-   ],
-   "measure": "REPS",
-   "pattern": "ISOLATION",
-   "staple": false
-  },
-  {
-   "key": "banded_standing_hip_abduction",
-   "name": "Standing Hip Abduction (Band)",
-   "nameJa": "バンドヒップアブダクション",
-   "muscle": "ABDUCTORS",
-   "requires": [
-    "RESISTANCE_BANDS"
-   ],
-   "measure": "REPS",
-   "pattern": "ISOLATION",
-   "staple": false
-  },
-  {
-   "key": "barbell_back_squat",
-   "name": "Back Squat (Barbell)",
-   "nameJa": "バーベルスクワット",
-   "muscle": "QUADRICEPS",
-   "requires": [
-    "BARBELL",
-    "SQUAT_RACK"
-   ],
-   "measure": "WEIGHT_AND_REPS",
-   "pattern": "SQUAT",
-   "staple": true
   },
   {
    "key": "barbell_bench_press",
    "name": "Bench Press (Barbell)",
    "nameJa": "ベンチプレス",
    "muscle": "CHEST",
-   "requires": [
-    "BARBELL",
-    "BENCH"
-   ],
+   "equipment": "BARBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "HORIZONTAL_PUSH",
    "staple": true
   },
   {
-   "key": "barbell_biceps_curl",
-   "name": "Biceps Curl (Barbell)",
-   "nameJa": "バーベルカール",
+   "key": "barbell_bench_press_wide_grip",
+   "name": "Bench Press - Wide Grip (Barbell)",
+   "nameJa": "ベンチプレスワイドグリップバーベル",
+   "muscle": "CHEST",
+   "equipment": "BARBELL",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "HORIZONTAL_PUSH",
+   "staple": false
+  },
+  {
+   "key": "barbell_bicep_curl",
+   "name": "Bicep Curl (Barbell)",
+   "nameJa": "バイセップカールバーベル",
    "muscle": "BICEPS",
-   "requires": [
-    "BARBELL"
-   ],
+   "equipment": "BARBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "ISOLATION",
-   "staple": true
+   "staple": false
+  },
+  {
+   "key": "barbell_box_squat",
+   "name": "Box Squat (Barbell)",
+   "nameJa": "ボックススクワットバーベル",
+   "muscle": "QUADRICEPS",
+   "equipment": "BARBELL",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "SQUAT",
+   "staple": false
   },
   {
    "key": "barbell_bulgarian_split_squat",
    "name": "Bulgarian Split Squat (Barbell)",
    "nameJa": "バーベルブルガリアンスクワット",
    "muscle": "QUADRICEPS",
-   "requires": [
-    "BARBELL",
-    "BENCH",
-    "SQUAT_RACK"
-   ],
+   "equipment": "BARBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "LUNGE",
    "staple": false
@@ -503,10 +236,7 @@
    "name": "Standing Calf Raise (Barbell)",
    "nameJa": "バーベルカーフレイズ",
    "muscle": "CALVES",
-   "requires": [
-    "BARBELL",
-    "SQUAT_RACK"
-   ],
+   "equipment": "BARBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "ISOLATION",
    "staple": false
@@ -516,23 +246,19 @@
    "name": "Deadlift (Barbell)",
    "nameJa": "デッドリフト",
    "muscle": "GLUTES",
-   "requires": [
-    "BARBELL"
-   ],
+   "equipment": "BARBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "HINGE",
    "staple": true
   },
   {
-   "key": "barbell_drag_curl",
-   "name": "Drag Curl (Barbell)",
-   "nameJa": "ドラッグカール",
-   "muscle": "BICEPS",
-   "requires": [
-    "BARBELL"
-   ],
+   "key": "barbell_feet_up_bench_press",
+   "name": "Feet Up Bench Press (Barbell)",
+   "nameJa": "Feet Up Bench Press (Barbell)",
+   "muscle": "CHEST",
+   "equipment": "BARBELL",
    "measure": "WEIGHT_AND_REPS",
-   "pattern": "ISOLATION",
+   "pattern": "HORIZONTAL_PUSH",
    "staple": false
   },
   {
@@ -540,24 +266,19 @@
    "name": "Floor Press (Barbell)",
    "nameJa": "バーベルフロアプレス",
    "muscle": "CHEST",
-   "requires": [
-    "BARBELL"
-   ],
+   "equipment": "BARBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "HORIZONTAL_PUSH",
    "staple": false
   },
   {
-   "key": "barbell_front_squat",
-   "name": "Front Squat (Barbell)",
-   "nameJa": "フロントスクワット",
-   "muscle": "QUADRICEPS",
-   "requires": [
-    "BARBELL",
-    "SQUAT_RACK"
-   ],
+   "key": "barbell_front_raise",
+   "name": "Front Raise (Barbell)",
+   "nameJa": "フロントレイズバーベル",
+   "muscle": "SHOULDERS",
+   "equipment": "BARBELL",
    "measure": "WEIGHT_AND_REPS",
-   "pattern": "SQUAT",
+   "pattern": "ISOLATION",
    "staple": false
   },
   {
@@ -565,9 +286,7 @@
    "name": "Glute Bridge (Barbell)",
    "nameJa": "バーベルヒップリフト",
    "muscle": "GLUTES",
-   "requires": [
-    "BARBELL"
-   ],
+   "equipment": "BARBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "HINGE",
    "staple": false
@@ -577,97 +296,107 @@
    "name": "Hip Thrust (Barbell)",
    "nameJa": "バーベルヒップスラスト",
    "muscle": "GLUTES",
-   "requires": [
-    "BARBELL",
-    "BENCH"
-   ],
+   "equipment": "BARBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "HINGE",
    "staple": true
   },
   {
-   "key": "barbell_overhead_triceps_extension",
-   "name": "Overhead Triceps Extension (Barbell)",
-   "nameJa": "バーベルフレンチプレス",
+   "key": "barbell_jm_press",
+   "name": "JM Press (Barbell)",
+   "nameJa": "JM Press (Barbell)",
    "muscle": "TRICEPS",
-   "requires": [
-    "BARBELL"
-   ],
+   "equipment": "BARBELL",
    "measure": "WEIGHT_AND_REPS",
-   "pattern": "ISOLATION",
+   "pattern": "HORIZONTAL_PUSH",
    "staple": false
   },
   {
-   "key": "barbell_preacher_curl",
-   "name": "Preacher Curl (Barbell)",
-   "nameJa": "プリーチャーカール",
-   "muscle": "BICEPS",
-   "requires": [
-    "BARBELL",
-    "BENCH"
-   ],
-   "measure": "WEIGHT_AND_REPS",
-   "pattern": "ISOLATION",
-   "staple": false
-  },
-  {
-   "key": "barbell_reverse_curl",
-   "name": "Reverse Curl (Barbell)",
-   "nameJa": "バーベルリバースカール",
-   "muscle": "FOREARMS",
-   "requires": [
-    "BARBELL"
-   ],
-   "measure": "WEIGHT_AND_REPS",
-   "pattern": "ISOLATION",
-   "staple": false
-  },
-  {
-   "key": "barbell_reverse_lunge",
-   "name": "Reverse Lunge (Barbell)",
-   "nameJa": "バーベルバックランジ",
+   "key": "barbell_lunge",
+   "name": "Lunge (Barbell)",
+   "nameJa": "ランジバーベル",
    "muscle": "QUADRICEPS",
-   "requires": [
-    "BARBELL",
-    "SQUAT_RACK"
-   ],
+   "equipment": "BARBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "LUNGE",
    "staple": false
   },
   {
-   "key": "barbell_rollout",
-   "name": "Ab Rollout (Barbell)",
-   "nameJa": "バーベルロールアウト",
-   "muscle": "ABDOMINALS",
-   "requires": [
-    "BARBELL"
-   ],
-   "measure": "REPS",
-   "pattern": "CORE",
-   "staple": false
-  },
-  {
-   "key": "barbell_shrug",
-   "name": "Shrug (Barbell)",
-   "nameJa": "バーベルシュラッグ",
-   "muscle": "TRAPS",
-   "requires": [
-    "BARBELL"
-   ],
+   "key": "barbell_meadows_rows",
+   "name": "Meadows Rows (Barbell)",
+   "nameJa": "Meadows Rows (Barbell)",
+   "muscle": "UPPER_BACK",
+   "equipment": "BARBELL",
    "measure": "WEIGHT_AND_REPS",
-   "pattern": "ISOLATION",
+   "pattern": "HORIZONTAL_PULL",
    "staple": false
   },
   {
-   "key": "barbell_skull_crusher",
-   "name": "Skull Crusher (Barbell)",
-   "nameJa": "スカルクラッシャー",
+   "key": "barbell_partial_glute_bridge",
+   "name": "Partial Glute Bridge (Barbell)",
+   "nameJa": "Partial Glute Bridge (Barbell)",
+   "muscle": "GLUTES",
+   "equipment": "BARBELL",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "HINGE",
+   "staple": false
+  },
+  {
+   "key": "barbell_pause_squat",
+   "name": "Pause Squat (Barbell)",
+   "nameJa": "Pause Squat (Barbell)",
+   "muscle": "QUADRICEPS",
+   "equipment": "BARBELL",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "SQUAT",
+   "staple": false
+  },
+  {
+   "key": "barbell_squat",
+   "name": "Squat (Barbell)",
+   "nameJa": "スクワットバーベル",
+   "muscle": "QUADRICEPS",
+   "equipment": "BARBELL",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "SQUAT",
+   "staple": true
+  },
+  {
+   "key": "barbell_standing_military_press",
+   "name": "Standing Military Press (Barbell)",
+   "nameJa": "スタンディングミリタリープレスバーベル",
+   "muscle": "SHOULDERS",
+   "equipment": "BARBELL",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "VERTICAL_PUSH",
+   "staple": false
+  },
+  {
+   "key": "barbell_sumo_squat",
+   "name": "Sumo Squat (Barbell)",
+   "nameJa": "スモウスクワットバーベル",
+   "muscle": "QUADRICEPS",
+   "equipment": "BARBELL",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "SQUAT",
+   "staple": false
+  },
+  {
+   "key": "barbell_thruster",
+   "name": "Thruster (Barbell)",
+   "nameJa": "スラスターバーベル",
+   "muscle": "FULL_BODY",
+   "equipment": "BARBELL",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "CONDITIONING",
+   "staple": false
+  },
+  {
+   "key": "barbell_triceps_extension",
+   "name": "Triceps Extension (Barbell)",
+   "nameJa": "トライセプスエクステンションバーベル",
    "muscle": "TRICEPS",
-   "requires": [
-    "BARBELL",
-    "BENCH"
-   ],
+   "equipment": "BARBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "ISOLATION",
    "staple": false
@@ -677,33 +406,17 @@
    "name": "Upright Row (Barbell)",
    "nameJa": "アップライトロウ",
    "muscle": "SHOULDERS",
-   "requires": [
-    "BARBELL"
-   ],
+   "equipment": "BARBELL",
    "measure": "WEIGHT_AND_REPS",
-   "pattern": "ISOLATION",
+   "pattern": "HORIZONTAL_PULL",
    "staple": false
   },
   {
-   "key": "barbell_wrist_curl",
-   "name": "Wrist Curl (Barbell)",
-   "nameJa": "バーベルリストカール",
-   "muscle": "FOREARMS",
-   "requires": [
-    "BARBELL"
-   ],
-   "measure": "WEIGHT_AND_REPS",
-   "pattern": "ISOLATION",
-   "staple": false
-  },
-  {
-   "key": "bear_crawl",
-   "name": "Bear Crawl",
-   "nameJa": "ベアクロール",
-   "muscle": "FULL_BODY",
-   "requires": [
-    "NONE"
-   ],
+   "key": "battle_ropes",
+   "name": "Battle Ropes",
+   "nameJa": "バトルロープ",
+   "muscle": "CARDIO",
+   "equipment": "MACHINE",
    "measure": "DURATION",
    "pattern": "CONDITIONING",
    "staple": false
@@ -713,143 +426,69 @@
    "name": "Bench Dip",
    "nameJa": "ベンチディップス",
    "muscle": "TRICEPS",
-   "requires": [
-    "BENCH"
-   ],
+   "equipment": "OTHER",
    "measure": "REPS",
    "pattern": "VERTICAL_PUSH",
    "staple": false
   },
   {
    "key": "bent_over_row",
-   "name": "Bent-Over Row (Barbell)",
+   "name": "Bent Over Row (Barbell)",
    "nameJa": "ベントオーバーロウ",
    "muscle": "UPPER_BACK",
-   "requires": [
-    "BARBELL"
-   ],
+   "equipment": "BARBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "HORIZONTAL_PULL",
    "staple": true
   },
   {
-   "key": "bicycle_crunch",
-   "name": "Bicycle Crunch",
-   "nameJa": "バイシクルクランチ",
-   "muscle": "ABDOMINALS",
-   "requires": [
-    "MAT"
-   ],
-   "measure": "REPS",
-   "pattern": "CORE",
-   "staple": false
-  },
-  {
-   "key": "bird_dog",
-   "name": "Bird Dog",
-   "nameJa": "バードドッグ",
-   "muscle": "LOWER_BACK",
-   "requires": [
-    "MAT"
-   ],
-   "measure": "REPS",
-   "pattern": "CORE",
-   "staple": true
-  },
-  {
-   "key": "bodyweight_good_morning",
-   "name": "Good Morning (Bodyweight)",
-   "nameJa": "自重グッドモーニング",
-   "muscle": "HAMSTRINGS",
-   "requires": [
-    "NONE"
-   ],
-   "measure": "REPS",
-   "pattern": "HINGE",
-   "staple": false
-  },
-  {
-   "key": "bodyweight_squat",
-   "name": "Squat (Bodyweight)",
-   "nameJa": "自重スクワット",
+   "key": "box_jump",
+   "name": "Box Jump",
+   "nameJa": "ボックスジャンプ",
    "muscle": "QUADRICEPS",
-   "requires": [
-    "NONE"
-   ],
-   "measure": "REPS",
-   "pattern": "SQUAT",
-   "staple": true
-  },
-  {
-   "key": "brisk_walk",
-   "name": "Brisk Walk",
-   "nameJa": "ウォーキング",
-   "muscle": "CARDIO",
-   "requires": [
-    "NONE"
-   ],
-   "measure": "DURATION",
-   "pattern": "CONDITIONING",
-   "staple": true
-  },
-  {
-   "key": "bulgarian_split_squat",
-   "name": "Bulgarian Split Squat (Bodyweight)",
-   "nameJa": "ブルガリアンスクワット",
-   "muscle": "QUADRICEPS",
-   "requires": [
-    "BENCH"
-   ],
-   "measure": "REPS",
-   "pattern": "LUNGE",
-   "staple": false
-  },
-  {
-   "key": "burpee",
-   "name": "Burpee",
-   "nameJa": "バーピー",
-   "muscle": "FULL_BODY",
-   "requires": [
-    "NONE"
-   ],
+   "equipment": "OTHER",
    "measure": "REPS",
    "pattern": "CONDITIONING",
-   "staple": true
+   "staple": false
   },
   {
-   "key": "cable_biceps_curl",
-   "name": "Biceps Curl (Cable)",
-   "nameJa": "ケーブルカール",
+   "key": "cable_behind_the_back_curl",
+   "name": "Behind the Back Curl (Cable)",
+   "nameJa": "Behind the Back Curl (Cable)",
    "muscle": "BICEPS",
-   "requires": [
-    "CABLE_MACHINE"
-   ],
+   "equipment": "MACHINE",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "ISOLATION",
-   "staple": true
+   "staple": false
   },
   {
-   "key": "cable_chest_press",
-   "name": "Chest Press (Cable)",
-   "nameJa": "ケーブルチェストプレス",
+   "key": "cable_bench_press",
+   "name": "Bench Press (Cable)",
+   "nameJa": "ベンチプレスケーブル",
    "muscle": "CHEST",
-   "requires": [
-    "CABLE_MACHINE"
-   ],
+   "equipment": "MACHINE",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "HORIZONTAL_PUSH",
    "staple": false
   },
   {
-   "key": "cable_crossover",
-   "name": "Cable Crossover (High-to-Low)",
-   "nameJa": "ケーブルクロスオーバー",
-   "muscle": "CHEST",
-   "requires": [
-    "CABLE_MACHINE"
-   ],
+   "key": "cable_bicep_curl",
+   "name": "Bicep Curl (Cable)",
+   "nameJa": "バイセップカールケーブル",
+   "muscle": "BICEPS",
+   "equipment": "MACHINE",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "ISOLATION",
+   "staple": false
+  },
+  {
+   "key": "cable_core_pallof_press",
+   "name": "Cable Core Pallof Press",
+   "nameJa": "Cable Core Pallof Press",
+   "muscle": "ABDOMINALS",
+   "equipment": "MACHINE",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "CORE",
    "staple": false
   },
   {
@@ -857,21 +496,17 @@
    "name": "Cable Crunch",
    "nameJa": "ケーブルクランチ",
    "muscle": "ABDOMINALS",
-   "requires": [
-    "CABLE_MACHINE"
-   ],
+   "equipment": "MACHINE",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "CORE",
    "staple": false
   },
   {
-   "key": "cable_face_pull",
-   "name": "Face Pull (Cable)",
-   "nameJa": "フェイスプル",
-   "muscle": "SHOULDERS",
-   "requires": [
-    "CABLE_MACHINE"
-   ],
+   "key": "cable_fly_crossovers",
+   "name": "Cable Fly Crossovers",
+   "nameJa": "Cable Fly Crossovers",
+   "muscle": "CHEST",
+   "equipment": "MACHINE",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "ISOLATION",
    "staple": true
@@ -881,57 +516,47 @@
    "name": "Front Raise (Cable)",
    "nameJa": "ケーブルフロントレイズ",
    "muscle": "SHOULDERS",
-   "requires": [
-    "CABLE_MACHINE"
-   ],
+   "equipment": "MACHINE",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "ISOLATION",
    "staple": false
   },
   {
-   "key": "cable_glute_kickback",
-   "name": "Glute Kickback (Cable)",
-   "nameJa": "ケーブルヒップキックバック",
-   "muscle": "GLUTES",
-   "requires": [
-    "CABLE_MACHINE"
-   ],
+   "key": "cable_hammer_curl",
+   "name": "Hammer Curl (Cable)",
+   "nameJa": "ハンマーカールケーブル",
+   "muscle": "BICEPS",
+   "equipment": "MACHINE",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "ISOLATION",
    "staple": false
   },
   {
-   "key": "cable_hip_abduction",
-   "name": "Standing Hip Abduction (Cable)",
-   "nameJa": "ケーブルヒップアブダクション",
+   "key": "cable_hip_abduction_v2",
+   "name": "Hip Abduction (Cable)",
+   "nameJa": "ヒップアブダクションケーブル",
    "muscle": "ABDUCTORS",
-   "requires": [
-    "CABLE_MACHINE"
-   ],
+   "equipment": "MACHINE",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "ISOLATION",
    "staple": false
   },
   {
-   "key": "cable_hip_adduction",
-   "name": "Standing Hip Adduction (Cable)",
-   "nameJa": "ケーブルヒップアダクション",
+   "key": "cable_hip_adduction_v2",
+   "name": "Hip Adduction (Cable)",
+   "nameJa": "ヒップアダクションケーブル",
    "muscle": "ADDUCTORS",
-   "requires": [
-    "CABLE_MACHINE"
-   ],
+   "equipment": "MACHINE",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "ISOLATION",
    "staple": false
   },
   {
-   "key": "cable_lateral_raise",
-   "name": "Lateral Raise (Cable)",
-   "nameJa": "ケーブルサイドレイズ",
-   "muscle": "SHOULDERS",
-   "requires": [
-    "CABLE_MACHINE"
-   ],
+   "key": "cable_overhead_curl",
+   "name": "Overhead Curl (Cable)",
+   "nameJa": "オーバーヘッドカールケーブル",
+   "muscle": "BICEPS",
+   "equipment": "MACHINE",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "ISOLATION",
    "staple": false
@@ -941,9 +566,7 @@
    "name": "Overhead Triceps Extension (Cable)",
    "nameJa": "ケーブルオーバーヘッドエクステンション",
    "muscle": "TRICEPS",
-   "requires": [
-    "CABLE_MACHINE"
-   ],
+   "equipment": "MACHINE",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "ISOLATION",
    "staple": false
@@ -953,21 +576,17 @@
    "name": "Cable Pull Through",
    "nameJa": "ケーブルプルスルー",
    "muscle": "GLUTES",
-   "requires": [
-    "CABLE_MACHINE"
-   ],
+   "equipment": "MACHINE",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "HINGE",
    "staple": false
   },
   {
-   "key": "cable_rear_delt_fly",
-   "name": "Rear Delt Fly (Cable)",
-   "nameJa": "ケーブルリアレイズ",
+   "key": "cable_rear_delt_reverse_fly",
+   "name": "Rear Delt Reverse Fly (Cable)",
+   "nameJa": "リアデルトフライケーブル",
    "muscle": "SHOULDERS",
-   "requires": [
-    "CABLE_MACHINE"
-   ],
+   "equipment": "MACHINE",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "ISOLATION",
    "staple": false
@@ -976,22 +595,48 @@
    "key": "cable_reverse_curl",
    "name": "Reverse Curl (Cable)",
    "nameJa": "ケーブルリバースカール",
-   "muscle": "FOREARMS",
-   "requires": [
-    "CABLE_MACHINE"
-   ],
+   "muscle": "BICEPS",
+   "equipment": "MACHINE",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "ISOLATION",
    "staple": false
   },
   {
-   "key": "cable_rope_hammer_curl",
-   "name": "Rope Hammer Curl (Cable)",
-   "nameJa": "ロープハンマーカール",
-   "muscle": "BICEPS",
-   "requires": [
-    "CABLE_MACHINE"
-   ],
+   "key": "cable_reverse_fly_single_arm",
+   "name": "Reverse Fly Single Arm (Cable)",
+   "nameJa": "リバースフライワンハンドケーブル",
+   "muscle": "SHOULDERS",
+   "equipment": "MACHINE",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "ISOLATION",
+   "staple": false
+  },
+  {
+   "key": "cable_reverse_grip_lat_pulldown",
+   "name": "Reverse Grip Lat Pulldown (Cable)",
+   "nameJa": "リバースグリップラットプルダウンケーブル",
+   "muscle": "LATS",
+   "equipment": "MACHINE",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "VERTICAL_PULL",
+   "staple": true
+  },
+  {
+   "key": "cable_seated_cable_row_v_grip",
+   "name": "Seated Cable Row - V Grip (Cable)",
+   "nameJa": "Seated Cable Row - V Grip (Cable)",
+   "muscle": "UPPER_BACK",
+   "equipment": "MACHINE",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "HORIZONTAL_PULL",
+   "staple": true
+  },
+  {
+   "key": "cable_seated_chest_flys",
+   "name": "Seated Chest Flys (Cable)",
+   "nameJa": "シーテッドダンベルフライsケーブル",
+   "muscle": "CHEST",
+   "equipment": "MACHINE",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "ISOLATION",
    "staple": false
@@ -1001,229 +646,169 @@
    "name": "Shrug (Cable)",
    "nameJa": "ケーブルシュラッグ",
    "muscle": "TRAPS",
-   "requires": [
-    "CABLE_MACHINE"
-   ],
+   "equipment": "MACHINE",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "ISOLATION",
    "staple": false
   },
   {
-   "key": "cable_triceps_pushdown",
-   "name": "Triceps Pushdown (Cable)",
-   "nameJa": "トライセプスプレスダウン",
+   "key": "cable_single_arm_curl",
+   "name": "Single Arm Curl (Cable)",
+   "nameJa": "ワンハンドカールケーブル",
+   "muscle": "BICEPS",
+   "equipment": "MACHINE",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "ISOLATION",
+   "staple": false
+  },
+  {
+   "key": "cable_single_arm_lateral_raise",
+   "name": "Single Arm Lateral Raise (Cable)",
+   "nameJa": "ワンハンドサイドレイズケーブル",
+   "muscle": "SHOULDERS",
+   "equipment": "MACHINE",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "ISOLATION",
+   "staple": false
+  },
+  {
+   "key": "cable_single_arm_triceps_pushdown",
+   "name": "Single Arm Triceps Pushdown (Cable)",
+   "nameJa": "ワンハンドトライセプスプッシュダウンケーブル",
    "muscle": "TRICEPS",
-   "requires": [
-    "CABLE_MACHINE"
-   ],
+   "equipment": "MACHINE",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "ISOLATION",
-   "staple": true
+   "staple": false
   },
   {
-   "key": "cable_woodchop",
-   "name": "Cable Woodchop",
-   "nameJa": "ケーブルウッドチョップ",
-   "muscle": "ABDOMINALS",
-   "requires": [
-    "CABLE_MACHINE"
-   ],
+   "key": "cable_standing_y_raise",
+   "name": "Standing Y Raise (Cable)",
+   "nameJa": "Standing Y Raise (Cable)",
+   "muscle": "SHOULDERS",
+   "equipment": "MACHINE",
    "measure": "WEIGHT_AND_REPS",
-   "pattern": "CORE",
+   "pattern": "ISOLATION",
    "staple": false
   },
   {
-   "key": "cat_cow",
-   "name": "Cat-Cow",
-   "nameJa": "キャット＆カウ",
-   "muscle": "OTHER",
-   "requires": [
-    "MAT"
-   ],
-   "measure": "REPS",
-   "pattern": "MOBILITY",
-   "staple": false
-  },
-  {
-   "key": "chest_dip",
-   "name": "Chest Dip (Forward Lean)",
-   "nameJa": "チェストディップス",
-   "muscle": "CHEST",
-   "requires": [
-    "MACHINES"
-   ],
-   "measure": "REPS",
-   "pattern": "VERTICAL_PUSH",
-   "staple": false
-  },
-  {
-   "key": "chest_supported_dumbbell_row",
-   "name": "Chest-Supported Row (Dumbbell, Incline Bench)",
-   "nameJa": "インクラインダンベルロウ",
-   "muscle": "UPPER_BACK",
-   "requires": [
-    "BENCH",
-    "DUMBBELLS"
-   ],
-   "measure": "WEIGHT_AND_REPS",
-   "pattern": "HORIZONTAL_PULL",
-   "staple": false
-  },
-  {
-   "key": "chest_supported_machine_row",
-   "name": "Chest-Supported Row (Machine)",
-   "nameJa": "マシンロウ",
-   "muscle": "UPPER_BACK",
-   "requires": [
-    "MACHINES"
-   ],
-   "measure": "WEIGHT_AND_REPS",
-   "pattern": "HORIZONTAL_PULL",
-   "staple": false
-  },
-  {
-   "key": "childs_pose",
-   "name": "Child's Pose",
-   "nameJa": "チャイルドポーズ",
-   "muscle": "OTHER",
-   "requires": [
-    "MAT"
-   ],
-   "measure": "DURATION",
-   "pattern": "MOBILITY",
-   "staple": false
-  },
-  {
-   "key": "chin_up",
-   "name": "Chin-Up (Underhand)",
-   "nameJa": "チンアップ（逆手懸垂）",
+   "key": "cable_straight_arm_lat_pulldown",
+   "name": "Straight Arm Lat Pulldown (Cable)",
+   "nameJa": "Straight Arm Lat Pulldown (Cable)",
    "muscle": "LATS",
-   "requires": [
-    "PULL_UP_BAR"
-   ],
-   "measure": "REPS",
+   "equipment": "MACHINE",
+   "measure": "WEIGHT_AND_REPS",
    "pattern": "VERTICAL_PULL",
    "staple": false
+  },
+  {
+   "key": "chin_up_v2",
+   "name": "Chin Up",
+   "nameJa": "チンアップ",
+   "muscle": "LATS",
+   "equipment": "MACHINE",
+   "measure": "REPS",
+   "pattern": "VERTICAL_PULL",
+   "staple": true
   },
   {
    "key": "clamshell",
    "name": "Clamshell",
    "nameJa": "クラムシェル",
-   "muscle": "ABDUCTORS",
-   "requires": [
-    "MAT"
-   ],
+   "muscle": "GLUTES",
+   "equipment": "RESISTANCE_BAND",
    "measure": "REPS",
    "pattern": "ISOLATION",
    "staple": false
   },
   {
-   "key": "clap_push_up",
-   "name": "Clap Push-Up",
-   "nameJa": "クラッププッシュアップ",
-   "muscle": "CHEST",
-   "requires": [
-    "NONE"
-   ],
-   "measure": "REPS",
-   "pattern": "HORIZONTAL_PUSH",
+   "key": "clean",
+   "name": "Clean",
+   "nameJa": "クリーン",
+   "muscle": "FULL_BODY",
+   "equipment": "BARBELL",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "CONDITIONING",
+   "staple": false
+  },
+  {
+   "key": "clean_and_jerk",
+   "name": "Clean and Jerk",
+   "nameJa": "Clean and Jerk",
+   "muscle": "FULL_BODY",
+   "equipment": "BARBELL",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "CONDITIONING",
+   "staple": false
+  },
+  {
+   "key": "clean_and_press",
+   "name": "Clean and Press",
+   "nameJa": "Clean and Press",
+   "muscle": "FULL_BODY",
+   "equipment": "BARBELL",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "CONDITIONING",
+   "staple": false
+  },
+  {
+   "key": "clean_pull",
+   "name": "Clean Pull",
+   "nameJa": "Clean Pull",
+   "muscle": "FULL_BODY",
+   "equipment": "BARBELL",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "CONDITIONING",
    "staple": false
   },
   {
    "key": "close_grip_bench_press",
-   "name": "Close-Grip Bench Press (Barbell)",
+   "name": "Bench Press - Close Grip (Barbell)",
    "nameJa": "ナローベンチプレス",
    "muscle": "TRICEPS",
-   "requires": [
-    "BARBELL",
-    "BENCH"
-   ],
+   "equipment": "BARBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "HORIZONTAL_PUSH",
    "staple": true
   },
   {
-   "key": "close_grip_lat_pulldown",
-   "name": "Close-Grip Lat Pulldown (Cable)",
-   "nameJa": "ナローグリップ・ラットプルダウン",
-   "muscle": "LATS",
-   "requires": [
-    "CABLE_MACHINE"
-   ],
+   "key": "concentration_curl",
+   "name": "Concentration Curl",
+   "nameJa": "コンセントレーションカール",
+   "muscle": "BICEPS",
+   "equipment": "DUMBBELL",
    "measure": "WEIGHT_AND_REPS",
-   "pattern": "VERTICAL_PULL",
-   "staple": false
-  },
-  {
-   "key": "copenhagen_plank",
-   "name": "Copenhagen Plank",
-   "nameJa": "コペンハーゲンプランク",
-   "muscle": "ADDUCTORS",
-   "requires": [
-    "BENCH"
-   ],
-   "measure": "DURATION",
    "pattern": "ISOLATION",
    "staple": false
   },
   {
-   "key": "cossack_squat",
-   "name": "Cossack Squat",
-   "nameJa": "コサックスクワット",
-   "muscle": "ADDUCTORS",
-   "requires": [
-    "NONE"
-   ],
-   "measure": "REPS",
-   "pattern": "LUNGE",
+   "key": "cross_body_hammer_curl",
+   "name": "Cross Body Hammer Curl",
+   "nameJa": "Cross Body Hammer Curl",
+   "muscle": "BICEPS",
+   "equipment": "DUMBBELL",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "ISOLATION",
    "staple": false
   },
   {
-   "key": "crunch",
-   "name": "Crunch",
-   "nameJa": "クランチ",
-   "muscle": "ABDOMINALS",
-   "requires": [
-    "MAT"
-   ],
-   "measure": "REPS",
-   "pattern": "CORE",
-   "staple": false
-  },
-  {
-   "key": "curtsy_lunge",
-   "name": "Curtsy Lunge",
-   "nameJa": "カーテシーランジ",
-   "muscle": "GLUTES",
-   "requires": [
-    "NONE"
-   ],
-   "measure": "REPS",
-   "pattern": "LUNGE",
-   "staple": false
-  },
-  {
-   "key": "dead_bug",
-   "name": "Dead Bug",
-   "nameJa": "デッドバグ",
-   "muscle": "ABDOMINALS",
-   "requires": [
-    "MAT"
-   ],
-   "measure": "REPS",
-   "pattern": "CORE",
-   "staple": true
-  },
-  {
-   "key": "dead_hang",
-   "name": "Dead Hang",
-   "nameJa": "デッドハング",
-   "muscle": "FOREARMS",
-   "requires": [
-    "PULL_UP_BAR"
-   ],
+   "key": "cycling",
+   "name": "Cycling",
+   "nameJa": "サイクリング",
+   "muscle": "CARDIO",
+   "equipment": "MACHINE",
    "measure": "DURATION",
-   "pattern": "CARRY",
+   "pattern": "CONDITIONING",
+   "staple": false
+  },
+  {
+   "key": "deadlift_high_pull",
+   "name": "Deadlift High Pull",
+   "nameJa": "Deadlift High Pull",
+   "muscle": "FULL_BODY",
+   "equipment": "BARBELL",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "CONDITIONING",
    "staple": false
   },
   {
@@ -1231,84 +816,39 @@
    "name": "Decline Bench Press (Barbell)",
    "nameJa": "デクラインベンチプレス",
    "muscle": "CHEST",
-   "requires": [
-    "BARBELL",
-    "BENCH"
-   ],
+   "equipment": "BARBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "HORIZONTAL_PUSH",
    "staple": false
   },
   {
-   "key": "decline_push_up",
-   "name": "Decline Push-Up (Feet Elevated)",
+   "key": "decline_push_up_v2",
+   "name": "Decline Push Up",
    "nameJa": "デクラインプッシュアップ",
    "muscle": "CHEST",
-   "requires": [
-    "BENCH"
-   ],
+   "equipment": "OTHER",
    "measure": "REPS",
    "pattern": "HORIZONTAL_PUSH",
    "staple": false
   },
   {
-   "key": "decline_sit_up",
-   "name": "Decline Sit-Up",
-   "nameJa": "デクラインシットアップ",
+   "key": "down_to_up_cable_twist",
+   "name": "Cable Twist (Down to up)",
+   "nameJa": "Cable Twist (Down to up)",
    "muscle": "ABDOMINALS",
-   "requires": [
-    "BENCH"
-   ],
-   "measure": "REPS",
+   "equipment": "MACHINE",
+   "measure": "WEIGHT_AND_REPS",
    "pattern": "CORE",
    "staple": false
   },
   {
-   "key": "diamond_push_up",
-   "name": "Diamond Push-Up",
-   "nameJa": "ダイヤモンドプッシュアップ",
-   "muscle": "TRICEPS",
-   "requires": [
-    "NONE"
-   ],
-   "measure": "REPS",
-   "pattern": "HORIZONTAL_PUSH",
-   "staple": true
-  },
-  {
-   "key": "donkey_kick",
-   "name": "Donkey Kick",
-   "nameJa": "ドンキーキック",
-   "muscle": "GLUTES",
-   "requires": [
-    "MAT"
-   ],
-   "measure": "REPS",
+   "key": "drag_curl",
+   "name": "Drag Curl",
+   "nameJa": "Drag Curl",
+   "muscle": "BICEPS",
+   "equipment": "BARBELL",
+   "measure": "WEIGHT_AND_REPS",
    "pattern": "ISOLATION",
-   "staple": false
-  },
-  {
-   "key": "doorway_row",
-   "name": "Doorway Row",
-   "nameJa": "ドアウェイロウ",
-   "muscle": "UPPER_BACK",
-   "requires": [
-    "NONE"
-   ],
-   "measure": "REPS",
-   "pattern": "HORIZONTAL_PULL",
-   "staple": true
-  },
-  {
-   "key": "downward_dog",
-   "name": "Downward Dog",
-   "nameJa": "ダウンドッグ",
-   "muscle": "OTHER",
-   "requires": [
-    "MAT"
-   ],
-   "measure": "DURATION",
-   "pattern": "MOBILITY",
    "staple": false
   },
   {
@@ -1316,34 +856,27 @@
    "name": "Bench Press (Dumbbell)",
    "nameJa": "ダンベルベンチプレス",
    "muscle": "CHEST",
-   "requires": [
-    "BENCH",
-    "DUMBBELLS"
-   ],
+   "equipment": "DUMBBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "HORIZONTAL_PUSH",
    "staple": true
   },
   {
-   "key": "dumbbell_bent_over_row",
-   "name": "Bent-Over Row (Dumbbell, Two-Arm)",
-   "nameJa": "ダンベルベントオーバーロウ",
+   "key": "dumbbell_bent_over_row_v2",
+   "name": "Bent Over Row (Dumbbell)",
+   "nameJa": "ベントオーバーロウダンベル",
    "muscle": "UPPER_BACK",
-   "requires": [
-    "DUMBBELLS"
-   ],
+   "equipment": "DUMBBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "HORIZONTAL_PULL",
-   "staple": true
+   "staple": false
   },
   {
-   "key": "dumbbell_biceps_curl",
-   "name": "Biceps Curl (Dumbbell)",
-   "nameJa": "ダンベルカール",
+   "key": "dumbbell_bicep_curl",
+   "name": "Bicep Curl (Dumbbell)",
+   "nameJa": "バイセップカールダンベル",
    "muscle": "BICEPS",
-   "requires": [
-    "DUMBBELLS"
-   ],
+   "equipment": "DUMBBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "ISOLATION",
    "staple": true
@@ -1353,46 +886,47 @@
    "name": "Bulgarian Split Squat (Dumbbell)",
    "nameJa": "ダンベルブルガリアンスクワット",
    "muscle": "QUADRICEPS",
-   "requires": [
-    "BENCH",
-    "DUMBBELLS"
-   ],
+   "equipment": "DUMBBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "LUNGE",
-   "staple": false
+   "staple": true
   },
   {
    "key": "dumbbell_calf_raise",
    "name": "Standing Calf Raise (Dumbbell)",
    "nameJa": "ダンベルカーフレイズ",
    "muscle": "CALVES",
-   "requires": [
-    "DUMBBELLS"
-   ],
+   "equipment": "DUMBBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "ISOLATION",
    "staple": false
   },
   {
-   "key": "dumbbell_clean_and_press",
-   "name": "Clean and Press (Dumbbell)",
-   "nameJa": "ダンベルクリーン＆プレス",
-   "muscle": "FULL_BODY",
-   "requires": [
-    "DUMBBELLS"
-   ],
+   "key": "dumbbell_chest_supported_incline_row",
+   "name": "Chest Supported Incline Row (Dumbbell)",
+   "nameJa": "Chest Supported Incline Row (Dumbbell)",
+   "muscle": "UPPER_BACK",
+   "equipment": "DUMBBELL",
    "measure": "WEIGHT_AND_REPS",
-   "pattern": "VERTICAL_PUSH",
+   "pattern": "HORIZONTAL_PULL",
    "staple": false
   },
   {
-   "key": "dumbbell_concentration_curl",
-   "name": "Concentration Curl (Dumbbell)",
-   "nameJa": "コンセントレーションカール",
-   "muscle": "BICEPS",
-   "requires": [
-    "DUMBBELLS"
-   ],
+   "key": "dumbbell_chest_supported_reverse_fly",
+   "name": "Chest Supported Reverse Fly (Dumbbell)",
+   "nameJa": "Chest Supported Reverse Fly (Dumbbell)",
+   "muscle": "SHOULDERS",
+   "equipment": "DUMBBELL",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "ISOLATION",
+   "staple": false
+  },
+  {
+   "key": "dumbbell_chest_supported_y_raise",
+   "name": "Chest Supported Y Raise (Dumbbell)",
+   "nameJa": "Chest Supported Y Raise (Dumbbell)",
+   "muscle": "SHOULDERS",
+   "equipment": "DUMBBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "ISOLATION",
    "staple": false
@@ -1401,34 +935,38 @@
    "key": "dumbbell_curtsy_lunge",
    "name": "Curtsy Lunge (Dumbbell)",
    "nameJa": "ダンベルカーテシーランジ",
-   "muscle": "GLUTES",
-   "requires": [
-    "DUMBBELLS"
-   ],
+   "muscle": "QUADRICEPS",
+   "equipment": "DUMBBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "LUNGE",
    "staple": false
   },
   {
-   "key": "dumbbell_external_rotation",
-   "name": "Side-Lying External Rotation (Dumbbell)",
-   "nameJa": "ダンベルエクスターナルローテーション",
-   "muscle": "SHOULDERS",
-   "requires": [
-    "DUMBBELLS"
-   ],
+   "key": "dumbbell_deadlift",
+   "name": "Deadlift (Dumbbell)",
+   "nameJa": "デッドリフトダンベル",
+   "muscle": "GLUTES",
+   "equipment": "DUMBBELL",
    "measure": "WEIGHT_AND_REPS",
-   "pattern": "ISOLATION",
+   "pattern": "HINGE",
    "staple": false
   },
   {
-   "key": "dumbbell_floor_fly",
-   "name": "Floor Chest Fly (Dumbbell)",
-   "nameJa": "ダンベルフロアフライ",
+   "key": "dumbbell_decline_bench_press",
+   "name": "Decline Bench Press (Dumbbell)",
+   "nameJa": "デクラインベンチプレスダンベル",
    "muscle": "CHEST",
-   "requires": [
-    "DUMBBELLS"
-   ],
+   "equipment": "DUMBBELL",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "HORIZONTAL_PUSH",
+   "staple": false
+  },
+  {
+   "key": "dumbbell_decline_chest_fly",
+   "name": "Decline Chest Fly (Dumbbell)",
+   "nameJa": "デクラインダンベルフライダンベル",
+   "muscle": "CHEST",
+   "equipment": "DUMBBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "ISOLATION",
    "staple": false
@@ -1438,9 +976,7 @@
    "name": "Floor Press (Dumbbell)",
    "nameJa": "ダンベルフロアプレス",
    "muscle": "CHEST",
-   "requires": [
-    "DUMBBELLS"
-   ],
+   "equipment": "DUMBBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "HORIZONTAL_PUSH",
    "staple": false
@@ -1450,12 +986,19 @@
    "name": "Chest Fly (Dumbbell)",
    "nameJa": "ダンベルフライ",
    "muscle": "CHEST",
-   "requires": [
-    "BENCH",
-    "DUMBBELLS"
-   ],
+   "equipment": "DUMBBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "ISOLATION",
+   "staple": false
+  },
+  {
+   "key": "dumbbell_frog_pumps",
+   "name": "Frog Pumps (Dumbbell)",
+   "nameJa": "Frog Pumps (Dumbbell)",
+   "muscle": "GLUTES",
+   "equipment": "DUMBBELL",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "HINGE",
    "staple": false
   },
   {
@@ -1463,23 +1006,9 @@
    "name": "Front Raise (Dumbbell)",
    "nameJa": "フロントレイズ",
    "muscle": "SHOULDERS",
-   "requires": [
-    "DUMBBELLS"
-   ],
+   "equipment": "DUMBBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "ISOLATION",
-   "staple": false
-  },
-  {
-   "key": "dumbbell_front_squat",
-   "name": "Front Squat (Dumbbell)",
-   "nameJa": "ダンベルフロントスクワット",
-   "muscle": "QUADRICEPS",
-   "requires": [
-    "DUMBBELLS"
-   ],
-   "measure": "WEIGHT_AND_REPS",
-   "pattern": "SQUAT",
    "staple": false
   },
   {
@@ -1487,49 +1016,29 @@
    "name": "Hammer Curl (Dumbbell)",
    "nameJa": "ハンマーカール",
    "muscle": "BICEPS",
-   "requires": [
-    "DUMBBELLS"
-   ],
+   "equipment": "DUMBBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "ISOLATION",
    "staple": true
+  },
+  {
+   "key": "dumbbell_hex_press",
+   "name": "Hex Press (Dumbbell)",
+   "nameJa": "Hex Press (Dumbbell)",
+   "muscle": "CHEST",
+   "equipment": "DUMBBELL",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "HORIZONTAL_PUSH",
+   "staple": false
   },
   {
    "key": "dumbbell_hip_thrust",
    "name": "Hip Thrust (Dumbbell)",
    "nameJa": "ダンベルヒップスラスト",
    "muscle": "GLUTES",
-   "requires": [
-    "BENCH",
-    "DUMBBELLS"
-   ],
+   "equipment": "DUMBBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "HINGE",
-   "staple": false
-  },
-  {
-   "key": "dumbbell_incline_curl",
-   "name": "Incline Curl (Dumbbell)",
-   "nameJa": "インクラインダンベルカール",
-   "muscle": "BICEPS",
-   "requires": [
-    "BENCH",
-    "DUMBBELLS"
-   ],
-   "measure": "WEIGHT_AND_REPS",
-   "pattern": "ISOLATION",
-   "staple": false
-  },
-  {
-   "key": "dumbbell_lateral_lunge",
-   "name": "Lateral Lunge (Dumbbell)",
-   "nameJa": "ダンベルサイドランジ",
-   "muscle": "ADDUCTORS",
-   "requires": [
-    "DUMBBELLS"
-   ],
-   "measure": "WEIGHT_AND_REPS",
-   "pattern": "LUNGE",
    "staple": false
   },
   {
@@ -1537,36 +1046,19 @@
    "name": "Lateral Raise (Dumbbell)",
    "nameJa": "サイドレイズ",
    "muscle": "SHOULDERS",
-   "requires": [
-    "DUMBBELLS"
-   ],
+   "equipment": "DUMBBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "ISOLATION",
    "staple": true
   },
   {
-   "key": "dumbbell_lying_leg_curl",
-   "name": "Lying Leg Curl (Dumbbell)",
-   "nameJa": "ダンベルレッグカール",
-   "muscle": "HAMSTRINGS",
-   "requires": [
-    "BENCH",
-    "DUMBBELLS"
-   ],
+   "key": "dumbbell_lunge",
+   "name": "Lunge (Dumbbell)",
+   "nameJa": "ランジダンベル",
+   "muscle": "QUADRICEPS",
+   "equipment": "DUMBBELL",
    "measure": "WEIGHT_AND_REPS",
-   "pattern": "ISOLATION",
-   "staple": false
-  },
-  {
-   "key": "dumbbell_overhead_carry",
-   "name": "Overhead Carry (Dumbbell)",
-   "nameJa": "ダンベルオーバーヘッドキャリー",
-   "muscle": "SHOULDERS",
-   "requires": [
-    "DUMBBELLS"
-   ],
-   "measure": "DURATION",
-   "pattern": "CARRY",
+   "pattern": "LUNGE",
    "staple": false
   },
   {
@@ -1574,47 +1066,27 @@
    "name": "Overhead Press (Dumbbell)",
    "nameJa": "ダンベルショルダープレス",
    "muscle": "SHOULDERS",
-   "requires": [
-    "DUMBBELLS"
-   ],
+   "equipment": "DUMBBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "VERTICAL_PUSH",
    "staple": true
   },
   {
-   "key": "dumbbell_overhead_triceps_extension",
-   "name": "Overhead Triceps Extension (Dumbbell)",
-   "nameJa": "ダンベルフレンチプレス",
-   "muscle": "TRICEPS",
-   "requires": [
-    "DUMBBELLS"
-   ],
-   "measure": "WEIGHT_AND_REPS",
-   "pattern": "ISOLATION",
-   "staple": true
-  },
-  {
-   "key": "dumbbell_prone_t_raise",
-   "name": "Prone T Raise (Dumbbell, Incline Bench)",
-   "nameJa": "インクラインダンベルTレイズ",
-   "muscle": "UPPER_BACK",
-   "requires": [
-    "BENCH",
-    "DUMBBELLS"
-   ],
+   "key": "dumbbell_pinwheel_curl",
+   "name": "Pinwheel Curl (Dumbbell)",
+   "nameJa": "Pinwheel Curl (Dumbbell)",
+   "muscle": "BICEPS",
+   "equipment": "DUMBBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "ISOLATION",
    "staple": false
   },
   {
-   "key": "dumbbell_prone_y_raise",
-   "name": "Prone Y Raise (Dumbbell, Incline Bench)",
-   "nameJa": "インクラインダンベルYレイズ",
-   "muscle": "TRAPS",
-   "requires": [
-    "BENCH",
-    "DUMBBELLS"
-   ],
+   "key": "dumbbell_preacher_curl",
+   "name": "Preacher Curl (Dumbbell)",
+   "nameJa": "プリーチャーカールダンベル",
+   "muscle": "BICEPS",
+   "equipment": "DUMBBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "ISOLATION",
    "staple": false
@@ -1624,34 +1096,27 @@
    "name": "Pullover (Dumbbell)",
    "nameJa": "ダンベルプルオーバー",
    "muscle": "LATS",
-   "requires": [
-    "BENCH",
-    "DUMBBELLS"
-   ],
+   "equipment": "DUMBBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "ISOLATION",
    "staple": false
   },
   {
-   "key": "dumbbell_rear_delt_fly",
-   "name": "Bent-Over Rear Delt Fly (Dumbbell)",
-   "nameJa": "リアレイズ",
+   "key": "dumbbell_rear_delt_reverse_fly",
+   "name": "Rear Delt Reverse Fly (Dumbbell)",
+   "nameJa": "リアデルトフライダンベル",
    "muscle": "SHOULDERS",
-   "requires": [
-    "DUMBBELLS"
-   ],
+   "equipment": "DUMBBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "ISOLATION",
-   "staple": true
+   "staple": false
   },
   {
    "key": "dumbbell_reverse_curl",
    "name": "Reverse Curl (Dumbbell)",
    "nameJa": "ダンベルリバースカール",
-   "muscle": "FOREARMS",
-   "requires": [
-    "DUMBBELLS"
-   ],
+   "muscle": "BICEPS",
+   "equipment": "DUMBBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "ISOLATION",
    "staple": false
@@ -1661,9 +1126,7 @@
    "name": "Reverse Lunge (Dumbbell)",
    "nameJa": "ダンベルバックランジ",
    "muscle": "QUADRICEPS",
-   "requires": [
-    "DUMBBELLS"
-   ],
+   "equipment": "DUMBBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "LUNGE",
    "staple": true
@@ -1673,9 +1136,7 @@
    "name": "Reverse Wrist Curl (Dumbbell)",
    "nameJa": "ダンベルリバースリストカール",
    "muscle": "FOREARMS",
-   "requires": [
-    "DUMBBELLS"
-   ],
+   "equipment": "DUMBBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "ISOLATION",
    "staple": false
@@ -1685,11 +1146,69 @@
    "name": "Romanian Deadlift (Dumbbell)",
    "nameJa": "ダンベルルーマニアンデッドリフト",
    "muscle": "HAMSTRINGS",
-   "requires": [
-    "DUMBBELLS"
-   ],
+   "equipment": "DUMBBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "HINGE",
+   "staple": true
+  },
+  {
+   "key": "dumbbell_row",
+   "name": "Dumbbell Row",
+   "nameJa": "ダンベルロウ",
+   "muscle": "LATS",
+   "equipment": "DUMBBELL",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "HORIZONTAL_PULL",
+   "staple": true
+  },
+  {
+   "key": "dumbbell_seal_row",
+   "name": "Seal Row (Dumbbell)",
+   "nameJa": "シールロウダンベル",
+   "muscle": "UPPER_BACK",
+   "equipment": "DUMBBELL",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "HORIZONTAL_PULL",
+   "staple": false
+  },
+  {
+   "key": "dumbbell_seated_incline_curl",
+   "name": "Seated Incline Curl (Dumbbell)",
+   "nameJa": "シーテッドインクラインカールダンベル",
+   "muscle": "BICEPS",
+   "equipment": "DUMBBELL",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "ISOLATION",
+   "staple": false
+  },
+  {
+   "key": "dumbbell_seated_incline_hammer_curl",
+   "name": "Seated Incline Hammer Curl (Dumbbell)",
+   "nameJa": "シーテッドインクラインハンマーカールダンベル",
+   "muscle": "BICEPS",
+   "equipment": "DUMBBELL",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "ISOLATION",
+   "staple": false
+  },
+  {
+   "key": "dumbbell_seated_lateral_raise",
+   "name": "Seated Lateral Raise (Dumbbell)",
+   "nameJa": "シーテッドサイドレイズダンベル",
+   "muscle": "SHOULDERS",
+   "equipment": "DUMBBELL",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "ISOLATION",
+   "staple": false
+  },
+  {
+   "key": "dumbbell_shoulder_press",
+   "name": "Shoulder Press (Dumbbell)",
+   "nameJa": "ショルダープレスダンベル",
+   "muscle": "SHOULDERS",
+   "equipment": "DUMBBELL",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "VERTICAL_PUSH",
    "staple": true
   },
   {
@@ -1697,9 +1216,7 @@
    "name": "Shrug (Dumbbell)",
    "nameJa": "ダンベルシュラッグ",
    "muscle": "TRAPS",
-   "requires": [
-    "DUMBBELLS"
-   ],
+   "equipment": "DUMBBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "ISOLATION",
    "staple": false
@@ -1709,24 +1226,59 @@
    "name": "Side Bend (Dumbbell)",
    "nameJa": "ダンベルサイドベンド",
    "muscle": "ABDOMINALS",
-   "requires": [
-    "DUMBBELLS"
-   ],
+   "equipment": "DUMBBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "CORE",
    "staple": false
   },
   {
-   "key": "dumbbell_skull_crusher",
-   "name": "Skull Crusher (Dumbbell)",
-   "nameJa": "ダンベルスカルクラッシャー",
+   "key": "dumbbell_single_arm_tricep_extension",
+   "name": "Single Arm Tricep Extension (Dumbbell)",
+   "nameJa": "ワンハンドトライセプスエクステンションダンベル",
    "muscle": "TRICEPS",
-   "requires": [
-    "BENCH",
-    "DUMBBELLS"
-   ],
+   "equipment": "DUMBBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "ISOLATION",
+   "staple": false
+  },
+  {
+   "key": "dumbbell_single_leg_hip_thrust",
+   "name": "Single Leg Hip Thrust (Dumbbell)",
+   "nameJa": "シングルレッグヒップスラストダンベル",
+   "muscle": "GLUTES",
+   "equipment": "DUMBBELL",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "HINGE",
+   "staple": false
+  },
+  {
+   "key": "dumbbell_single_leg_standing_calf_raise",
+   "name": "Single Leg Standing Calf Raise (Dumbbell)",
+   "nameJa": "シングルレッグスタンディングカーフレイズダンベル",
+   "muscle": "CALVES",
+   "equipment": "DUMBBELL",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "ISOLATION",
+   "staple": false
+  },
+  {
+   "key": "dumbbell_skullcrusher",
+   "name": "Skullcrusher (Dumbbell)",
+   "nameJa": "スカルクラッシャーダンベル",
+   "muscle": "TRICEPS",
+   "equipment": "DUMBBELL",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "ISOLATION",
+   "staple": false
+  },
+  {
+   "key": "dumbbell_snatch",
+   "name": "Dumbbell Snatch",
+   "nameJa": "ダンベルスナッチ",
+   "muscle": "FULL_BODY",
+   "equipment": "DUMBBELL",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "CONDITIONING",
    "staple": false
   },
   {
@@ -1734,10 +1286,7 @@
    "name": "Spider Curl (Dumbbell)",
    "nameJa": "スパイダーカール",
    "muscle": "BICEPS",
-   "requires": [
-    "BENCH",
-    "DUMBBELLS"
-   ],
+   "equipment": "DUMBBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "ISOLATION",
    "staple": false
@@ -1747,9 +1296,7 @@
    "name": "Split Squat (Dumbbell)",
    "nameJa": "ダンベルスプリットスクワット",
    "muscle": "QUADRICEPS",
-   "requires": [
-    "DUMBBELLS"
-   ],
+   "equipment": "DUMBBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "LUNGE",
    "staple": false
@@ -1759,36 +1306,28 @@
    "name": "Squat (Dumbbell)",
    "nameJa": "ダンベルスクワット",
    "muscle": "QUADRICEPS",
-   "requires": [
-    "DUMBBELLS"
-   ],
+   "equipment": "DUMBBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "SQUAT",
    "staple": false
   },
   {
    "key": "dumbbell_squeeze_press",
-   "name": "Squeeze Press (Dumbbell)",
+   "name": "Dumbbell Squeeze Press",
    "nameJa": "ダンベルスクイーズプレス",
    "muscle": "CHEST",
-   "requires": [
-    "BENCH",
-    "DUMBBELLS"
-   ],
+   "equipment": "DUMBBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "HORIZONTAL_PUSH",
    "staple": false
   },
   {
    "key": "dumbbell_step_up",
-   "name": "Step-Up (Dumbbell)",
+   "name": "Dumbbell Step Up",
    "nameJa": "ダンベルステップアップ",
    "muscle": "QUADRICEPS",
-   "requires": [
-    "BENCH",
-    "DUMBBELLS"
-   ],
-   "measure": "WEIGHT_AND_REPS",
+   "equipment": "DUMBBELL",
+   "measure": "REPS",
    "pattern": "LUNGE",
    "staple": false
   },
@@ -1796,24 +1335,30 @@
    "key": "dumbbell_suitcase_carry",
    "name": "Suitcase Carry (Dumbbell)",
    "nameJa": "スーツケースキャリー",
-   "muscle": "ABDOMINALS",
-   "requires": [
-    "DUMBBELLS"
-   ],
+   "muscle": "FULL_BODY",
+   "equipment": "DUMBBELL",
    "measure": "DURATION",
    "pattern": "CARRY",
    "staple": false
   },
   {
-   "key": "dumbbell_thruster",
-   "name": "Thruster (Dumbbell)",
-   "nameJa": "ダンベルスラスター",
-   "muscle": "FULL_BODY",
-   "requires": [
-    "DUMBBELLS"
-   ],
+   "key": "dumbbell_sumo_squat",
+   "name": "Sumo Squat (Dumbbell)",
+   "nameJa": "スモウスクワットダンベル",
+   "muscle": "QUADRICEPS",
+   "equipment": "DUMBBELL",
    "measure": "WEIGHT_AND_REPS",
-   "pattern": "VERTICAL_PUSH",
+   "pattern": "SQUAT",
+   "staple": false
+  },
+  {
+   "key": "dumbbell_triceps_extension",
+   "name": "Triceps Extension (Dumbbell)",
+   "nameJa": "トライセプスエクステンションダンベル",
+   "muscle": "TRICEPS",
+   "equipment": "DUMBBELL",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "ISOLATION",
    "staple": false
   },
   {
@@ -1821,23 +1366,29 @@
    "name": "Triceps Kickback (Dumbbell)",
    "nameJa": "トライセプスキックバック",
    "muscle": "TRICEPS",
-   "requires": [
-    "DUMBBELLS"
-   ],
+   "equipment": "DUMBBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "ISOLATION",
    "staple": false
   },
   {
-   "key": "dumbbell_upright_row",
-   "name": "Wide-Grip Upright Row (Dumbbell)",
-   "nameJa": "ダンベルアップライトロウ",
-   "muscle": "TRAPS",
-   "requires": [
-    "DUMBBELLS"
-   ],
+   "key": "dumbbell_upright_row_v2",
+   "name": "Upright Row (Dumbbell)",
+   "nameJa": "アップライトロウダンベル",
+   "muscle": "SHOULDERS",
+   "equipment": "DUMBBELL",
    "measure": "WEIGHT_AND_REPS",
-   "pattern": "VERTICAL_PULL",
+   "pattern": "HORIZONTAL_PULL",
+   "staple": false
+  },
+  {
+   "key": "dumbbell_waiter_curl",
+   "name": "Waiter Curl (Dumbbell)",
+   "nameJa": "Waiter Curl (Dumbbell)",
+   "muscle": "BICEPS",
+   "equipment": "DUMBBELL",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "ISOLATION",
    "staple": false
   },
   {
@@ -1845,33 +1396,17 @@
    "name": "Walking Lunge (Dumbbell)",
    "nameJa": "ダンベルウォーキングランジ",
    "muscle": "QUADRICEPS",
-   "requires": [
-    "DUMBBELLS"
-   ],
+   "equipment": "DUMBBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "LUNGE",
-   "staple": false
+   "staple": true
   },
   {
-   "key": "dumbbell_wrist_curl",
-   "name": "Wrist Curl (Dumbbell)",
-   "nameJa": "ダンベルリストカール",
-   "muscle": "FOREARMS",
-   "requires": [
-    "DUMBBELLS"
-   ],
-   "measure": "WEIGHT_AND_REPS",
-   "pattern": "ISOLATION",
-   "staple": false
-  },
-  {
-   "key": "dumbbell_wrist_supination",
-   "name": "Wrist Supination (Dumbbell)",
-   "nameJa": "ダンベルリストローテーション",
-   "muscle": "FOREARMS",
-   "requires": [
-    "DUMBBELLS"
-   ],
+   "key": "dumbbell_wide_elbow_triceps_press",
+   "name": "Wide-Elbow Triceps Press (Dumbbell)",
+   "nameJa": "Wide-Elbow Triceps Press (Dumbbell)",
+   "muscle": "TRICEPS",
+   "equipment": "DUMBBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "ISOLATION",
    "staple": false
@@ -1880,10 +1415,8 @@
    "key": "dumbbell_zottman_curl",
    "name": "Zottman Curl (Dumbbell)",
    "nameJa": "ゾットマンカール",
-   "muscle": "FOREARMS",
-   "requires": [
-    "DUMBBELLS"
-   ],
+   "muscle": "BICEPS",
+   "equipment": "DUMBBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "ISOLATION",
    "staple": false
@@ -1893,81 +1426,97 @@
    "name": "Elliptical Trainer",
    "nameJa": "クロストレーナー",
    "muscle": "CARDIO",
-   "requires": [
-    "CARDIO_MACHINES"
-   ],
+   "equipment": "MACHINE",
    "measure": "DURATION",
    "pattern": "CONDITIONING",
    "staple": false
   },
   {
-   "key": "farmers_carry",
-   "name": "Farmer's Carry (Dumbbell)",
-   "nameJa": "ファーマーズウォーク",
-   "muscle": "TRAPS",
-   "requires": [
-    "DUMBBELLS"
-   ],
-   "measure": "DURATION",
-   "pattern": "CARRY",
-   "staple": true
-  },
-  {
-   "key": "fire_hydrant",
-   "name": "Fire Hydrant",
-   "nameJa": "ファイヤーハイドラント",
-   "muscle": "ABDUCTORS",
-   "requires": [
-    "MAT"
-   ],
-   "measure": "REPS",
+   "key": "ez_bar_biceps_curl",
+   "name": "EZ Bar Biceps Curl",
+   "nameJa": "EZ Bar Biceps Curl",
+   "muscle": "BICEPS",
+   "equipment": "BARBELL",
+   "measure": "WEIGHT_AND_REPS",
    "pattern": "ISOLATION",
    "staple": false
   },
   {
-   "key": "forward_lunge",
-   "name": "Forward Lunge (Bodyweight)",
-   "nameJa": "フロントランジ",
-   "muscle": "QUADRICEPS",
-   "requires": [
-    "NONE"
-   ],
-   "measure": "REPS",
-   "pattern": "LUNGE",
-   "staple": false
-  },
-  {
-   "key": "frog_pump",
-   "name": "Frog Pump",
-   "nameJa": "フロッグポンプ",
-   "muscle": "GLUTES",
-   "requires": [
-    "MAT"
-   ],
-   "measure": "REPS",
-   "pattern": "HINGE",
-   "staple": false
-  },
-  {
-   "key": "glute_bridge",
-   "name": "Glute Bridge",
-   "nameJa": "ヒップリフト",
-   "muscle": "GLUTES",
-   "requires": [
-    "NONE"
-   ],
-   "measure": "REPS",
-   "pattern": "HINGE",
+   "key": "face_pull",
+   "name": "Face Pull",
+   "nameJa": "フェイスプル",
+   "muscle": "SHOULDERS",
+   "equipment": "MACHINE",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "HORIZONTAL_PULL",
    "staple": true
   },
   {
+   "key": "farmers_walk",
+   "name": "Farmers Walk",
+   "nameJa": "ファーマーズウォーク",
+   "muscle": "FULL_BODY",
+   "equipment": "OTHER",
+   "measure": "DURATION",
+   "pattern": "CARRY",
+   "staple": false
+  },
+  {
+   "key": "floors_stair_machine",
+   "name": "Stair Machine (Floors)",
+   "nameJa": "Stair Machine (Floors)",
+   "muscle": "CARDIO",
+   "equipment": "MACHINE",
+   "measure": "DURATION",
+   "pattern": "CONDITIONING",
+   "staple": false
+  },
+  {
+   "key": "front_squat",
+   "name": "Front Squat",
+   "nameJa": "フロントスクワット",
+   "muscle": "QUADRICEPS",
+   "equipment": "BARBELL",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "SQUAT",
+   "staple": true
+  },
+  {
+   "key": "full_squat",
+   "name": "Full Squat",
+   "nameJa": "Full Squat",
+   "muscle": "QUADRICEPS",
+   "equipment": "BARBELL",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "SQUAT",
+   "staple": false
+  },
+  {
+   "key": "gironda_sternum_pull_up",
+   "name": "Sternum Pull up (Gironda)",
+   "nameJa": "Sternum Pull up (Gironda)",
+   "muscle": "LATS",
+   "equipment": "MACHINE",
+   "measure": "REPS",
+   "pattern": "VERTICAL_PULL",
+   "staple": false
+  },
+  {
+   "key": "glute_ham_raise",
+   "name": "Glute Ham Raise",
+   "nameJa": "Glute Ham Raise",
+   "muscle": "HAMSTRINGS",
+   "equipment": "MACHINE",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "HINGE",
+   "staple": false
+  },
+  {
    "key": "goblet_squat",
-   "name": "Goblet Squat (Dumbbell)",
+   "name": "Goblet Squat",
    "nameJa": "ゴブレットスクワット",
    "muscle": "QUADRICEPS",
-   "requires": [
-    "DUMBBELLS"
-   ],
+   "equipment": "DUMBBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "SQUAT",
    "staple": true
@@ -1977,10 +1526,7 @@
    "name": "Good Morning (Barbell)",
    "nameJa": "グッドモーニング",
    "muscle": "HAMSTRINGS",
-   "requires": [
-    "BARBELL",
-    "SQUAT_RACK"
-   ],
+   "equipment": "BARBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "HINGE",
    "staple": false
@@ -1990,58 +1536,38 @@
    "name": "Hack Squat (Machine)",
    "nameJa": "ハックスクワット",
    "muscle": "QUADRICEPS",
-   "requires": [
-    "MACHINES"
-   ],
+   "equipment": "MACHINE",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "SQUAT",
    "staple": false
   },
   {
-   "key": "hamstring_stretch",
-   "name": "Standing Hamstring Stretch",
-   "nameJa": "ハムストリングストレッチ",
-   "muscle": "OTHER",
-   "requires": [
-    "NONE"
-   ],
-   "measure": "DURATION",
-   "pattern": "MOBILITY",
+   "key": "hack_squat_v2",
+   "name": "Hack Squat",
+   "nameJa": "ハックスクワット",
+   "muscle": "QUADRICEPS",
+   "equipment": "BARBELL",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "SQUAT",
    "staple": false
   },
   {
-   "key": "hanging_leg_raise",
-   "name": "Hanging Leg Raise",
-   "nameJa": "ハンギングレッグレイズ",
-   "muscle": "ABDOMINALS",
-   "requires": [
-    "PULL_UP_BAR"
-   ],
-   "measure": "REPS",
-   "pattern": "CORE",
-   "staple": false
-  },
-  {
-   "key": "high_intensity_intervals",
-   "name": "High Intensity Intervals",
-   "nameJa": "HIIT",
-   "muscle": "CARDIO",
-   "requires": [
-    "NONE"
-   ],
-   "measure": "DURATION",
+   "key": "hang_clean",
+   "name": "Hang Clean",
+   "nameJa": "ハングクリーン",
+   "muscle": "FULL_BODY",
+   "equipment": "BARBELL",
+   "measure": "WEIGHT_AND_REPS",
    "pattern": "CONDITIONING",
-   "staple": true
+   "staple": false
   },
   {
-   "key": "high_knees",
-   "name": "High Knees",
-   "nameJa": "もも上げ",
-   "muscle": "CARDIO",
-   "requires": [
-    "NONE"
-   ],
-   "measure": "DURATION",
+   "key": "hang_snatch",
+   "name": "Hang Snatch",
+   "nameJa": "Hang Snatch",
+   "muscle": "FULL_BODY",
+   "equipment": "BARBELL",
+   "measure": "WEIGHT_AND_REPS",
    "pattern": "CONDITIONING",
    "staple": false
   },
@@ -2050,47 +1576,19 @@
    "name": "Hip Abduction (Machine)",
    "nameJa": "アブダクションマシン",
    "muscle": "ABDUCTORS",
-   "requires": [
-    "MACHINES"
-   ],
+   "equipment": "MACHINE",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "ISOLATION",
    "staple": false
   },
   {
-   "key": "hip_adduction_machine",
-   "name": "Hip Adduction (Machine)",
-   "nameJa": "アダクションマシン",
-   "muscle": "ADDUCTORS",
-   "requires": [
-    "MACHINES"
-   ],
+   "key": "hyperextension_back_extension",
+   "name": "Back Extension (Hyperextension)",
+   "nameJa": "バックエクステンションバックエクステンション",
+   "muscle": "LOWER_BACK",
+   "equipment": "MACHINE",
    "measure": "WEIGHT_AND_REPS",
-   "pattern": "ISOLATION",
-   "staple": false
-  },
-  {
-   "key": "hollow_body_hold",
-   "name": "Hollow Body Hold",
-   "nameJa": "ホロウボディホールド",
-   "muscle": "ABDOMINALS",
-   "requires": [
-    "MAT"
-   ],
-   "measure": "DURATION",
-   "pattern": "CORE",
-   "staple": false
-  },
-  {
-   "key": "inchworm",
-   "name": "Inchworm",
-   "nameJa": "インチワーム",
-   "muscle": "OTHER",
-   "requires": [
-    "NONE"
-   ],
-   "measure": "REPS",
-   "pattern": "MOBILITY",
+   "pattern": "HINGE",
    "staple": false
   },
   {
@@ -2098,23 +1596,17 @@
    "name": "Incline Bench Press (Barbell)",
    "nameJa": "インクラインベンチプレス",
    "muscle": "CHEST",
-   "requires": [
-    "BARBELL",
-    "BENCH"
-   ],
+   "equipment": "BARBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "HORIZONTAL_PUSH",
-   "staple": false
+   "staple": true
   },
   {
    "key": "incline_dumbbell_bench_press",
    "name": "Incline Bench Press (Dumbbell)",
    "nameJa": "インクラインダンベルプレス",
    "muscle": "CHEST",
-   "requires": [
-    "BENCH",
-    "DUMBBELLS"
-   ],
+   "equipment": "DUMBBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "HORIZONTAL_PUSH",
    "staple": true
@@ -2124,73 +1616,8 @@
    "name": "Incline Chest Fly (Dumbbell)",
    "nameJa": "インクラインダンベルフライ",
    "muscle": "CHEST",
-   "requires": [
-    "BENCH",
-    "DUMBBELLS"
-   ],
+   "equipment": "DUMBBELL",
    "measure": "WEIGHT_AND_REPS",
-   "pattern": "ISOLATION",
-   "staple": false
-  },
-  {
-   "key": "incline_dumbbell_rear_delt_fly",
-   "name": "Chest-Supported Rear Delt Fly (Dumbbell)",
-   "nameJa": "インクラインリアレイズ",
-   "muscle": "SHOULDERS",
-   "requires": [
-    "BENCH",
-    "DUMBBELLS"
-   ],
-   "measure": "WEIGHT_AND_REPS",
-   "pattern": "ISOLATION",
-   "staple": false
-  },
-  {
-   "key": "incline_push_up",
-   "name": "Incline Push-Up (Hands Elevated)",
-   "nameJa": "インクラインプッシュアップ",
-   "muscle": "CHEST",
-   "requires": [
-    "BENCH"
-   ],
-   "measure": "REPS",
-   "pattern": "HORIZONTAL_PUSH",
-   "staple": false
-  },
-  {
-   "key": "incline_treadmill_walk",
-   "name": "Incline Treadmill Walk",
-   "nameJa": "インクラインウォーキング",
-   "muscle": "CARDIO",
-   "requires": [
-    "CARDIO_MACHINES"
-   ],
-   "measure": "DURATION",
-   "pattern": "CONDITIONING",
-   "staple": false
-  },
-  {
-   "key": "inverted_row",
-   "name": "Inverted Row (Bar in Rack)",
-   "nameJa": "インバーテッドロウ（斜め懸垂）",
-   "muscle": "UPPER_BACK",
-   "requires": [
-    "BARBELL",
-    "SQUAT_RACK"
-   ],
-   "measure": "REPS",
-   "pattern": "HORIZONTAL_PULL",
-   "staple": false
-  },
-  {
-   "key": "isometric_biceps_hold",
-   "name": "Isometric Biceps Hold",
-   "nameJa": "アイソメトリックカール",
-   "muscle": "BICEPS",
-   "requires": [
-    "NONE"
-   ],
-   "measure": "DURATION",
    "pattern": "ISOLATION",
    "staple": false
   },
@@ -2199,322 +1626,197 @@
    "name": "Jump Rope",
    "nameJa": "縄跳び",
    "muscle": "CARDIO",
-   "requires": [
-    "JUMP_ROPE"
-   ],
+   "equipment": "OTHER",
    "measure": "DURATION",
    "pattern": "CONDITIONING",
    "staple": false
   },
   {
-   "key": "jump_squat",
-   "name": "Jump Squat",
-   "nameJa": "ジャンプスクワット",
-   "muscle": "QUADRICEPS",
-   "requires": [
-    "NONE"
-   ],
-   "measure": "REPS",
-   "pattern": "SQUAT",
-   "staple": false
-  },
-  {
-   "key": "jumping_jack",
-   "name": "Jumping Jack",
-   "nameJa": "ジャンピングジャック",
-   "muscle": "CARDIO",
-   "requires": [
-    "NONE"
-   ],
-   "measure": "DURATION",
-   "pattern": "CONDITIONING",
-   "staple": false
-  },
-  {
-   "key": "jumping_lunge",
-   "name": "Jumping Lunge",
-   "nameJa": "ジャンピングランジ",
-   "muscle": "QUADRICEPS",
-   "requires": [
-    "NONE"
-   ],
-   "measure": "REPS",
-   "pattern": "LUNGE",
-   "staple": false
-  },
-  {
-   "key": "kettlebell_bench_press",
-   "name": "Bench Press (Kettlebell, Single-Arm)",
-   "nameJa": "ケトルベルベンチプレス",
-   "muscle": "CHEST",
-   "requires": [
-    "BENCH",
-    "KETTLEBELLS"
-   ],
+   "key": "jump_shrug",
+   "name": "Jump Shrug",
+   "nameJa": "Jump Shrug",
+   "muscle": "FULL_BODY",
+   "equipment": "BARBELL",
    "measure": "WEIGHT_AND_REPS",
-   "pattern": "HORIZONTAL_PUSH",
+   "pattern": "CONDITIONING",
    "staple": false
   },
   {
-   "key": "kettlebell_biceps_curl",
-   "name": "Biceps Curl (Kettlebell)",
-   "nameJa": "ケトルベルカール",
-   "muscle": "BICEPS",
-   "requires": [
-    "KETTLEBELLS"
-   ],
+   "key": "kettlebell_around_the_world",
+   "name": "Kettlebell Around the World",
+   "nameJa": "Kettlebell Around the World",
+   "muscle": "SHOULDERS",
+   "equipment": "KETTLEBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "ISOLATION",
    "staple": false
   },
   {
-   "key": "kettlebell_bottoms_up_carry",
-   "name": "Bottoms-Up Carry (Kettlebell)",
-   "nameJa": "ボトムズアップキャリー",
-   "muscle": "FOREARMS",
-   "requires": [
-    "KETTLEBELLS"
-   ],
-   "measure": "DURATION",
-   "pattern": "CARRY",
-   "staple": false
-  },
-  {
-   "key": "kettlebell_deadlift",
-   "name": "Deadlift (Kettlebell)",
-   "nameJa": "ケトルベルデッドリフト",
-   "muscle": "GLUTES",
-   "requires": [
-    "KETTLEBELLS"
-   ],
+   "key": "kettlebell_clean",
+   "name": "Kettlebell Clean",
+   "nameJa": "ケトルベルクリーン",
+   "muscle": "FULL_BODY",
+   "equipment": "KETTLEBELL",
    "measure": "WEIGHT_AND_REPS",
-   "pattern": "HINGE",
+   "pattern": "CONDITIONING",
    "staple": false
   },
   {
-   "key": "kettlebell_floor_press",
-   "name": "Floor Press (Kettlebell)",
-   "nameJa": "ケトルベルフロアプレス",
-   "muscle": "CHEST",
-   "requires": [
-    "KETTLEBELLS"
-   ],
+   "key": "kettlebell_curl",
+   "name": "Kettlebell Curl",
+   "nameJa": "ケトルベルカール",
+   "muscle": "BICEPS",
+   "equipment": "KETTLEBELL",
    "measure": "WEIGHT_AND_REPS",
-   "pattern": "HORIZONTAL_PUSH",
+   "pattern": "ISOLATION",
    "staple": false
   },
   {
-   "key": "kettlebell_front_rack_lunge",
-   "name": "Front Rack Lunge (Kettlebell)",
-   "nameJa": "ケトルベルフロントラックランジ",
+   "key": "kettlebell_goblet_squat",
+   "name": "Kettlebell Goblet Squat",
+   "nameJa": "ケトルベルゴブレットスクワット",
    "muscle": "QUADRICEPS",
-   "requires": [
-    "KETTLEBELLS"
-   ],
-   "measure": "WEIGHT_AND_REPS",
-   "pattern": "LUNGE",
-   "staple": false
-  },
-  {
-   "key": "kettlebell_front_squat",
-   "name": "Front Squat (Double Kettlebell)",
-   "nameJa": "ケトルベルフロントスクワット",
-   "muscle": "QUADRICEPS",
-   "requires": [
-    "KETTLEBELLS"
-   ],
+   "equipment": "KETTLEBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "SQUAT",
-   "staple": false
+   "staple": true
   },
   {
    "key": "kettlebell_gorilla_row",
    "name": "Gorilla Row (Kettlebell)",
    "nameJa": "ゴリラロウ",
    "muscle": "UPPER_BACK",
-   "requires": [
-    "KETTLEBELLS"
-   ],
+   "equipment": "KETTLEBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "HORIZONTAL_PULL",
    "staple": false
   },
   {
    "key": "kettlebell_halo",
-   "name": "Halo (Kettlebell)",
+   "name": "Kettlebell Halo",
    "nameJa": "ケトルベルハロー",
-   "muscle": "OTHER",
-   "requires": [
-    "KETTLEBELLS"
-   ],
-   "measure": "WEIGHT_AND_REPS",
-   "pattern": "MOBILITY",
-   "staple": false
-  },
-  {
-   "key": "kettlebell_high_pull",
-   "name": "High Pull (Kettlebell, Ballistic)",
-   "nameJa": "ケトルベルハイプル",
-   "muscle": "TRAPS",
-   "requires": [
-    "KETTLEBELLS"
-   ],
-   "measure": "WEIGHT_AND_REPS",
-   "pattern": "VERTICAL_PULL",
-   "staple": false
-  },
-  {
-   "key": "kettlebell_overhead_carry",
-   "name": "Overhead Carry (Kettlebell)",
-   "nameJa": "ケトルベルオーバーヘッドキャリー",
    "muscle": "SHOULDERS",
-   "requires": [
-    "KETTLEBELLS"
-   ],
-   "measure": "DURATION",
-   "pattern": "CARRY",
-   "staple": false
-  },
-  {
-   "key": "kettlebell_overhead_press",
-   "name": "Overhead Press (Kettlebell)",
-   "nameJa": "ケトルベルショルダープレス",
-   "muscle": "SHOULDERS",
-   "requires": [
-    "KETTLEBELLS"
-   ],
-   "measure": "WEIGHT_AND_REPS",
-   "pattern": "VERTICAL_PUSH",
-   "staple": false
-  },
-  {
-   "key": "kettlebell_overhead_triceps_extension",
-   "name": "Overhead Triceps Extension (Kettlebell)",
-   "nameJa": "ケトルベルフレンチプレス",
-   "muscle": "TRICEPS",
-   "requires": [
-    "KETTLEBELLS"
-   ],
+   "equipment": "KETTLEBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "ISOLATION",
    "staple": false
   },
   {
-   "key": "kettlebell_push_press",
-   "name": "Push Press (Kettlebell)",
-   "nameJa": "ケトルベルプッシュプレス",
+   "key": "kettlebell_high_pull_v2",
+   "name": "Kettlebell High Pull",
+   "nameJa": "Kettlebell High Pull",
+   "muscle": "FULL_BODY",
+   "equipment": "KETTLEBELL",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "CONDITIONING",
+   "staple": false
+  },
+  {
+   "key": "kettlebell_shoulder_press",
+   "name": "Kettlebell Shoulder Press",
+   "nameJa": "ケトルベルショルダープレス",
    "muscle": "SHOULDERS",
-   "requires": [
-    "KETTLEBELLS"
-   ],
+   "equipment": "KETTLEBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "VERTICAL_PUSH",
    "staple": false
   },
   {
-   "key": "kettlebell_single_arm_row",
-   "name": "Single-Arm Row (Kettlebell)",
-   "nameJa": "ケトルベルワンハンドロウ",
-   "muscle": "LATS",
-   "requires": [
-    "KETTLEBELLS"
-   ],
+   "key": "kettlebell_snatch",
+   "name": "Kettlebell Snatch",
+   "nameJa": "ケトルベルスナッチ",
+   "muscle": "FULL_BODY",
+   "equipment": "KETTLEBELL",
    "measure": "WEIGHT_AND_REPS",
-   "pattern": "HORIZONTAL_PULL",
+   "pattern": "CONDITIONING",
+   "staple": false
+  },
+  {
+   "key": "kettlebell_sumo_squat",
+   "name": "Sumo Squat (Kettlebell)",
+   "nameJa": "スモウスクワットケトルベル",
+   "muscle": "QUADRICEPS",
+   "equipment": "KETTLEBELL",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "SQUAT",
    "staple": false
   },
   {
    "key": "kettlebell_swing",
    "name": "Kettlebell Swing",
    "nameJa": "ケトルベルスイング",
-   "muscle": "GLUTES",
-   "requires": [
-    "KETTLEBELLS"
-   ],
+   "muscle": "FULL_BODY",
+   "equipment": "KETTLEBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "HINGE",
    "staple": true
   },
   {
+   "key": "kettlebell_thruster",
+   "name": "Thruster (Kettlebell)",
+   "nameJa": "スラスターケトルベル",
+   "muscle": "FULL_BODY",
+   "equipment": "KETTLEBELL",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "CONDITIONING",
+   "staple": false
+  },
+  {
    "key": "kettlebell_turkish_get_up",
-   "name": "Turkish Get-Up (Kettlebell)",
+   "name": "Kettlebell Turkish Get Up",
    "nameJa": "ターキッシュゲットアップ",
    "muscle": "FULL_BODY",
-   "requires": [
-    "KETTLEBELLS"
-   ],
+   "equipment": "KETTLEBELL",
    "measure": "WEIGHT_AND_REPS",
-   "pattern": "CORE",
+   "pattern": "CONDITIONING",
    "staple": false
   },
   {
-   "key": "kettlebell_windmill",
-   "name": "Windmill (Kettlebell)",
-   "nameJa": "ケトルベルウィンドミル",
+   "key": "landmine_180",
+   "name": "Landmine 180",
+   "nameJa": "Landmine 180",
    "muscle": "ABDOMINALS",
-   "requires": [
-    "KETTLEBELLS"
-   ],
+   "equipment": "BARBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "CORE",
    "staple": false
   },
   {
-   "key": "knee_push_up",
-   "name": "Knee Push-Up",
-   "nameJa": "膝つきプッシュアップ",
-   "muscle": "CHEST",
-   "requires": [
-    "NONE"
-   ],
-   "measure": "REPS",
-   "pattern": "HORIZONTAL_PUSH",
-   "staple": false
-  },
-  {
-   "key": "kneeling_hip_flexor_stretch",
-   "name": "Kneeling Hip Flexor Stretch",
-   "nameJa": "腸腰筋ストレッチ",
-   "muscle": "OTHER",
-   "requires": [
-    "MAT"
-   ],
-   "measure": "DURATION",
-   "pattern": "MOBILITY",
-   "staple": false
-  },
-  {
-   "key": "lat_pulldown",
-   "name": "Lat Pulldown (Cable)",
-   "nameJa": "ラットプルダウン",
-   "muscle": "LATS",
-   "requires": [
-    "CABLE_MACHINE"
-   ],
+   "key": "landmine_row",
+   "name": "Landmine Row",
+   "nameJa": "Landmine Row",
+   "muscle": "UPPER_BACK",
+   "equipment": "BARBELL",
    "measure": "WEIGHT_AND_REPS",
-   "pattern": "VERTICAL_PULL",
-   "staple": true
+   "pattern": "HORIZONTAL_PULL",
+   "staple": false
   },
   {
-   "key": "lateral_lunge",
-   "name": "Lateral Lunge",
-   "nameJa": "サイドランジ",
-   "muscle": "ADDUCTORS",
-   "requires": [
-    "NONE"
-   ],
+   "key": "landmine_squat_and_press",
+   "name": "Landmine Squat and Press",
+   "nameJa": "Landmine Squat and Press",
+   "muscle": "FULL_BODY",
+   "equipment": "BARBELL",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "SQUAT",
+   "staple": false
+  },
+  {
+   "key": "lateral_box_jump",
+   "name": "Lateral Box Jump",
+   "nameJa": "Lateral Box Jump",
+   "muscle": "QUADRICEPS",
+   "equipment": "OTHER",
    "measure": "REPS",
-   "pattern": "LUNGE",
-   "staple": true
+   "pattern": "CONDITIONING",
+   "staple": false
   },
   {
    "key": "leg_extension",
    "name": "Leg Extension (Machine)",
    "nameJa": "レッグエクステンション",
    "muscle": "QUADRICEPS",
-   "requires": [
-    "MACHINES"
-   ],
+   "equipment": "MACHINE",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "ISOLATION",
    "staple": true
@@ -2524,45 +1826,27 @@
    "name": "Leg Press (Machine)",
    "nameJa": "レッグプレス",
    "muscle": "QUADRICEPS",
-   "requires": [
-    "MACHINES"
-   ],
+   "equipment": "MACHINE",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "SQUAT",
    "staple": true
   },
   {
-   "key": "leg_raise",
-   "name": "Lying Leg Raise",
-   "nameJa": "レッグレイズ",
+   "key": "leg_raise_parallel_bars",
+   "name": "Leg Raise Parallel Bars",
+   "nameJa": "Leg Raise Parallel Bars",
    "muscle": "ABDOMINALS",
-   "requires": [
-    "MAT"
-   ],
+   "equipment": "MACHINE",
    "measure": "REPS",
    "pattern": "CORE",
-   "staple": true
-  },
-  {
-   "key": "leg_swing",
-   "name": "Leg Swing",
-   "nameJa": "レッグスイング",
-   "muscle": "OTHER",
-   "requires": [
-    "NONE"
-   ],
-   "measure": "REPS",
-   "pattern": "MOBILITY",
    "staple": false
   },
   {
-   "key": "low_cable_fly",
-   "name": "Low-to-High Cable Fly",
-   "nameJa": "ローケーブルフライ",
+   "key": "low_cable_fly_crossovers",
+   "name": "Low Cable Fly Crossovers",
+   "nameJa": "Low Cable Fly Crossovers",
    "muscle": "CHEST",
-   "requires": [
-    "CABLE_MACHINE"
-   ],
+   "equipment": "MACHINE",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "ISOLATION",
    "staple": false
@@ -2572,45 +1856,37 @@
    "name": "Lying Leg Curl (Machine)",
    "nameJa": "ライイングレッグカール",
    "muscle": "HAMSTRINGS",
-   "requires": [
-    "MACHINES"
-   ],
+   "equipment": "MACHINE",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "ISOLATION",
    "staple": true
   },
   {
-   "key": "machine_ab_crunch",
-   "name": "Abdominal Crunch (Machine)",
-   "nameJa": "アブドミナルクランチ",
-   "muscle": "ABDOMINALS",
-   "requires": [
-    "MACHINES"
-   ],
+   "key": "machine_back_extension",
+   "name": "Back Extension (Machine)",
+   "nameJa": "バックエクステンションマシン",
+   "muscle": "LOWER_BACK",
+   "equipment": "MACHINE",
    "measure": "WEIGHT_AND_REPS",
-   "pattern": "CORE",
+   "pattern": "HINGE",
    "staple": false
   },
   {
-   "key": "machine_assisted_pull_up",
-   "name": "Assisted Pull-Up (Machine)",
-   "nameJa": "アシストチンニング（マシン）",
-   "muscle": "LATS",
-   "requires": [
-    "MACHINES"
-   ],
+   "key": "machine_belt_squat",
+   "name": "Belt Squat (Machine)",
+   "nameJa": "Belt Squat (Machine)",
+   "muscle": "QUADRICEPS",
+   "equipment": "MACHINE",
    "measure": "WEIGHT_AND_REPS",
-   "pattern": "VERTICAL_PULL",
+   "pattern": "SQUAT",
    "staple": false
   },
   {
-   "key": "machine_biceps_curl",
-   "name": "Biceps Curl (Machine)",
-   "nameJa": "マシンアームカール",
+   "key": "machine_bicep_curl",
+   "name": "Bicep Curl (Machine)",
+   "nameJa": "バイセップカールマシン",
    "muscle": "BICEPS",
-   "requires": [
-    "MACHINES"
-   ],
+   "equipment": "MACHINE",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "ISOLATION",
    "staple": false
@@ -2620,131 +1896,199 @@
    "name": "Standing Calf Raise (Machine)",
    "nameJa": "スタンディングカーフレイズ",
    "muscle": "CALVES",
-   "requires": [
-    "MACHINES"
-   ],
+   "equipment": "MACHINE",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "ISOLATION",
-   "staple": false
-  },
-  {
-   "key": "machine_chest_press",
-   "name": "Chest Press (Machine)",
-   "nameJa": "チェストプレス（マシン）",
-   "muscle": "CHEST",
-   "requires": [
-    "MACHINES"
-   ],
-   "measure": "WEIGHT_AND_REPS",
-   "pattern": "HORIZONTAL_PUSH",
    "staple": true
   },
   {
-   "key": "machine_lateral_raise",
-   "name": "Lateral Raise (Machine)",
-   "nameJa": "マシンサイドレイズ",
-   "muscle": "SHOULDERS",
-   "requires": [
-    "MACHINES"
-   ],
+   "key": "machine_crunch",
+   "name": "Crunch (Machine)",
+   "nameJa": "マシンクランチ",
+   "muscle": "ABDOMINALS",
+   "equipment": "MACHINE",
    "measure": "WEIGHT_AND_REPS",
-   "pattern": "ISOLATION",
+   "pattern": "CORE",
    "staple": false
   },
   {
-   "key": "machine_shoulder_press",
-   "name": "Shoulder Press (Machine)",
-   "nameJa": "マシンショルダープレス",
+   "key": "machine_decline_bench_press",
+   "name": "Decline Bench Press (Machine)",
+   "nameJa": "デクラインベンチプレスマシン",
+   "muscle": "CHEST",
+   "equipment": "MACHINE",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "HORIZONTAL_PUSH",
+   "staple": false
+  },
+  {
+   "key": "machine_glute_kickback",
+   "name": "Glute Kickback (Machine)",
+   "nameJa": "Glute Kickback (Machine)",
+   "muscle": "GLUTES",
+   "equipment": "MACHINE",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "HINGE",
+   "staple": false
+  },
+  {
+   "key": "machine_leg_press_horizontal",
+   "name": "Leg Press Horizontal (Machine)",
+   "nameJa": "Leg Press Horizontal (Machine)",
+   "muscle": "QUADRICEPS",
+   "equipment": "MACHINE",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "SQUAT",
+   "staple": false
+  },
+  {
+   "key": "machine_pendulum_squat",
+   "name": "Pendulum Squat (Machine)",
+   "nameJa": "Pendulum Squat (Machine)",
+   "muscle": "QUADRICEPS",
+   "equipment": "MACHINE",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "SQUAT",
+   "staple": false
+  },
+  {
+   "key": "machine_plates_shoulder_press",
+   "name": "Shoulder Press (Machine Plates)",
+   "nameJa": "ショルダープレスマシンプレートs",
    "muscle": "SHOULDERS",
-   "requires": [
-    "MACHINES"
-   ],
+   "equipment": "MACHINE",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "VERTICAL_PUSH",
    "staple": false
   },
   {
-   "key": "machine_triceps_extension",
-   "name": "Triceps Extension (Machine)",
-   "nameJa": "トライセプスエクステンション（マシン）",
-   "muscle": "TRICEPS",
-   "requires": [
-    "MACHINES"
-   ],
+   "key": "machine_preacher_curl",
+   "name": "Preacher Curl (Machine)",
+   "nameJa": "プリーチャーカールマシン",
+   "muscle": "BICEPS",
+   "equipment": "MACHINE",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "ISOLATION",
    "staple": false
   },
   {
-   "key": "mountain_climber",
-   "name": "Mountain Climber",
-   "nameJa": "マウンテンクライマー",
-   "muscle": "ABDOMINALS",
-   "requires": [
-    "NONE"
-   ],
-   "measure": "DURATION",
-   "pattern": "CORE",
-   "staple": false
-  },
-  {
-   "key": "neck_extension_isometric",
-   "name": "Isometric Neck Extension",
-   "nameJa": "アイソメトリックネックエクステンション",
-   "muscle": "NECK",
-   "requires": [
-    "NONE"
-   ],
-   "measure": "DURATION",
-   "pattern": "ISOLATION",
-   "staple": false
-  },
-  {
-   "key": "neck_flexion_isometric",
-   "name": "Isometric Neck Flexion",
-   "nameJa": "アイソメトリックネックフレクション",
-   "muscle": "NECK",
-   "requires": [
-    "NONE"
-   ],
-   "measure": "DURATION",
-   "pattern": "ISOLATION",
-   "staple": false
-  },
-  {
-   "key": "neck_lateral_flexion_isometric",
-   "name": "Isometric Neck Side Flexion",
-   "nameJa": "アイソメトリックネックサイドフレクション",
-   "muscle": "NECK",
-   "requires": [
-    "NONE"
-   ],
-   "measure": "DURATION",
-   "pattern": "ISOLATION",
-   "staple": false
-  },
-  {
-   "key": "neck_rotation_stretch",
-   "name": "Neck Rotation Stretch",
-   "nameJa": "ネックストレッチ（回旋）",
-   "muscle": "OTHER",
-   "requires": [
-    "NONE"
-   ],
-   "measure": "DURATION",
-   "pattern": "MOBILITY",
-   "staple": false
-  },
-  {
-   "key": "negative_pull_up",
-   "name": "Negative Pull-Up",
-   "nameJa": "ネガティブプルアップ",
+   "key": "machine_pullover",
+   "name": "Pullover (Machine)",
+   "nameJa": "プルオーバーマシン",
    "muscle": "LATS",
-   "requires": [
-    "PULL_UP_BAR"
-   ],
+   "equipment": "MACHINE",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "ISOLATION",
+   "staple": false
+  },
+  {
+   "key": "machine_rear_delt_reverse_fly",
+   "name": "Rear Delt Reverse Fly (Machine)",
+   "nameJa": "リアデルトフライマシン",
+   "muscle": "SHOULDERS",
+   "equipment": "MACHINE",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "ISOLATION",
+   "staple": false
+  },
+  {
+   "key": "machine_rear_kick",
+   "name": "Rear Kick (Machine)",
+   "nameJa": "Rear Kick (Machine)",
+   "muscle": "GLUTES",
+   "equipment": "MACHINE",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "HINGE",
+   "staple": false
+  },
+  {
+   "key": "machine_seated_row",
+   "name": "Seated Row (Machine)",
+   "nameJa": "シーテッドロウマシン",
+   "muscle": "UPPER_BACK",
+   "equipment": "MACHINE",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "HORIZONTAL_PULL",
+   "staple": true
+  },
+  {
+   "key": "machine_seated_shoulder_press",
+   "name": "Seated Shoulder Press (Machine)",
+   "nameJa": "シーテッドショルダープレスマシン",
+   "muscle": "SHOULDERS",
+   "equipment": "MACHINE",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "VERTICAL_PUSH",
+   "staple": false
+  },
+  {
+   "key": "machine_shrug",
+   "name": "Shrug (Machine)",
+   "nameJa": "シュラッグマシン",
+   "muscle": "TRAPS",
+   "equipment": "MACHINE",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "ISOLATION",
+   "staple": false
+  },
+  {
+   "key": "machine_single_leg_press",
+   "name": "Single Leg Press (Machine)",
+   "nameJa": "Single Leg Press (Machine)",
+   "muscle": "QUADRICEPS",
+   "equipment": "MACHINE",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "SQUAT",
+   "staple": false
+  },
+  {
+   "key": "machine_single_leg_standing_calf_raise",
+   "name": "Single Leg Standing Calf Raise (Machine)",
+   "nameJa": "シングルレッグスタンディングカーフレイズマシン",
+   "muscle": "CALVES",
+   "equipment": "MACHINE",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "ISOLATION",
+   "staple": false
+  },
+  {
+   "key": "machine_squat",
+   "name": "Squat (Machine)",
+   "nameJa": "スクワットマシン",
+   "muscle": "QUADRICEPS",
+   "equipment": "MACHINE",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "SQUAT",
+   "staple": false
+  },
+  {
+   "key": "muscle_up",
+   "name": "Muscle Up",
+   "nameJa": "Muscle Up",
+   "muscle": "FULL_BODY",
+   "equipment": "MACHINE",
    "measure": "REPS",
-   "pattern": "VERTICAL_PULL",
+   "pattern": "CONDITIONING",
+   "staple": false
+  },
+  {
+   "key": "overhead_dumbbell_lunge",
+   "name": "Overhead Dumbbell Lunge",
+   "nameJa": "オーバーヘッドダンベルランジ",
+   "muscle": "QUADRICEPS",
+   "equipment": "DUMBBELL",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "LUNGE",
+   "staple": false
+  },
+  {
+   "key": "overhead_plate_raise",
+   "name": "Overhead Plate Raise",
+   "nameJa": "Overhead Plate Raise",
+   "muscle": "SHOULDERS",
+   "equipment": "PLATE",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "ISOLATION",
    "staple": false
   },
   {
@@ -2752,21 +2096,27 @@
    "name": "Overhead Press (Barbell)",
    "nameJa": "バーベルショルダープレス",
    "muscle": "SHOULDERS",
-   "requires": [
-    "BARBELL"
-   ],
+   "equipment": "BARBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "VERTICAL_PUSH",
    "staple": true
   },
   {
-   "key": "pec_deck_fly",
-   "name": "Pec Deck Fly (Machine)",
-   "nameJa": "ペックデックフライ",
+   "key": "overhead_squat",
+   "name": "Overhead Squat",
+   "nameJa": "オーバーヘッドスクワット",
+   "muscle": "FULL_BODY",
+   "equipment": "BARBELL",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "SQUAT",
+   "staple": false
+  },
+  {
+   "key": "pec_deck_butterfly",
+   "name": "Butterfly (Pec Deck)",
+   "nameJa": "Butterfly (Pec Deck)",
    "muscle": "CHEST",
-   "requires": [
-    "MACHINES"
-   ],
+   "equipment": "MACHINE",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "ISOLATION",
    "staple": false
@@ -2776,362 +2126,219 @@
    "name": "Pendlay Row (Barbell)",
    "nameJa": "ペンドレイロウ",
    "muscle": "UPPER_BACK",
-   "requires": [
-    "BARBELL"
-   ],
+   "equipment": "BARBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "HORIZONTAL_PULL",
    "staple": false
   },
   {
-   "key": "pigeon_pose",
-   "name": "Pigeon Pose",
-   "nameJa": "鳩のポーズ",
-   "muscle": "OTHER",
-   "requires": [
-    "MAT"
-   ],
-   "measure": "DURATION",
-   "pattern": "MOBILITY",
+   "key": "plate_curl",
+   "name": "Plate Curl",
+   "nameJa": "プレートカール",
+   "muscle": "BICEPS",
+   "equipment": "PLATE",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "ISOLATION",
    "staple": false
   },
   {
-   "key": "pike_push_up",
-   "name": "Pike Push-Up",
-   "nameJa": "パイクプッシュアップ",
+   "key": "plate_front_raise",
+   "name": "Plate Front Raise",
+   "nameJa": "プレートフロントレイズ",
    "muscle": "SHOULDERS",
-   "requires": [
-    "NONE"
-   ],
-   "measure": "REPS",
-   "pattern": "VERTICAL_PUSH",
-   "staple": true
-  },
-  {
-   "key": "pistol_squat",
-   "name": "Pistol Squat",
-   "nameJa": "ピストルスクワット",
-   "muscle": "QUADRICEPS",
-   "requires": [
-    "NONE"
-   ],
-   "measure": "REPS",
-   "pattern": "SQUAT",
+   "equipment": "PLATE",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "ISOLATION",
    "staple": false
   },
   {
-   "key": "plank",
-   "name": "Plank",
-   "nameJa": "プランク",
-   "muscle": "ABDOMINALS",
-   "requires": [
-    "NONE"
-   ],
-   "measure": "DURATION",
-   "pattern": "CORE",
-   "staple": true
-  },
-  {
-   "key": "plate_pinch_hold",
-   "name": "Plate Pinch Hold",
-   "nameJa": "プレートピンチ",
-   "muscle": "FOREARMS",
-   "requires": [
-    "BARBELL"
-   ],
-   "measure": "DURATION",
-   "pattern": "CARRY",
+   "key": "plate_press",
+   "name": "Plate Press",
+   "nameJa": "Plate Press",
+   "muscle": "CHEST",
+   "equipment": "PLATE",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "HORIZONTAL_PUSH",
    "staple": false
   },
   {
-   "key": "pogo_hop",
-   "name": "Pogo Hop",
-   "nameJa": "ポゴジャンプ",
-   "muscle": "CALVES",
-   "requires": [
-    "NONE"
-   ],
-   "measure": "REPS",
+   "key": "power_clean",
+   "name": "Power Clean",
+   "nameJa": "パワークリーン",
+   "muscle": "FULL_BODY",
+   "equipment": "BARBELL",
+   "measure": "WEIGHT_AND_REPS",
    "pattern": "CONDITIONING",
    "staple": false
   },
   {
-   "key": "prone_lat_pull_in",
-   "name": "Prone Lat Pull-In (Floor)",
-   "nameJa": "プローンラットプル",
-   "muscle": "LATS",
-   "requires": [
-    "NONE"
-   ],
-   "measure": "REPS",
-   "pattern": "ISOLATION",
-   "staple": false
-  },
-  {
-   "key": "prone_reverse_snow_angel",
-   "name": "Prone Reverse Snow Angel",
-   "nameJa": "リバーススノーエンジェル",
-   "muscle": "UPPER_BACK",
-   "requires": [
-    "NONE"
-   ],
-   "measure": "REPS",
-   "pattern": "HORIZONTAL_PULL",
-   "staple": false
-  },
-  {
-   "key": "prone_t_raise",
-   "name": "Prone T Raise",
-   "nameJa": "プローンTレイズ",
-   "muscle": "UPPER_BACK",
-   "requires": [
-    "NONE"
-   ],
-   "measure": "REPS",
-   "pattern": "ISOLATION",
-   "staple": false
-  },
-  {
-   "key": "prone_y_raise",
-   "name": "Prone Y Raise",
-   "nameJa": "プローンYレイズ",
-   "muscle": "TRAPS",
-   "requires": [
-    "NONE"
-   ],
-   "measure": "REPS",
-   "pattern": "ISOLATION",
+   "key": "power_snatch",
+   "name": "Power Snatch",
+   "nameJa": "Power Snatch",
+   "muscle": "FULL_BODY",
+   "equipment": "BARBELL",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "CONDITIONING",
    "staple": false
   },
   {
    "key": "pull_up",
-   "name": "Pull-Up",
+   "name": "Pull Up",
    "nameJa": "プルアップ（懸垂）",
    "muscle": "LATS",
-   "requires": [
-    "PULL_UP_BAR"
-   ],
+   "equipment": "MACHINE",
    "measure": "REPS",
    "pattern": "VERTICAL_PULL",
    "staple": true
   },
   {
-   "key": "push_press",
-   "name": "Push Press (Barbell)",
-   "nameJa": "プッシュプレス",
-   "muscle": "SHOULDERS",
-   "requires": [
-    "BARBELL"
-   ],
-   "measure": "WEIGHT_AND_REPS",
-   "pattern": "VERTICAL_PUSH",
-   "staple": false
-  },
-  {
-   "key": "push_up",
-   "name": "Push-Up",
-   "nameJa": "プッシュアップ",
-   "muscle": "CHEST",
-   "requires": [
-    "NONE"
-   ],
-   "measure": "REPS",
-   "pattern": "HORIZONTAL_PUSH",
-   "staple": true
-  },
-  {
-   "key": "push_up_hold",
-   "name": "Push-Up Hold (Bottom Position)",
-   "nameJa": "プッシュアップホールド",
-   "muscle": "CHEST",
-   "requires": [
-    "NONE"
-   ],
+   "key": "recumbent_bike",
+   "name": "Recumbent Bike",
+   "nameJa": "Recumbent Bike",
+   "muscle": "CARDIO",
+   "equipment": "MACHINE",
    "measure": "DURATION",
-   "pattern": "HORIZONTAL_PUSH",
+   "pattern": "CONDITIONING",
    "staple": false
   },
   {
    "key": "renegade_row",
    "name": "Renegade Row (Dumbbell)",
    "nameJa": "レネゲードロウ",
-   "muscle": "LATS",
-   "requires": [
-    "DUMBBELLS"
-   ],
+   "muscle": "UPPER_BACK",
+   "equipment": "DUMBBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "HORIZONTAL_PULL",
    "staple": false
   },
   {
-   "key": "reverse_hyperextension",
-   "name": "Reverse Hyperextension (on Bench)",
-   "nameJa": "リバースハイパーエクステンション",
+   "key": "reverse_grip_concentration_curl",
+   "name": "Reverse Grip Concentration Curl",
+   "nameJa": "リバースグリップコンセントレーションカール",
+   "muscle": "BICEPS",
+   "equipment": "DUMBBELL",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "ISOLATION",
+   "staple": false
+  },
+  {
+   "key": "reverse_grip_triceps_pushdown",
+   "name": "Reverse Grip Triceps Pushdown",
+   "nameJa": "リバースグリップトライセプスプッシュダウン",
+   "muscle": "TRICEPS",
+   "equipment": "MACHINE",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "ISOLATION",
+   "staple": false
+  },
+  {
+   "key": "reverse_hyperextension_v2",
+   "name": "Reverse Hyperextension",
+   "nameJa": "Reverse Hyperextension",
    "muscle": "GLUTES",
-   "requires": [
-    "BENCH"
-   ],
-   "measure": "REPS",
+   "equipment": "MACHINE",
+   "measure": "WEIGHT_AND_REPS",
    "pattern": "HINGE",
    "staple": false
   },
   {
-   "key": "reverse_lunge",
-   "name": "Reverse Lunge (Bodyweight)",
-   "nameJa": "バックランジ",
-   "muscle": "QUADRICEPS",
-   "requires": [
-    "NONE"
-   ],
+   "key": "ring_pull_up",
+   "name": "Ring Pull Up",
+   "nameJa": "Ring Pull Up",
+   "muscle": "LATS",
+   "equipment": "OTHER",
    "measure": "REPS",
-   "pattern": "LUNGE",
+   "pattern": "VERTICAL_PULL",
    "staple": false
   },
   {
-   "key": "reverse_nordic_curl",
-   "name": "Reverse Nordic Curl",
-   "nameJa": "リバースノルディックカール",
-   "muscle": "QUADRICEPS",
-   "requires": [
-    "MAT"
-   ],
+   "key": "ring_push_up",
+   "name": "Ring Push Up",
+   "nameJa": "Ring Push Up",
+   "muscle": "CHEST",
+   "equipment": "OTHER",
    "measure": "REPS",
-   "pattern": "ISOLATION",
+   "pattern": "HORIZONTAL_PUSH",
    "staple": false
   },
   {
-   "key": "reverse_pec_deck",
-   "name": "Reverse Pec Deck",
-   "nameJa": "リアデルトフライ",
-   "muscle": "SHOULDERS",
-   "requires": [
-    "MACHINES"
-   ],
+   "key": "rope_cable_curl",
+   "name": "Rope Cable Curl",
+   "nameJa": "Rope Cable Curl",
+   "muscle": "BICEPS",
+   "equipment": "MACHINE",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "ISOLATION",
    "staple": false
   },
   {
-   "key": "reverse_snow_angel",
-   "name": "Reverse Snow Angel",
-   "nameJa": "リバーススノーエンジェル",
-   "muscle": "TRAPS",
-   "requires": [
-    "NONE"
-   ],
-   "measure": "REPS",
-   "pattern": "ISOLATION",
-   "staple": false
-  },
-  {
-   "key": "romanian_deadlift",
-   "name": "Romanian Deadlift (Barbell)",
-   "nameJa": "ルーマニアンデッドリフト",
-   "muscle": "HAMSTRINGS",
-   "requires": [
-    "BARBELL"
-   ],
+   "key": "rope_straight_arm_pulldown",
+   "name": "Rope Straight Arm Pulldown",
+   "nameJa": "Rope Straight Arm Pulldown",
+   "muscle": "LATS",
+   "equipment": "MACHINE",
    "measure": "WEIGHT_AND_REPS",
-   "pattern": "HINGE",
-   "staple": true
+   "pattern": "VERTICAL_PULL",
+   "staple": false
   },
   {
    "key": "rowing_machine",
    "name": "Rowing Machine",
    "nameJa": "ローイングマシン",
    "muscle": "CARDIO",
-   "requires": [
-    "CARDIO_MACHINES"
-   ],
+   "equipment": "MACHINE",
    "measure": "DURATION",
    "pattern": "CONDITIONING",
-   "staple": false
-  },
-  {
-   "key": "russian_twist",
-   "name": "Russian Twist",
-   "nameJa": "ロシアンツイスト",
-   "muscle": "ABDOMINALS",
-   "requires": [
-    "MAT"
-   ],
-   "measure": "REPS",
-   "pattern": "CORE",
-   "staple": false
-  },
-  {
-   "key": "scapular_pull_up",
-   "name": "Scapular Pull-Up",
-   "nameJa": "スキャプラプルアップ",
-   "muscle": "TRAPS",
-   "requires": [
-    "PULL_UP_BAR"
-   ],
-   "measure": "REPS",
-   "pattern": "VERTICAL_PULL",
-   "staple": false
-  },
-  {
-   "key": "scapular_push_up",
-   "name": "Scapular Push-Up",
-   "nameJa": "スキャプラプッシュアップ",
-   "muscle": "UPPER_BACK",
-   "requires": [
-    "NONE"
-   ],
-   "measure": "REPS",
-   "pattern": "ISOLATION",
-   "staple": false
-  },
-  {
-   "key": "seated_barbell_overhead_press",
-   "name": "Seated Overhead Press (Barbell)",
-   "nameJa": "シーテッドバーベルショルダープレス",
-   "muscle": "SHOULDERS",
-   "requires": [
-    "BARBELL",
-    "BENCH",
-    "SQUAT_RACK"
-   ],
-   "measure": "WEIGHT_AND_REPS",
-   "pattern": "VERTICAL_PUSH",
-   "staple": false
-  },
-  {
-   "key": "seated_cable_row",
-   "name": "Seated Cable Row",
-   "nameJa": "シーテッドロウ",
-   "muscle": "UPPER_BACK",
-   "requires": [
-    "CABLE_MACHINE"
-   ],
-   "measure": "WEIGHT_AND_REPS",
-   "pattern": "HORIZONTAL_PULL",
    "staple": true
   },
   {
-   "key": "seated_calf_raise",
-   "name": "Seated Calf Raise (Machine)",
+   "key": "sandbag_walking_lunge",
+   "name": "Walking Lunge (Sandbag)",
+   "nameJa": "Walking Lunge (Sandbag)",
+   "muscle": "QUADRICEPS",
+   "equipment": "OTHER",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "LUNGE",
+   "staple": false
+  },
+  {
+   "key": "seated_cable_row_bar_grip",
+   "name": "Seated Cable Row - Bar Grip",
+   "nameJa": "Seated Cable Row - Bar Grip",
+   "muscle": "UPPER_BACK",
+   "equipment": "MACHINE",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "HORIZONTAL_PULL",
+   "staple": false
+  },
+  {
+   "key": "seated_cable_row_bar_wide_grip",
+   "name": "Seated Cable Row - Bar Wide Grip",
+   "nameJa": "Seated Cable Row - Bar Wide Grip",
+   "muscle": "UPPER_BACK",
+   "equipment": "MACHINE",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "HORIZONTAL_PULL",
+   "staple": false
+  },
+  {
+   "key": "seated_calf_raise_v2",
+   "name": "Seated Calf Raise",
    "nameJa": "シーテッドカーフレイズ",
    "muscle": "CALVES",
-   "requires": [
-    "MACHINES"
-   ],
+   "equipment": "MACHINE",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "ISOLATION",
    "staple": false
   },
   {
-   "key": "seated_dumbbell_calf_raise",
-   "name": "Seated Calf Raise (Dumbbell)",
-   "nameJa": "シーテッドダンベルカーフレイズ",
-   "muscle": "CALVES",
-   "requires": [
-    "BENCH",
-    "DUMBBELLS"
-   ],
+   "key": "seated_dip_machine",
+   "name": "Seated Dip Machine",
+   "nameJa": "シーテッドディップスマシン",
+   "muscle": "TRICEPS",
+   "equipment": "MACHINE",
    "measure": "WEIGHT_AND_REPS",
-   "pattern": "ISOLATION",
+   "pattern": "VERTICAL_PUSH",
    "staple": false
   },
   {
@@ -3139,10 +2346,7 @@
    "name": "Seated Overhead Press (Dumbbell)",
    "nameJa": "シーテッドダンベルショルダープレス",
    "muscle": "SHOULDERS",
-   "requires": [
-    "BENCH",
-    "DUMBBELLS"
-   ],
+   "equipment": "DUMBBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "VERTICAL_PUSH",
    "staple": false
@@ -3152,193 +2356,179 @@
    "name": "Seated Leg Curl (Machine)",
    "nameJa": "シーテッドレッグカール",
    "muscle": "HAMSTRINGS",
-   "requires": [
-    "MACHINES"
-   ],
+   "equipment": "MACHINE",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "ISOLATION",
+   "staple": true
+  },
+  {
+   "key": "seated_palms_up_wrist_curl",
+   "name": "Seated Palms Up Wrist Curl",
+   "nameJa": "Seated Palms Up Wrist Curl",
+   "muscle": "FOREARMS",
+   "equipment": "DUMBBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "ISOLATION",
    "staple": false
   },
   {
-   "key": "self_resisted_biceps_curl",
-   "name": "Self-Resisted Biceps Curl",
-   "nameJa": "セルフレジスタンスカール",
-   "muscle": "BICEPS",
-   "requires": [
-    "NONE"
-   ],
-   "measure": "REPS",
+   "key": "seated_triceps_press",
+   "name": "Seated Triceps Press",
+   "nameJa": "Seated Triceps Press",
+   "muscle": "TRICEPS",
+   "equipment": "MACHINE",
+   "measure": "WEIGHT_AND_REPS",
    "pattern": "ISOLATION",
    "staple": false
   },
   {
-   "key": "self_resisted_wrist_curl",
-   "name": "Self-Resisted Wrist Curl",
-   "nameJa": "セルフレジスタンスリストカール",
-   "muscle": "FOREARMS",
-   "requires": [
-    "NONE"
-   ],
-   "measure": "REPS",
+   "key": "single_arm_cable_crossover",
+   "name": "Single Arm Cable Crossover",
+   "nameJa": "Single Arm Cable Crossover",
+   "muscle": "CHEST",
+   "equipment": "MACHINE",
+   "measure": "WEIGHT_AND_REPS",
    "pattern": "ISOLATION",
    "staple": false
   },
   {
-   "key": "shadow_boxing",
-   "name": "Shadow Boxing",
-   "nameJa": "シャドーボクシング",
+   "key": "single_arm_cable_row_v2",
+   "name": "Single Arm Cable Row",
+   "nameJa": "ワンハンドケーブルロウ",
+   "muscle": "UPPER_BACK",
+   "equipment": "MACHINE",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "HORIZONTAL_PULL",
+   "staple": false
+  },
+  {
+   "key": "single_arm_lat_pulldown",
+   "name": "Single Arm Lat Pulldown",
+   "nameJa": "ワンハンドラットプルダウン",
+   "muscle": "LATS",
+   "equipment": "MACHINE",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "VERTICAL_PULL",
+   "staple": false
+  },
+  {
+   "key": "single_leg_extensions",
+   "name": "Single Leg Extensions",
+   "nameJa": "Single Leg Extensions",
+   "muscle": "QUADRICEPS",
+   "equipment": "MACHINE",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "ISOLATION",
+   "staple": false
+  },
+  {
+   "key": "single_leg_romanian_deadlift",
+   "name": "Single Leg Romanian Deadlift (Dumbbell)",
+   "nameJa": "シングルレッグルーマニアンデッドリフト",
+   "muscle": "HAMSTRINGS",
+   "equipment": "DUMBBELL",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "HINGE",
+   "staple": false
+  },
+  {
+   "key": "ski_erg",
+   "name": "Ski Erg",
+   "nameJa": "Ski Erg",
    "muscle": "CARDIO",
-   "requires": [
-    "NONE"
-   ],
+   "equipment": "MACHINE",
    "measure": "DURATION",
    "pattern": "CONDITIONING",
    "staple": false
   },
   {
-   "key": "side_lying_hip_abduction",
-   "name": "Side-Lying Hip Abduction",
-   "nameJa": "サイドレッグレイズ",
-   "muscle": "ABDUCTORS",
-   "requires": [
-    "MAT"
-   ],
-   "measure": "REPS",
-   "pattern": "ISOLATION",
-   "staple": false
-  },
-  {
-   "key": "side_plank",
-   "name": "Side Plank",
-   "nameJa": "サイドプランク",
-   "muscle": "ABDOMINALS",
-   "requires": [
-    "NONE"
-   ],
+   "key": "sled_pull",
+   "name": "Sled Pull",
+   "nameJa": "Sled Pull",
+   "muscle": "FULL_BODY",
+   "equipment": "OTHER",
    "measure": "DURATION",
-   "pattern": "CORE",
-   "staple": true
-  },
-  {
-   "key": "single_arm_cable_row",
-   "name": "Single-Arm Cable Row (Half-Kneeling)",
-   "nameJa": "ワンハンドケーブルロウ",
-   "muscle": "LATS",
-   "requires": [
-    "CABLE_MACHINE"
-   ],
-   "measure": "WEIGHT_AND_REPS",
-   "pattern": "HORIZONTAL_PULL",
+   "pattern": "CONDITIONING",
    "staple": false
   },
   {
-   "key": "single_arm_dumbbell_bench_press",
-   "name": "Single-Arm Bench Press (Dumbbell)",
-   "nameJa": "ワンハンドダンベルプレス",
+   "key": "sled_push",
+   "name": "Sled Push",
+   "nameJa": "Sled Push",
+   "muscle": "FULL_BODY",
+   "equipment": "OTHER",
+   "measure": "DURATION",
+   "pattern": "CONDITIONING",
+   "staple": false
+  },
+  {
+   "key": "smith_machine_bench_press",
+   "name": "Bench Press (Smith Machine)",
+   "nameJa": "ベンチプレススミスマシン",
    "muscle": "CHEST",
-   "requires": [
-    "BENCH",
-    "DUMBBELLS"
-   ],
+   "equipment": "MACHINE",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "HORIZONTAL_PUSH",
    "staple": false
   },
   {
-   "key": "single_arm_dumbbell_row",
-   "name": "Single-Arm Row (Dumbbell, Bench-Supported)",
-   "nameJa": "ワンハンドダンベルロウ",
-   "muscle": "LATS",
-   "requires": [
-    "BENCH",
-    "DUMBBELLS"
-   ],
+   "key": "smith_machine_bent_over_row",
+   "name": "Bent Over Row (Smith Machine)",
+   "nameJa": "ベントオーバーロウスミスマシン",
+   "muscle": "UPPER_BACK",
+   "equipment": "MACHINE",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "HORIZONTAL_PULL",
-   "staple": true
-  },
-  {
-   "key": "single_leg_calf_raise",
-   "name": "Single-Leg Calf Raise (Bodyweight)",
-   "nameJa": "片脚カーフレイズ",
-   "muscle": "CALVES",
-   "requires": [
-    "NONE"
-   ],
-   "measure": "REPS",
-   "pattern": "ISOLATION",
    "staple": false
   },
   {
-   "key": "single_leg_glute_bridge",
-   "name": "Single-Leg Glute Bridge",
-   "nameJa": "シングルレッグヒップリフト",
+   "key": "smith_machine_deadlift",
+   "name": "Deadlift (Smith Machine)",
+   "nameJa": "デッドリフトスミスマシン",
    "muscle": "GLUTES",
-   "requires": [
-    "NONE"
-   ],
-   "measure": "REPS",
-   "pattern": "HINGE",
-   "staple": false
-  },
-  {
-   "key": "single_leg_hip_thrust",
-   "name": "Single-Leg Hip Thrust (Bodyweight)",
-   "nameJa": "シングルレッグヒップスラスト",
-   "muscle": "GLUTES",
-   "requires": [
-    "BENCH"
-   ],
-   "measure": "REPS",
-   "pattern": "HINGE",
-   "staple": false
-  },
-  {
-   "key": "single_leg_leg_press",
-   "name": "Single-Leg Leg Press (Machine)",
-   "nameJa": "片脚レッグプレス",
-   "muscle": "QUADRICEPS",
-   "requires": [
-    "MACHINES"
-   ],
+   "equipment": "MACHINE",
    "measure": "WEIGHT_AND_REPS",
-   "pattern": "SQUAT",
+   "pattern": "HINGE",
    "staple": false
   },
   {
-   "key": "single_leg_romanian_deadlift",
-   "name": "Single-Leg Romanian Deadlift (Dumbbell)",
-   "nameJa": "シングルレッグルーマニアンデッドリフト",
+   "key": "smith_machine_decline_bench_press",
+   "name": "Decline Bench Press (Smith Machine)",
+   "nameJa": "デクラインベンチプレススミスマシン",
+   "muscle": "CHEST",
+   "equipment": "MACHINE",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "HORIZONTAL_PUSH",
+   "staple": false
+  },
+  {
+   "key": "smith_machine_overhead_press",
+   "name": "Overhead Press (Smith Machine)",
+   "nameJa": "オーバーヘッドプレススミスマシン",
+   "muscle": "SHOULDERS",
+   "equipment": "MACHINE",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "VERTICAL_PUSH",
+   "staple": false
+  },
+  {
+   "key": "smith_machine_romanian_deadlift",
+   "name": "Romanian Deadlift (Smith Machine)",
+   "nameJa": "ルーマニアンデッドリフトスミスマシン",
    "muscle": "HAMSTRINGS",
-   "requires": [
-    "DUMBBELLS"
-   ],
+   "equipment": "MACHINE",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "HINGE",
    "staple": false
   },
   {
-   "key": "sissy_squat",
-   "name": "Sissy Squat",
-   "nameJa": "シシースクワット",
-   "muscle": "QUADRICEPS",
-   "requires": [
-    "NONE"
-   ],
-   "measure": "REPS",
+   "key": "smith_machine_shrug",
+   "name": "Shrug (Smith Machine)",
+   "nameJa": "シュラッグスミスマシン",
+   "muscle": "TRAPS",
+   "equipment": "MACHINE",
+   "measure": "WEIGHT_AND_REPS",
    "pattern": "ISOLATION",
-   "staple": false
-  },
-  {
-   "key": "sit_up",
-   "name": "Sit-Up",
-   "nameJa": "シットアップ",
-   "muscle": "ABDOMINALS",
-   "requires": [
-    "MAT"
-   ],
-   "measure": "REPS",
-   "pattern": "CORE",
    "staple": false
   },
   {
@@ -3346,251 +2536,249 @@
    "name": "Squat (Smith Machine)",
    "nameJa": "スミスマシンスクワット",
    "muscle": "QUADRICEPS",
-   "requires": [
-    "MACHINES"
-   ],
+   "equipment": "MACHINE",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "SQUAT",
    "staple": false
   },
   {
-   "key": "sphinx_push_up",
-   "name": "Sphinx Push-Up",
-   "nameJa": "スフィンクスプッシュアップ",
-   "muscle": "TRICEPS",
-   "requires": [
-    "NONE"
-   ],
-   "measure": "REPS",
-   "pattern": "ISOLATION",
-   "staple": false
-  },
-  {
-   "key": "split_squat",
-   "name": "Split Squat (Bodyweight)",
-   "nameJa": "スプリットスクワット",
-   "muscle": "QUADRICEPS",
-   "requires": [
-    "NONE"
-   ],
-   "measure": "REPS",
-   "pattern": "LUNGE",
-   "staple": false
-  },
-  {
-   "key": "stair_climber",
-   "name": "Stair Climber",
-   "nameJa": "ステアクライマー",
-   "muscle": "CARDIO",
-   "requires": [
-    "CARDIO_MACHINES"
-   ],
-   "measure": "DURATION",
-   "pattern": "CONDITIONING",
-   "staple": false
-  },
-  {
-   "key": "standing_calf_raise",
-   "name": "Standing Calf Raise (Bodyweight)",
-   "nameJa": "カーフレイズ",
+   "key": "smith_standing_calf_raise",
+   "name": "Standing Calf Raise (Smith)",
+   "nameJa": "Standing Calf Raise (Smith)",
    "muscle": "CALVES",
-   "requires": [
-    "NONE"
-   ],
-   "measure": "REPS",
-   "pattern": "ISOLATION",
-   "staple": true
-  },
-  {
-   "key": "standing_hamstring_stretch",
-   "name": "Standing Hamstring Stretch",
-   "nameJa": "ハムストリングストレッチ",
-   "muscle": "OTHER",
-   "requires": [
-    "NONE"
-   ],
-   "measure": "DURATION",
-   "pattern": "MOBILITY",
-   "staple": false
-  },
-  {
-   "key": "stationary_bike",
-   "name": "Stationary Bike",
-   "nameJa": "エアロバイク",
-   "muscle": "CARDIO",
-   "requires": [
-    "CARDIO_MACHINES"
-   ],
-   "measure": "DURATION",
-   "pattern": "CONDITIONING",
-   "staple": false
-  },
-  {
-   "key": "steady_state_run",
-   "name": "Steady-State Run",
-   "nameJa": "ランニング",
-   "muscle": "CARDIO",
-   "requires": [
-    "NONE"
-   ],
-   "measure": "DURATION",
-   "pattern": "CONDITIONING",
-   "staple": false
-  },
-  {
-   "key": "step_up",
-   "name": "Step-Up (Bodyweight)",
-   "nameJa": "ステップアップ",
-   "muscle": "QUADRICEPS",
-   "requires": [
-    "BENCH"
-   ],
-   "measure": "REPS",
-   "pattern": "LUNGE",
-   "staple": false
-  },
-  {
-   "key": "straight_arm_pulldown",
-   "name": "Straight-Arm Pulldown (Cable)",
-   "nameJa": "ストレートアームプルダウン",
-   "muscle": "LATS",
-   "requires": [
-    "CABLE_MACHINE"
-   ],
+   "equipment": "MACHINE",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "ISOLATION",
    "staple": false
   },
   {
-   "key": "sumo_deadlift",
-   "name": "Sumo Deadlift (Barbell)",
-   "nameJa": "スモウデッドリフト",
-   "muscle": "GLUTES",
-   "requires": [
-    "BARBELL"
-   ],
-   "measure": "WEIGHT_AND_REPS",
-   "pattern": "HINGE",
-   "staple": false
-  },
-  {
-   "key": "superman",
-   "name": "Superman",
-   "nameJa": "スーパーマン",
-   "muscle": "LOWER_BACK",
-   "requires": [
-    "MAT"
-   ],
-   "measure": "REPS",
-   "pattern": "CORE",
-   "staple": false
-  },
-  {
-   "key": "thoracic_rotation",
-   "name": "Thoracic Rotation",
-   "nameJa": "胸椎回旋ストレッチ",
-   "muscle": "OTHER",
-   "requires": [
-    "MAT"
-   ],
-   "measure": "REPS",
-   "pattern": "MOBILITY",
-   "staple": false
-  },
-  {
-   "key": "tibialis_raise",
-   "name": "Tibialis Raise",
-   "nameJa": "トゥレイズ",
-   "muscle": "CALVES",
-   "requires": [
-    "NONE"
-   ],
-   "measure": "REPS",
-   "pattern": "ISOLATION",
-   "staple": false
-  },
-  {
-   "key": "treadmill_run",
-   "name": "Treadmill Run",
-   "nameJa": "ランニングマシン",
+   "key": "spinning",
+   "name": "Spinning",
+   "nameJa": "Spinning",
    "muscle": "CARDIO",
-   "requires": [
-    "CARDIO_MACHINES"
-   ],
+   "equipment": "MACHINE",
    "measure": "DURATION",
    "pattern": "CONDITIONING",
    "staple": false
   },
   {
-   "key": "underhand_bent_over_row",
-   "name": "Underhand Bent-Over Row (Barbell)",
-   "nameJa": "アンダーグリップ・ベントオーバーロウ",
-   "muscle": "LATS",
-   "requires": [
-    "BARBELL"
-   ],
+   "key": "split_jerk",
+   "name": "Split Jerk",
+   "nameJa": "Split Jerk",
+   "muscle": "FULL_BODY",
+   "equipment": "BARBELL",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "CONDITIONING",
+   "staple": false
+  },
+  {
+   "key": "squat_row",
+   "name": "Squat Row",
+   "nameJa": "スクワットロウ",
+   "muscle": "FULL_BODY",
+   "equipment": "MACHINE",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "HORIZONTAL_PULL",
    "staple": false
   },
   {
-   "key": "walking_lunge",
-   "name": "Walking Lunge (Bodyweight)",
-   "nameJa": "ウォーキングランジ",
+   "key": "standing_cable_glute_kickbacks",
+   "name": "Standing Cable Glute Kickbacks",
+   "nameJa": "Standing Cable Glute Kickbacks",
+   "muscle": "GLUTES",
+   "equipment": "MACHINE",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "HINGE",
+   "staple": false
+  },
+  {
+   "key": "standing_leg_curls",
+   "name": "Standing Leg Curls",
+   "nameJa": "スタンディングレッグカールs",
+   "muscle": "HAMSTRINGS",
+   "equipment": "MACHINE",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "ISOLATION",
+   "staple": false
+  },
+  {
+   "key": "step_up_v2",
+   "name": "Step Up",
+   "nameJa": "ステップアップ",
    "muscle": "QUADRICEPS",
-   "requires": [
-    "NONE"
-   ],
+   "equipment": "OTHER",
    "measure": "REPS",
    "pattern": "LUNGE",
+   "staple": false
+  },
+  {
+   "key": "steps_stair_machine",
+   "name": "Stair Machine (Steps)",
+   "nameJa": "Stair Machine (Steps)",
+   "muscle": "CARDIO",
+   "equipment": "MACHINE",
+   "measure": "DURATION",
+   "pattern": "CONDITIONING",
+   "staple": false
+  },
+  {
+   "key": "straight_leg_deadlift",
+   "name": "Straight Leg Deadlift",
+   "nameJa": "Straight Leg Deadlift",
+   "muscle": "HAMSTRINGS",
+   "equipment": "BARBELL",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "HINGE",
+   "staple": false
+  },
+  {
+   "key": "sumo_deadlift_v2",
+   "name": "Sumo Deadlift",
+   "nameJa": "スモウデッドリフト",
+   "muscle": "GLUTES",
+   "equipment": "BARBELL",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "HINGE",
+   "staple": false
+  },
+  {
+   "key": "suspension_bicep_curl",
+   "name": "Bicep Curl (Suspension)",
+   "nameJa": "バイセップカールサスペンション",
+   "muscle": "BICEPS",
+   "equipment": "SUSPENSION_BAND",
+   "measure": "REPS",
+   "pattern": "ISOLATION",
+   "staple": false
+  },
+  {
+   "key": "suspension_chest_fly",
+   "name": "Chest Fly (Suspension)",
+   "nameJa": "ダンベルフライサスペンション",
+   "muscle": "CHEST",
+   "equipment": "SUSPENSION_BAND",
+   "measure": "REPS",
+   "pattern": "ISOLATION",
+   "staple": false
+  },
+  {
+   "key": "suspension_front_raise",
+   "name": "Front Raise (Suspension)",
+   "nameJa": "フロントレイズサスペンション",
+   "muscle": "SHOULDERS",
+   "equipment": "SUSPENSION_BAND",
+   "measure": "REPS",
+   "pattern": "ISOLATION",
+   "staple": false
+  },
+  {
+   "key": "suspension_jack_knife",
+   "name": "Jack Knife (Suspension)",
+   "nameJa": "Jack Knife (Suspension)",
+   "muscle": "ABDOMINALS",
+   "equipment": "SUSPENSION_BAND",
+   "measure": "REPS",
+   "pattern": "CORE",
+   "staple": false
+  },
+  {
+   "key": "suspension_low_row",
+   "name": "Low Row (Suspension)",
+   "nameJa": "Low Row (Suspension)",
+   "muscle": "UPPER_BACK",
+   "equipment": "SUSPENSION_BAND",
+   "measure": "REPS",
+   "pattern": "HORIZONTAL_PULL",
+   "staple": false
+  },
+  {
+   "key": "suspension_squat",
+   "name": "Squat (Suspension)",
+   "nameJa": "スクワットサスペンション",
+   "muscle": "QUADRICEPS",
+   "equipment": "SUSPENSION_BAND",
+   "measure": "REPS",
+   "pattern": "SQUAT",
+   "staple": false
+  },
+  {
+   "key": "suspension_triceps_extension",
+   "name": "Triceps Extension (Suspension)",
+   "nameJa": "トライセプスエクステンションサスペンション",
+   "muscle": "TRICEPS",
+   "equipment": "SUSPENSION_BAND",
+   "measure": "REPS",
+   "pattern": "ISOLATION",
+   "staple": false
+  },
+  {
+   "key": "svend_press_plate_squeeze",
+   "name": "Plate Squeeze (Svend Press)",
+   "nameJa": "Plate Squeeze (Svend Press)",
+   "muscle": "CHEST",
+   "equipment": "PLATE",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "ISOLATION",
+   "staple": false
+  },
+  {
+   "key": "t_bar_row",
+   "name": "T Bar Row",
+   "nameJa": "T Bar Row",
+   "muscle": "UPPER_BACK",
+   "equipment": "MACHINE",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "HORIZONTAL_PULL",
+   "staple": false
+  },
+  {
+   "key": "torso_rotation",
+   "name": "Torso Rotation",
+   "nameJa": "Torso Rotation",
+   "muscle": "ABDOMINALS",
+   "equipment": "MACHINE",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "CORE",
+   "staple": false
+  },
+  {
+   "key": "trap_bar_deadlift",
+   "name": "Deadlift (Trap bar)",
+   "nameJa": "Deadlift (Trap bar)",
+   "muscle": "GLUTES",
+   "equipment": "BARBELL",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "HINGE",
+   "staple": false
+  },
+  {
+   "key": "treadmill",
+   "name": "Treadmill",
+   "nameJa": "トレッドミル",
+   "muscle": "CARDIO",
+   "equipment": "MACHINE",
+   "measure": "DURATION",
+   "pattern": "CONDITIONING",
    "staple": true
   },
   {
-   "key": "wall_angel",
-   "name": "Wall Angel",
-   "nameJa": "ウォールエンジェル",
-   "muscle": "OTHER",
-   "requires": [
-    "NONE"
-   ],
-   "measure": "REPS",
-   "pattern": "MOBILITY",
-   "staple": false
-  },
-  {
-   "key": "wall_handstand_hold",
-   "name": "Wall Handstand Hold",
-   "nameJa": "壁倒立ホールド",
-   "muscle": "SHOULDERS",
-   "requires": [
-    "NONE"
-   ],
-   "measure": "DURATION",
-   "pattern": "VERTICAL_PUSH",
-   "staple": false
-  },
-  {
-   "key": "wall_handstand_push_up",
-   "name": "Wall Handstand Push-Up",
-   "nameJa": "ウォールハンドスタンドプッシュアップ",
-   "muscle": "SHOULDERS",
-   "requires": [
-    "NONE"
-   ],
+   "key": "triceps_dip",
+   "name": "Triceps Dip",
+   "nameJa": "Triceps Dip",
+   "muscle": "TRICEPS",
+   "equipment": "MACHINE",
    "measure": "REPS",
    "pattern": "VERTICAL_PUSH",
-   "staple": false
+   "staple": true
   },
   {
-   "key": "wall_push_up",
-   "name": "Wall Push-Up",
-   "nameJa": "ウォールプッシュアップ",
-   "muscle": "CHEST",
-   "requires": [
-    "NONE"
-   ],
+   "key": "wall_ball",
+   "name": "Wall Ball",
+   "nameJa": "ウォールボール",
+   "muscle": "FULL_BODY",
+   "equipment": "OTHER",
    "measure": "REPS",
-   "pattern": "HORIZONTAL_PUSH",
+   "pattern": "CONDITIONING",
    "staple": false
   },
   {
@@ -3598,71 +2786,99 @@
    "name": "Wall Sit",
    "nameJa": "ウォールシット",
    "muscle": "QUADRICEPS",
-   "requires": [
-    "NONE"
-   ],
+   "equipment": "OTHER",
    "measure": "DURATION",
    "pattern": "SQUAT",
    "staple": false
   },
   {
-   "key": "wall_slide",
-   "name": "Wall Slide",
-   "nameJa": "ウォールスライド",
-   "muscle": "OTHER",
-   "requires": [
-    "NONE"
-   ],
-   "measure": "REPS",
-   "pattern": "MOBILITY",
+   "key": "weighted_chin_up",
+   "name": "Chin Up (Weighted)",
+   "nameJa": "加重チンアップ",
+   "muscle": "LATS",
+   "equipment": "MACHINE",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "VERTICAL_PULL",
    "staple": false
   },
   {
-   "key": "warm_up_jog",
-   "name": "Warm-Up Jog",
-   "nameJa": "ウォームアップジョグ",
-   "muscle": "CARDIO",
-   "requires": [
-    "NONE"
-   ],
-   "measure": "DURATION",
-   "pattern": "CONDITIONING",
-   "staple": true
-  },
-  {
-   "key": "worlds_greatest_stretch",
-   "name": "World's Greatest Stretch",
-   "nameJa": "ワールドグレイテストストレッチ",
-   "muscle": "OTHER",
-   "requires": [
-    "NONE"
-   ],
-   "measure": "REPS",
-   "pattern": "MOBILITY",
-   "staple": true
-  },
-  {
-   "key": "wrist_circles",
-   "name": "Wrist Circles",
-   "nameJa": "手首回し",
-   "muscle": "OTHER",
-   "requires": [
-    "NONE"
-   ],
-   "measure": "DURATION",
-   "pattern": "MOBILITY",
+   "key": "weighted_hyperextension_back_extension",
+   "name": "Back Extension (Weighted Hyperextension)",
+   "nameJa": "バックエクステンションウエイテッドバックエクステンション",
+   "muscle": "LOWER_BACK",
+   "equipment": "MACHINE",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "HINGE",
    "staple": false
   },
   {
-   "key": "wrist_flexor_stretch",
-   "name": "Wrist Flexor Stretch",
-   "nameJa": "前腕ストレッチ",
-   "muscle": "OTHER",
-   "requires": [
-    "NONE"
-   ],
+   "key": "weighted_lying_neck_curls",
+   "name": "Lying Neck Curls (Weighted)",
+   "nameJa": "Lying Neck Curls (Weighted)",
+   "muscle": "NECK",
+   "equipment": "PLATE",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "ISOLATION",
+   "staple": false
+  },
+  {
+   "key": "weighted_lying_neck_extension",
+   "name": "Lying Neck Extension (Weighted)",
+   "nameJa": "Lying Neck Extension (Weighted)",
+   "muscle": "NECK",
+   "equipment": "PLATE",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "ISOLATION",
+   "staple": false
+  },
+  {
+   "key": "weighted_pull_up",
+   "name": "Pull Up (Weighted)",
+   "nameJa": "加重プルアップ",
+   "muscle": "LATS",
+   "equipment": "MACHINE",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "VERTICAL_PULL",
+   "staple": false
+  },
+  {
+   "key": "weighted_russian_twist",
+   "name": "Russian Twist (Weighted)",
+   "nameJa": "ロシアンツイストウエイテッド",
+   "muscle": "ABDOMINALS",
+   "equipment": "PLATE",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "CORE",
+   "staple": false
+  },
+  {
+   "key": "weighted_triceps_dip",
+   "name": "Triceps Dip (Weighted)",
+   "nameJa": "加重ディップス",
+   "muscle": "TRICEPS",
+   "equipment": "MACHINE",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "VERTICAL_PUSH",
+   "staple": false
+  },
+  {
+   "key": "wrist_roller",
+   "name": "Wrist Roller",
+   "nameJa": "Wrist Roller",
+   "muscle": "FOREARMS",
+   "equipment": "MACHINE",
    "measure": "DURATION",
-   "pattern": "MOBILITY",
+   "pattern": "ISOLATION",
+   "staple": false
+  },
+  {
+   "key": "zercher_squat",
+   "name": "Zercher Squat",
+   "nameJa": "Zercher Squat",
+   "muscle": "QUADRICEPS",
+   "equipment": "BARBELL",
+   "measure": "WEIGHT_AND_REPS",
+   "pattern": "SQUAT",
    "staple": false
   }
  ]

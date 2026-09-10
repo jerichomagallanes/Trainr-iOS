@@ -3,39 +3,27 @@ import Testing
 
 struct EquipmentVocabularyTests {
 
-    // The three movements worth the time they take are a leg press, an upper
-    // push and an upper pull. A gym list with nothing to pull from leaves the
-    // model to invent the equipment or skip the pattern.
-    @Test func aGymCanPull() {
-        let gym = Equipment.available(at: .gym)
-
-        #expect(gym.contains(.pullUpBar))
-        #expect(gym.contains(.cableMachine))
-        #expect(gym.contains(.machines))
+    // The setup screen asks in the catalog's own vocabulary, so a chip and a
+    // movement's category are the same word or the filter silently misses.
+    @Test func theChipsAreTheCatalogsOwnNineCategories() {
+        #expect(Equipment.choices == [
+            Equipment.none, .barbell, .dumbbell, .kettlebell, .machine,
+            .plate, .resistanceBand, .suspensionBand, .other
+        ])
     }
 
-    // A garage with a barbell is a home gym, and a bench is the most common
-    // thing in one after the dumbbells.
-    @Test func aHomeCanBeLoaded() {
-        let home = Equipment.available(at: .home)
-
-        #expect(home.contains(.bench))
-        #expect(home.contains(.barbell))
-        #expect(home.contains(.squatRack))
-    }
-
-    // Training in both places used to mean being asked only about the gym.
-    @Test func bothIsTheUnionAndNotTheGymList() {
-        let both = Equipment.available(at: .both)
-
-        #expect(both.contains(.jumpRope))
-        #expect(both.contains(.machines))
-        #expect(!both.contains(Equipment.none))
-        #expect(Set(both).count == both.count)
-    }
-
+    // "I have no equipment" is an answer at home and nowhere else.
     @Test func bodyweightOnlyIsOfferedOnlyWhereItIsAnAnswer() {
         #expect(Equipment.available(at: .home).contains(Equipment.none))
         #expect(!Equipment.available(at: .gym).contains(Equipment.none))
+        #expect(!Equipment.available(at: .both).contains(Equipment.none))
+    }
+
+    @Test func everyLocationCanReachEveryKindOfKit() {
+        for location in WorkoutLocation.allCases {
+            let offered = Equipment.available(at: location)
+            #expect(Set(offered).count == offered.count)
+            #expect(Set(offered).isSuperset(of: [.barbell, .dumbbell, .machine, .other]))
+        }
     }
 }

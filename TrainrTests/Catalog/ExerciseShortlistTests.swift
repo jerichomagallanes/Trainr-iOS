@@ -6,13 +6,13 @@ struct ExerciseShortlistTests {
     private func exercise(
         _ key: String,
         muscle: MuscleGroup = .chest,
-        requires: Set<Equipment> = [.none],
+        equipment: Equipment = Equipment.none,
         pattern: MovementPattern = .horizontalPush,
         staple: Bool = false
     ) -> CatalogExercise {
         CatalogExercise(
             key: key, name: key, nameJa: key, muscle: muscle,
-            requires: requires, measure: .reps, pattern: pattern, staple: staple
+            equipment: equipment, measure: .reps, pattern: pattern, staple: staple
         )
     }
 
@@ -27,25 +27,28 @@ struct ExerciseShortlistTests {
     @Test func onlyMovementsTheClientCanPerformAreOffered() {
         let catalog = InMemoryExerciseCatalog([
             exercise("push_up"),
-            exercise("barbell_bench_press", requires: [.barbell, .bench])
+            exercise("barbell_bench_press", equipment: Equipment.barbell)
         ])
 
-        let offered = ExerciseShortlist.forRequest(catalog: catalog, user: profile(.dumbbells))
+        let offered = ExerciseShortlist.forRequest(catalog: catalog, user: profile(.dumbbell))
 
         #expect(offered.map(\.key) == ["push_up"])
     }
 
-    // Every listed item, not any one of them: a bench press needs the bench
-    // as well as the bar.
-    @Test func aMovementNeedsEverythingItLists() {
+    // Bodyweight is the one category everybody owns; everything else has to
+    // be ticked on the setup screen before it can be prescribed.
+    @Test func bodyweightIsAvailableToEveryoneAndNothingElseIs() {
         let catalog = InMemoryExerciseCatalog([
-            exercise("barbell_bench_press", requires: [.barbell, .bench])
+            exercise("push_up"),
+            exercise("machine_leg_press", equipment: Equipment.machine)
         ])
 
-        #expect(ExerciseShortlist.forRequest(catalog: catalog, user: profile(.barbell)).isEmpty)
         #expect(ExerciseShortlist.forRequest(
-            catalog: catalog, user: profile(.barbell, .bench)
-        ).count == 1)
+            catalog: catalog, user: profile(Equipment.none)
+        ).map(\.key) == ["push_up"])
+        #expect(ExerciseShortlist.forRequest(
+            catalog: catalog, user: profile(.machine)
+        ).map(\.key).sorted() == ["machine_leg_press", "push_up"])
     }
 
     // A key the model cannot name again is a lift whose history stops there.

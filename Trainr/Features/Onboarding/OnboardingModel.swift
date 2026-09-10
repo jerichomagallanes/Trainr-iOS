@@ -25,6 +25,10 @@ final class OnboardingModel {
     private let planGenerator: any PlanGenerator
     private let languageCode: String
 
+    // Only the kit the catalog actually has movements for reaches the setup
+    // screen, so a chip can never lead to an empty week.
+    let stockedEquipment: Set<Equipment>
+
     // One plan at a time; the model outlives the screen, so a rerun must not begin complete.
     private var isWorking = false
     // The request has no cancellation point of its own; a run nobody awaits must not write.
@@ -35,6 +39,7 @@ final class OnboardingModel {
         store = dependencies.store
         planGenerator = dependencies.planGenerator
         languageCode = dependencies.languageCode
+        stockedEquipment = Set(dependencies.catalog.all.map(\.equipment))
         if let stored = dependencies.attempt("currentUser", { try store.currentUser() }) {
             profile = stored
         }

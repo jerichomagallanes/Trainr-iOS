@@ -276,18 +276,14 @@ nonisolated struct PlanPromptBuilder {
     private func text(for item: Equipment) -> String {
         switch item {
         case .none: "bodyweight only"
-        case .dumbbells: "dumbbells"
-        case .barbell: "barbell and plates"
-        case .bench: "adjustable bench"
-        case .resistanceBands: "resistance bands"
-        case .pullUpBar: "pull-up bar"
-        case .kettlebells: "kettlebells"
-        case .squatRack: "squat rack"
-        case .cableMachine: "cable machine"
-        case .machines: "weight machines (lat pulldown, leg press, chest press, leg curl)"
-        case .cardioMachines: "cardio machines (treadmill, bike, rower)"
-        case .mat: "exercise mat"
-        case .jumpRope: "jump rope"
+        case .barbell: "barbell"
+        case .dumbbell: "dumbbells"
+        case .kettlebell: "kettlebells"
+        case .machine: "machines and cables"
+        case .plate: "weight plates"
+        case .resistanceBand: "resistance bands"
+        case .suspensionBand: "a suspension trainer"
+        case .other: "other gym kit (ab wheel, box, sled, rings, jump rope)"
         }
     }
 

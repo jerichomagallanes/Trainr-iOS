@@ -287,17 +287,6 @@
         }
       }
     },
-    "barbell_plates": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Barbell & plates"
-          }
-        }
-      }
-    },
     "beginner": {
       "extractionState": "manual",
       "localizations": {
@@ -327,17 +316,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Beginner"
-          }
-        }
-      }
-    },
-    "bench": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bench"
           }
         }
       }
@@ -430,17 +408,6 @@
         }
       }
     },
-    "cable_machine": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Cable machine"
-          }
-        }
-      }
-    },
     "cancel": {
       "extractionState": "manual",
       "localizations": {
@@ -470,17 +437,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Improve endurance and burn calories."
-          }
-        }
-      }
-    },
-    "cardio_equipment": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Cardio equipment"
           }
         }
       }
@@ -695,17 +651,6 @@
         }
       }
     },
-    "dumbbells": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Dumbbells"
-          }
-        }
-      }
-    },
     "duration_label": {
       "extractionState": "manual",
       "localizations": {
@@ -795,6 +740,39 @@
         }
       }
     },
+    "equipment_barbell": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Barbell"
+          }
+        }
+      }
+    },
+    "equipment_dumbbell": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dumbbell"
+          }
+        }
+      }
+    },
+    "equipment_kettlebell": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kettlebell"
+          }
+        }
+      }
+    },
     "equipment_label": {
       "extractionState": "manual",
       "localizations": {
@@ -813,6 +791,61 @@
           "stringUnit": {
             "state": "translated",
             "value": "Equipment"
+          }
+        }
+      }
+    },
+    "equipment_machine": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Machine"
+          }
+        }
+      }
+    },
+    "equipment_other": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Other"
+          }
+        }
+      }
+    },
+    "equipment_plate": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Plate"
+          }
+        }
+      }
+    },
+    "equipment_resistance_band": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Resistance Band"
+          }
+        }
+      }
+    },
+    "equipment_suspension_band": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Suspension Band"
           }
         }
       }
@@ -890,17 +923,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Exercise in progress…"
-          }
-        }
-      }
-    },
-    "exercise_mat": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Exercise mat"
           }
         }
       }
@@ -1595,28 +1617,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Intermediate"
-          }
-        }
-      }
-    },
-    "jump_rope": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Jump rope"
-          }
-        }
-      }
-    },
-    "kettlebells": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kettlebells"
           }
         }
       }
@@ -3173,17 +3173,6 @@
         }
       }
     },
-    "pull_up_bar": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Pull-up bar"
-          }
-        }
-      }
-    },
     "regenerate_plan": {
       "extractionState": "manual",
       "localizations": {
@@ -3290,17 +3279,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Reset"
-          }
-        }
-      }
-    },
-    "resistance_bands": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Resistance bands"
           }
         }
       }
@@ -3455,17 +3433,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "SLIDE TO FINISH THIS WORKOUT"
-          }
-        }
-      }
-    },
-    "squat_rack": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Squat rack"
           }
         }
       }
@@ -3906,17 +3873,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "%1$@ lbs"
-          }
-        }
-      }
-    },
-    "weight_machines": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Weight machines"
           }
         }
       }
