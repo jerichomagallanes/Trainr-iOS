@@ -38,8 +38,6 @@ nonisolated enum L10n {
     static var bmiLabel: String { String(localized: "bmi_label") }
     static var bodyweightOnly: String { String(localized: "bodyweight_only") }
     static var bodyweightOnlyLabel: String { String(localized: "bodyweight_only_label") }
-    static var both: String { String(localized: "both") }
-    static var bothLocation: String { String(localized: "both_location") }
     static var buildMuscle: String { String(localized: "build_muscle") }
     static var buildMuscleDescription: String { String(localized: "build_muscle_description") }
     static var buildMuscleGoal: String { String(localized: "build_muscle_goal") }
@@ -126,8 +124,6 @@ nonisolated enum L10n {
     static var goalFocusImproveEndurance: String { String(localized: "goal_focus_improve_endurance") }
     static var goalFocusLoseWeight: String { String(localized: "goal_focus_lose_weight") }
     static var gotIt: String { String(localized: "got_it") }
-    static var gym: String { String(localized: "gym") }
-    static var gymLocation: String { String(localized: "gym_location") }
     static var healthDisclaimer: String { String(localized: "health_disclaimer") }
     static var heightCm: String { String(localized: "height_cm") }
     static func heightCmFormat(_ p1: Int) -> String {
@@ -140,8 +136,6 @@ nonisolated enum L10n {
     static var hideHowToPerform: String { String(localized: "hide_how_to_perform") }
     static var hideVideoTutorial: String { String(localized: "hide_video_tutorial") }
     static var hipProblemsInjury: String { String(localized: "hip_problems_injury") }
-    static var home: String { String(localized: "home") }
-    static var homeLocation: String { String(localized: "home_location") }
     static var imperial: String { String(localized: "imperial") }
     static var improveEndurance: String { String(localized: "improve_endurance") }
     static var improveEnduranceDescription: String { String(localized: "improve_endurance_description") }
@@ -157,7 +151,6 @@ nonisolated enum L10n {
     static var letsKeepYouSafe: String { String(localized: "lets_keep_you_safe") }
     static var limitationsDescription: String { String(localized: "limitations_description") }
     static var limitationsLabel: String { String(localized: "limitations_label") }
-    static var locationLabel: String { String(localized: "location_label") }
     static var loseWeight: String { String(localized: "lose_weight") }
     static var loseWeightDescription: String { String(localized: "lose_weight_description") }
     static var loseWeightGoal: String { String(localized: "lose_weight_goal") }
@@ -367,7 +360,6 @@ nonisolated enum L10n {
     static var weightsInLabel: String { String(localized: "weights_in_label") }
     static var weightsMarkedIn: String { String(localized: "weights_marked_in") }
     static var welcomeTo: String { String(localized: "welcome_to") }
-    static var whereWillYouWorkOut: String { String(localized: "where_will_you_work_out") }
     static func workoutDaysOption(_ p1: Int) -> String {
         String.localizedStringWithFormat(String(localized: "workout_days_option"), p1)
     }

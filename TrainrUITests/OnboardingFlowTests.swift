@@ -62,7 +62,6 @@ final class OnboardingFlowTests: XCTestCase {
         app.buttons["NEXT"].tap()
 
         XCTAssertTrue(app.staticTexts["SET UP YOUR WORKOUT"].waitForExistence(timeout: 5))
-        app.buttons["Home"].tap()
         app.buttons["Dumbbell"].tap()
         XCTAssertTrue(app.staticTexts["What are the weights marked in?"].waitForExistence(timeout: 5))
         app.buttons["kg"].tap()

@@ -218,15 +218,17 @@ final class OnboardingScreenTests: XCTestCase {
     // MARK: - Setup
 
     @MainActor
-    func testSetupOffersEveryLocationAndALocationAloneIsNotEnough() {
+    func testSetupAsksForEquipmentAndNotWhereTheClientStands() {
         app = .launched(startingAt: "setup")
         XCTAssertTrue(app.staticTexts["SET UP YOUR WORKOUT"].waitForExistence(timeout: 20))
 
-        for location in ["Home", "Gym", "Both"] {
-            XCTAssertTrue(app.buttons[location].exists)
+        XCTAssertTrue(app.staticTexts["Available Equipment"].exists)
+        for gone in ["Home", "Gym", "Both"] {
+            XCTAssertFalse(app.buttons[gone].exists)
         }
-        app.buttons["Home"].tap()
-        XCTAssertTrue(app.staticTexts["Available Equipment"].waitForExistence(timeout: 3))
+        for kit in ["Bodyweight only", "Barbell", "Dumbbell", "Machine"] {
+            XCTAssertTrue(app.buttons[kit].exists, kit)
+        }
         XCTAssertTrue(app.buttons["Choose how many days"].exists)
         XCTAssertFalse(app.buttons["NEXT"].isEnabled)
     }

@@ -121,7 +121,6 @@ struct ReviewView: View {
 
     private var setupItems: [(String, String)] {
         var items: [(String, String)] = [
-            (L10n.locationLabel, profile.workoutLocation.displayName),
             (L10n.equipmentLabelFull, equipmentText)
         ]
         if let liftingUnits = profile.liftingUnitSystem {

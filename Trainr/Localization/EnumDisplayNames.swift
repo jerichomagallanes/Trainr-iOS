@@ -47,16 +47,6 @@ extension FitnessGoal {
     }
 }
 
-extension WorkoutLocation {
-    var displayName: String {
-        switch self {
-        case .home: L10n.homeLocation
-        case .gym: L10n.gymLocation
-        case .both: L10n.bothLocation
-        }
-    }
-}
-
 extension Equipment {
     var displayName: String {
         switch self {

@@ -12,18 +12,20 @@ struct EquipmentVocabularyTests {
         ])
     }
 
-    // "I have no equipment" is an answer at home and nowhere else.
-    @Test func bodyweightOnlyIsOfferedOnlyWhereItIsAnAnswer() {
-        #expect(Equipment.available(at: .home).contains(Equipment.none))
-        #expect(!Equipment.available(at: .gym).contains(Equipment.none))
-        #expect(!Equipment.available(at: .both).contains(Equipment.none))
+    // "I have no equipment" is one of the nine answers, not a special case of
+    // where someone stands: a gym member can still be given a push-up.
+    @Test func everyCategoryIncludingBodyweightIsOffered() {
+        let offered = Equipment.available()
+
+        #expect(Set(offered).count == offered.count)
+        #expect(offered == Equipment.choices)
+        #expect(offered.contains(Equipment.none))
     }
 
-    @Test func everyLocationCanReachEveryKindOfKit() {
-        for location in WorkoutLocation.allCases {
-            let offered = Equipment.available(at: location)
-            #expect(Set(offered).count == offered.count)
-            #expect(Set(offered).isSuperset(of: [.barbell, .dumbbell, .machine, .other]))
-        }
+    // A category the catalog cannot serve is a chip that leads nowhere.
+    @Test func aCategoryNothingIsStockedForIsNotOffered() {
+        let offered = Equipment.available(stocked: [Equipment.none, .dumbbell])
+
+        #expect(offered == [Equipment.none, .dumbbell])
     }
 }

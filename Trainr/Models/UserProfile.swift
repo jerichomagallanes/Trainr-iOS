@@ -10,7 +10,6 @@ nonisolated struct UserProfile: Identifiable, Equatable, Sendable {
     var weight = 0.0
     var fitnessGoal = FitnessGoal.generalFitness
     var experienceLevel = ExperienceLevel.beginner
-    var workoutLocation = WorkoutLocation.home
     var availableEquipment: [Equipment] = []
     var workoutDaysPerWeek = Constants.Workout.defaultDaysPerWeek
     var workoutDuration = Constants.Workout.defaultDuration
@@ -44,12 +43,6 @@ nonisolated enum ExperienceLevel: String, Codable, CaseIterable, Sendable {
     case beginner
     case intermediate
     case advanced
-}
-
-nonisolated enum WorkoutLocation: String, Codable, CaseIterable, Sendable {
-    case home
-    case gym
-    case both
 }
 
 // The equipment vocabulary the exercise catalog is categorised by, and the
@@ -129,13 +122,12 @@ extension Equipment {
     // A chip the catalog cannot serve is a lie: the client ticks it, the
     // shortlist comes back empty, and the plan is built from nothing. What is
     // offered is what there are movements for.
-    static func available(
-        at location: WorkoutLocation,
-        stocked: Set<Equipment> = Set(Equipment.choices)
-    ) -> [Equipment] {
-        choices
-            .filter { stocked.contains($0) }
-            .filter { $0 != Equipment.none || location == .home }
+    //
+    // Where they train used to gate this and could not: a gym has resistance
+    // bands and a spare room has a machine, so every answer offered the same
+    // nine and the question only cost a tap.
+    static func available(stocked: Set<Equipment> = Set(Equipment.choices)) -> [Equipment] {
+        choices.filter { stocked.contains($0) }
     }
 }
 

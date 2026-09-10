@@ -71,14 +71,12 @@ final class OnboardingModel {
     }
 
     func updateWorkoutSetup(
-        location: WorkoutLocation,
         equipment: [Equipment],
         liftingUnits: UnitSystem?,
         daysPerWeek: Int,
         duration: Int,
     ) {
         answeredSteps.insert(.setup)
-        profile.workoutLocation = location
         profile.liftingUnitSystem = liftingUnits
         profile.availableEquipment = equipment
         profile.workoutDaysPerWeek = daysPerWeek

@@ -67,12 +67,10 @@ struct ExerciseCatalogIntegrityTests {
     @Test func everyCategoryTheSetupScreenOffersHasMovements() {
         let stocked = Set(catalog.all.map(\.equipment))
 
-        for location in WorkoutLocation.allCases {
-            let offered = Equipment.available(at: location, stocked: stocked)
-            #expect(!offered.isEmpty)
-            for kit in offered {
-                #expect(!catalog.available(with: [kit]).isEmpty)
-            }
+        let offered = Equipment.available(stocked: stocked)
+        #expect(!offered.isEmpty)
+        for kit in offered {
+            #expect(!catalog.available(with: [kit]).isEmpty)
         }
     }
 
@@ -81,9 +79,7 @@ struct ExerciseCatalogIntegrityTests {
         let stocked = Set(catalog.all.map(\.equipment))
 
         for kit in Equipment.allCases where !stocked.contains(kit) {
-            for location in WorkoutLocation.allCases {
-                #expect(!Equipment.available(at: location, stocked: stocked).contains(kit))
-            }
+            #expect(!Equipment.available(stocked: stocked).contains(kit))
         }
     }
 
