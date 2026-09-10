@@ -13,7 +13,7 @@ extension Equipment {
     // Kit whose weight is written on it, and so worth asking which units it is
     // marked in; a pull-up bar and a mat have nothing to read.
     nonisolated static let loaded: Set<Equipment> = [
-        .dumbbell, .barbell, .kettlebell, .machine
+        .dumbbell, .barbell, .kettlebell, .machine, .plate
     ]
 }
 

@@ -28,4 +28,13 @@ struct EquipmentVocabularyTests {
 
         #expect(offered == [Equipment.none, .dumbbell])
     }
+
+    // Plates are loaded in whatever the gym stamps on them, so a client who
+    // owns only plates still has to be asked which unit that is.
+    @Test func everyCategoryTheClientLoadsCountsAsLoaded() {
+        #expect(Equipment.loaded == [.dumbbell, .barbell, .kettlebell, .machine, .plate])
+        #expect(Equipment.loaded.contains(.plate))
+        #expect(!Equipment.loaded.contains(Equipment.none))
+        #expect(!Equipment.loaded.contains(.resistanceBand))
+    }
 }
