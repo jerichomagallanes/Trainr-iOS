@@ -12,6 +12,10 @@ nonisolated struct CatalogExercise: Equatable, Sendable {
     let measure: ExerciseMeasure
     let pattern: MovementPattern
     let staple: Bool
+    // Reps are performed on one side and repeated on the other, so the set
+    // costs twice the time and the chip has to say so. A walking lunge
+    // alternates inside the set and is not one of these.
+    var unilateral = false
     // One line for the card, and the how-to behind a tap. Both owned by the
     // catalog, so a form cue can never be generated.
     let summary: String
@@ -44,4 +48,25 @@ nonisolated struct InMemoryExerciseCatalog: ExerciseCatalog {
     }
 
     subscript(key: String) -> CatalogExercise? { byKey[key] }
+}
+
+// What a movement is for, which decides its rep window, its rest and where it
+// sits in a session. Derived rather than stored, so the catalog has one fewer
+// field to keep true.
+nonisolated enum ExerciseRole { case compound, isolation, timed }
+
+nonisolated extension CatalogExercise {
+    // The measure settles it before the pattern gets a say: a clean is tagged
+    // conditioning and is still a loaded multi-joint lift, and prescribing it
+    // in seconds would be nonsense.
+    var role: ExerciseRole {
+        if measure == .duration { return .timed }
+        if pattern == .isolation || pattern == .core { return .isolation }
+        return .compound
+    }
+
+    // Whether a load can be prescribed at all. It follows the measure, not the
+    // equipment: an assisted pull-up is on a machine and still has no weight
+    // to choose.
+    var isLoadable: Bool { measure == .weightAndReps }
 }
