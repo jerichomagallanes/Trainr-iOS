@@ -63,7 +63,9 @@ struct PlanPromptBuilderTests {
         let prompt = builder.userPrompt(request(), shortlist: shortlist)
 
         #expect(prompt.contains("Session set cap: at most 14 sets"))
-        #expect(prompt.contains("Weekly set target: about 10 hard sets"))
+        #expect(prompt.contains("Weekly set target: about 7 hard sets"))
+        #expect(prompt.contains("never past 67"))
+        #expect(prompt.contains("half for each muscle that movement assists"))
     }
 
     @Test func weekOneCarriesNoHistory() {

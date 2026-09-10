@@ -8,6 +8,11 @@ nonisolated struct PlanLimits {
     // tests: a real request always has a shortlist.
     var allowedKeys: Set<String> = []
     var requiredPatterns: Set<PatternRequirement> = []
+    // Zero means unchecked, which is only true in tests: the set cap is a
+    // proxy for time and a timed set breaks it, so the minutes are what
+    // actually has to fit.
+    var sessionMinutes = 0
+    var sessionCeilingMinutes = 0
 
     static let unbounded = PlanLimits(maxSetsPerSession: .max)
 }
@@ -106,6 +111,13 @@ nonisolated struct GeneratedPlanParser {
             errors.append(
                 "\(location): has \(sets) sets but the client's session length allows at most "
                     + "\(limits.maxSetsPerSession), warm-up included"
+            )
+        }
+        let dayMinutes = day.exercises.reduce(0) { $0 + minutes(of: $1) }
+        if limits.sessionCeilingMinutes > 0, dayMinutes > limits.sessionCeilingMinutes {
+            errors.append(
+                "\(location): runs about \(dayMinutes) minutes of work and rest, and the "
+                    + "client asked for about \(limits.sessionMinutes)"
             )
         }
         for (key, count) in Dictionary(grouping: day.exercises, by: \.exerciseKey)
