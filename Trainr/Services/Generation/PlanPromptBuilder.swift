@@ -2,14 +2,6 @@ import Foundation
 
 nonisolated struct PlanPromptBuilder {
 
-    // The video catalog's keys. Other movements may get new keys, but these
-    // must use these exact ones or history and tutorials silently split.
-    private let canonicalKeys: [String]
-
-    init(canonicalKeys: Set<String> = []) {
-        self.canonicalKeys = canonicalKeys.sorted()
-    }
-
     func systemInstruction() -> String {
         """
         You are an experienced, certified strength and conditioning coach writing a
@@ -37,9 +29,9 @@ nonisolated struct PlanPromptBuilder {
           never exceed the session set cap given below. The cap is what the
           client's session length pays for once warm-up and rest are counted, so a
           session that exceeds it is a session they will not finish.
-        - Include a lower-body push, an upper-body push and an upper-body pull
-          every week. Order each session large muscle groups before small,
-          multi-joint before single-joint.
+        - Cover every pattern the request names as required, and order each
+          session large muscle groups before small, multi-joint before
+          single-joint.
         - Each day starts with a short warm-up exercise (DURATION measure): easy
           versions of the movements that follow, not a generic routine and not
           static stretching.
@@ -59,11 +51,10 @@ nonisolated struct PlanPromptBuilder {
           muscle or strength, keep conditioning short and low-impact and keep it
           off the day before a hard leg session: running blunts strength and size
           gains where cycling does not.
-        - Use ONLY the client's available equipment, and list in each day's
-          equipment array only items from that list. Prescribe a weight (measure
-          WEIGHT_AND_REPS, weightKg on every set) only for movements loaded by that
-          equipment; bodyweight movements are REPS; timed work, holds and cardio
-          are DURATION with seconds.
+        - The movement list is already filtered to what this client owns, so
+          every key in it is one they can perform. Give each set the targets its
+          group asks for: weighted movements take reps and weightKg, bodyweight
+          movements take reps, timed movements take seconds.
         - Weights are kilograms, whatever the client reads them in. Every
           weightKg must be a multiple of the client's smallest loadable
           increment, given below, or the plan asks for a weight they cannot
@@ -93,12 +84,11 @@ nonisolated struct PlanPromptBuilder {
         - If an exercise was skipped, repeat its week unchanged.
 
         Output rules:
-        - exerciseKey is a canonical English lower_snake_case slug (goblet_squat,
-          bent_over_row), singular, identical for the same movement in every week
-          and language. It is an identifier, never translated.\(knownKeysRule())
-        - name, titles, equipment, prescription and instructions are display copy
-          in the requested language. Capitalize each equipment item ("Dumbbells",
-          "Yoga Mat").
+        - exerciseKey is chosen from the movement list in the request and never
+          invented. The app owns each movement's name, the muscle it trains and
+          how it is measured, so all you choose is which movement and how much.
+        - Day titles, prescription and instructions are display copy in the
+          requested language.
         - Day titles are short and name the session's focus ("Full Body
           Strength", "Lower Body Power") - never letter or index labels like
           "Full Body A" or "Day 1".
@@ -112,7 +102,7 @@ nonisolated struct PlanPromptBuilder {
         """
     }
 
-    func userPrompt(_ request: PlanRequest) -> String {
+    func userPrompt(_ request: PlanRequest, shortlist: [CatalogExercise]) -> String {
         let user = request.user
         var lines = [
             "Write week \(request.weekNumber) for this client.",
@@ -141,19 +131,46 @@ nonisolated struct PlanPromptBuilder {
             lines.append("- Injuries or areas to protect: \(named)")
         }
         lines.append("- Write all display copy in: \(language(for: request.languageCode))")
+        let required = ExerciseShortlist.requiredPatterns(shortlist)
+        if !required.isEmpty {
+            let named = PatternRequirement.allCases
+                .filter(required.contains)
+                .map(\.label)
+                .joined(separator: ", ")
+            lines.append("- The week must include \(named)")
+        }
         if let previousWeek = request.previousWeek {
             lines.append(contentsOf: history(of: previousWeek))
         }
+        lines.append(contentsOf: vocabulary(shortlist))
         return lines.joined(separator: "\n") + "\n"
     }
 
-    private func knownKeysRule() -> String {
-        if canonicalKeys.isEmpty {
-            ""
-        } else {
-            "\n- When you prescribe one of these movements or a close variant of"
-                + "\n  it, use exactly this key rather than minting a near-duplicate:"
-                + "\n  \(canonicalKeys.joined(separator: ", "))."
+    // Grouped by what a set of it looks like, then by the muscle it trains, so
+    // the model reads off which targets to write rather than inferring them
+    // from a slug. Already filtered to this client's equipment.
+    private func vocabulary(_ shortlist: [CatalogExercise]) -> [String] {
+        guard !shortlist.isEmpty else { return [] }
+        var lines = ["", "Movements you may prescribe. Use these keys exactly, and no others."]
+        for measure in ExerciseMeasure.allCases {
+            let group = shortlist.filter { $0.measure == measure }
+            guard !group.isEmpty else { continue }
+            lines.append("")
+            lines.append(heading(for: measure))
+            for muscle in MuscleGroup.allCases {
+                let named = group.filter { $0.muscle == muscle }
+                guard !named.isEmpty else { continue }
+                lines.append("  \(muscle.rawValue): " + named.map(\.key).joined(separator: ", "))
+            }
+        }
+        return lines
+    }
+
+    private func heading(for measure: ExerciseMeasure) -> String {
+        switch measure {
+        case .weightAndReps: "Weighted - every set needs reps and weightKg:"
+        case .reps: "Bodyweight - every set needs reps:"
+        case .duration: "Timed - every set needs seconds:"
         }
     }
 

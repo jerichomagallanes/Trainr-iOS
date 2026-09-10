@@ -9,14 +9,15 @@ struct FirebaseAIPlanModelClient: PlanModelClient {
     func generate(
         model: String,
         systemInstruction: String,
-        userPrompt: String
+        userPrompt: String,
+        exerciseKeys: [String]
     ) async -> GeminiResponse {
         let generativeModel = FirebaseAI.firebaseAI(backend: .googleAI()).generativeModel(
             modelName: model,
             generationConfig: GenerationConfig(
                 temperature: Self.temperature,
                 responseMIMEType: "application/json",
-                responseSchema: GeneratedPlanSchema.schema
+                responseSchema: GeneratedPlanSchema.schema(exerciseKeys: exerciseKeys)
             ),
             systemInstruction: ModelContent(parts: systemInstruction),
             // Capped: without it the SDK waits its own much longer timeout, and

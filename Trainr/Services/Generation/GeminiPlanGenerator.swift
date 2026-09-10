@@ -5,8 +5,9 @@ import Foundation
 struct GeminiPlanGenerator: PlanGenerator {
 
     private let client: any PlanModelClient
-    private let parser = GeneratedPlanParser()
+    private let parser: GeneratedPlanParser
     private let promptBuilder: PlanPromptBuilder
+    private let catalog: any ExerciseCatalog
     // Nothing from the profile goes in here. See Breadcrumbs.
     private let spentModels: any SpentModels
     private let breadcrumbs: any Breadcrumbs
@@ -15,19 +16,33 @@ struct GeminiPlanGenerator: PlanGenerator {
     init(
         client: any PlanModelClient,
         promptBuilder: PlanPromptBuilder = PlanPromptBuilder(),
+        catalog: any ExerciseCatalog = InMemoryExerciseCatalog([]),
         spentModels: any SpentModels,
         breadcrumbs: any Breadcrumbs = NoBreadcrumbs(),
         pause: @escaping (Duration) async -> Void = { try? await Task.sleep(for: $0) }
     ) {
         self.client = client
         self.promptBuilder = promptBuilder
+        self.catalog = catalog
+        parser = GeneratedPlanParser(catalog: catalog)
         self.spentModels = spentModels
         self.breadcrumbs = breadcrumbs
         self.pause = pause
     }
 
     func generate(_ request: PlanRequest) async -> PlanGenerationResult {
-        let basePrompt = promptBuilder.userPrompt(request)
+        // Last week's movements stay reachable whatever the shortlist would
+        // otherwise drop, or progression loses the lift it was tracking.
+        let carriedOver = Set(
+            (request.previousWeek?.workoutDays ?? [])
+                .flatMap(\.exercises)
+                .map(\.exerciseKey)
+        )
+        let shortlist = ExerciseShortlist.forRequest(
+            catalog: catalog, user: request.user, carriedOver: carriedOver
+        )
+        let exerciseKeys = shortlist.map(\.key)
+        let basePrompt = promptBuilder.userPrompt(request, shortlist: shortlist)
         var feedback: [String] = []
         var failure = PlanGenerationFailure.failed
 
@@ -67,7 +82,8 @@ struct GeminiPlanGenerator: PlanGenerator {
             switch await client.generate(
                 model: models[modelIndex],
                 systemInstruction: promptBuilder.systemInstruction(),
-                userPrompt: prompt
+                userPrompt: prompt,
+                exerciseKeys: exerciseKeys
             ) {
             case .text(let value):
                 json = value
@@ -114,7 +130,12 @@ struct GeminiPlanGenerator: PlanGenerator {
                 userID: request.user.id,
                 weekNumber: request.weekNumber,
                 startDate: request.startDate,
-                limits: PlanLimits(maxSetsPerSession: SessionBudget.maxSetsPerSession(request.user))
+                limits: PlanLimits(
+                    maxSetsPerSession: SessionBudget.maxSetsPerSession(request.user),
+                    allowedKeys: Set(exerciseKeys),
+                    requiredPatterns: ExerciseShortlist.requiredPatterns(shortlist),
+                    languageCode: request.languageCode
+                )
             ) {
             case .parsed(let plan):
                 if plan.workoutDays.count == request.user.workoutDaysPerWeek {

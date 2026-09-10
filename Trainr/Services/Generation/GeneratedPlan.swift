@@ -8,14 +8,11 @@ nonisolated struct GeneratedPlan: Codable {
 nonisolated struct GeneratedDay: Codable {
     var dayNumber: Int
     var title: String
-    var equipment: [String]?
     var exercises: [GeneratedExercise]
 }
 
 nonisolated struct GeneratedExercise: Codable {
     var exerciseKey: String
-    var name: String
-    var measure: String
     var prescription: String
     var instructions: String
     var restSeconds: Int?
