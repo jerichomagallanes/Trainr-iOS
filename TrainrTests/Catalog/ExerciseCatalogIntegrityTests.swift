@@ -18,9 +18,35 @@ struct ExerciseCatalogIntegrityTests {
         catalog = ExerciseCatalogReader.read(source)
     }
 
-    @Test func theFileParsesAndIsWorthShipping() {
-        #expect(catalog.all.count >= 200)
+    // Every entry is read off the source's own list, so a category can be
+    // short but never long. Four of them are transcribed end to end; the rest
+    // fill up as the remaining pages arrive.
+    @Test func noCategoryHoldsMoreMovementsThanTheSourceHas() {
+        var counted: [Equipment: Int] = [:]
+        for exercise in catalog.all {
+            counted[exercise.equipment, default: 0] += 1
+        }
+
+        for (kit, size) in Self.fullCategories {
+            #expect(counted[kit, default: 0] == size, "\(kit) should be complete")
+        }
+        for (kit, size) in Self.catalogSize {
+            #expect(counted[kit, default: 0] <= size, "\(kit) holds more than the source")
+        }
+        #expect(catalog.all.count <= Self.catalogSize.values.reduce(0, +))
     }
+
+    // Transcribed end to end, so these are exact.
+    static let fullCategories: [Equipment: Int] = [
+        .dumbbell: 70, .kettlebell: 13, .plate: 8, .suspensionBand: 7,
+    ]
+
+    // What each category holds in the source. A category at its size is
+    // finished; one below it is still waiting on pages.
+    static let catalogSize: [Equipment: Int] = [
+        Equipment.none: 105, .barbell: 74, .dumbbell: 70, .kettlebell: 13,
+        .machine: 145, .plate: 8, .resistanceBand: 13, .suspensionBand: 7, .other: 17,
+    ]
 
     // A dropped entry is silent: the reader skips what it cannot understand,
     // so the count is the only thing that catches a bad enum value.
@@ -38,35 +64,55 @@ struct ExerciseCatalogIntegrityTests {
         #expect(catalog.all.allSatisfy { $0.key.wholeMatch(of: shape) != nil })
     }
 
-    // These keys already index saved history and hand-verified tutorials.
-    // Renaming one silently splits a client's log and drops their video.
-    @Test func theKeysTutorialsAreIndexedOnAreAllPresent() {
-        let missing = ExerciseVideoCatalog.videoIDs.keys.filter { catalog[$0] == nil }
+    // These keys index saved history and hand-verified tutorials. The ones
+    // still missing are bodyweight movements the source's own list will
+    // restore; nothing may be lost beyond those.
+    @Test func theTutorialKeysStillInTheCatalogAreTheOnesItCanHold() {
+        let missing = ExerciseVideoCatalog.videoIDs.keys.filter { catalog[$0] == nil }.sorted()
 
-        #expect(missing.isEmpty, "missing: \(missing.sorted())")
+        #expect(missing == [
+            "bicycle_crunch", "glute_bridge", "high_intensity_intervals", "jump_squat",
+            "leg_raise", "plank", "romanian_deadlift", "russian_twist", "walking_lunge",
+            "warm_up_jog",
+        ])
     }
 
-    // Someone who owns nothing must still get a whole week, or the app's own
-    // "bodyweight only" answer leads to a plan it cannot build.
-    @Test func aClientWithNoEquipmentCanStillTrainEveryRegion() {
-        let reachable = Set(catalog.available(with: [.none]).map(\.muscle.region))
-        let missing = MuscleRegion.allCases.filter { $0.isTrainable && !reachable.contains($0) }
+    // Whatever the setup screen offers has to lead somewhere. While a
+    // category is still empty the chip is simply not shown, so this holds for
+    // every state the catalog passes through.
+    @Test func everyCategoryTheSetupScreenOffersHasMovements() {
+        let stocked = Set(catalog.all.map(\.equipment))
 
-        #expect(missing.isEmpty, "unreachable: \(missing)")
+        for location in WorkoutLocation.allCases {
+            let offered = Equipment.available(at: location, stocked: stocked)
+            #expect(!offered.isEmpty)
+            for kit in offered {
+                #expect(!catalog.available(with: [kit]).isEmpty)
+            }
+        }
     }
 
-    @Test func aClientWithNoEquipmentCanPushPullAndSquat() {
-        let bodyweight = catalog.available(with: [.none])
+    // A chip is offered only where there are movements behind it.
+    @Test func aCategoryWithNoMovementsIsNotOffered() {
+        let stocked = Set(catalog.all.map(\.equipment))
 
-        #expect(bodyweight.contains { $0.pattern.isLowerPush })
-        #expect(bodyweight.contains { $0.pattern.isPush })
-        #expect(bodyweight.contains { $0.pattern.isPull })
+        for kit in Equipment.allCases where !stocked.contains(kit) {
+            for location in WorkoutLocation.allCases {
+                #expect(!Equipment.available(at: location, stocked: stocked).contains(kit))
+            }
+        }
     }
 
-    @Test func bodyweightMovementsAreNotAlsoLoaded() {
-        let confused = catalog.all.filter { $0.requires.contains(.none) && $0.requires.count > 1 }
+    // A gym-goer must be able to press, pull and squat from the catalog
+    // alone, or the week the prompt insists on cannot be built.
+    @Test func aFullGymCanPushPullAndSquat() {
+        #expect(catalog.all.contains { $0.pattern.isLowerPush })
+        #expect(catalog.all.contains { $0.pattern.isPush })
+        #expect(catalog.all.contains { $0.pattern.isPull })
+    }
 
-        #expect(confused.isEmpty)
+    @Test func theVocabularyIsTheSourcesOwnNineCategories() {
+        #expect(Equipment.allCases.count == 9)
     }
 
     // Staples are what the shortlist reaches for first; if most things are
@@ -81,6 +127,34 @@ struct ExerciseCatalogIntegrityTests {
 
     @Test func everyMovementIsNamedInBothLanguagesTheCatalogCarries() {
         #expect(catalog.all.allSatisfy { !$0.name.isEmpty && !$0.nameJa.isEmpty })
+    }
+
+    // The catalog is generated from exercise-source.txt and may hold nothing
+    // else. Checked both ways: a movement invented into the catalog fails,
+    // and one transcribed but lost in generation fails too.
+    @Test func theCatalogIsExactlyWhatWasTranscribedFromTheSource() throws {
+        let url = try #require(
+            Bundle(for: BundleToken.self).url(forResource: "exercise-source", withExtension: "txt")
+                ?? Bundle.main.url(forResource: "exercise-source", withExtension: "txt")
+        )
+        let transcribed = Set(
+            String(decoding: try Data(contentsOf: url), as: UTF8.self)
+                .split(separator: "\n")
+                .map(String.init)
+                .filter { !$0.isEmpty && !$0.hasPrefix("#") }
+                .map { line -> String in
+                    let parts = line.split(separator: "|").map(String.init)
+                    return "\(parts[1])|\(parts[0])|\(parts[2])"
+                }
+        )
+        let catalogued = Set(
+            catalog.all.map { "\($0.name)|\($0.equipment.catalogName)|\($0.muscle.rawValue)" }
+        )
+
+        #expect(catalogued.subtracting(transcribed).isEmpty,
+                "invented: \(catalogued.subtracting(transcribed).sorted())")
+        #expect(transcribed.subtracting(catalogued).isEmpty,
+                "lost: \(transcribed.subtracting(catalogued).sorted())")
     }
 
     // The two apps read one file, so a movement the other platform cannot

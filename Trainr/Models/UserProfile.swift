@@ -54,68 +54,90 @@ nonisolated enum WorkoutLocation: String, Codable, CaseIterable, Sendable {
     case both
 }
 
+// The equipment vocabulary the exercise catalog is categorised by, and the
+// only vocabulary the setup screen asks about. One tag per movement: what a
+// bench press is done with is the bar, and the bench is part of doing it.
 nonisolated enum Equipment: String, Codable, CaseIterable, Sendable {
     case none
-    case dumbbells
     case barbell
-    case bench
-    case resistanceBands
-    case pullUpBar
-    case kettlebells
-    case squatRack
-    case cableMachine
-    case machines
-    case cardioMachines
-    case mat
-    case jumpRope
+    case dumbbell
+    case kettlebell
+    case machine
+    case plate
+    case resistanceBand
+    case suspensionBand
+    case other
 }
 
 extension Equipment {
 
     // The catalog file is shared with the Android app, which spells these in
     // the shape Kotlin enums take, so the mapping lives here rather than
-    // bending either app's own naming to the file.
-    // Spelled out: in a function returning Equipment?, a bare `.none` is
-    // Optional.none, and every bodyweight movement in the catalog silently
-    // disappears.
+    // bending either app's own naming to the file. Spelled out: in a function
+    // returning Equipment?, a bare `.none` is Optional.none, and every
+    // bodyweight movement in the catalog silently disappears.
     nonisolated static func fromCatalog(_ raw: String) -> Equipment? {
         switch raw {
         case "NONE": Equipment.none
-        case "DUMBBELLS": .dumbbells
-        case "BARBELL": .barbell
-        case "BENCH": .bench
-        case "RESISTANCE_BANDS": .resistanceBands
-        case "PULL_UP_BAR": .pullUpBar
-        case "KETTLEBELLS": .kettlebells
-        case "SQUAT_RACK": .squatRack
-        case "CABLE_MACHINE": .cableMachine
-        case "MACHINES": .machines
-        case "CARDIO_MACHINES": .cardioMachines
-        case "MAT": .mat
-        case "JUMP_ROPE": .jumpRope
+        case "BARBELL": Equipment.barbell
+        case "DUMBBELL": Equipment.dumbbell
+        case "KETTLEBELL": Equipment.kettlebell
+        case "MACHINE": Equipment.machine
+        case "PLATE": Equipment.plate
+        case "RESISTANCE_BAND": Equipment.resistanceBand
+        case "SUSPENSION_BAND": Equipment.suspensionBand
+        case "OTHER": Equipment.other
         default: nil
         }
     }
 
-    // Everything a gym has that a home might not, and the other way round. A
-    // client who trains in both places has both, which is why both is the
-    // union and not the gym list.
-    static let atHome: [Equipment] = [
-        .none, .dumbbells, .kettlebells, .resistanceBands, .pullUpBar, .bench,
-        .mat, .jumpRope, .barbell, .squatRack, .cardioMachines
+    // A profile saved before the catalog settled on nine categories still
+    // names the old finer-grained kit. Dropping those would quietly empty
+    // someone's equipment and hand them a bodyweight plan without saying why.
+    nonisolated private static let legacy: [String: Equipment] = [
+        "dumbbells": .dumbbell, "kettlebells": .kettlebell,
+        "resistanceBands": .resistanceBand, "machines": .machine,
+        "cableMachine": .machine, "cardioMachines": .machine,
+        "pullUpBar": .machine, "squatRack": .barbell,
+        "bench": .other, "jumpRope": .other, "others": .other, "mat": Equipment.none,
     ]
 
-    static let atTheGym: [Equipment] = [
-        .barbell, .squatRack, .bench, .dumbbells, .kettlebells, .cableMachine,
-        .machines, .pullUpBar, .resistanceBands, .cardioMachines, .mat
-    ]
-
-    static func available(at location: WorkoutLocation) -> [Equipment] {
-        switch location {
-        case .home: atHome
-        case .gym: atTheGym
-        case .both: atHome.filter { $0 != .none } + atTheGym.filter { !atHome.contains($0) }
+    // The spelling the shared catalog file uses, which is the Kotlin enum's.
+    nonisolated var catalogName: String {
+        switch self {
+        case .none: "NONE"
+        case .barbell: "BARBELL"
+        case .dumbbell: "DUMBBELL"
+        case .kettlebell: "KETTLEBELL"
+        case .machine: "MACHINE"
+        case .plate: "PLATE"
+        case .resistanceBand: "RESISTANCE_BAND"
+        case .suspensionBand: "SUSPENSION_BAND"
+        case .other: "OTHER"
         }
+    }
+
+    nonisolated static func stored(_ raw: String) -> Equipment? {
+        Equipment(rawValue: raw) ?? legacy[raw]
+    }
+
+    // Asked in the catalog's own order. "No equipment" is an answer only where
+    // there might be none; at a gym it is not a thing anyone means.
+    static let choices: [Equipment] = [
+        .none, .barbell, .dumbbell, .kettlebell, .machine,
+        .plate, .resistanceBand, .suspensionBand, .other
+    ]
+
+    // A chip the catalog cannot serve is a lie: the client ticks it, the
+    // shortlist comes back empty, and the plan is built from nothing. What is
+    // offered is what there are movements for.
+    static func available(
+        at location: WorkoutLocation,
+        stocked: Set<Equipment> = Set(Equipment.choices)
+    ) -> [Equipment] {
+        choices
+            .filter { stocked.contains($0) }
+            .filter { $0 != Equipment.none || location == .home }
     }
 }
 

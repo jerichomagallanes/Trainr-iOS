@@ -5,11 +5,11 @@ import Testing
 private func catalogExercise(
     _ key: String, _ muscle: MuscleGroup,
     _ measure: ExerciseMeasure, _ pattern: MovementPattern,
-    requires: Set<Equipment> = [.none]
+    equipment: Equipment = Equipment.none
 ) -> CatalogExercise {
     CatalogExercise(
         key: key, name: key.replacingOccurrences(of: "_", with: " "), nameJa: key,
-        muscle: muscle, requires: requires, measure: measure, pattern: pattern, staple: true
+        muscle: muscle, equipment: equipment, measure: measure, pattern: pattern, staple: true
     )
 }
 
@@ -177,10 +177,10 @@ struct GeneratedPlanParserTests {
 
     // Asking a model to restate the day's kit only gave it a way to name
     // equipment the client does not own.
-    @Test func theDaysEquipmentIsTheUnionOfWhatItsMovementsNeed() throws {
+    @Test func theDaysEquipmentComesFromItsMovements() throws {
         let loaded = GeneratedPlanParser(catalog: InMemoryExerciseCatalog([
             catalogExercise("goblet_squat", .quadriceps, .weightAndReps, .squat,
-                            requires: [.dumbbells]),
+                            equipment: Equipment.dumbbell),
             catalogExercise("warm_up_jog", .cardio, .duration, .conditioning),
             catalogExercise("bicycle_crunch", .abdominals, .reps, .core)
         ]))
@@ -189,7 +189,7 @@ struct GeneratedPlanParserTests {
         )
 
         guard case .parsed(let plan) = result else { throw ParserTestFailure.expectedParsed }
-        #expect(plan.workoutDays.first { $0.dayNumber == 1 }?.equipment == ["Dumbbells"])
+        #expect(plan.workoutDays.first { $0.dayNumber == 1 }?.equipment == ["Dumbbell"])
         #expect(plan.workoutDays.first { $0.dayNumber == 3 }?.equipment == [])
     }
 

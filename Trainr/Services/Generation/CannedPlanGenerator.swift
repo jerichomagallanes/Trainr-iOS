@@ -127,18 +127,14 @@ struct CannedPlanGenerator: PlanGenerator {
 
     private static func text(for equipment: Equipment) -> String {
         switch equipment {
-        case .dumbbells: "Dumbbells"
         case .barbell: "Barbell"
-        case .kettlebells: "Kettlebells"
-        case .bench: "Bench"
-        case .resistanceBands: "Resistance bands"
-        case .pullUpBar: "Pull-up bar"
-        case .squatRack: "Squat rack"
-        case .cableMachine: "Cable machine"
-        case .cardioMachines: "Cardio equipment"
-        case .machines: "Weight machines"
-        case .mat: "Exercise mat"
-        case .jumpRope: "Jump rope"
+        case .dumbbell: "Dumbbell"
+        case .kettlebell: "Kettlebell"
+        case .machine: "Machine"
+        case .plate: "Plate"
+        case .resistanceBand: "Resistance Band"
+        case .suspensionBand: "Suspension Band"
+        case .other: "Other"
         case .none: bodyweight
         }
     }
@@ -181,7 +177,7 @@ struct CannedPlanGenerator: PlanGenerator {
             )
         ),
         Candidate(
-            needs: [.dumbbells, .kettlebells],
+            needs: [.dumbbell, .kettlebell],
             exercise: WorkoutExercise(
                 exerciseKey: "goblet_squat",
                 name: "Goblet Squat",
@@ -195,7 +191,7 @@ struct CannedPlanGenerator: PlanGenerator {
             )
         ),
         Candidate(
-            needs: [.dumbbells],
+            needs: [.dumbbell],
             exercise: WorkoutExercise(
                 exerciseKey: "dumbbell_floor_press",
                 name: "Dumbbell Floor Press",
@@ -209,7 +205,7 @@ struct CannedPlanGenerator: PlanGenerator {
             )
         ),
         Candidate(
-            needs: [.dumbbells, .barbell],
+            needs: [.dumbbell, .barbell],
             exercise: WorkoutExercise(
                 exerciseKey: "bent_over_row",
                 name: "Bent Over Row",
@@ -223,7 +219,7 @@ struct CannedPlanGenerator: PlanGenerator {
             )
         ),
         Candidate(
-            needs: [.dumbbells, .barbell],
+            needs: [.dumbbell, .barbell],
             exercise: WorkoutExercise(
                 exerciseKey: "romanian_deadlift",
                 name: "Romanian Deadlift",
@@ -237,7 +233,7 @@ struct CannedPlanGenerator: PlanGenerator {
             )
         ),
         Candidate(
-            needs: [.dumbbells, .barbell],
+            needs: [.dumbbell, .barbell],
             exercise: WorkoutExercise(
                 exerciseKey: "overhead_press",
                 name: "Overhead Press",

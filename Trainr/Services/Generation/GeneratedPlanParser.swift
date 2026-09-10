@@ -226,7 +226,7 @@ nonisolated struct GeneratedPlanParser {
     private func day(_ generated: GeneratedDay, languageCode: String) -> WorkoutDay {
         var kit: [String] = []
         for item in generated.exercises.compactMap({ catalog[$0.exerciseKey] })
-            .flatMap(\.requires).filter({ $0 != Equipment.none })
+            .map(\.equipment).filter({ $0 != Equipment.none })
             .map(\.catalogDisplayText) where !kit.contains(item) {
             kit.append(item)
         }

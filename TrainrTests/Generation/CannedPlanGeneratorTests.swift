@@ -10,7 +10,7 @@ struct CannedPlanGeneratorTests {
         daysPerWeek: Int = 3,
         weekNumber: Int = 1,
         duration: Int = 45,
-        equipment: [Equipment] = [.dumbbells],
+        equipment: [Equipment] = [.dumbbell],
         previousWeek: WeeklyPlan? = nil
     ) -> PlanRequest {
         PlanRequest(
@@ -31,7 +31,7 @@ struct CannedPlanGeneratorTests {
     private func plan(
         daysPerWeek: Int = 3,
         duration: Int = 45,
-        equipment: [Equipment] = [.dumbbells],
+        equipment: [Equipment] = [.dumbbell],
         previousWeek: WeeklyPlan? = nil,
         weekNumber: Int = 1
     ) async throws -> WeeklyPlan {
@@ -125,8 +125,8 @@ struct CannedPlanGeneratorTests {
 
     @Test func itNamesOnlyTheEquipmentTheDayActuallyNeeds() async throws {
         let loaded = try #require(
-            await plan(equipment: [.dumbbells, .squatRack]).workoutDays.first)
-        #expect(loaded.equipment == ["Dumbbells"])
+            await plan(equipment: [.dumbbell, .machine]).workoutDays.first)
+        #expect(loaded.equipment == ["Dumbbell"])
 
         let bodyweight = try #require(
             await plan(equipment: [Equipment.none]).workoutDays.first)

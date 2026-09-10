@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct WorkoutSetupView: View {
+    let stockedEquipment: Set<Equipment>
     var isEditing = false
     let onNext: (WorkoutLocation, [Equipment], UnitSystem?, Int, Int, WorkoutTime) -> Void
     let onBack: () -> Void
@@ -13,11 +14,13 @@ struct WorkoutSetupView: View {
     @State private var selectedLiftingUnits: UnitSystem?
 
     init(
+        stockedEquipment: Set<Equipment> = Set(Equipment.choices),
         initial: UserProfile? = nil,
         isEditing: Bool = false,
         onNext: @escaping (WorkoutLocation, [Equipment], UnitSystem?, Int, Int, WorkoutTime) -> Void,
         onBack: @escaping () -> Void
     ) {
+        self.stockedEquipment = stockedEquipment
         self.isEditing = isEditing
         self.onNext = onNext
         self.onBack = onBack
@@ -163,7 +166,8 @@ struct WorkoutSetupView: View {
 
     private var equipmentOptions: [(Equipment, String)] {
         guard let selectedLocation else { return [] }
-        return Equipment.available(at: selectedLocation).map { ($0, $0.displayName) }
+        return Equipment.available(at: selectedLocation, stocked: stockedEquipment)
+            .map { ($0, $0.displayName) }
     }
 
     private var equipmentList: [Equipment] {

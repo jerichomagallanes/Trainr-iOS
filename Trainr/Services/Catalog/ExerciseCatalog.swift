@@ -7,7 +7,7 @@ nonisolated struct CatalogExercise: Equatable, Sendable {
     let name: String
     let nameJa: String
     let muscle: MuscleGroup
-    let requires: Set<Equipment>
+    let equipment: Equipment
     let measure: ExerciseMeasure
     let pattern: MovementPattern
     let staple: Bool
@@ -16,10 +16,9 @@ nonisolated struct CatalogExercise: Equatable, Sendable {
         languageCode == "ja" && !nameJa.isEmpty ? nameJa : name
     }
 
-    // Bodyweight needs nothing, so it is available to everyone; everything else
-    // needs every item it lists, not any one of them.
+    // Bodyweight needs nothing, so it is available to everyone.
     func isAvailable(with owned: Set<Equipment>) -> Bool {
-        requires == [.none] || requires.isSubset(of: owned)
+        equipment == Equipment.none || owned.contains(equipment)
     }
 }
 

@@ -12,7 +12,7 @@ private nonisolated struct CatalogEntry: Decodable {
     var name = ""
     var nameJa = ""
     var muscle = ""
-    var requires: [String] = []
+    var equipment = ""
     var measure = ""
     var pattern = ""
     var staple = false
@@ -33,11 +33,10 @@ nonisolated enum ExerciseCatalogReader {
               let measure = ExerciseMeasure(rawValue: entry.measure),
               let pattern = MovementPattern(rawValue: entry.pattern)
         else { return nil }
-        let kit = entry.requires.compactMap(Equipment.fromCatalog)
-        guard kit.count == entry.requires.count else { return nil }
+        guard let kit = Equipment.fromCatalog(entry.equipment) else { return nil }
         return CatalogExercise(
             key: entry.key, name: entry.name, nameJa: entry.nameJa, muscle: muscle,
-            requires: Set(kit), measure: measure, pattern: pattern, staple: entry.staple
+            equipment: kit, measure: measure, pattern: pattern, staple: entry.staple
         )
     }
 }
