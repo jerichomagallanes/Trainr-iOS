@@ -194,6 +194,30 @@ nonisolated enum L10n {
     static var personalizedWorkoutPlans: String { String(localized: "personalized_workout_plans") }
     static var planOptions: String { String(localized: "plan_options") }
     static var preferredFirstName: String { String(localized: "preferred_first_name") }
+    static func prescriptionMinutes(_ p1: Int) -> String {
+        String.localizedStringWithFormat(String(localized: "prescription_minutes"), p1)
+    }
+    static func prescriptionPerSide(_ p1: String) -> String {
+        String.localizedStringWithFormat(String(localized: "prescription_per_side"), p1)
+    }
+    static func prescriptionRangeMinutes(_ p1: Int, _ p2: Int) -> String {
+        String.localizedStringWithFormat(String(localized: "prescription_range_minutes"), p1, p2)
+    }
+    static func prescriptionRangeReps(_ p1: Int, _ p2: Int) -> String {
+        String.localizedStringWithFormat(String(localized: "prescription_range_reps"), p1, p2)
+    }
+    static func prescriptionRangeSeconds(_ p1: Int, _ p2: Int) -> String {
+        String.localizedStringWithFormat(String(localized: "prescription_range_seconds"), p1, p2)
+    }
+    static func prescriptionReps(_ p1: Int) -> String {
+        String.localizedStringWithFormat(String(localized: "prescription_reps"), p1)
+    }
+    static func prescriptionSeconds(_ p1: Int) -> String {
+        String.localizedStringWithFormat(String(localized: "prescription_seconds"), p1)
+    }
+    static func prescriptionSets(_ p1: Int, _ p2: String) -> String {
+        String.localizedStringWithFormat(String(localized: "prescription_sets"), p1, p2)
+    }
     static var previousColumn: String { String(localized: "previous_column") }
     static var proActive: String { String(localized: "pro_active") }
     static var proAndMore: String { String(localized: "pro_and_more") }
