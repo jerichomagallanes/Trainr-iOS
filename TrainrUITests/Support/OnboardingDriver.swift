@@ -72,11 +72,6 @@ extension XCUIApplication {
     @MainActor
     func fillGoals() {
         buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "Build Muscle")).firstMatch.tap()
-        let style = buttons.matching(
-            NSPredicate(format: "label BEGINSWITH %@", "Strength Training")
-        ).firstMatch
-        scrollUntilHittable(style)
-        style.tap()
         buttons["NEXT"].tap()
         XCTAssertTrue(staticTexts["SET UP YOUR WORKOUT"].waitForExistence(timeout: 5))
     }
@@ -90,9 +85,6 @@ extension XCUIApplication {
         buttons["Choose how many days"].tap()
         buttons["3 days"].tap()
         buttons["45 mins"].tap()
-        let morning = buttons["Morning (7-12 PM)"]
-        scrollUntilHittable(morning)
-        morning.tap()
         let next = buttons["NEXT"]
         scrollUntilHittable(next)
         next.tap()

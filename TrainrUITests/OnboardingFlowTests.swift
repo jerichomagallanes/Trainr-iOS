@@ -59,7 +59,6 @@ final class OnboardingFlowTests: XCTestCase {
 
         XCTAssertTrue(app.staticTexts["YOUR FITNESS GOALS"].waitForExistence(timeout: 5))
         app.button(startingWith: "Build Muscle").tap()
-        app.select(app.button(startingWith: "Strength Training"))
         app.buttons["NEXT"].tap()
 
         XCTAssertTrue(app.staticTexts["SET UP YOUR WORKOUT"].waitForExistence(timeout: 5))
@@ -70,7 +69,6 @@ final class OnboardingFlowTests: XCTestCase {
         app.buttons["Choose how many days"].tap()
         app.buttons["3 days"].tap()
         app.buttons["45 mins"].tap()
-        app.select(app.buttons["Morning (7-12 PM)"])
         let setupNext = app.buttons["NEXT"]
         XCTAssertTrue(setupNext.isEnabled)
         setupNext.tap()

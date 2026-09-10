@@ -14,9 +14,7 @@ nonisolated struct UserProfile: Identifiable, Equatable, Sendable {
     var availableEquipment: [Equipment] = []
     var workoutDaysPerWeek = Constants.Workout.defaultDaysPerWeek
     var workoutDuration = Constants.Workout.defaultDuration
-    var preferredWorkoutTime = WorkoutTime.anytime
     var injuries: [Injury] = []
-    var workoutType = WorkoutType.mixed
     var bodyUnitSystem = UnitSystem.standard
     // What the gym's plates are marked in, a different question from how the
     // client reads their own body. Nil until there is loaded kit to ask about.
@@ -154,18 +152,3 @@ nonisolated enum Injury: String, Codable, CaseIterable, Sendable {
     case neck
 }
 
-nonisolated enum WorkoutType: String, Codable, CaseIterable, Sendable {
-    case strength
-    case cardio
-    case hiit
-    case yoga
-    case mixed
-}
-
-nonisolated enum WorkoutTime: String, Codable, CaseIterable, Sendable {
-    case earlyMorning
-    case morning
-    case afternoon
-    case evening
-    case anytime
-}

@@ -178,8 +178,8 @@ struct RootView: View {
             FitnessGoalView(
                 initial: onboarding.filled(for: .goals, editing: editing),
                 isEditing: editing,
-                onNext: { goal, workoutType in
-                    onboarding.updateFitnessGoal(goal, workoutType: workoutType)
+                onNext: { goal in
+                    onboarding.updateFitnessGoal(goal)
                     step(editing: editing, next: .workoutSetup(editing: false))
                 },
                 onBack: pop
@@ -190,10 +190,10 @@ struct RootView: View {
                 stockedEquipment: onboarding.stockedEquipment,
                 initial: onboarding.filled(for: .setup, editing: editing),
                 isEditing: editing,
-                onNext: { location, equipment, liftingUnits, days, duration, time in
+                onNext: { location, equipment, liftingUnits, days, duration in
                     onboarding.updateWorkoutSetup(
                         location: location, equipment: equipment, liftingUnits: liftingUnits,
-                        daysPerWeek: days, duration: duration, preferredTime: time)
+                        daysPerWeek: days, duration: duration)
                     step(editing: editing, next: .limitations(editing: false))
                 },
                 onBack: pop

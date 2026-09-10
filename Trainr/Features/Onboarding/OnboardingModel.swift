@@ -65,10 +65,9 @@ final class OnboardingModel {
         profile.bodyUnitSystem = units
     }
 
-    func updateFitnessGoal(_ goal: FitnessGoal, workoutType: WorkoutType) {
+    func updateFitnessGoal(_ goal: FitnessGoal) {
         answeredSteps.insert(.goals)
         profile.fitnessGoal = goal
-        profile.workoutType = workoutType
     }
 
     func updateWorkoutSetup(
@@ -77,7 +76,6 @@ final class OnboardingModel {
         liftingUnits: UnitSystem?,
         daysPerWeek: Int,
         duration: Int,
-        preferredTime: WorkoutTime
     ) {
         answeredSteps.insert(.setup)
         profile.workoutLocation = location
@@ -85,7 +83,6 @@ final class OnboardingModel {
         profile.availableEquipment = equipment
         profile.workoutDaysPerWeek = daysPerWeek
         profile.workoutDuration = duration
-        profile.preferredWorkoutTime = preferredTime
     }
 
     func updateLimitations(injuries: [Injury]) {

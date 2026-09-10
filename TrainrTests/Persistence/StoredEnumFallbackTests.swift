@@ -40,15 +40,11 @@ struct StoredEnumFallbackTests {
         record.fitnessGoal = "becomeABird"
         record.experienceLevel = "olympian"
         record.workoutLocation = "moon"
-        record.preferredWorkoutTime = "thirdWatch"
-        record.workoutType = "interpretiveDance"
 
         let profile = record.profile
         #expect(profile.fitnessGoal == .generalFitness)
         #expect(profile.experienceLevel == .beginner)
         #expect(profile.workoutLocation == .home)
-        #expect(profile.preferredWorkoutTime == .anytime)
-        #expect(profile.workoutType == .mixed)
     }
 
     // Dropped rather than defaulted: equipment the client does not have must

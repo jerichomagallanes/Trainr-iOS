@@ -11,9 +11,8 @@ nonisolated struct PlanPromptBuilder {
 
         When the client's answers pull against each other, this is the order that
         decides: injuries first, then the equipment they actually have, then the
-        time they have, then their goal, then their preferred style. The style
-        decides what the sessions are made of; the goal decides how they are
-        loaded.
+        time they have, then their goal. The goal decides both what the sessions
+        are made of and how they are loaded.
 
         Program design rules:
         - Plan exactly the number of training days requested, placed across the
@@ -113,7 +112,6 @@ nonisolated struct PlanPromptBuilder {
             "- Age \(user.age), height \(user.height) cm, weight \(user.weight) kg",
             "- Goal: \(text(for: user.fitnessGoal))",
             "- Experience: \(user.experienceLevel.rawValue)",
-            "- Preferred training style: \(text(for: user.workoutType))",
             "- Trains at: \(user.workoutLocation.rawValue)",
             "- Available equipment: \(text(for: user.availableEquipment))",
             "- Days per week: \(user.workoutDaysPerWeek) (plan EXACTLY this many days)",
@@ -235,16 +233,6 @@ nonisolated struct PlanPromptBuilder {
         case .ankle: "ankle issues"
         case .hip: "hip problems"
         case .neck: "neck pain"
-        }
-    }
-
-    private func text(for style: WorkoutType) -> String {
-        switch style {
-        case .strength: "resistance training"
-        case .cardio: "cardio"
-        case .hiit: "high-intensity intervals"
-        case .yoga: "mobility and yoga"
-        case .mixed: "a mix of resistance and conditioning"
         }
     }
 

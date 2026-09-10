@@ -3,21 +3,20 @@ import SwiftUI
 struct WorkoutSetupView: View {
     let stockedEquipment: Set<Equipment>
     var isEditing = false
-    let onNext: (WorkoutLocation, [Equipment], UnitSystem?, Int, Int, WorkoutTime) -> Void
+    let onNext: (WorkoutLocation, [Equipment], UnitSystem?, Int, Int) -> Void
     let onBack: () -> Void
 
     @State private var selectedLocation: WorkoutLocation?
     @State private var selectedEquipment: Set<Equipment>
     @State private var selectedDays: Int?
     @State private var selectedDuration: Int?
-    @State private var selectedTime: WorkoutTime?
     @State private var selectedLiftingUnits: UnitSystem?
 
     init(
         stockedEquipment: Set<Equipment> = Set(Equipment.choices),
         initial: UserProfile? = nil,
         isEditing: Bool = false,
-        onNext: @escaping (WorkoutLocation, [Equipment], UnitSystem?, Int, Int, WorkoutTime) -> Void,
+        onNext: @escaping (WorkoutLocation, [Equipment], UnitSystem?, Int, Int) -> Void,
         onBack: @escaping () -> Void
     ) {
         self.stockedEquipment = stockedEquipment
@@ -28,7 +27,6 @@ struct WorkoutSetupView: View {
         _selectedEquipment = State(initialValue: Set(initial?.availableEquipment ?? []))
         _selectedDays = State(initialValue: (initial?.workoutDaysPerWeek).flatMap { $0 > 0 ? $0 : nil })
         _selectedDuration = State(initialValue: (initial?.workoutDuration).flatMap { $0 > 0 ? $0 : nil })
-        _selectedTime = State(initialValue: initial?.preferredWorkoutTime)
         _selectedLiftingUnits = State(initialValue: initial?.liftingUnitSystem)
     }
 
@@ -44,18 +42,17 @@ struct WorkoutSetupView: View {
             && (!hasLoadedEquipment || selectedLiftingUnits != nil)
             && selectedDays != nil
             && selectedDuration != nil
-            && selectedTime != nil
     }
 
     var body: some View {
         ScreenScaffold(onBack: onBack, closeInsteadOfBack: isEditing) {
             PrimaryButton(title: isEditing ? L10n.save : L10n.next, isEnabled: isFormValid) {
                 guard let location = selectedLocation, let days = selectedDays,
-                      let duration = selectedDuration, let time = selectedTime
+                      let duration = selectedDuration
                 else { return }
                 onNext(location, equipmentList,
                        hasLoadedEquipment ? selectedLiftingUnits : nil,
-                       days, duration, time)
+                       days, duration)
             }
         } content: {
             if !isEditing {
@@ -148,18 +145,6 @@ struct WorkoutSetupView: View {
                     }
                 }
 
-                Spacer().frame(height: Spacing.sectionGap)
-
-                FormSection(title: L10n.preferredWorkoutTime,
-                            verticalPadding: 0, titleGap: Spacing.card) {
-                    VStack(spacing: Spacing.card) {
-                        timeChip(L10n.earlyMorningTime, .earlyMorning)
-                        timeChip(L10n.morningTime, .morning)
-                        timeChip(L10n.afternoonTime, .afternoon)
-                        timeChip(L10n.eveningTime, .evening)
-                        timeChip(L10n.flexibleAnytime, .anytime)
-                    }
-                }
             }
         }
     }
@@ -208,13 +193,8 @@ struct WorkoutSetupView: View {
         }
     }
 
-    private func timeChip(_ label: String, _ time: WorkoutTime) -> some View {
-        RadioChip(text: label, isSelected: selectedTime == time) {
-            selectedTime = time
-        }
-    }
 }
 
 #Preview {
-    WorkoutSetupView(onNext: { _, _, _, _, _, _ in }, onBack: {})
+    WorkoutSetupView(onNext: { _, _, _, _, _ in }, onBack: {})
 }
