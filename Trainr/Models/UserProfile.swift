@@ -72,6 +72,31 @@ nonisolated enum Equipment: String, Codable, CaseIterable, Sendable {
 
 extension Equipment {
 
+    // The catalog file is shared with the Android app, which spells these in
+    // the shape Kotlin enums take, so the mapping lives here rather than
+    // bending either app's own naming to the file.
+    // Spelled out: in a function returning Equipment?, a bare `.none` is
+    // Optional.none, and every bodyweight movement in the catalog silently
+    // disappears.
+    nonisolated static func fromCatalog(_ raw: String) -> Equipment? {
+        switch raw {
+        case "NONE": Equipment.none
+        case "DUMBBELLS": .dumbbells
+        case "BARBELL": .barbell
+        case "BENCH": .bench
+        case "RESISTANCE_BANDS": .resistanceBands
+        case "PULL_UP_BAR": .pullUpBar
+        case "KETTLEBELLS": .kettlebells
+        case "SQUAT_RACK": .squatRack
+        case "CABLE_MACHINE": .cableMachine
+        case "MACHINES": .machines
+        case "CARDIO_MACHINES": .cardioMachines
+        case "MAT": .mat
+        case "JUMP_ROPE": .jumpRope
+        default: nil
+        }
+    }
+
     // Everything a gym has that a home might not, and the other way round. A
     // client who trains in both places has both, which is why both is the
     // union and not the gym list.

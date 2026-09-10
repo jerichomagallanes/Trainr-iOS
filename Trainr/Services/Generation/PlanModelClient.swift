@@ -22,10 +22,13 @@ nonisolated enum GeminiResponse: Equatable, Sendable {
 // reports only what a single ask did.
 protocol PlanModelClient {
 
+    // The movement keys become the schema's exerciseKey enum, so an answer
+    // naming a movement this client cannot perform is not representable.
     func generate(
         model: String,
         systemInstruction: String,
-        userPrompt: String
+        userPrompt: String,
+        exerciseKeys: [String]
     ) async -> GeminiResponse
 }
 

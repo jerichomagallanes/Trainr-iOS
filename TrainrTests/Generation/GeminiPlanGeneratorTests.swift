@@ -8,6 +8,7 @@ struct GeminiPlanGeneratorTests {
         private var remaining: [GeminiResponse]
         var modelsAsked: [String] = []
         var prompts: [String] = []
+        var offered: [[String]] = []
 
         init(_ answers: [GeminiResponse]) {
             remaining = answers
@@ -16,10 +17,12 @@ struct GeminiPlanGeneratorTests {
         func generate(
             model: String,
             systemInstruction: String,
-            userPrompt: String
+            userPrompt: String,
+            exerciseKeys: [String]
         ) async -> GeminiResponse {
             modelsAsked.append(model)
             prompts.append(userPrompt)
+            offered.append(exerciseKeys)
             return remaining.isEmpty ? .failed : remaining.removeFirst()
         }
     }
@@ -48,6 +51,14 @@ struct GeminiPlanGeneratorTests {
         func everything() -> [String] { events + states.keys + states.values }
     }
 
+    private let catalog = InMemoryExerciseCatalog([
+        CatalogExercise(
+            key: "goblet_squat", name: "Goblet Squat", nameJa: "ゴブレットスクワット",
+            muscle: .quadriceps, requires: [.none],
+            measure: .weightAndReps, pattern: .squat, staple: true
+        )
+    ])
+
     private func generator(
         _ client: any PlanModelClient,
         spentModels: any SpentModels = FakeSpentModels(),
@@ -55,6 +66,7 @@ struct GeminiPlanGeneratorTests {
     ) -> GeminiPlanGenerator {
         GeminiPlanGenerator(
             client: client,
+            catalog: catalog,
             spentModels: spentModels,
             breadcrumbs: breadcrumbs,
             pause: { _ in }
@@ -80,13 +92,9 @@ struct GeminiPlanGeneratorTests {
             {
               "dayNumber": 1,
               "title": "Full Body",
-              "equipment": ["Dumbbells"],
               "exercises": [
                 {
                   "exerciseKey": "goblet_squat",
-                  "name": "Goblet Squats",
-                  "measure": "WEIGHT_AND_REPS",
-                  "durationMinutes": 8,
                   "prescription": "3 sets of 12 reps",
                   "instructions": "Squat holding a dumbbell at your chest.",
                   "restSeconds": 60,

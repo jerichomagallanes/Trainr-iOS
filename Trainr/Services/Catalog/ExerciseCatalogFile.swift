@@ -1,0 +1,65 @@
+import Foundation
+
+// Read loosely on purpose: a row missing a field is one movement lost, not a
+// catalog, and the integrity test is what keeps the file honest.
+private nonisolated struct CatalogFile: Decodable {
+    var version: Int = 1
+    var exercises: [CatalogEntry] = []
+}
+
+private nonisolated struct CatalogEntry: Decodable {
+    var key = ""
+    var name = ""
+    var nameJa = ""
+    var muscle = ""
+    var requires: [String] = []
+    var measure = ""
+    var pattern = ""
+    var staple = false
+}
+
+nonisolated enum ExerciseCatalogReader {
+
+    static func read(_ source: Data) -> any ExerciseCatalog {
+        guard let file = try? JSONDecoder().decode(CatalogFile.self, from: source) else {
+            return InMemoryExerciseCatalog([])
+        }
+        return InMemoryExerciseCatalog(file.exercises.compactMap(exercise))
+    }
+
+    private static func exercise(_ entry: CatalogEntry) -> CatalogExercise? {
+        guard !entry.key.isEmpty, !entry.name.isEmpty,
+              let muscle = MuscleGroup(rawValue: entry.muscle),
+              let measure = ExerciseMeasure(rawValue: entry.measure),
+              let pattern = MovementPattern(rawValue: entry.pattern)
+        else { return nil }
+        let kit = entry.requires.compactMap(Equipment.fromCatalog)
+        guard kit.count == entry.requires.count else { return nil }
+        return CatalogExercise(
+            key: entry.key, name: entry.name, nameJa: entry.nameJa, muscle: muscle,
+            requires: Set(kit), measure: measure, pattern: pattern, staple: entry.staple
+        )
+    }
+}
+
+// A missing or broken file leaves an empty catalog rather than a crash:
+// generation then fails to find movements and says so, which is recoverable,
+// where a dead launch is not.
+nonisolated struct BundleExerciseCatalog: ExerciseCatalog {
+
+    private let loaded: any ExerciseCatalog
+
+    init(bundle: Bundle = .main, resource: String = "exercise-catalog") {
+        guard let url = bundle.url(forResource: resource, withExtension: "json"),
+              let data = try? Data(contentsOf: url)
+        else {
+            loaded = InMemoryExerciseCatalog([])
+            return
+        }
+        loaded = ExerciseCatalogReader.read(data)
+    }
+
+    var all: [CatalogExercise] { loaded.all }
+
+    subscript(key: String) -> CatalogExercise? { loaded[key] }
+}

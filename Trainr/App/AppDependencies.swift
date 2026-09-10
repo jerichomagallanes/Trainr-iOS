@@ -97,9 +97,8 @@ final class AppDependencies {
         #endif
         return GeminiPlanGenerator(
             client: FirebaseAIPlanModelClient(),
-            promptBuilder: PlanPromptBuilder(
-                canonicalKeys: Set(ExerciseVideoCatalog.videoIDs.keys)
-            ),
+            promptBuilder: PlanPromptBuilder(),
+            catalog: BundleExerciseCatalog(),
             spentModels: DailySpentModels(),
             breadcrumbs: breadcrumbs
         )

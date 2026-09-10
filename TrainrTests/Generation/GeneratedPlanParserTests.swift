@@ -2,9 +2,27 @@ import Foundation
 import Testing
 @testable import Trainr
 
+private func catalogExercise(
+    _ key: String, _ muscle: MuscleGroup,
+    _ measure: ExerciseMeasure, _ pattern: MovementPattern,
+    requires: Set<Equipment> = [.none]
+) -> CatalogExercise {
+    CatalogExercise(
+        key: key, name: key.replacingOccurrences(of: "_", with: " "), nameJa: key,
+        muscle: muscle, requires: requires, measure: measure, pattern: pattern, staple: true
+    )
+}
+
 struct GeneratedPlanParserTests {
 
-    private let parser = GeneratedPlanParser()
+    private let catalog = InMemoryExerciseCatalog([
+        catalogExercise("warm_up_jog", .cardio, .duration, .conditioning),
+        catalogExercise("bicycle_crunch", .abdominals, .reps, .core),
+        catalogExercise("goblet_squat", .quadriceps, .weightAndReps, .squat),
+        catalogExercise("plank", .abdominals, .duration, .core)
+    ])
+
+    private var parser: GeneratedPlanParser { GeneratedPlanParser(catalog: catalog) }
     private let userID = UUID()
     private let startDate = Date(timeIntervalSince1970: 1_753_056_000)
 
@@ -17,22 +35,15 @@ struct GeneratedPlanParserTests {
             {
               "dayNumber": 3,
               "title": "Cardio & Core",
-              "equipment": ["Yoga Mat"],
               "exercises": [
                 {
                   "exerciseKey": "warm_up_jog",
-                  "name": "Warm-up jog",
-                  "measure": "DURATION",
-                  "durationMinutes": 5,
                   "prescription": "5 minutes",
                   "instructions": "Light jogging in place to warm up.",
                   "sets": [{ "seconds": 300 }]
                 },
                 {
                   "exerciseKey": "bicycle_crunch",
-                  "name": "Bicycle Crunches",
-                  "measure": "REPS",
-                  "durationMinutes": 4,
                   "prescription": "2 sets of 20 reps",
                   "instructions": "Alternate elbow to knee.",
                   "restSeconds": 30,
@@ -43,13 +54,9 @@ struct GeneratedPlanParserTests {
             {
               "dayNumber": 1,
               "title": "Full Body Strength",
-              "equipment": ["Dumbbells"],
               "exercises": [
                 {
                   "exerciseKey": "goblet_squat",
-                  "name": "Goblet Squats",
-                  "measure": "WEIGHT_AND_REPS",
-                  "durationMinutes": 8,
                   "prescription": "3 sets of 12 reps",
                   "instructions": "Squat holding a dumbbell at your chest.",
                   "restSeconds": 60,
@@ -120,7 +127,7 @@ struct GeneratedPlanParserTests {
         let squat = try #require(day.exercises.first)
 
         #expect(squat.exerciseKey == "goblet_squat")
-        #expect(squat.name == "Goblet Squats")
+        #expect(squat.name == "goblet squat")
         #expect(squat.measure == .weightAndReps)
         #expect(squat.durationMinutes == 4)
         #expect(squat.prescription == "3 sets of 12 reps")
@@ -153,16 +160,37 @@ struct GeneratedPlanParserTests {
         }
     }
 
-    @Test func anUnknownMeasureDegradesToReps() throws {
-        let result = parser.parse(
-            goodJSON(replacing: "\"measure\": \"REPS\"", with: "\"measure\": \"DISTANCE\""),
-            userID: UUID(), weekNumber: 1, startDate: Date(timeIntervalSince1970: 0)
+    // How a movement is measured is a fact about the movement, so it comes
+    // from the catalog and the model never gets to disagree with it.
+    @Test func theCatalogDecidesHowAMovementIsMeasured() throws {
+        let plan = try parseGood()
+        let jog = try #require(
+            plan.workoutDays.first { $0.dayNumber == 3 }?.exercises.first
+        )
+        let squat = try #require(
+            plan.workoutDays.first { $0.dayNumber == 1 }?.exercises.first
+        )
+
+        #expect(jog.measure == .duration)
+        #expect(squat.measure == .weightAndReps)
+    }
+
+    // Asking a model to restate the day's kit only gave it a way to name
+    // equipment the client does not own.
+    @Test func theDaysEquipmentIsTheUnionOfWhatItsMovementsNeed() throws {
+        let loaded = GeneratedPlanParser(catalog: InMemoryExerciseCatalog([
+            catalogExercise("goblet_squat", .quadriceps, .weightAndReps, .squat,
+                            requires: [.dumbbells]),
+            catalogExercise("warm_up_jog", .cardio, .duration, .conditioning),
+            catalogExercise("bicycle_crunch", .abdominals, .reps, .core)
+        ]))
+        let result = loaded.parse(
+            goodJSON, userID: UUID(), weekNumber: 1, startDate: Date(timeIntervalSince1970: 0)
         )
 
         guard case .parsed(let plan) = result else { throw ParserTestFailure.expectedParsed }
-        let day = try #require(plan.workoutDays.first { $0.dayNumber == 3 })
-        let crunches = try #require(day.exercises.first { $0.exerciseKey == "bicycle_crunch" })
-        #expect(crunches.measure == .reps)
+        #expect(plan.workoutDays.first { $0.dayNumber == 1 }?.equipment == ["Dumbbells"])
+        #expect(plan.workoutDays.first { $0.dayNumber == 3 }?.equipment == [])
     }
 
     @Test func aStrayTargetTheMeasureDoesNotRenderIsStripped() throws {
@@ -218,7 +246,7 @@ struct GeneratedPlanParserTests {
     @Test func theSameExerciseTwiceInOneDayIsRejected() throws {
         let errors = try errors(of: goodJSON(replacing: "warm_up_jog", with: "bicycle_crunch"))
 
-        #expect(errors == ["day 3: exerciseKey 'bicycle_crunch' appears more than once"])
+        #expect(errors.contains("day 3: exerciseKey 'bicycle_crunch' appears more than once"))
     }
 
     @Test func aSetMissingTheTargetItsMeasureNeedsIsRejected() throws {

@@ -1,35 +1,32 @@
 import FirebaseAILogic
 
-// docs/generation-contract.md in the shape the SDK asks for. The parser still
-// enforces the rules a schema cannot (bounds, key vocabulary, day counts).
+// docs/generation-contract.md in the shape the SDK asks for. Built per request
+// rather than once, because the movement vocabulary is the client's own: an
+// enum of the keys they can actually perform is what makes an unusable plan
+// unrepresentable rather than merely rejected afterwards.
 enum GeneratedPlanSchema {
 
-    static var schema: Schema {
+    static func schema(exerciseKeys: [String]) -> Schema {
         .object(properties: [
             "title": .string(),
-            "days": .array(items: day)
+            "days": .array(items: day(exerciseKeys: exerciseKeys))
         ])
     }
 
-    private static var day: Schema {
+    private static func day(exerciseKeys: [String]) -> Schema {
         .object(properties: [
             "dayNumber": .integer(
                 description: "Day within the week, 1 = the first day .. 7 = the last"
             ),
             "title": .string(),
-            "equipment": .array(items: .string()),
-            "exercises": .array(items: exercise)
+            "exercises": .array(items: exercise(exerciseKeys: exerciseKeys))
         ])
     }
 
-    private static var exercise: Schema {
+    private static func exercise(exerciseKeys: [String]) -> Schema {
         .object(
             properties: [
-                "exerciseKey": .string(
-                    description: "Canonical lower_snake_case slug, stable across weeks"
-                ),
-                "name": .string(),
-                "measure": .enumeration(values: ["WEIGHT_AND_REPS", "REPS", "DURATION"]),
+                "exerciseKey": exerciseKey(exerciseKeys),
                 "prescription": .string(),
                 "instructions": .string(),
                 "restSeconds": .integer(nullable: true),
@@ -37,6 +34,14 @@ enum GeneratedPlanSchema {
             ],
             optionalProperties: ["restSeconds"]
         )
+    }
+
+    // An empty vocabulary would make an enum with no members, which no answer
+    // can satisfy; a plain string lets the parser explain the problem instead.
+    private static func exerciseKey(_ keys: [String]) -> Schema {
+        keys.isEmpty
+            ? .string(description: "Movement key from the list in the request")
+            : .enumeration(values: keys)
     }
 
     // A set carries only what its measure needs, so none of the three is required.
