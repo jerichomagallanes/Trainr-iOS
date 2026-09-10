@@ -22,10 +22,10 @@ struct OnboardingModelTests {
     private func answerEverything(_ model: OnboardingModel, liftingUnits: UnitSystem? = .metric) {
         model.updateBasicInfo(firstName: "Alex", age: 30, gender: .male, experience: .beginner)
         model.updateBodyMetrics(height: 175, weight: 72, units: .imperial)
-        model.updateFitnessGoal(.muscleGain, workoutType: .strength)
+        model.updateFitnessGoal(.muscleGain)
         model.updateWorkoutSetup(
             location: .home, equipment: [.dumbbell], liftingUnits: liftingUnits,
-            daysPerWeek: 3, duration: 45, preferredTime: .morning
+            daysPerWeek: 3, duration: 45
         )
         model.updateLimitations(injuries: [.lowerBack])
     }
@@ -59,12 +59,10 @@ struct OnboardingModelTests {
         #expect(model.profile.height == 175)
         #expect(model.profile.weight == 72)
         #expect(model.profile.fitnessGoal == .muscleGain)
-        #expect(model.profile.workoutType == .strength)
         #expect(model.profile.workoutLocation == .home)
         #expect(model.profile.availableEquipment == [.dumbbell])
         #expect(model.profile.workoutDaysPerWeek == 3)
         #expect(model.profile.workoutDuration == 45)
-        #expect(model.profile.preferredWorkoutTime == .morning)
         #expect(model.profile.injuries == [.lowerBack])
         #expect(model.filled(for: .setup, editing: false) != nil)
     }
@@ -86,12 +84,12 @@ struct OnboardingModelTests {
         #expect(model.profile.weightUnits == .imperial)
     }
 
-    @Test("Limitations leave the workout style alone")
-    func limitationsLeaveStyleAlone() throws {
+    @Test("Limitations leave the goal alone")
+    func limitationsLeaveGoalAlone() throws {
         let model = OnboardingModel(dependencies: try dependencies())
-        model.updateFitnessGoal(.endurance, workoutType: .cardio)
+        model.updateFitnessGoal(.endurance)
         model.updateLimitations(injuries: [])
-        #expect(model.profile.workoutType == .cardio)
+        #expect(model.profile.fitnessGoal == .endurance)
     }
 
     @Test("A successful save stores the user and a plan against them, and says so")
@@ -173,7 +171,7 @@ struct OnboardingModelTests {
         let model = OnboardingModel(dependencies: try dependencies())
 
         model.updateBasicInfo(firstName: "Alex", age: 30, gender: .male, experience: .beginner)
-        model.updateFitnessGoal(.muscleGain, workoutType: .strength)
+        model.updateFitnessGoal(.muscleGain)
 
         #expect(model.answeredSteps == [.basicInfo, .goals])
     }

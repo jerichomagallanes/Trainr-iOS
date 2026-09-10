@@ -56,28 +56,6 @@
         }
       }
     },
-    "afternoon": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Afternoon"
-          }
-        }
-      }
-    },
-    "afternoon_time": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Afternoon (12-5 PM)"
-          }
-        }
-      }
-    },
     "age": {
       "extractionState": "manual",
       "localizations": {
@@ -128,7 +106,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Based on your profile, we'll create a %1$@ %2$@ plan focused on %3$@."
+            "value": "Based on your profile, we'll create a %1$@ plan focused on %2$@."
           }
         }
       }
@@ -419,39 +397,6 @@
         }
       }
     },
-    "cardio": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Cardio"
-          }
-        }
-      }
-    },
-    "cardio_description": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Improve endurance and burn calories."
-          }
-        }
-      }
-    },
-    "cardio_style": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Cardio"
-          }
-        }
-      }
-    },
     "close": {
       "extractionState": "manual",
       "localizations": {
@@ -685,28 +630,6 @@
         }
       }
     },
-    "early_morning": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Early Morning"
-          }
-        }
-      }
-    },
-    "early_morning_time": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Early Morning (5-7 AM)"
-          }
-        }
-      }
-    },
     "edit": {
       "extractionState": "manual",
       "localizations": {
@@ -894,28 +817,6 @@
         }
       }
     },
-    "evening": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Evening"
-          }
-        }
-      }
-    },
-    "evening_time": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Evening (5-10 PM)"
-          }
-        }
-      }
-    },
     "exercise_in_progress": {
       "extractionState": "manual",
       "localizations": {
@@ -1034,39 +935,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Flexibility & Mobility"
-          }
-        }
-      }
-    },
-    "flexibility_mobility_style": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Flexibility & Mobility"
-          }
-        }
-      }
-    },
-    "flexible_anytime": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Flexible/Anytime"
-          }
-        }
-      }
-    },
-    "flexible_anytime_time": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Flexible/Anytime"
           }
         }
       }
@@ -1463,39 +1331,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Hide video tutorial"
-          }
-        }
-      }
-    },
-    "hiit": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "HIIT"
-          }
-        }
-      }
-    },
-    "hiit_description": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "High intensity interval training."
-          }
-        }
-      }
-    },
-    "hiit_style": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "HIIT"
           }
         }
       }
@@ -1897,83 +1732,6 @@
         }
       }
     },
-    "mixed_balanced": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Mixed/Balanced"
-          }
-        }
-      }
-    },
-    "mixed_balanced_description": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Combination of different training styles."
-          }
-        }
-      }
-    },
-    "mixed_balanced_style": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Mixed/Balanced"
-          }
-        }
-      }
-    },
-    "mobility_yoga": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Mobility & Yoga"
-          }
-        }
-      }
-    },
-    "mobility_yoga_description": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Stretching, mobility and yoga work."
-          }
-        }
-      }
-    },
-    "morning": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Morning"
-          }
-        }
-      }
-    },
-    "morning_time": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Morning (7-12 PM)"
-          }
-        }
-      }
-    },
     "move_earlier": {
       "extractionState": "manual",
       "localizations": {
@@ -2223,39 +1981,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Preferred name"
-          }
-        }
-      }
-    },
-    "preferred_time_label": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Preferred Time"
-          }
-        }
-      }
-    },
-    "preferred_workout_style": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Preferred Workout Style"
-          }
-        }
-      }
-    },
-    "preferred_workout_time": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Preferred Workout Time"
           }
         }
       }
@@ -3074,39 +2799,6 @@
         }
       }
     },
-    "program_cardio": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "cardio"
-          }
-        }
-      }
-    },
-    "program_flexibility": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "mobility"
-          }
-        }
-      }
-    },
-    "program_hiit": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "HIIT"
-          }
-        }
-      }
-    },
     "program_length_format": {
       "extractionState": "manual",
       "localizations": {
@@ -3114,28 +2806,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "%lld-day"
-          }
-        }
-      }
-    },
-    "program_mixed": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "balanced"
-          }
-        }
-      }
-    },
-    "program_strength": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "strength"
           }
         }
       }
@@ -3499,39 +3169,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Stop"
-          }
-        }
-      }
-    },
-    "strength_training": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Strength Training"
-          }
-        }
-      }
-    },
-    "strength_training_description": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Focus on building muscle and strength."
-          }
-        }
-      }
-    },
-    "strength_training_style": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Strength Training"
           }
         }
       }
@@ -3951,17 +3588,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Workout Setup"
-          }
-        }
-      }
-    },
-    "workout_style_label": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Workout Style"
           }
         }
       }

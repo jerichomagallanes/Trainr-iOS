@@ -67,7 +67,6 @@ struct ReviewView: View {
                     title: L10n.fitnessGoalsLabel,
                     items: [
                         (L10n.mainGoalLabel, profile.fitnessGoal.displayName),
-                        (L10n.workoutStyleLabel, profile.workoutType.displayName)
                     ],
                     onEdit: { onEdit(.fitnessGoal(editing: true)) }
                 )
@@ -135,7 +134,6 @@ struct ReviewView: View {
             ? L10n.flexibleSchedule
             : L10n.daysPerWeekFormat(profile.workoutDaysPerWeek)))
         items.append((L10n.durationLabel, L10n.durationMinutesFormat(profile.workoutDuration)))
-        items.append((L10n.preferredTimeLabel, profile.preferredWorkoutTime.displayName))
         return items
     }
 
@@ -202,7 +200,6 @@ private struct AIPreviewCard: View {
                         profile.workoutDaysPerWeek == 0
                             ? L10n.flexibleSchedule
                             : L10n.programLengthFormat(profile.workoutDaysPerWeek),
-                        profile.workoutType.programPhrase,
                         profile.fitnessGoal.focusPhrase
                     ))
                     .font(.body14)

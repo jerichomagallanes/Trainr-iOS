@@ -47,28 +47,6 @@ extension FitnessGoal {
     }
 }
 
-extension WorkoutType {
-    var displayName: String {
-        switch self {
-        case .strength: L10n.strengthTrainingStyle
-        case .cardio: L10n.cardioStyle
-        case .hiit: L10n.hiitStyle
-        case .yoga: L10n.flexibilityMobilityStyle
-        case .mixed: L10n.mixedBalancedStyle
-        }
-    }
-
-    var programPhrase: String {
-        switch self {
-        case .strength: L10n.programStrength
-        case .cardio: L10n.programCardio
-        case .hiit: L10n.programHiit
-        case .yoga: L10n.programFlexibility
-        case .mixed: L10n.programMixed
-        }
-    }
-}
-
 extension WorkoutLocation {
     var displayName: String {
         switch self {
@@ -109,14 +87,3 @@ extension Injury {
     }
 }
 
-extension WorkoutTime {
-    var displayName: String {
-        switch self {
-        case .earlyMorning: L10n.earlyMorning
-        case .morning: L10n.morning
-        case .afternoon: L10n.afternoon
-        case .evening: L10n.evening
-        case .anytime: L10n.flexibleAnytimeTime
-        }
-    }
-}

@@ -18,9 +18,7 @@ final class UserRecord {
     var availableEquipment: [String]
     var workoutDaysPerWeek: Int
     var workoutDuration: Int
-    var preferredWorkoutTime: String
     var injuries: [String]
-    var workoutType: String
     var bodyUnitSystem: String
     var liftingUnitSystem: String?
     var createdAt: Date
@@ -41,9 +39,7 @@ final class UserRecord {
         availableEquipment = profile.availableEquipment.map(\.rawValue)
         workoutDaysPerWeek = profile.workoutDaysPerWeek
         workoutDuration = profile.workoutDuration
-        preferredWorkoutTime = profile.preferredWorkoutTime.rawValue
         injuries = profile.injuries.map(\.rawValue)
-        workoutType = profile.workoutType.rawValue
         bodyUnitSystem = profile.bodyUnitSystem.rawValue
         liftingUnitSystem = profile.liftingUnitSystem?.rawValue
         createdAt = profile.createdAt
@@ -63,9 +59,7 @@ final class UserRecord {
             availableEquipment: availableEquipment.compactMap(Equipment.stored),
             workoutDaysPerWeek: workoutDaysPerWeek,
             workoutDuration: workoutDuration,
-            preferredWorkoutTime: WorkoutTime(rawValue: preferredWorkoutTime) ?? .anytime,
             injuries: injuries.compactMap(Injury.init(rawValue:)),
-            workoutType: WorkoutType(rawValue: workoutType) ?? .mixed,
             bodyUnitSystem: UnitSystem(rawValue: bodyUnitSystem) ?? .standard,
             liftingUnitSystem: liftingUnitSystem.flatMap(UnitSystem.init(rawValue:)),
             createdAt: createdAt
@@ -84,9 +78,7 @@ final class UserRecord {
         availableEquipment = profile.availableEquipment.map(\.rawValue)
         workoutDaysPerWeek = profile.workoutDaysPerWeek
         workoutDuration = profile.workoutDuration
-        preferredWorkoutTime = profile.preferredWorkoutTime.rawValue
         injuries = profile.injuries.map(\.rawValue)
-        workoutType = profile.workoutType.rawValue
         bodyUnitSystem = profile.bodyUnitSystem.rawValue
         liftingUnitSystem = profile.liftingUnitSystem?.rawValue
         createdAt = profile.createdAt
