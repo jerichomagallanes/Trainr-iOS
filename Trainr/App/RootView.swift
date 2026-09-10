@@ -190,9 +190,9 @@ struct RootView: View {
                 stockedEquipment: onboarding.stockedEquipment,
                 initial: onboarding.filled(for: .setup, editing: editing),
                 isEditing: editing,
-                onNext: { location, equipment, liftingUnits, days, duration in
+                onNext: { equipment, liftingUnits, days, duration in
                     onboarding.updateWorkoutSetup(
-                        location: location, equipment: equipment, liftingUnits: liftingUnits,
+                        equipment: equipment, liftingUnits: liftingUnits,
                         daysPerWeek: days, duration: duration)
                     step(editing: editing, next: .limitations(editing: false))
                 },

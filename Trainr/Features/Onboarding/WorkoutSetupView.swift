@@ -3,10 +3,9 @@ import SwiftUI
 struct WorkoutSetupView: View {
     let stockedEquipment: Set<Equipment>
     var isEditing = false
-    let onNext: (WorkoutLocation, [Equipment], UnitSystem?, Int, Int) -> Void
+    let onNext: ([Equipment], UnitSystem?, Int, Int) -> Void
     let onBack: () -> Void
 
-    @State private var selectedLocation: WorkoutLocation?
     @State private var selectedEquipment: Set<Equipment>
     @State private var selectedDays: Int?
     @State private var selectedDuration: Int?
@@ -16,14 +15,13 @@ struct WorkoutSetupView: View {
         stockedEquipment: Set<Equipment> = Set(Equipment.choices),
         initial: UserProfile? = nil,
         isEditing: Bool = false,
-        onNext: @escaping (WorkoutLocation, [Equipment], UnitSystem?, Int, Int) -> Void,
+        onNext: @escaping ([Equipment], UnitSystem?, Int, Int) -> Void,
         onBack: @escaping () -> Void
     ) {
         self.stockedEquipment = stockedEquipment
         self.isEditing = isEditing
         self.onNext = onNext
         self.onBack = onBack
-        _selectedLocation = State(initialValue: initial?.workoutLocation)
         _selectedEquipment = State(initialValue: Set(initial?.availableEquipment ?? []))
         _selectedDays = State(initialValue: (initial?.workoutDaysPerWeek).flatMap { $0 > 0 ? $0 : nil })
         _selectedDuration = State(initialValue: (initial?.workoutDuration).flatMap { $0 > 0 ? $0 : nil })
@@ -37,8 +35,7 @@ struct WorkoutSetupView: View {
 
     // An empty equipment set means unanswered: "bodyweight only" is itself one of the choices.
     private var isFormValid: Bool {
-        selectedLocation != nil
-            && !selectedEquipment.isEmpty
+        !selectedEquipment.isEmpty
             && (!hasLoadedEquipment || selectedLiftingUnits != nil)
             && selectedDays != nil
             && selectedDuration != nil
@@ -47,10 +44,9 @@ struct WorkoutSetupView: View {
     var body: some View {
         ScreenScaffold(onBack: onBack, closeInsteadOfBack: isEditing) {
             PrimaryButton(title: isEditing ? L10n.save : L10n.next, isEnabled: isFormValid) {
-                guard let location = selectedLocation, let days = selectedDays,
-                      let duration = selectedDuration
+                guard let days = selectedDays, let duration = selectedDuration
                 else { return }
-                onNext(location, equipmentList,
+                onNext(equipmentList,
                        hasLoadedEquipment ? selectedLiftingUnits : nil,
                        days, duration)
             }
@@ -65,29 +61,16 @@ struct WorkoutSetupView: View {
                 ScreenTitle(text: L10n.setUpYourWorkout)
                 Spacer().frame(height: Spacing.extraLarge)
 
-                SectionTitle(text: L10n.whereWillYouWorkOut)
-                Spacer().frame(height: Spacing.card)
-
-                HStack(spacing: Spacing.medium) {
-                    locationCard(L10n.home, "house.fill", .home)
-                    locationCard(L10n.gym, "dumbbell.fill", .gym)
-                    locationCard(L10n.both, "arrow.left.arrow.right", .both)
-                }
-
-                if selectedLocation != nil {
-                    Spacer().frame(height: Spacing.sectionGap)
-
-                    FormSection(title: L10n.availableEquipment,
-                                verticalPadding: 0, titleGap: Spacing.card) {
-                        FlowLayout(horizontalSpacing: Spacing.tight,
-                                   verticalSpacing: Spacing.card) {
-                            ForEach(equipmentOptions, id: \.0) { equipment, label in
-                                ToggleChip(
-                                    text: label,
-                                    isSelected: selectedEquipment.contains(equipment)
-                                ) {
-                                    toggle(equipment)
-                                }
+                FormSection(title: L10n.availableEquipment,
+                            verticalPadding: 0, titleGap: Spacing.card) {
+                    FlowLayout(horizontalSpacing: Spacing.tight,
+                               verticalSpacing: Spacing.card) {
+                        ForEach(equipmentOptions, id: \.0) { equipment, label in
+                            ToggleChip(
+                                text: label,
+                                isSelected: selectedEquipment.contains(equipment)
+                            ) {
+                                toggle(equipment)
                             }
                         }
                     }
@@ -150,8 +133,7 @@ struct WorkoutSetupView: View {
     }
 
     private var equipmentOptions: [(Equipment, String)] {
-        guard let selectedLocation else { return [] }
-        return Equipment.available(at: selectedLocation, stocked: stockedEquipment)
+        Equipment.available(stocked: stockedEquipment)
             .map { ($0, $0.displayName) }
     }
 
@@ -172,15 +154,6 @@ struct WorkoutSetupView: View {
         }
     }
 
-    private func locationCard(
-        _ title: String, _ symbol: String, _ location: WorkoutLocation
-    ) -> some View {
-        LocationCard(title: title, symbol: symbol, isSelected: selectedLocation == location) {
-            selectedLocation = location
-            selectedEquipment = []
-        }
-    }
-
     private func unitChip(_ label: String, _ units: UnitSystem) -> some View {
         ToggleChip(
             text: label,
@@ -196,5 +169,5 @@ struct WorkoutSetupView: View {
 }
 
 #Preview {
-    WorkoutSetupView(onNext: { _, _, _, _, _ in }, onBack: {})
+    WorkoutSetupView(onNext: { _, _, _, _ in }, onBack: {})
 }

@@ -24,7 +24,7 @@ struct OnboardingModelTests {
         model.updateBodyMetrics(height: 175, weight: 72, units: .imperial)
         model.updateFitnessGoal(.muscleGain)
         model.updateWorkoutSetup(
-            location: .home, equipment: [.dumbbell], liftingUnits: liftingUnits,
+            equipment: [.dumbbell], liftingUnits: liftingUnits,
             daysPerWeek: 3, duration: 45
         )
         model.updateLimitations(injuries: [.lowerBack])
@@ -59,7 +59,6 @@ struct OnboardingModelTests {
         #expect(model.profile.height == 175)
         #expect(model.profile.weight == 72)
         #expect(model.profile.fitnessGoal == .muscleGain)
-        #expect(model.profile.workoutLocation == .home)
         #expect(model.profile.availableEquipment == [.dumbbell])
         #expect(model.profile.workoutDaysPerWeek == 3)
         #expect(model.profile.workoutDuration == 45)

@@ -14,7 +14,6 @@ final class UserRecord {
     var weight: Double
     var fitnessGoal: String
     var experienceLevel: String
-    var workoutLocation: String
     var availableEquipment: [String]
     var workoutDaysPerWeek: Int
     var workoutDuration: Int
@@ -35,7 +34,6 @@ final class UserRecord {
         weight = profile.weight
         fitnessGoal = profile.fitnessGoal.rawValue
         experienceLevel = profile.experienceLevel.rawValue
-        workoutLocation = profile.workoutLocation.rawValue
         availableEquipment = profile.availableEquipment.map(\.rawValue)
         workoutDaysPerWeek = profile.workoutDaysPerWeek
         workoutDuration = profile.workoutDuration
@@ -55,7 +53,6 @@ final class UserRecord {
             weight: weight,
             fitnessGoal: FitnessGoal(rawValue: fitnessGoal) ?? .generalFitness,
             experienceLevel: ExperienceLevel(rawValue: experienceLevel) ?? .beginner,
-            workoutLocation: WorkoutLocation(rawValue: workoutLocation) ?? .home,
             availableEquipment: availableEquipment.compactMap(Equipment.stored),
             workoutDaysPerWeek: workoutDaysPerWeek,
             workoutDuration: workoutDuration,
@@ -74,7 +71,6 @@ final class UserRecord {
         weight = profile.weight
         fitnessGoal = profile.fitnessGoal.rawValue
         experienceLevel = profile.experienceLevel.rawValue
-        workoutLocation = profile.workoutLocation.rawValue
         availableEquipment = profile.availableEquipment.map(\.rawValue)
         workoutDaysPerWeek = profile.workoutDaysPerWeek
         workoutDuration = profile.workoutDuration

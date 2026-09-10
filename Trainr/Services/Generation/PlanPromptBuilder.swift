@@ -112,7 +112,6 @@ nonisolated struct PlanPromptBuilder {
             "- Age \(user.age), height \(user.height) cm, weight \(user.weight) kg",
             "- Goal: \(text(for: user.fitnessGoal))",
             "- Experience: \(user.experienceLevel.rawValue)",
-            "- Trains at: \(user.workoutLocation.rawValue)",
             "- Available equipment: \(text(for: user.availableEquipment))",
             "- Days per week: \(user.workoutDaysPerWeek) (plan EXACTLY this many days)",
             "- Session length: about \(user.workoutDuration) minutes, and never past "

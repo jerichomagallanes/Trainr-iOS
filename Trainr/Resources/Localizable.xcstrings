@@ -331,28 +331,6 @@
         }
       }
     },
-    "both": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Both"
-          }
-        }
-      }
-    },
-    "both_location": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Both"
-          }
-        }
-      }
-    },
     "build_muscle": {
       "extractionState": "manual",
       "localizations": {
@@ -1225,28 +1203,6 @@
         }
       }
     },
-    "gym": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Gym"
-          }
-        }
-      }
-    },
-    "gym_location": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Gym"
-          }
-        }
-      }
-    },
     "health_disclaimer": {
       "extractionState": "manual",
       "localizations": {
@@ -1353,28 +1309,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Hip Problems"
-          }
-        }
-      }
-    },
-    "home": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Home"
-          }
-        }
-      }
-    },
-    "home_location": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Home"
           }
         }
       }
@@ -1540,17 +1474,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Limitations"
-          }
-        }
-      }
-    },
-    "location_label": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Location"
           }
         }
       }
@@ -3554,17 +3477,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "WELCOME TO"
-          }
-        }
-      }
-    },
-    "where_will_you_work_out": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Where will you work out?"
           }
         }
       }
