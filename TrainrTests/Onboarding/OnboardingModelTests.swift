@@ -27,7 +27,7 @@ struct OnboardingModelTests {
             location: .home, equipment: [.dumbbells], liftingUnits: liftingUnits,
             daysPerWeek: 3, duration: 45, preferredTime: .morning
         )
-        model.updateLimitations(injuries: ["Lower Back Pain"])
+        model.updateLimitations(injuries: [.lowerBack])
     }
 
     private func settle(_ model: OnboardingModel) async {
@@ -65,7 +65,7 @@ struct OnboardingModelTests {
         #expect(model.profile.workoutDaysPerWeek == 3)
         #expect(model.profile.workoutDuration == 45)
         #expect(model.profile.preferredWorkoutTime == .morning)
-        #expect(model.profile.injuries == ["Lower Back Pain"])
+        #expect(model.profile.injuries == [.lowerBack])
         #expect(model.filled(for: .setup, editing: false) != nil)
     }
 

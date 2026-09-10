@@ -162,24 +162,8 @@ struct WorkoutSetupView: View {
     }
 
     private var equipmentOptions: [(Equipment, String)] {
-        switch selectedLocation {
-        case .home:
-            [(.none, L10n.bodyweightOnly),
-             (.dumbbells, L10n.dumbbells),
-             (.resistanceBands, L10n.resistanceBands),
-             (.pullUpBar, L10n.pullUpBar),
-             (.kettlebells, L10n.kettlebells)]
-        case .gym, .both:
-            [(.barbell, L10n.barbellPlates),
-             (.bench, L10n.bench),
-             (.cardioMachines, L10n.cardioEquipment),
-             (.cableMachine, L10n.cableMachine),
-             (.dumbbells, L10n.dumbbells),
-             (.squatRack, L10n.squatRack),
-             (.others, L10n.others)]
-        case nil:
-            []
-        }
+        guard let selectedLocation else { return [] }
+        return Equipment.available(at: selectedLocation).map { ($0, $0.displayName) }
     }
 
     private var equipmentList: [Equipment] {

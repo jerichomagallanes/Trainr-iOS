@@ -302,7 +302,7 @@ struct GeminiPlanGeneratorTests {
             height: 178,
             weight: 75,
             workoutDaysPerWeek: 1,
-            injuries: ["Left rotator cuff"]
+            injuries: [.shoulder]
         )
         let client = answering(
             .failed, .text(#"{ "title": " ", "days": [] }"#), .text(validPlanJSON)

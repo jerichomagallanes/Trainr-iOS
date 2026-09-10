@@ -20,7 +20,7 @@ struct PlanPromptBuilderTests {
                 availableEquipment: [.dumbbells, .pullUpBar],
                 workoutDaysPerWeek: 3,
                 workoutDuration: 45,
-                injuries: ["Lower Back Pain"],
+                injuries: [.lowerBack],
                 bodyUnitSystem: units
             ),
             weekNumber: previousWeek == nil ? 1 : 2,
@@ -34,11 +34,19 @@ struct PlanPromptBuilderTests {
         let prompt = builder.userPrompt(request())
 
         #expect(prompt.contains("build muscle"))
-        #expect(prompt.contains("dumbbells, pull up bar"))
+        #expect(prompt.contains("dumbbells, pull-up bar"))
         #expect(prompt.contains("3 (plan EXACTLY this many days)"))
         #expect(prompt.contains("about 45 minutes"))
-        #expect(prompt.contains("Lower Back Pain"))
+        #expect(prompt.contains("lower back pain"))
         #expect(prompt.contains("English"))
+    }
+
+    // The two numbers every rule in the system instruction refers back to.
+    @Test func thePromptCarriesTheBudgetTheRulesReferTo() {
+        let prompt = builder.userPrompt(request())
+
+        #expect(prompt.contains("Session set cap: at most 14 sets"))
+        #expect(prompt.contains("Weekly set target: about 10 hard sets"))
     }
 
     @Test func displayCopyLanguageFollowsTheAppLanguage() {

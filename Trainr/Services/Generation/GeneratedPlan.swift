@@ -16,7 +16,6 @@ nonisolated struct GeneratedExercise: Codable {
     var exerciseKey: String
     var name: String
     var measure: String
-    var durationMinutes: Int
     var prescription: String
     var instructions: String
     var restSeconds: Int?

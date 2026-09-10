@@ -894,6 +894,17 @@
         }
       }
     },
+    "exercise_mat": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Exercise mat"
+          }
+        }
+      }
+    },
     "exercises_count": {
       "extractionState": "manual",
       "localizations": {
@@ -1588,6 +1599,17 @@
         }
       }
     },
+    "jump_rope": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jump rope"
+          }
+        }
+      }
+    },
     "kettlebells": {
       "extractionState": "manual",
       "localizations": {
@@ -1941,6 +1963,28 @@
         }
       }
     },
+    "mobility_yoga": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mobility & Yoga"
+          }
+        }
+      }
+    },
+    "mobility_yoga_description": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stretching, mobility and yoga work."
+          }
+        }
+      }
+    },
     "morning": {
       "extractionState": "manual",
       "localizations": {
@@ -2040,17 +2084,6 @@
         }
       }
     },
-    "none": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "None"
-          }
-        }
-      }
-    },
     "none_injury": {
       "extractionState": "manual",
       "localizations": {
@@ -2146,17 +2179,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Other"
-          }
-        }
-      }
-    },
-    "others": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Others"
           }
         }
       }
@@ -2392,6 +2414,17 @@
         }
       }
     },
+    "pro_compare_every_week": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Every week"
+          }
+        }
+      }
+    },
     "pro_compare_free": {
       "extractionState": "manual",
       "localizations": {
@@ -2509,17 +2542,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Need to compare?"
-          }
-        }
-      }
-    },
-    "pro_compare_unlimited": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Unlimited"
           }
         }
       }
@@ -2651,7 +2673,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Monthly and Yearly renew automatically at the end of each period. Lifetime is a single payment that never renews."
+            "value": "Yes. Monthly and Yearly renew at the end of each period, until you cancel."
           }
         }
       }
@@ -2662,7 +2684,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Is Pro a one-time payment or does it renew?"
+            "value": "Does Pro renew automatically?"
           }
         }
       }
@@ -3884,6 +3906,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "%1$@ lbs"
+          }
+        }
+      }
+    },
+    "weight_machines": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Weight machines"
           }
         }
       }

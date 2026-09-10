@@ -15,7 +15,7 @@ nonisolated struct UserProfile: Identifiable, Equatable, Sendable {
     var workoutDaysPerWeek = Constants.Workout.defaultDaysPerWeek
     var workoutDuration = Constants.Workout.defaultDuration
     var preferredWorkoutTime = WorkoutTime.anytime
-    var injuries: [String] = []
+    var injuries: [Injury] = []
     var workoutType = WorkoutType.mixed
     var bodyUnitSystem = UnitSystem.standard
     // What the gym's plates are marked in, a different question from how the
@@ -64,8 +64,47 @@ nonisolated enum Equipment: String, Codable, CaseIterable, Sendable {
     case kettlebells
     case squatRack
     case cableMachine
+    case machines
     case cardioMachines
-    case others
+    case mat
+    case jumpRope
+}
+
+extension Equipment {
+
+    // Everything a gym has that a home might not, and the other way round. A
+    // client who trains in both places has both, which is why both is the
+    // union and not the gym list.
+    static let atHome: [Equipment] = [
+        .none, .dumbbells, .kettlebells, .resistanceBands, .pullUpBar, .bench,
+        .mat, .jumpRope, .barbell, .squatRack, .cardioMachines
+    ]
+
+    static let atTheGym: [Equipment] = [
+        .barbell, .squatRack, .bench, .dumbbells, .kettlebells, .cableMachine,
+        .machines, .pullUpBar, .resistanceBands, .cardioMachines, .mat
+    ]
+
+    static func available(at location: WorkoutLocation) -> [Equipment] {
+        switch location {
+        case .home: atHome
+        case .gym: atTheGym
+        case .both: atHome.filter { $0 != .none } + atTheGym.filter { !atHome.contains($0) }
+        }
+    }
+}
+
+// Stored and sent as these constants, never as the words on the chip: a
+// profile filled in Japanese used to reach the model as Japanese injury names,
+// and stopped matching its own chips the moment the phone changed language.
+nonisolated enum Injury: String, Codable, CaseIterable, Sendable {
+    case lowerBack
+    case knee
+    case shoulder
+    case wrist
+    case ankle
+    case hip
+    case neck
 }
 
 nonisolated enum WorkoutType: String, Codable, CaseIterable, Sendable {

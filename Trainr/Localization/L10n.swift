@@ -95,6 +95,7 @@ nonisolated enum L10n {
     static var evening: String { String(localized: "evening") }
     static var eveningTime: String { String(localized: "evening_time") }
     static var exerciseInProgress: String { String(localized: "exercise_in_progress") }
+    static var exerciseMat: String { String(localized: "exercise_mat") }
     static func exercisesCount(_ p1: Int) -> String {
         String.localizedStringWithFormat(String(localized: "exercises_count"), p1)
     }
@@ -161,6 +162,7 @@ nonisolated enum L10n {
     static var intermediate: String { String(localized: "intermediate") }
     static var intermediateDescription: String { String(localized: "intermediate_description") }
     static var intermediateLevel: String { String(localized: "intermediate_level") }
+    static var jumpRope: String { String(localized: "jump_rope") }
     static var kettlebells: String { String(localized: "kettlebells") }
     static var kneeProblemsInjury: String { String(localized: "knee_problems_injury") }
     static var languageEnglish: String { String(localized: "language_english") }
@@ -194,6 +196,8 @@ nonisolated enum L10n {
     static var mixedBalanced: String { String(localized: "mixed_balanced") }
     static var mixedBalancedDescription: String { String(localized: "mixed_balanced_description") }
     static var mixedBalancedStyle: String { String(localized: "mixed_balanced_style") }
+    static var mobilityYoga: String { String(localized: "mobility_yoga") }
+    static var mobilityYogaDescription: String { String(localized: "mobility_yoga_description") }
     static var morning: String { String(localized: "morning") }
     static var morningTime: String { String(localized: "morning_time") }
     static var moveEarlier: String { String(localized: "move_earlier") }
@@ -203,7 +207,6 @@ nonisolated enum L10n {
     static var next: String { String(localized: "next") }
     static var noPlanMessage: String { String(localized: "no_plan_message") }
     static var noPlanTitle: String { String(localized: "no_plan_title") }
-    static var none: String { String(localized: "none") }
     static var noneInjury: String { String(localized: "none_injury") }
     static var noneLabel: String { String(localized: "none_label") }
     static var normalWeight: String { String(localized: "normal_weight") }
@@ -215,7 +218,6 @@ nonisolated enum L10n {
     }
     static var other: String { String(localized: "other") }
     static var otherGender: String { String(localized: "other_gender") }
-    static var others: String { String(localized: "others") }
     static var overweight: String { String(localized: "overweight") }
     static var pauseTimer: String { String(localized: "pause_timer") }
     static var personalInformation: String { String(localized: "personal_information") }
@@ -237,6 +239,7 @@ nonisolated enum L10n {
     static var proBilledMonthly: String { String(localized: "pro_billed_monthly") }
     static var proBuyLifetime: String { String(localized: "pro_buy_lifetime") }
     static var proCancelAnytime: String { String(localized: "pro_cancel_anytime") }
+    static var proCompareEveryWeek: String { String(localized: "pro_compare_every_week") }
     static var proCompareFree: String { String(localized: "pro_compare_free") }
     static var proCompareFresh: String { String(localized: "pro_compare_fresh") }
     static var proCompareGenerated: String { String(localized: "pro_compare_generated") }
@@ -248,7 +251,6 @@ nonisolated enum L10n {
     static var proCompareRewrite: String { String(localized: "pro_compare_rewrite") }
     static var proCompareTimer: String { String(localized: "pro_compare_timer") }
     static var proCompareTitle: String { String(localized: "pro_compare_title") }
-    static var proCompareUnlimited: String { String(localized: "pro_compare_unlimited") }
     static var proContinue: String { String(localized: "pro_continue") }
     static var proFaqCancelA: String { String(localized: "pro_faq_cancel_a") }
     static var proFaqCancelQ: String { String(localized: "pro_faq_cancel_q") }
@@ -397,6 +399,7 @@ nonisolated enum L10n {
     static func weightLbsFormat(_ p1: String) -> String {
         String.localizedStringWithFormat(String(localized: "weight_lbs_format"), p1)
     }
+    static var weightMachines: String { String(localized: "weight_machines") }
     static var weightPlaceholderKg: String { String(localized: "weight_placeholder_kg") }
     static var weightPlaceholderLbs: String { String(localized: "weight_placeholder_lbs") }
     static var weightsInLabel: String { String(localized: "weights_in_label") }
