@@ -11,8 +11,8 @@ struct ExerciseShortlistTests {
         staple: Bool = false
     ) -> CatalogExercise {
         CatalogExercise(
-            key: key, name: key, nameJa: key, muscle: muscle,
-            equipment: equipment, measure: .reps, pattern: pattern, staple: staple
+            key: key, name: key, nameJa: key, primary: muscle, secondary: [],
+            equipment: equipment, measure: .reps, pattern: pattern, staple: staple, summary: key, steps: []
         )
     }
 
@@ -80,8 +80,8 @@ struct ExerciseShortlistTests {
 
         let offered = ExerciseShortlist.forRequest(catalog: catalog, user: profile(.none))
 
-        #expect(offered.count { $0.muscle == .quadriceps } == 40)
-        #expect(offered.count { $0.muscle == .chest } == 40)
+        #expect(offered.count { $0.primary == .quadriceps } == 40)
+        #expect(offered.count { $0.primary == .chest } == 40)
     }
 
     @Test func staplesAreReachedForFirst() {

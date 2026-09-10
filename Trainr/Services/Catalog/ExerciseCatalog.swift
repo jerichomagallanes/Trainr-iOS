@@ -6,11 +6,17 @@ nonisolated struct CatalogExercise: Equatable, Sendable {
     let key: String
     let name: String
     let nameJa: String
-    let muscle: MuscleGroup
+    let primary: MuscleGroup
+    // A movement can assist several; Around The World names three.
+    let secondary: [MuscleGroup]
     let equipment: Equipment
     let measure: ExerciseMeasure
     let pattern: MovementPattern
     let staple: Bool
+    // One line for the card, and the how-to behind a tap. Both owned by the
+    // catalog, so a form cue can never be generated.
+    let summary: String
+    let steps: [String]
 
     func displayName(_ languageCode: String) -> String {
         languageCode == "ja" && !nameJa.isEmpty ? nameJa : name

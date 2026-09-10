@@ -33,7 +33,7 @@ nonisolated enum ExerciseShortlist {
         // never leaves a client with nine chest movements and no legs.
         var queues: [MuscleRegion: [CatalogExercise]] = [:]
         for exercise in available where !keptKeys.contains(exercise.key) {
-            queues[exercise.muscle.region, default: []].append(exercise)
+            queues[exercise.primary.region, default: []].append(exercise)
         }
         for region in queues.keys {
             queues[region]?.sort {

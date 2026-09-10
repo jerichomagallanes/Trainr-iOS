@@ -120,7 +120,7 @@ struct CannedPlanGeneratorTests {
         let keys = Set(try await plan(equipment: [.barbell])
             .workoutDays.flatMap(\.exercises).map(\.exerciseKey))
 
-        #expect(keys.contains("bent_over_row"))
+        #expect(keys.contains("barbell_bent_over_row"))
     }
 
     @Test func itNamesOnlyTheEquipmentTheDayActuallyNeeds() async throws {

@@ -18,34 +18,23 @@ struct ExerciseCatalogIntegrityTests {
         catalog = ExerciseCatalogReader.read(source)
     }
 
-    // Every entry is read off the source's own list, so a category can be
-    // short but never long. Four of them are transcribed end to end; the rest
-    // fill up as the remaining pages arrive.
-    @Test func noCategoryHoldsMoreMovementsThanTheSourceHas() {
+    // Each category holds exactly what the source's own filter holds. The one
+    // entry short of 452 is a user-made "custom" superset, which is somebody's
+    // own and not part of the list.
+    @Test func eachCategoryHoldsExactlyTheMovementsTheSourceHas() {
         var counted: [Equipment: Int] = [:]
         for exercise in catalog.all {
             counted[exercise.equipment, default: 0] += 1
         }
 
-        for (kit, size) in Self.fullCategories {
-            #expect(counted[kit, default: 0] == size, "\(kit) should be complete")
-        }
-        for (kit, size) in Self.catalogSize {
-            #expect(counted[kit, default: 0] <= size, "\(kit) holds more than the source")
-        }
-        #expect(catalog.all.count <= Self.catalogSize.values.reduce(0, +))
+        #expect(counted == Self.catalogSize)
+        #expect(catalog.all.count == 451)
     }
 
-    // Transcribed end to end, so these are exact.
-    static let fullCategories: [Equipment: Int] = [
-        .dumbbell: 70, .kettlebell: 13, .plate: 8, .suspensionBand: 7,
-    ]
-
-    // What each category holds in the source. A category at its size is
-    // finished; one below it is still waiting on pages.
+    // What each category holds in the source's own equipment filter.
     static let catalogSize: [Equipment: Int] = [
         Equipment.none: 105, .barbell: 74, .dumbbell: 70, .kettlebell: 13,
-        .machine: 145, .plate: 8, .resistanceBand: 13, .suspensionBand: 7, .other: 17,
+        .machine: 145, .plate: 8, .resistanceBand: 13, .suspensionBand: 7, .other: 16,
     ]
 
     // A dropped entry is silent: the reader skips what it cannot understand,
@@ -64,17 +53,12 @@ struct ExerciseCatalogIntegrityTests {
         #expect(catalog.all.allSatisfy { $0.key.wholeMatch(of: shape) != nil })
     }
 
-    // These keys index saved history and hand-verified tutorials. The ones
-    // still missing are bodyweight movements the source's own list will
-    // restore; nothing may be lost beyond those.
-    @Test func theTutorialKeysStillInTheCatalogAreTheOnesItCanHold() {
+    // These keys index saved history and hand-verified tutorials. Renaming one
+    // silently splits a client's log and drops their video.
+    @Test func theKeysTutorialsAreIndexedOnAreAllPresent() {
         let missing = ExerciseVideoCatalog.videoIDs.keys.filter { catalog[$0] == nil }.sorted()
 
-        #expect(missing == [
-            "bicycle_crunch", "glute_bridge", "high_intensity_intervals", "jump_squat",
-            "leg_raise", "plank", "romanian_deadlift", "russian_twist", "walking_lunge",
-            "warm_up_jog",
-        ])
+        #expect(missing.isEmpty, "missing: \(missing)")
     }
 
     // Whatever the setup screen offers has to lead somewhere. While a
@@ -103,12 +87,58 @@ struct ExerciseCatalogIntegrityTests {
         }
     }
 
-    // A gym-goer must be able to press, pull and squat from the catalog
-    // alone, or the week the prompt insists on cannot be built.
-    @Test func aFullGymCanPushPullAndSquat() {
-        #expect(catalog.all.contains { $0.pattern.isLowerPush })
-        #expect(catalog.all.contains { $0.pattern.isPush })
-        #expect(catalog.all.contains { $0.pattern.isPull })
+    // Someone who owns nothing must still get a whole week, or the app's own
+    // "bodyweight only" answer leads to a plan it cannot build.
+    @Test func aClientWithNoEquipmentCanPushPullAndSquat() {
+        let bodyweight = catalog.available(with: [Equipment.none])
+
+        #expect(bodyweight.contains { $0.pattern.isLowerPush })
+        #expect(bodyweight.contains { $0.pattern.isPush })
+        #expect(bodyweight.contains { $0.pattern.isPull })
+    }
+
+    @Test func aClientWithNoEquipmentCanTrainEveryRegion() {
+        let reachable = Set(catalog.available(with: [Equipment.none]).map(\.primary.region))
+        let missing = MuscleRegion.allCases.filter { $0.isTrainable && !reachable.contains($0) }
+
+        #expect(missing.isEmpty, "unreachable: \(missing)")
+    }
+
+    // Read one-handed between sets, so the shape matters as much as the
+    // content: a wall of text is a step nobody reads.
+    @Test func howToStepsFitOnAPhoneScreen() {
+        let described = catalog.all.filter { !$0.steps.isEmpty }
+
+        #expect(described.filter { !(4...7).contains($0.steps.count) }.isEmpty)
+        #expect(described.flatMap(\.steps).filter { $0.split(separator: " ").count > 16 }.isEmpty)
+    }
+
+    // The list is numbered by the UI, so a step that numbers itself renders
+    // as "1. 1. Lie back".
+    @Test func stepsCarryNoNumberingOfTheirOwn() {
+        let numbered = catalog.all.flatMap(\.steps).filter {
+            $0.firstMatch(of: /^\s*\d+[.)]/) != nil
+        }
+
+        #expect(numbered.isEmpty)
+    }
+
+    @Test func everyStepStartsWithACapitalAndEndsWithAStop() {
+        let malformed = catalog.all.flatMap(\.steps).filter {
+            !($0.first?.isUppercase ?? false) || !$0.hasSuffix(".")
+        }
+
+        #expect(malformed.isEmpty)
+    }
+
+    // A movement assists muscles; it cannot assist the one it already trains.
+    @Test func secondaryMusclesNeverRepeatThePrimary() {
+        #expect(catalog.all.filter { $0.secondary.contains($0.primary) }.isEmpty)
+    }
+
+    // Every movement says what it is, even the ones with no steps.
+    @Test func everyMovementCarriesASummary() {
+        #expect(catalog.all.filter { $0.summary.isEmpty }.isEmpty)
     }
 
     @Test func theVocabularyIsTheSourcesOwnNineCategories() {
@@ -143,12 +173,13 @@ struct ExerciseCatalogIntegrityTests {
                 .map(String.init)
                 .filter { !$0.isEmpty && !$0.hasPrefix("#") }
                 .map { line -> String in
-                    let parts = line.split(separator: "|").map(String.init)
+                    let parts = line.split(separator: "|", omittingEmptySubsequences: false)
+                        .map(String.init)
                     return "\(parts[1])|\(parts[0])|\(parts[2])"
                 }
         )
         let catalogued = Set(
-            catalog.all.map { "\($0.name)|\($0.equipment.catalogName)|\($0.muscle.rawValue)" }
+            catalog.all.map { "\($0.name)|\($0.equipment.catalogName)|\($0.primary.rawValue)" }
         )
 
         #expect(catalogued.subtracting(transcribed).isEmpty,
