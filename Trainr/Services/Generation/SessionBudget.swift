@@ -36,6 +36,18 @@ nonisolated enum SessionBudget {
         }
     }
 
+    // Isolation work does not need the three minutes a heavy compound does;
+    // the existing brief already asked for 90-120 on multi-joint and 60-90 on
+    // isolation, and this is that, worked out rather than written out.
+    static func restSeconds(for goal: FitnessGoal, role: ExerciseRole) -> Int {
+        switch role {
+        case .timed: timedRest
+        case .compound: restSeconds(for: goal)
+        case .isolation: max(restSeconds(for: goal) * 3 / 4 / restGranularity * restGranularity,
+                             timedRest)
+        }
+    }
+
     static func maxSetsPerSession(_ user: UserProfile) -> Int {
         let usableSeconds = (user.workoutDuration - overheadMinutes) * 60
         let perSet = workSecondsPerSet + restSeconds(for: user.fitnessGoal)
@@ -73,4 +85,7 @@ nonisolated enum SessionBudget {
     static func sessionCeilingMinutes(_ user: UserProfile) -> Int {
         user.workoutDuration * 3 / 2
     }
+
+    private static let timedRest = 30
+    private static let restGranularity = 15
 }

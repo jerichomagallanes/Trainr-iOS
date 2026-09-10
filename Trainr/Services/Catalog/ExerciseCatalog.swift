@@ -69,4 +69,10 @@ nonisolated extension CatalogExercise {
     // equipment: an assisted pull-up is on a machine and still has no weight
     // to choose.
     var isLoadable: Bool { measure == .weightAndReps }
+
+    // Legs tolerate a bigger weekly jump than arms do, which is the only
+    // reason the distinction is drawn here.
+    var isLowerBody: Bool {
+        [.quads, .hamstrings, .hips, .calves].contains(primary.region)
+    }
 }
