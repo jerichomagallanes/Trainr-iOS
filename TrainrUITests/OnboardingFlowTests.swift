@@ -64,7 +64,7 @@ final class OnboardingFlowTests: XCTestCase {
 
         XCTAssertTrue(app.staticTexts["SET UP YOUR WORKOUT"].waitForExistence(timeout: 5))
         app.buttons["Home"].tap()
-        app.buttons["Dumbbells"].tap()
+        app.buttons["Dumbbell"].tap()
         XCTAssertTrue(app.staticTexts["What are the weights marked in?"].waitForExistence(timeout: 5))
         app.buttons["kg"].tap()
         app.buttons["Choose how many days"].tap()
@@ -130,7 +130,7 @@ final class OnboardingFlowTests: XCTestCase {
         )
         XCTAssertTrue(app.buttons["Add set"].firstMatch.exists)
         XCTAssertTrue(app.buttons["Start timer"].firstMatch.exists)
-        XCTAssertTrue(app.staticTexts["Equipment: Dumbbells"].exists)
+        XCTAssertTrue(app.staticTexts["Equipment: Dumbbell"].exists)
 
         let slider = app.buttons["SLIDE TO FINISH THIS WORKOUT"]
         XCTAssertTrue(slider.waitForExistence(timeout: 5))

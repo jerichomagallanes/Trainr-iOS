@@ -2359,7 +2359,7 @@
    "equipment": "MACHINE",
    "measure": "DURATION",
    "pattern": "CONDITIONING",
-   "staple": false,
+   "staple": true,
    "summary": "A whole-session activity; log the time you spend on it.",
    "steps": []
   },
@@ -2506,7 +2506,7 @@
    ],
    "equipment": "NONE",
    "measure": "DURATION",
-   "pattern": "CONDITIONING",
+   "pattern": "MOBILITY",
    "staple": false,
    "summary": "A whole-back-line stretch. Bend your knees to get a long spine.",
    "steps": [
@@ -4477,7 +4477,7 @@
    "equipment": "OTHER",
    "measure": "DURATION",
    "pattern": "CONDITIONING",
-   "staple": false,
+   "staple": true,
    "summary": "A whole-session activity; log the time you spend on it.",
    "steps": []
   },
@@ -6144,7 +6144,7 @@
    "secondary": [],
    "equipment": "NONE",
    "measure": "DURATION",
-   "pattern": "CONDITIONING",
+   "pattern": "MOBILITY",
    "staple": false,
    "summary": "A whole-session activity; log the time you spend on it.",
    "steps": []
@@ -6664,7 +6664,7 @@
    "equipment": "NONE",
    "measure": "DURATION",
    "pattern": "CONDITIONING",
-   "staple": false,
+   "staple": true,
    "summary": "A whole-session activity; log the time you spend on it.",
    "steps": []
   },
@@ -7542,8 +7542,8 @@
    "secondary": [],
    "equipment": "NONE",
    "measure": "DURATION",
-   "pattern": "CONDITIONING",
-   "staple": false,
+   "pattern": "MOBILITY",
+   "staple": true,
    "summary": "A whole-session activity; log the time you spend on it.",
    "steps": []
   },
@@ -7987,7 +7987,7 @@
    "equipment": "NONE",
    "measure": "DURATION",
    "pattern": "CONDITIONING",
-   "staple": false,
+   "staple": true,
    "summary": "A whole-session activity; log the time you spend on it.",
    "steps": []
   },
@@ -8055,8 +8055,8 @@
    "secondary": [],
    "equipment": "NONE",
    "measure": "DURATION",
-   "pattern": "CONDITIONING",
-   "staple": false,
+   "pattern": "MOBILITY",
+   "staple": true,
    "summary": "A whole-session activity; log the time you spend on it.",
    "steps": []
   },
@@ -8360,8 +8360,8 @@
    "secondary": [],
    "equipment": "NONE",
    "measure": "DURATION",
-   "pattern": "CONDITIONING",
-   "staple": false,
+   "pattern": "MOBILITY",
+   "staple": true,
    "summary": "A whole-session activity; log the time you spend on it.",
    "steps": []
   },

@@ -26,9 +26,11 @@ nonisolated struct PlanPromptBuilder {
         - Train every major muscle group at least twice in the week: the same work
           split over two days beats all of it on one.
         - Reach the weekly set target given below for each major muscle group, and
-          never exceed the session set cap given below. The cap is what the
-          client's session length pays for once warm-up and rest are counted, so a
-          session that exceeds it is a session they will not finish.
+          never exceed the session set cap or the session length given below. The
+          cap is what the client's session length pays for once warm-up and rest
+          are counted, so a session that exceeds it is a session they will not
+          finish. A timed set spends its own seconds, not one set's worth: three
+          thirty-minute walks are a ninety-minute day whatever the set count says.
         - Cover every pattern the request names as required, and order each
           session large muscle groups before small, multi-joint before
           single-joint.
@@ -115,14 +117,24 @@ nonisolated struct PlanPromptBuilder {
             "- Trains at: \(user.workoutLocation.rawValue)",
             "- Available equipment: \(text(for: user.availableEquipment))",
             "- Days per week: \(user.workoutDaysPerWeek) (plan EXACTLY this many days)",
-            "- Session length: about \(user.workoutDuration) minutes",
+            "- Session length: about \(user.workoutDuration) minutes, and never past "
+                + "\(SessionBudget.sessionCeilingMinutes(user)) once every set and rest is counted",
             "- Session set cap: at most \(SessionBudget.maxSetsPerSession(user)) sets in "
                 + "one day, warm-up included",
             "- Weekly set target: about \(SessionBudget.weeklySetsPerMuscle(user)) hard sets "
-                + "per major muscle group across the week",
+                + "per major muscle group across the week. The groups are chest, back, "
+                + "shoulders, arms, core, quads, hamstrings, glutes and hips, calves. A set "
+                + "counts once for the muscle its movement trains and half for each muscle "
+                + "that movement assists",
             "- Reads weights in \(weightWord(for: user.weightUnits)); smallest loadable "
                 + "increment \(incrementKg(for: user.weightUnits)) kg"
         ]
+        if !SessionBudget.coversEveryRegion(user) {
+            lines.append(
+                "- This week cannot reach the minimum useful dose for every group, so "
+                    + "prefer compound movements that train several at once over isolation work"
+            )
+        }
         if let conditioning = weeklyConditioningMinutes(for: user) {
             lines.append("- Weekly conditioning: \(conditioning)")
         }
@@ -131,7 +143,7 @@ nonisolated struct PlanPromptBuilder {
             lines.append("- Injuries or areas to protect: \(named)")
         }
         lines.append("- Write all display copy in: English")
-        let required = ExerciseShortlist.requiredPatterns(shortlist)
+        let required = ExerciseShortlist.requiredPatterns(shortlist, goal: user.fitnessGoal)
         if !required.isEmpty {
             let named = PatternRequirement.allCases
                 .filter(required.contains)

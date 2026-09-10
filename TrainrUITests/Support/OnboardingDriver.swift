@@ -84,7 +84,7 @@ extension XCUIApplication {
     @MainActor
     func fillSetup() {
         buttons["Home"].tap()
-        buttons["Dumbbells"].tap()
+        buttons["Dumbbell"].tap()
         XCTAssertTrue(staticTexts["What are the weights marked in?"].waitForExistence(timeout: 5))
         buttons["kg"].tap()
         buttons["Choose how many days"].tap()

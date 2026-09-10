@@ -16,9 +16,13 @@ struct ExerciseShortlistTests {
         )
     }
 
-    private func profile(_ owned: Equipment...) -> UserProfile {
+    private func profile(
+        _ owned: Equipment...,
+        goal: FitnessGoal = .generalFitness
+    ) -> UserProfile {
         var profile = UserProfile()
         profile.availableEquipment = owned
+        profile.fitnessGoal = goal
         return profile
     }
 
@@ -108,5 +112,66 @@ struct ExerciseShortlistTests {
         ]
 
         #expect(ExerciseShortlist.requiredPatterns(full) == [.lowerPush, .upperPush, .upperPull])
+    }
+
+    private func conditioning(_ key: String, staple: Bool = false) -> CatalogExercise {
+        exercise(key, muscle: .cardio, pattern: .conditioning, staple: staple)
+    }
+
+    private func mobility(_ key: String) -> CatalogExercise {
+        exercise(key, muscle: .fullBody, pattern: .mobility)
+    }
+
+    private func mixedCatalog() -> InMemoryExerciseCatalog {
+        var all = [conditioning("walking", staple: true)]
+        all += (0..<9).map { conditioning("zz_activity_\($0)") }
+        all.append(mobility("stretching"))
+        all += (0..<3).map { mobility("zz_mobility_\($0)") }
+        for muscle in MuscleGroup.allCases where muscle.region.isTrainable {
+            all += (0..<12).map { exercise("lift_\(muscle.rawValue)_\($0)", muscle: muscle) }
+        }
+        return InMemoryExerciseCatalog(all)
+    }
+
+    // Ranked among the muscle regions, conditioning and mobility lost every
+    // slot to the alphabet: a client who asked for flexibility was offered a
+    // single stretch, and one who asked to lose weight was never offered a walk.
+    @Test func theGoalDecidesHowMuchConditioningAndMobilityIsOffered() {
+        let catalog = mixedCatalog()
+        func offered(_ goal: FitnessGoal) -> [CatalogExercise] {
+            ExerciseShortlist.forRequest(catalog: catalog, user: profile(Equipment.none, goal: goal))
+        }
+
+        let forMuscle = offered(.muscleGain)
+        let forFlexibility = offered(.flexibility)
+        let forWeightLoss = offered(.weightLoss)
+
+        #expect(forFlexibility.count(where: { $0.pattern == .mobility })
+            > forMuscle.count(where: { $0.pattern == .mobility }))
+        #expect(forWeightLoss.count(where: { $0.primary == .cardio })
+            > forMuscle.count(where: { $0.primary == .cardio }))
+        #expect(forMuscle.contains { $0.pattern == .mobility })
+    }
+
+    // Every goal needs a warm-up, and the staple is what a coach reaches for
+    // rather than whatever sorts first.
+    @Test func theStapleConditioningAndMobilityAreTheOnesOffered() {
+        let offered = ExerciseShortlist.forRequest(
+            catalog: mixedCatalog(), user: profile(Equipment.none, goal: .weightLoss)
+        ).map(\.key)
+
+        #expect(offered.contains("walking"))
+        #expect(offered.contains("stretching"))
+    }
+
+    // Someone who came for mobility should not have their week rejected for
+    // holding no squat.
+    @Test func aFlexibilityGoalIsNotHeldToTheSquatPressPullRule() {
+        let offered = ExerciseShortlist.forRequest(
+            catalog: mixedCatalog(), user: profile(Equipment.none)
+        )
+
+        #expect(!ExerciseShortlist.requiredPatterns(offered, goal: .muscleGain).isEmpty)
+        #expect(ExerciseShortlist.requiredPatterns(offered, goal: .flexibility).isEmpty)
     }
 }
