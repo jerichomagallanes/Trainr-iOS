@@ -156,7 +156,7 @@ struct ExerciseCatalogIntegrityTests {
     }
 
     @Test func everyMovementIsNamedInBothLanguagesTheCatalogCarries() {
-        #expect(catalog.all.allSatisfy { !$0.name.isEmpty && !$0.nameJa.isEmpty })
+        #expect(catalog.all.allSatisfy { !$0.name.isEmpty })
     }
 
     // The catalog is generated from exercise-source.txt and may hold nothing

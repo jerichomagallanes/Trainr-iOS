@@ -15,7 +15,7 @@ struct CannedDeterminismTests {
 
     private func plan(_ user: UserProfile) async -> WeeklyPlan? {
         let result = await CannedPlanGenerator().generate(
-            PlanRequest(user: user, weekNumber: 1, startDate: Date(), languageCode: "en")
+            PlanRequest(user: user, weekNumber: 1, startDate: Date())
         )
         guard case .generated(let plan) = result else { return nil }
         return plan

@@ -23,7 +23,6 @@ struct CannedPlanGeneratorTests {
             ),
             weekNumber: weekNumber,
             startDate: Date(timeIntervalSince1970: 1),
-            languageCode: "en",
             previousWeek: previousWeek
         )
     }

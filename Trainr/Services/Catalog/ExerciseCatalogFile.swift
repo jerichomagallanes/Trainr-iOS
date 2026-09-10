@@ -10,7 +10,6 @@ private nonisolated struct CatalogFile: Decodable {
 private nonisolated struct CatalogEntry: Decodable {
     var key = ""
     var name = ""
-    var nameJa = ""
     var primary = ""
     var secondary: [String] = []
     var summary = ""
@@ -38,7 +37,7 @@ nonisolated enum ExerciseCatalogReader {
         else { return nil }
         guard let kit = Equipment.fromCatalog(entry.equipment) else { return nil }
         return CatalogExercise(
-            key: entry.key, name: entry.name, nameJa: entry.nameJa, primary: prime,
+            key: entry.key, name: entry.name, primary: prime,
             secondary: entry.secondary.compactMap(MuscleGroup.init(rawValue:)),
             equipment: kit, measure: measure, pattern: pattern, staple: entry.staple,
             summary: entry.summary, steps: entry.steps

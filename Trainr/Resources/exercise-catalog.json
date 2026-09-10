@@ -4,7 +4,6 @@
   {
    "key": "ab_scissors",
    "name": "Ab Scissors",
-   "nameJa": "Ab Scissors",
    "primary": "ABDOMINALS",
    "secondary": [],
    "equipment": "NONE",
@@ -22,7 +21,6 @@
   {
    "key": "ab_wheel",
    "name": "Ab Wheel",
-   "nameJa": "アブローラー",
    "primary": "ABDOMINALS",
    "secondary": [],
    "equipment": "OTHER",
@@ -40,7 +38,6 @@
   {
    "key": "aerobics",
    "name": "Aerobics",
-   "nameJa": "Aerobics",
    "primary": "CARDIO",
    "secondary": [],
    "equipment": "NONE",
@@ -53,7 +50,6 @@
   {
    "key": "air_bike",
    "name": "Air Bike",
-   "nameJa": "エアバイク",
    "primary": "CARDIO",
    "secondary": [],
    "equipment": "MACHINE",
@@ -66,7 +62,6 @@
   {
    "key": "around_the_world",
    "name": "Around The World",
-   "nameJa": "Around The World",
    "primary": "CHEST",
    "secondary": [
     "UPPER_BACK",
@@ -88,7 +83,6 @@
   {
    "key": "assisted_chest_dip",
    "name": "Chest Dip (Assisted)",
-   "nameJa": "Chest Dip (Assisted)",
    "primary": "CHEST",
    "secondary": [
     "TRICEPS",
@@ -109,7 +103,6 @@
   {
    "key": "assisted_chin_up",
    "name": "Chin Up (Assisted)",
-   "nameJa": "チンアップアシスト",
    "primary": "LATS",
    "secondary": [
     "BICEPS",
@@ -130,7 +123,6 @@
   {
    "key": "assisted_pistol_squats",
    "name": "Assisted Pistol Squats",
-   "nameJa": "アシストピストルスクワットs",
    "primary": "QUADRICEPS",
    "secondary": [
     "HAMSTRINGS",
@@ -152,7 +144,6 @@
   {
    "key": "assisted_pull_up",
    "name": "Pull Up (Assisted)",
-   "nameJa": "プルアップアシスト",
    "primary": "LATS",
    "secondary": [
     "BICEPS",
@@ -173,7 +164,6 @@
   {
    "key": "assisted_triceps_dip",
    "name": "Triceps Dip (Assisted)",
-   "nameJa": "Triceps Dip (Assisted)",
    "primary": "TRICEPS",
    "secondary": [
     "CHEST",
@@ -194,7 +184,6 @@
   {
    "key": "ball_slams",
    "name": "Ball Slams",
-   "nameJa": "Ball Slams",
    "primary": "FULL_BODY",
    "secondary": [],
    "equipment": "OTHER",
@@ -212,7 +201,6 @@
   {
    "key": "band_bent_over_row",
    "name": "Bent Over Row (Band)",
-   "nameJa": "ベントオーバーロウバンド",
    "primary": "UPPER_BACK",
    "secondary": [
     "LATS",
@@ -235,7 +223,6 @@
   {
    "key": "band_chest_fly",
    "name": "Chest Fly (Band)",
-   "nameJa": "ダンベルフライバンド",
    "primary": "CHEST",
    "secondary": [
     "SHOULDERS"
@@ -255,7 +242,6 @@
   {
    "key": "band_chest_press",
    "name": "Chest Press (Band)",
-   "nameJa": "チェストプレスバンド",
    "primary": "CHEST",
    "secondary": [
     "SHOULDERS",
@@ -276,7 +262,6 @@
   {
    "key": "band_deadlift",
    "name": "Deadlift (Band)",
-   "nameJa": "デッドリフトバンド",
    "primary": "GLUTES",
    "secondary": [
     "HAMSTRINGS",
@@ -297,7 +282,6 @@
   {
    "key": "band_front_raise",
    "name": "Front Raise (Band)",
-   "nameJa": "フロントレイズバンド",
    "primary": "SHOULDERS",
    "secondary": [],
    "equipment": "RESISTANCE_BAND",
@@ -315,7 +299,6 @@
   {
    "key": "band_hammer_curl",
    "name": "Hammer Curl (Band)",
-   "nameJa": "ハンマーカールバンド",
    "primary": "BICEPS",
    "secondary": [
     "FOREARMS"
@@ -335,7 +318,6 @@
   {
    "key": "band_kneeling_pulldown",
    "name": "Kneeling Pulldown (band)",
-   "nameJa": "ニーリングプルダウンバンド",
    "primary": "LATS",
    "secondary": [
     "UPPER_BACK",
@@ -356,7 +338,6 @@
   {
    "key": "band_lat_pulldown",
    "name": "Lat Pulldown (Band)",
-   "nameJa": "ラットプルダウンバンド",
    "primary": "LATS",
    "secondary": [
     "UPPER_BACK",
@@ -377,7 +358,6 @@
   {
    "key": "band_lateral_raise",
    "name": "Lateral Raise (Band)",
-   "nameJa": "サイドレイズバンド",
    "primary": "SHOULDERS",
    "secondary": [],
    "equipment": "RESISTANCE_BAND",
@@ -395,7 +375,6 @@
   {
    "key": "band_pull_up",
    "name": "Pull Up (Band)",
-   "nameJa": "プルアップバンド",
    "primary": "LATS",
    "secondary": [
     "BICEPS",
@@ -416,7 +395,6 @@
   {
    "key": "band_pullaparts",
    "name": "Band Pullaparts",
-   "nameJa": "Band Pullaparts",
    "primary": "SHOULDERS",
    "secondary": [
     "UPPER_BACK"
@@ -436,7 +414,6 @@
   {
    "key": "band_squat",
    "name": "Squat (Band)",
-   "nameJa": "スクワットバンド",
    "primary": "QUADRICEPS",
    "secondary": [
     "GLUTES",
@@ -457,7 +434,6 @@
   {
    "key": "barbell_behind_the_back_wrist_curl",
    "name": "Behind the Back Wrist Curl (Barbell)",
-   "nameJa": "Behind the Back Wrist Curl (Barbell)",
    "primary": "FOREARMS",
    "secondary": [],
    "equipment": "BARBELL",
@@ -475,7 +451,6 @@
   {
    "key": "barbell_bench_press",
    "name": "Bench Press (Barbell)",
-   "nameJa": "ベンチプレスバーベル",
    "primary": "CHEST",
    "secondary": [
     "TRICEPS",
@@ -497,7 +472,6 @@
   {
    "key": "barbell_bench_press_close_grip",
    "name": "Bench Press - Close Grip (Barbell)",
-   "nameJa": "ベンチプレスナローグリップバーベル",
    "primary": "TRICEPS",
    "secondary": [
     "CHEST",
@@ -519,7 +493,6 @@
   {
    "key": "barbell_bench_press_wide_grip",
    "name": "Bench Press - Wide Grip (Barbell)",
-   "nameJa": "ベンチプレスワイドグリップバーベル",
    "primary": "CHEST",
    "secondary": [
     "SHOULDERS",
@@ -541,7 +514,6 @@
   {
    "key": "barbell_bent_over_row",
    "name": "Bent Over Row (Barbell)",
-   "nameJa": "ベントオーバーロウバーベル",
    "primary": "UPPER_BACK",
    "secondary": [
     "LATS",
@@ -564,7 +536,6 @@
   {
    "key": "barbell_bicep_curl",
    "name": "Bicep Curl (Barbell)",
-   "nameJa": "バイセップカールバーベル",
    "primary": "BICEPS",
    "secondary": [],
    "equipment": "BARBELL",
@@ -582,7 +553,6 @@
   {
    "key": "barbell_box_squat",
    "name": "Box Squat (Barbell)",
-   "nameJa": "ボックススクワットバーベル",
    "primary": "QUADRICEPS",
    "secondary": [
     "HAMSTRINGS",
@@ -603,7 +573,6 @@
   {
    "key": "barbell_bulgarian_split_squat",
    "name": "Bulgarian Split Squat (Barbell)",
-   "nameJa": "ブルガリアンスクワットバーベル",
    "primary": "QUADRICEPS",
    "secondary": [
     "GLUTES",
@@ -626,7 +595,6 @@
   {
    "key": "barbell_deadlift",
    "name": "Deadlift (Barbell)",
-   "nameJa": "デッドリフトバーベル",
    "primary": "GLUTES",
    "secondary": [
     "HAMSTRINGS",
@@ -648,7 +616,6 @@
   {
    "key": "barbell_decline_bench_press",
    "name": "Decline Bench Press (Barbell)",
-   "nameJa": "デクラインベンチプレスバーベル",
    "primary": "CHEST",
    "secondary": [
     "TRICEPS",
@@ -669,7 +636,6 @@
   {
    "key": "barbell_feet_up_bench_press",
    "name": "Feet Up Bench Press (Barbell)",
-   "nameJa": "Feet Up Bench Press (Barbell)",
    "primary": "CHEST",
    "secondary": [
     "TRICEPS",
@@ -690,7 +656,6 @@
   {
    "key": "barbell_floor_press",
    "name": "Floor Press (Barbell)",
-   "nameJa": "フロアプレスバーベル",
    "primary": "CHEST",
    "secondary": [
     "TRICEPS",
@@ -711,7 +676,6 @@
   {
    "key": "barbell_front_raise",
    "name": "Front Raise (Barbell)",
-   "nameJa": "フロントレイズバーベル",
    "primary": "SHOULDERS",
    "secondary": [],
    "equipment": "BARBELL",
@@ -729,7 +693,6 @@
   {
    "key": "barbell_glute_bridge",
    "name": "Glute Bridge (Barbell)",
-   "nameJa": "グルートブリッジバーベル",
    "primary": "GLUTES",
    "secondary": [
     "HAMSTRINGS"
@@ -749,7 +712,6 @@
   {
    "key": "barbell_good_morning",
    "name": "Good Morning (Barbell)",
-   "nameJa": "グッドモーニングバーベル",
    "primary": "HAMSTRINGS",
    "secondary": [
     "GLUTES",
@@ -770,7 +732,6 @@
   {
    "key": "barbell_hip_thrust",
    "name": "Hip Thrust (Barbell)",
-   "nameJa": "ヒップスラストバーベル",
    "primary": "GLUTES",
    "secondary": [
     "HAMSTRINGS"
@@ -790,7 +751,6 @@
   {
    "key": "barbell_incline_bench_press",
    "name": "Incline Bench Press (Barbell)",
-   "nameJa": "インクラインベンチプレスバーベル",
    "primary": "CHEST",
    "secondary": [
     "SHOULDERS",
@@ -812,7 +772,6 @@
   {
    "key": "barbell_jm_press",
    "name": "JM Press (Barbell)",
-   "nameJa": "JM Press (Barbell)",
    "primary": "TRICEPS",
    "secondary": [
     "CHEST",
@@ -833,7 +792,6 @@
   {
    "key": "barbell_lunge",
    "name": "Lunge (Barbell)",
-   "nameJa": "ランジバーベル",
    "primary": "QUADRICEPS",
    "secondary": [
     "GLUTES",
@@ -854,7 +812,6 @@
   {
    "key": "barbell_meadows_rows",
    "name": "Meadows Rows (Barbell)",
-   "nameJa": "Meadows Rows (Barbell)",
    "primary": "UPPER_BACK",
    "secondary": [
     "LATS",
@@ -875,7 +832,6 @@
   {
    "key": "barbell_overhead_press",
    "name": "Overhead Press (Barbell)",
-   "nameJa": "オーバーヘッドプレスバーベル",
    "primary": "SHOULDERS",
    "secondary": [
     "TRICEPS",
@@ -897,7 +853,6 @@
   {
    "key": "barbell_partial_glute_bridge",
    "name": "Partial Glute Bridge (Barbell)",
-   "nameJa": "Partial Glute Bridge (Barbell)",
    "primary": "GLUTES",
    "secondary": [
     "HAMSTRINGS"
@@ -917,7 +872,6 @@
   {
    "key": "barbell_pause_squat",
    "name": "Pause Squat (Barbell)",
-   "nameJa": "Pause Squat (Barbell)",
    "primary": "QUADRICEPS",
    "secondary": [
     "GLUTES",
@@ -938,7 +892,6 @@
   {
    "key": "barbell_pendlay_row",
    "name": "Pendlay Row (Barbell)",
-   "nameJa": "ペンドレイロウバーベル",
    "primary": "UPPER_BACK",
    "secondary": [
     "LATS",
@@ -959,7 +912,6 @@
   {
    "key": "barbell_preacher_curl",
    "name": "Preacher Curl (Barbell)",
-   "nameJa": "プリーチャーカールバーベル",
    "primary": "BICEPS",
    "secondary": [],
    "equipment": "BARBELL",
@@ -977,7 +929,6 @@
   {
    "key": "barbell_reverse_curl",
    "name": "Reverse Curl (Barbell)",
-   "nameJa": "リバースカールバーベル",
    "primary": "BICEPS",
    "secondary": [
     "FOREARMS"
@@ -997,7 +948,6 @@
   {
    "key": "barbell_reverse_lunge",
    "name": "Reverse Lunge (Barbell)",
-   "nameJa": "リバースランジバーベル",
    "primary": "QUADRICEPS",
    "secondary": [
     "GLUTES",
@@ -1018,7 +968,6 @@
   {
    "key": "barbell_romanian_deadlift",
    "name": "Romanian Deadlift (Barbell)",
-   "nameJa": "ルーマニアンデッドリフトバーベル",
    "primary": "HAMSTRINGS",
    "secondary": [
     "GLUTES",
@@ -1040,7 +989,6 @@
   {
    "key": "barbell_seal_row",
    "name": "Seal Row (Barbell)",
-   "nameJa": "シールロウバーベル",
    "primary": "UPPER_BACK",
    "secondary": [
     "LATS",
@@ -1061,7 +1009,6 @@
   {
    "key": "barbell_seated_overhead_press",
    "name": "Seated Overhead Press (Barbell)",
-   "nameJa": "シーテッドオーバーヘッドプレスバーベル",
    "primary": "SHOULDERS",
    "secondary": [
     "TRICEPS"
@@ -1081,7 +1028,6 @@
   {
    "key": "barbell_seated_wrist_curl",
    "name": "Seated Wrist Curl (Barbell)",
-   "nameJa": "シーテッドリストカールバーベル",
    "primary": "FOREARMS",
    "secondary": [],
    "equipment": "BARBELL",
@@ -1099,7 +1045,6 @@
   {
    "key": "barbell_seated_wrist_extension",
    "name": "Seated Wrist Extension (Barbell)",
-   "nameJa": "Seated Wrist Extension (Barbell)",
    "primary": "FOREARMS",
    "secondary": [],
    "equipment": "BARBELL",
@@ -1117,7 +1062,6 @@
   {
    "key": "barbell_shrug",
    "name": "Shrug (Barbell)",
-   "nameJa": "シュラッグバーベル",
    "primary": "TRAPS",
    "secondary": [],
    "equipment": "BARBELL",
@@ -1135,7 +1079,6 @@
   {
    "key": "barbell_single_arm_landmine_press",
    "name": "Single Arm Landmine Press (Barbell)",
-   "nameJa": "Single Arm Landmine Press (Barbell)",
    "primary": "SHOULDERS",
    "secondary": [
     "CHEST",
@@ -1156,7 +1099,6 @@
   {
    "key": "barbell_single_leg_romanian_deadlift",
    "name": "Single Leg Romanian Deadlift (Barbell)",
-   "nameJa": "シングルレッグルーマニアンデッドリフトバーベル",
    "primary": "HAMSTRINGS",
    "secondary": [
     "GLUTES",
@@ -1178,7 +1120,6 @@
   {
    "key": "barbell_single_leg_standing_calf_raise",
    "name": "Single Leg Standing Calf Raise (Barbell)",
-   "nameJa": "シングルレッグスタンディングカーフレイズバーベル",
    "primary": "CALVES",
    "secondary": [],
    "equipment": "BARBELL",
@@ -1196,7 +1137,6 @@
   {
    "key": "barbell_skullcrusher",
    "name": "Skullcrusher (Barbell)",
-   "nameJa": "スカルクラッシャーバーベル",
    "primary": "TRICEPS",
    "secondary": [],
    "equipment": "BARBELL",
@@ -1214,7 +1154,6 @@
   {
    "key": "barbell_spider_curl",
    "name": "Spider Curl (Barbell)",
-   "nameJa": "スパイダーカールバーベル",
    "primary": "BICEPS",
    "secondary": [],
    "equipment": "BARBELL",
@@ -1232,7 +1171,6 @@
   {
    "key": "barbell_squat",
    "name": "Squat (Barbell)",
-   "nameJa": "スクワットバーベル",
    "primary": "QUADRICEPS",
    "secondary": [
     "GLUTES",
@@ -1254,7 +1192,6 @@
   {
    "key": "barbell_standing_calf_raise",
    "name": "Standing Calf Raise (Barbell)",
-   "nameJa": "スタンディングカーフレイズバーベル",
    "primary": "CALVES",
    "secondary": [],
    "equipment": "BARBELL",
@@ -1272,7 +1209,6 @@
   {
    "key": "barbell_standing_military_press",
    "name": "Standing Military Press (Barbell)",
-   "nameJa": "スタンディングミリタリープレスバーベル",
    "primary": "SHOULDERS",
    "secondary": [
     "TRICEPS",
@@ -1293,7 +1229,6 @@
   {
    "key": "barbell_sumo_squat",
    "name": "Sumo Squat (Barbell)",
-   "nameJa": "スモウスクワットバーベル",
    "primary": "QUADRICEPS",
    "secondary": [
     "ADDUCTORS",
@@ -1315,7 +1250,6 @@
   {
    "key": "barbell_thruster",
    "name": "Thruster (Barbell)",
-   "nameJa": "スラスターバーベル",
    "primary": "FULL_BODY",
    "secondary": [
     "QUADRICEPS",
@@ -1336,7 +1270,6 @@
   {
    "key": "barbell_triceps_extension",
    "name": "Triceps Extension (Barbell)",
-   "nameJa": "トライセプスエクステンションバーベル",
    "primary": "TRICEPS",
    "secondary": [],
    "equipment": "BARBELL",
@@ -1354,7 +1287,6 @@
   {
    "key": "barbell_upright_row",
    "name": "Upright Row (Barbell)",
-   "nameJa": "アップライトロウバーベル",
    "primary": "SHOULDERS",
    "secondary": [
     "TRAPS",
@@ -1375,7 +1307,6 @@
   {
    "key": "battle_ropes",
    "name": "Battle Ropes",
-   "nameJa": "バトルロープ",
    "primary": "CARDIO",
    "secondary": [],
    "equipment": "MACHINE",
@@ -1393,7 +1324,6 @@
   {
    "key": "bear_crawl",
    "name": "Bear Crawl",
-   "nameJa": "Bear Crawl",
    "primary": "FULL_BODY",
    "secondary": [],
    "equipment": "NONE",
@@ -1411,7 +1341,6 @@
   {
    "key": "bench_dip",
    "name": "Bench Dip",
-   "nameJa": "Bench Dip",
    "primary": "TRICEPS",
    "secondary": [
     "SHOULDERS",
@@ -1432,7 +1361,6 @@
   {
    "key": "bicycle_crunch",
    "name": "Bicycle Crunch",
-   "nameJa": "Bicycle Crunch",
    "primary": "ABDOMINALS",
    "secondary": [],
    "equipment": "NONE",
@@ -1450,7 +1378,6 @@
   {
    "key": "bicycle_crunch_raised_legs",
    "name": "Bicycle Crunch Raised Legs",
-   "nameJa": "Bicycle Crunch Raised Legs",
    "primary": "ABDOMINALS",
    "secondary": [],
    "equipment": "NONE",
@@ -1468,7 +1395,6 @@
   {
    "key": "bird_dog",
    "name": "Bird Dog",
-   "nameJa": "バードドッグ",
    "primary": "GLUTES",
    "secondary": [
     "HAMSTRINGS",
@@ -1490,7 +1416,6 @@
   {
    "key": "bodyweight_russian_twist",
    "name": "Russian Twist (Bodyweight)",
-   "nameJa": "ロシアンツイスト自重",
    "primary": "ABDOMINALS",
    "secondary": [],
    "equipment": "NONE",
@@ -1508,7 +1433,6 @@
   {
    "key": "bodyweight_squat",
    "name": "Squat (Bodyweight)",
-   "nameJa": "スクワット自重",
    "primary": "QUADRICEPS",
    "secondary": [
     "GLUTES",
@@ -1530,7 +1454,6 @@
   {
    "key": "box_jump",
    "name": "Box Jump",
-   "nameJa": "ボックスジャンプ",
    "primary": "QUADRICEPS",
    "secondary": [
     "HAMSTRINGS",
@@ -1552,7 +1475,6 @@
   {
    "key": "boxing",
    "name": "Boxing",
-   "nameJa": "ボクシング",
    "primary": "CARDIO",
    "secondary": [],
    "equipment": "NONE",
@@ -1565,7 +1487,6 @@
   {
    "key": "burpee",
    "name": "Burpee",
-   "nameJa": "バーピー",
    "primary": "FULL_BODY",
    "secondary": [],
    "equipment": "NONE",
@@ -1584,7 +1505,6 @@
   {
    "key": "burpee_broad_jumps",
    "name": "Burpee Broad Jumps",
-   "nameJa": "Burpee Broad Jumps",
    "primary": "FULL_BODY",
    "secondary": [],
    "equipment": "NONE",
@@ -1602,7 +1522,6 @@
   {
    "key": "burpee_over_the_bar",
    "name": "Burpee Over the Bar",
-   "nameJa": "Burpee Over the Bar",
    "primary": "FULL_BODY",
    "secondary": [],
    "equipment": "NONE",
@@ -1621,7 +1540,6 @@
   {
    "key": "cable_behind_the_back_curl",
    "name": "Behind the Back Curl (Cable)",
-   "nameJa": "Behind the Back Curl (Cable)",
    "primary": "BICEPS",
    "secondary": [],
    "equipment": "MACHINE",
@@ -1640,7 +1558,6 @@
   {
    "key": "cable_bench_press",
    "name": "Bench Press (Cable)",
-   "nameJa": "ベンチプレスケーブル",
    "primary": "CHEST",
    "secondary": [
     "SHOULDERS",
@@ -1662,7 +1579,6 @@
   {
    "key": "cable_bicep_curl",
    "name": "Bicep Curl (Cable)",
-   "nameJa": "バイセップカールケーブル",
    "primary": "BICEPS",
    "secondary": [],
    "equipment": "MACHINE",
@@ -1680,7 +1596,6 @@
   {
    "key": "cable_core_pallof_press",
    "name": "Cable Core Pallof Press",
-   "nameJa": "Cable Core Pallof Press",
    "primary": "ABDOMINALS",
    "secondary": [
     "CHEST",
@@ -1703,7 +1618,6 @@
   {
    "key": "cable_crunch",
    "name": "Cable Crunch",
-   "nameJa": "ケーブルクランチ",
    "primary": "ABDOMINALS",
    "secondary": [],
    "equipment": "MACHINE",
@@ -1721,7 +1635,6 @@
   {
    "key": "cable_fly_crossovers",
    "name": "Cable Fly Crossovers",
-   "nameJa": "Cable Fly Crossovers",
    "primary": "CHEST",
    "secondary": [],
    "equipment": "MACHINE",
@@ -1740,7 +1653,6 @@
   {
    "key": "cable_front_raise",
    "name": "Front Raise (Cable)",
-   "nameJa": "フロントレイズケーブル",
    "primary": "SHOULDERS",
    "secondary": [],
    "equipment": "MACHINE",
@@ -1758,7 +1670,6 @@
   {
    "key": "cable_hammer_curl",
    "name": "Hammer Curl (Cable)",
-   "nameJa": "ハンマーカールケーブル",
    "primary": "BICEPS",
    "secondary": [
     "FOREARMS"
@@ -1778,7 +1689,6 @@
   {
    "key": "cable_hip_abduction",
    "name": "Hip Abduction (Cable)",
-   "nameJa": "ヒップアブダクションケーブル",
    "primary": "ABDUCTORS",
    "secondary": [
     "GLUTES"
@@ -1798,7 +1708,6 @@
   {
    "key": "cable_hip_adduction",
    "name": "Hip Adduction (Cable)",
-   "nameJa": "ヒップアダクションケーブル",
    "primary": "ADDUCTORS",
    "secondary": [],
    "equipment": "MACHINE",
@@ -1816,7 +1725,6 @@
   {
    "key": "cable_lat_pulldown",
    "name": "Lat Pulldown (Cable)",
-   "nameJa": "ラットプルダウンケーブル",
    "primary": "LATS",
    "secondary": [
     "UPPER_BACK",
@@ -1837,7 +1745,6 @@
   {
    "key": "cable_lat_pulldown_close_grip",
    "name": "Lat Pulldown - Close Grip (Cable)",
-   "nameJa": "ラットプルダウンナローグリップケーブル",
    "primary": "LATS",
    "secondary": [
     "BICEPS",
@@ -1858,7 +1765,6 @@
   {
    "key": "cable_lateral_raise",
    "name": "Lateral Raise (Cable)",
-   "nameJa": "サイドレイズケーブル",
    "primary": "SHOULDERS",
    "secondary": [],
    "equipment": "MACHINE",
@@ -1876,7 +1782,6 @@
   {
    "key": "cable_overhead_curl",
    "name": "Overhead Curl (Cable)",
-   "nameJa": "オーバーヘッドカールケーブル",
    "primary": "BICEPS",
    "secondary": [],
    "equipment": "MACHINE",
@@ -1894,7 +1799,6 @@
   {
    "key": "cable_overhead_triceps_extension",
    "name": "Overhead Triceps Extension (Cable)",
-   "nameJa": "オーバーヘッドトライセプスエクステンションケーブル",
    "primary": "TRICEPS",
    "secondary": [],
    "equipment": "MACHINE",
@@ -1912,7 +1816,6 @@
   {
    "key": "cable_pull_through",
    "name": "Cable Pull Through",
-   "nameJa": "Cable Pull Through",
    "primary": "GLUTES",
    "secondary": [
     "HAMSTRINGS"
@@ -1932,7 +1835,6 @@
   {
    "key": "cable_rear_delt_reverse_fly",
    "name": "Rear Delt Reverse Fly (Cable)",
-   "nameJa": "リアデルトフライケーブル",
    "primary": "SHOULDERS",
    "secondary": [
     "UPPER_BACK"
@@ -1952,7 +1854,6 @@
   {
    "key": "cable_reverse_curl",
    "name": "Reverse Curl (Cable)",
-   "nameJa": "リバースカールケーブル",
    "primary": "BICEPS",
    "secondary": [
     "FOREARMS"
@@ -1972,7 +1873,6 @@
   {
    "key": "cable_reverse_fly_single_arm",
    "name": "Reverse Fly Single Arm (Cable)",
-   "nameJa": "リバースフライワンハンドケーブル",
    "primary": "SHOULDERS",
    "secondary": [
     "UPPER_BACK"
@@ -1992,7 +1892,6 @@
   {
    "key": "cable_reverse_grip_lat_pulldown",
    "name": "Reverse Grip Lat Pulldown (Cable)",
-   "nameJa": "リバースグリップラットプルダウンケーブル",
    "primary": "LATS",
    "secondary": [
     "BICEPS",
@@ -2013,7 +1912,6 @@
   {
    "key": "cable_seated_cable_row_v_grip",
    "name": "Seated Cable Row - V Grip (Cable)",
-   "nameJa": "Seated Cable Row - V Grip (Cable)",
    "primary": "UPPER_BACK",
    "secondary": [
     "LATS",
@@ -2034,7 +1932,6 @@
   {
    "key": "cable_seated_chest_flys",
    "name": "Seated Chest Flys (Cable)",
-   "nameJa": "シーテッドダンベルフライsケーブル",
    "primary": "CHEST",
    "secondary": [
     "SHOULDERS"
@@ -2054,7 +1951,6 @@
   {
    "key": "cable_shrug",
    "name": "Shrug (Cable)",
-   "nameJa": "シュラッグケーブル",
    "primary": "TRAPS",
    "secondary": [],
    "equipment": "MACHINE",
@@ -2072,7 +1968,6 @@
   {
    "key": "cable_single_arm_curl",
    "name": "Single Arm Curl (Cable)",
-   "nameJa": "ワンハンドカールケーブル",
    "primary": "BICEPS",
    "secondary": [],
    "equipment": "MACHINE",
@@ -2090,7 +1985,6 @@
   {
    "key": "cable_single_arm_lateral_raise",
    "name": "Single Arm Lateral Raise (Cable)",
-   "nameJa": "ワンハンドサイドレイズケーブル",
    "primary": "SHOULDERS",
    "secondary": [],
    "equipment": "MACHINE",
@@ -2108,7 +2002,6 @@
   {
    "key": "cable_single_arm_triceps_pushdown",
    "name": "Single Arm Triceps Pushdown (Cable)",
-   "nameJa": "ワンハンドトライセプスプッシュダウンケーブル",
    "primary": "TRICEPS",
    "secondary": [],
    "equipment": "MACHINE",
@@ -2126,7 +2019,6 @@
   {
    "key": "cable_standing_y_raise",
    "name": "Standing Y Raise (Cable)",
-   "nameJa": "Standing Y Raise (Cable)",
    "primary": "SHOULDERS",
    "secondary": [
     "UPPER_BACK",
@@ -2147,7 +2039,6 @@
   {
    "key": "cable_straight_arm_lat_pulldown",
    "name": "Straight Arm Lat Pulldown (Cable)",
-   "nameJa": "Straight Arm Lat Pulldown (Cable)",
    "primary": "LATS",
    "secondary": [],
    "equipment": "MACHINE",
@@ -2165,7 +2056,6 @@
   {
    "key": "cable_triceps_extension",
    "name": "Triceps Extension (Cable)",
-   "nameJa": "トライセプスエクステンションケーブル",
    "primary": "TRICEPS",
    "secondary": [],
    "equipment": "MACHINE",
@@ -2183,7 +2073,6 @@
   {
    "key": "cable_triceps_kickback",
    "name": "Triceps Kickback (Cable)",
-   "nameJa": "トライセプスキックバックケーブル",
    "primary": "TRICEPS",
    "secondary": [],
    "equipment": "MACHINE",
@@ -2201,7 +2090,6 @@
   {
    "key": "cable_upright_row",
    "name": "Upright Row (Cable)",
-   "nameJa": "アップライトロウケーブル",
    "primary": "SHOULDERS",
    "secondary": [
     "TRAPS",
@@ -2222,7 +2110,6 @@
   {
    "key": "chest_dip",
    "name": "Chest Dip",
-   "nameJa": "Chest Dip",
    "primary": "CHEST",
    "secondary": [
     "TRICEPS",
@@ -2243,7 +2130,6 @@
   {
    "key": "chest_supported_t_bar_row",
    "name": "Chest Supported T Bar Row",
-   "nameJa": "Chest Supported T Bar Row",
    "primary": "UPPER_BACK",
    "secondary": [
     "LATS",
@@ -2264,7 +2150,6 @@
   {
    "key": "chin_up",
    "name": "Chin Up",
-   "nameJa": "チンアップ",
    "primary": "LATS",
    "secondary": [
     "BICEPS",
@@ -2285,7 +2170,6 @@
   {
    "key": "clamshell",
    "name": "Clamshell",
-   "nameJa": "Clamshell",
    "primary": "GLUTES",
    "secondary": [
     "ABDUCTORS"
@@ -2305,7 +2189,6 @@
   {
    "key": "clap_push_ups",
    "name": "Clap Push Ups",
-   "nameJa": "Clap Push Ups",
    "primary": "CHEST",
    "secondary": [
     "TRICEPS",
@@ -2326,7 +2209,6 @@
   {
    "key": "clean",
    "name": "Clean",
-   "nameJa": "クリーン",
    "primary": "FULL_BODY",
    "secondary": [
     "QUADRICEPS",
@@ -2347,7 +2229,6 @@
   {
    "key": "clean_and_jerk",
    "name": "Clean and Jerk",
-   "nameJa": "Clean and Jerk",
    "primary": "FULL_BODY",
    "secondary": [
     "SHOULDERS",
@@ -2368,7 +2249,6 @@
   {
    "key": "clean_and_press",
    "name": "Clean and Press",
-   "nameJa": "Clean and Press",
    "primary": "FULL_BODY",
    "secondary": [
     "SHOULDERS",
@@ -2389,7 +2269,6 @@
   {
    "key": "clean_pull",
    "name": "Clean Pull",
-   "nameJa": "Clean Pull",
    "primary": "FULL_BODY",
    "secondary": [
     "TRAPS",
@@ -2410,7 +2289,6 @@
   {
    "key": "climbing",
    "name": "Climbing",
-   "nameJa": "Climbing",
    "primary": "CARDIO",
    "secondary": [],
    "equipment": "NONE",
@@ -2423,7 +2301,6 @@
   {
    "key": "concentration_curl",
    "name": "Concentration Curl",
-   "nameJa": "コンセントレーションカール",
    "primary": "BICEPS",
    "secondary": [],
    "equipment": "DUMBBELL",
@@ -2441,7 +2318,6 @@
   {
    "key": "cross_body_hammer_curl",
    "name": "Cross Body Hammer Curl",
-   "nameJa": "Cross Body Hammer Curl",
    "primary": "BICEPS",
    "secondary": [
     "FOREARMS"
@@ -2461,7 +2337,6 @@
   {
    "key": "crunch",
    "name": "Crunch",
-   "nameJa": "クランチ",
    "primary": "ABDOMINALS",
    "secondary": [],
    "equipment": "NONE",
@@ -2479,7 +2354,6 @@
   {
    "key": "cycling",
    "name": "Cycling",
-   "nameJa": "サイクリング",
    "primary": "CARDIO",
    "secondary": [],
    "equipment": "MACHINE",
@@ -2492,7 +2366,6 @@
   {
    "key": "dead_bug",
    "name": "Dead Bug",
-   "nameJa": "デッドバグ",
    "primary": "ABDOMINALS",
    "secondary": [],
    "equipment": "NONE",
@@ -2510,7 +2383,6 @@
   {
    "key": "dead_hang",
    "name": "Dead Hang",
-   "nameJa": "デッドハング",
    "primary": "UPPER_BACK",
    "secondary": [
     "FOREARMS",
@@ -2531,7 +2403,6 @@
   {
    "key": "deadlift_high_pull",
    "name": "Deadlift High Pull",
-   "nameJa": "Deadlift High Pull",
    "primary": "FULL_BODY",
    "secondary": [
     "TRAPS",
@@ -2552,7 +2423,6 @@
   {
    "key": "decline_crunch",
    "name": "Decline Crunch",
-   "nameJa": "デクラインクランチ",
    "primary": "ABDOMINALS",
    "secondary": [],
    "equipment": "NONE",
@@ -2570,7 +2440,6 @@
   {
    "key": "decline_push_up",
    "name": "Decline Push Up",
-   "nameJa": "デクラインプッシュアップ",
    "primary": "CHEST",
    "secondary": [
     "TRICEPS",
@@ -2591,7 +2460,6 @@
   {
    "key": "diamond_push_up",
    "name": "Diamond Push Up",
-   "nameJa": "ダイヤモンドプッシュアップ",
    "primary": "TRICEPS",
    "secondary": [
     "CHEST",
@@ -2612,7 +2480,6 @@
   {
    "key": "down_to_up_cable_twist",
    "name": "Cable Twist (Down to up)",
-   "nameJa": "Cable Twist (Down to up)",
    "primary": "ABDOMINALS",
    "secondary": [
     "SHOULDERS"
@@ -2632,7 +2499,6 @@
   {
    "key": "downward_dog",
    "name": "Downward Dog",
-   "nameJa": "Downward Dog",
    "primary": "FULL_BODY",
    "secondary": [
     "HAMSTRINGS",
@@ -2653,7 +2519,6 @@
   {
    "key": "drag_curl",
    "name": "Drag Curl",
-   "nameJa": "Drag Curl",
    "primary": "BICEPS",
    "secondary": [],
    "equipment": "BARBELL",
@@ -2671,7 +2536,6 @@
   {
    "key": "dragon_flag",
    "name": "Dragon Flag",
-   "nameJa": "Dragon Flag",
    "primary": "ABDOMINALS",
    "secondary": [],
    "equipment": "NONE",
@@ -2689,7 +2553,6 @@
   {
    "key": "dragonfly",
    "name": "Dragonfly",
-   "nameJa": "Dragonfly",
    "primary": "ABDOMINALS",
    "secondary": [],
    "equipment": "NONE",
@@ -2707,7 +2570,6 @@
   {
    "key": "dumbbell_arnold_press",
    "name": "Arnold Press (Dumbbell)",
-   "nameJa": "Arnold Press (Dumbbell)",
    "primary": "SHOULDERS",
    "secondary": [
     "TRICEPS"
@@ -2728,7 +2590,6 @@
   {
    "key": "dumbbell_bench_press",
    "name": "Bench Press (Dumbbell)",
-   "nameJa": "ベンチプレスダンベル",
    "primary": "CHEST",
    "secondary": [
     "TRICEPS",
@@ -2750,7 +2611,6 @@
   {
    "key": "dumbbell_bent_over_row",
    "name": "Bent Over Row (Dumbbell)",
-   "nameJa": "ベントオーバーロウダンベル",
    "primary": "UPPER_BACK",
    "secondary": [
     "LATS",
@@ -2773,7 +2633,6 @@
   {
    "key": "dumbbell_bicep_curl",
    "name": "Bicep Curl (Dumbbell)",
-   "nameJa": "バイセップカールダンベル",
    "primary": "BICEPS",
    "secondary": [],
    "equipment": "DUMBBELL",
@@ -2791,7 +2650,6 @@
   {
    "key": "dumbbell_bulgarian_split_squat",
    "name": "Bulgarian Split Squat (Dumbbell)",
-   "nameJa": "ブルガリアンスクワットダンベル",
    "primary": "QUADRICEPS",
    "secondary": [
     "GLUTES",
@@ -2814,7 +2672,6 @@
   {
    "key": "dumbbell_chest_fly",
    "name": "Chest Fly (Dumbbell)",
-   "nameJa": "ダンベルフライダンベル",
    "primary": "CHEST",
    "secondary": [
     "SHOULDERS"
@@ -2834,7 +2691,6 @@
   {
    "key": "dumbbell_chest_supported_incline_row",
    "name": "Chest Supported Incline Row (Dumbbell)",
-   "nameJa": "Chest Supported Incline Row (Dumbbell)",
    "primary": "UPPER_BACK",
    "secondary": [
     "LATS",
@@ -2855,7 +2711,6 @@
   {
    "key": "dumbbell_chest_supported_reverse_fly",
    "name": "Chest Supported Reverse Fly (Dumbbell)",
-   "nameJa": "Chest Supported Reverse Fly (Dumbbell)",
    "primary": "SHOULDERS",
    "secondary": [
     "UPPER_BACK"
@@ -2875,7 +2730,6 @@
   {
    "key": "dumbbell_chest_supported_y_raise",
    "name": "Chest Supported Y Raise (Dumbbell)",
-   "nameJa": "Chest Supported Y Raise (Dumbbell)",
    "primary": "SHOULDERS",
    "secondary": [
     "UPPER_BACK",
@@ -2896,7 +2750,6 @@
   {
    "key": "dumbbell_curtsy_lunge",
    "name": "Curtsy Lunge (Dumbbell)",
-   "nameJa": "Curtsy Lunge (Dumbbell)",
    "primary": "QUADRICEPS",
    "secondary": [
     "GLUTES",
@@ -2917,7 +2770,6 @@
   {
    "key": "dumbbell_deadlift",
    "name": "Deadlift (Dumbbell)",
-   "nameJa": "デッドリフトダンベル",
    "primary": "GLUTES",
    "secondary": [
     "HAMSTRINGS",
@@ -2938,7 +2790,6 @@
   {
    "key": "dumbbell_decline_bench_press",
    "name": "Decline Bench Press (Dumbbell)",
-   "nameJa": "デクラインベンチプレスダンベル",
    "primary": "CHEST",
    "secondary": [
     "TRICEPS",
@@ -2959,7 +2810,6 @@
   {
    "key": "dumbbell_decline_chest_fly",
    "name": "Decline Chest Fly (Dumbbell)",
-   "nameJa": "デクラインダンベルフライダンベル",
    "primary": "CHEST",
    "secondary": [
     "SHOULDERS"
@@ -2979,7 +2829,6 @@
   {
    "key": "dumbbell_floor_press",
    "name": "Floor Press (Dumbbell)",
-   "nameJa": "フロアプレスダンベル",
    "primary": "CHEST",
    "secondary": [
     "TRICEPS",
@@ -3000,7 +2849,6 @@
   {
    "key": "dumbbell_frog_pumps",
    "name": "Frog Pumps (Dumbbell)",
-   "nameJa": "Frog Pumps (Dumbbell)",
    "primary": "GLUTES",
    "secondary": [
     "HAMSTRINGS"
@@ -3020,7 +2868,6 @@
   {
    "key": "dumbbell_front_raise",
    "name": "Front Raise (Dumbbell)",
-   "nameJa": "フロントレイズダンベル",
    "primary": "SHOULDERS",
    "secondary": [],
    "equipment": "DUMBBELL",
@@ -3038,7 +2885,6 @@
   {
    "key": "dumbbell_hammer_curl",
    "name": "Hammer Curl (Dumbbell)",
-   "nameJa": "ハンマーカールダンベル",
    "primary": "BICEPS",
    "secondary": [
     "FOREARMS"
@@ -3058,7 +2904,6 @@
   {
    "key": "dumbbell_hex_press",
    "name": "Hex Press (Dumbbell)",
-   "nameJa": "Hex Press (Dumbbell)",
    "primary": "CHEST",
    "secondary": [
     "TRICEPS"
@@ -3078,7 +2923,6 @@
   {
    "key": "dumbbell_hip_thrust",
    "name": "Hip Thrust (Dumbbell)",
-   "nameJa": "ヒップスラストダンベル",
    "primary": "GLUTES",
    "secondary": [
     "HAMSTRINGS"
@@ -3098,7 +2942,6 @@
   {
    "key": "dumbbell_incline_bench_press",
    "name": "Incline Bench Press (Dumbbell)",
-   "nameJa": "インクラインベンチプレスダンベル",
    "primary": "CHEST",
    "secondary": [
     "SHOULDERS",
@@ -3119,7 +2962,6 @@
   {
    "key": "dumbbell_incline_chest_fly",
    "name": "Incline Chest Fly (Dumbbell)",
-   "nameJa": "インクラインダンベルフライダンベル",
    "primary": "CHEST",
    "secondary": [
     "SHOULDERS"
@@ -3139,7 +2981,6 @@
   {
    "key": "dumbbell_lateral_raise",
    "name": "Lateral Raise (Dumbbell)",
-   "nameJa": "サイドレイズダンベル",
    "primary": "SHOULDERS",
    "secondary": [],
    "equipment": "DUMBBELL",
@@ -3157,7 +2998,6 @@
   {
    "key": "dumbbell_lunge",
    "name": "Lunge (Dumbbell)",
-   "nameJa": "ランジダンベル",
    "primary": "QUADRICEPS",
    "secondary": [
     "GLUTES",
@@ -3178,7 +3018,6 @@
   {
    "key": "dumbbell_overhead_press",
    "name": "Overhead Press (Dumbbell)",
-   "nameJa": "オーバーヘッドプレスダンベル",
    "primary": "SHOULDERS",
    "secondary": [
     "TRICEPS",
@@ -3199,7 +3038,6 @@
   {
    "key": "dumbbell_pinwheel_curl",
    "name": "Pinwheel Curl (Dumbbell)",
-   "nameJa": "Pinwheel Curl (Dumbbell)",
    "primary": "BICEPS",
    "secondary": [
     "FOREARMS"
@@ -3219,7 +3057,6 @@
   {
    "key": "dumbbell_preacher_curl",
    "name": "Preacher Curl (Dumbbell)",
-   "nameJa": "プリーチャーカールダンベル",
    "primary": "BICEPS",
    "secondary": [],
    "equipment": "DUMBBELL",
@@ -3237,7 +3074,6 @@
   {
    "key": "dumbbell_pullover",
    "name": "Pullover (Dumbbell)",
-   "nameJa": "プルオーバーダンベル",
    "primary": "LATS",
    "secondary": [
     "CHEST",
@@ -3258,7 +3094,6 @@
   {
    "key": "dumbbell_rear_delt_reverse_fly",
    "name": "Rear Delt Reverse Fly (Dumbbell)",
-   "nameJa": "リアデルトフライダンベル",
    "primary": "SHOULDERS",
    "secondary": [
     "UPPER_BACK"
@@ -3278,7 +3113,6 @@
   {
    "key": "dumbbell_renegade_row",
    "name": "Renegade Row (Dumbbell)",
-   "nameJa": "Renegade Row (Dumbbell)",
    "primary": "UPPER_BACK",
    "secondary": [
     "ABDOMINALS",
@@ -3299,7 +3133,6 @@
   {
    "key": "dumbbell_reverse_curl",
    "name": "Reverse Curl (Dumbbell)",
-   "nameJa": "リバースカールダンベル",
    "primary": "BICEPS",
    "secondary": [
     "FOREARMS"
@@ -3319,7 +3152,6 @@
   {
    "key": "dumbbell_reverse_lunge",
    "name": "Reverse Lunge (Dumbbell)",
-   "nameJa": "リバースランジダンベル",
    "primary": "QUADRICEPS",
    "secondary": [
     "GLUTES",
@@ -3340,7 +3172,6 @@
   {
    "key": "dumbbell_reverse_wrist_curl",
    "name": "Reverse Wrist Curl (Dumbbell)",
-   "nameJa": "リバースリストカールダンベル",
    "primary": "FOREARMS",
    "secondary": [],
    "equipment": "DUMBBELL",
@@ -3358,7 +3189,6 @@
   {
    "key": "dumbbell_romanian_deadlift",
    "name": "Romanian Deadlift (Dumbbell)",
-   "nameJa": "ルーマニアンデッドリフトダンベル",
    "primary": "HAMSTRINGS",
    "secondary": [
     "GLUTES",
@@ -3379,7 +3209,6 @@
   {
    "key": "dumbbell_row",
    "name": "Dumbbell Row",
-   "nameJa": "ダンベルロウ",
    "primary": "LATS",
    "secondary": [
     "UPPER_BACK",
@@ -3400,7 +3229,6 @@
   {
    "key": "dumbbell_seal_row",
    "name": "Seal Row (Dumbbell)",
-   "nameJa": "シールロウダンベル",
    "primary": "UPPER_BACK",
    "secondary": [
     "LATS",
@@ -3421,7 +3249,6 @@
   {
    "key": "dumbbell_seated_incline_curl",
    "name": "Seated Incline Curl (Dumbbell)",
-   "nameJa": "シーテッドインクラインカールダンベル",
    "primary": "BICEPS",
    "secondary": [],
    "equipment": "DUMBBELL",
@@ -3439,7 +3266,6 @@
   {
    "key": "dumbbell_seated_incline_hammer_curl",
    "name": "Seated Incline Hammer Curl (Dumbbell)",
-   "nameJa": "シーテッドインクラインハンマーカールダンベル",
    "primary": "BICEPS",
    "secondary": [
     "FOREARMS"
@@ -3459,7 +3285,6 @@
   {
    "key": "dumbbell_seated_lateral_raise",
    "name": "Seated Lateral Raise (Dumbbell)",
-   "nameJa": "シーテッドサイドレイズダンベル",
    "primary": "SHOULDERS",
    "secondary": [],
    "equipment": "DUMBBELL",
@@ -3477,7 +3302,6 @@
   {
    "key": "dumbbell_seated_overhead_press",
    "name": "Seated Overhead Press (Dumbbell)",
-   "nameJa": "シーテッドオーバーヘッドプレスダンベル",
    "primary": "SHOULDERS",
    "secondary": [
     "TRICEPS"
@@ -3497,7 +3321,6 @@
   {
    "key": "dumbbell_shoulder_press",
    "name": "Shoulder Press (Dumbbell)",
-   "nameJa": "ショルダープレスダンベル",
    "primary": "SHOULDERS",
    "secondary": [
     "TRICEPS"
@@ -3517,7 +3340,6 @@
   {
    "key": "dumbbell_shrug",
    "name": "Shrug (Dumbbell)",
-   "nameJa": "シュラッグダンベル",
    "primary": "TRAPS",
    "secondary": [],
    "equipment": "DUMBBELL",
@@ -3535,7 +3357,6 @@
   {
    "key": "dumbbell_side_bend",
    "name": "Side Bend (Dumbbell)",
-   "nameJa": "サイドベンドダンベル",
    "primary": "ABDOMINALS",
    "secondary": [],
    "equipment": "DUMBBELL",
@@ -3553,7 +3374,6 @@
   {
    "key": "dumbbell_single_arm_tricep_extension",
    "name": "Single Arm Tricep Extension (Dumbbell)",
-   "nameJa": "ワンハンドトライセプスエクステンションダンベル",
    "primary": "TRICEPS",
    "secondary": [],
    "equipment": "DUMBBELL",
@@ -3571,7 +3391,6 @@
   {
    "key": "dumbbell_single_leg_hip_thrust",
    "name": "Single Leg Hip Thrust (Dumbbell)",
-   "nameJa": "シングルレッグヒップスラストダンベル",
    "primary": "GLUTES",
    "secondary": [
     "HAMSTRINGS"
@@ -3591,7 +3410,6 @@
   {
    "key": "dumbbell_single_leg_romanian_deadlift",
    "name": "Single Leg Romanian Deadlift (Dumbbell)",
-   "nameJa": "シングルレッグルーマニアンデッドリフトダンベル",
    "primary": "HAMSTRINGS",
    "secondary": [
     "GLUTES",
@@ -3612,7 +3430,6 @@
   {
    "key": "dumbbell_single_leg_standing_calf_raise",
    "name": "Single Leg Standing Calf Raise (Dumbbell)",
-   "nameJa": "シングルレッグスタンディングカーフレイズダンベル",
    "primary": "CALVES",
    "secondary": [],
    "equipment": "DUMBBELL",
@@ -3630,7 +3447,6 @@
   {
    "key": "dumbbell_skullcrusher",
    "name": "Skullcrusher (Dumbbell)",
-   "nameJa": "スカルクラッシャーダンベル",
    "primary": "TRICEPS",
    "secondary": [],
    "equipment": "DUMBBELL",
@@ -3648,7 +3464,6 @@
   {
    "key": "dumbbell_snatch",
    "name": "Dumbbell Snatch",
-   "nameJa": "ダンベルスナッチ",
    "primary": "FULL_BODY",
    "secondary": [
     "SHOULDERS",
@@ -3669,7 +3484,6 @@
   {
    "key": "dumbbell_spider_curl",
    "name": "Spider Curl (Dumbbell)",
-   "nameJa": "スパイダーカールダンベル",
    "primary": "BICEPS",
    "secondary": [],
    "equipment": "DUMBBELL",
@@ -3687,7 +3501,6 @@
   {
    "key": "dumbbell_split_squat",
    "name": "Split Squat (Dumbbell)",
-   "nameJa": "スプリットスクワットダンベル",
    "primary": "QUADRICEPS",
    "secondary": [
     "GLUTES",
@@ -3708,7 +3521,6 @@
   {
    "key": "dumbbell_squat",
    "name": "Squat (Dumbbell)",
-   "nameJa": "スクワットダンベル",
    "primary": "QUADRICEPS",
    "secondary": [
     "GLUTES",
@@ -3729,7 +3541,6 @@
   {
    "key": "dumbbell_squeeze_press",
    "name": "Dumbbell Squeeze Press",
-   "nameJa": "Dumbbell Squeeze Press",
    "primary": "CHEST",
    "secondary": [
     "TRICEPS"
@@ -3749,7 +3560,6 @@
   {
    "key": "dumbbell_standing_calf_raise",
    "name": "Standing Calf Raise (Dumbbell)",
-   "nameJa": "スタンディングカーフレイズダンベル",
    "primary": "CALVES",
    "secondary": [],
    "equipment": "DUMBBELL",
@@ -3767,7 +3577,6 @@
   {
    "key": "dumbbell_step_up",
    "name": "Dumbbell Step Up",
-   "nameJa": "ダンベルステップアップ",
    "primary": "QUADRICEPS",
    "secondary": [
     "GLUTES",
@@ -3788,7 +3597,6 @@
   {
    "key": "dumbbell_suitcase_carry",
    "name": "Suitcase Carry (Dumbbell)",
-   "nameJa": "スーツケースキャリーダンベル",
    "primary": "FULL_BODY",
    "secondary": [
     "ABDOMINALS",
@@ -3809,7 +3617,6 @@
   {
    "key": "dumbbell_sumo_squat",
    "name": "Sumo Squat (Dumbbell)",
-   "nameJa": "スモウスクワットダンベル",
    "primary": "QUADRICEPS",
    "secondary": [
     "ADDUCTORS",
@@ -3830,7 +3637,6 @@
   {
    "key": "dumbbell_triceps_extension",
    "name": "Triceps Extension (Dumbbell)",
-   "nameJa": "トライセプスエクステンションダンベル",
    "primary": "TRICEPS",
    "secondary": [],
    "equipment": "DUMBBELL",
@@ -3848,7 +3654,6 @@
   {
    "key": "dumbbell_triceps_kickback",
    "name": "Triceps Kickback (Dumbbell)",
-   "nameJa": "トライセプスキックバックダンベル",
    "primary": "TRICEPS",
    "secondary": [],
    "equipment": "DUMBBELL",
@@ -3866,7 +3671,6 @@
   {
    "key": "dumbbell_upright_row",
    "name": "Upright Row (Dumbbell)",
-   "nameJa": "アップライトロウダンベル",
    "primary": "SHOULDERS",
    "secondary": [
     "TRAPS",
@@ -3887,7 +3691,6 @@
   {
    "key": "dumbbell_waiter_curl",
    "name": "Waiter Curl (Dumbbell)",
-   "nameJa": "Waiter Curl (Dumbbell)",
    "primary": "BICEPS",
    "secondary": [],
    "equipment": "DUMBBELL",
@@ -3905,7 +3708,6 @@
   {
    "key": "dumbbell_walking_lunge",
    "name": "Walking Lunge (Dumbbell)",
-   "nameJa": "ウォーキングランジダンベル",
    "primary": "QUADRICEPS",
    "secondary": [
     "GLUTES",
@@ -3926,7 +3728,6 @@
   {
    "key": "dumbbell_wide_elbow_triceps_press",
    "name": "Wide-Elbow Triceps Press (Dumbbell)",
-   "nameJa": "Wide-Elbow Triceps Press (Dumbbell)",
    "primary": "TRICEPS",
    "secondary": [
     "CHEST"
@@ -3946,7 +3747,6 @@
   {
    "key": "dumbbell_zottman_curl",
    "name": "Zottman Curl (Dumbbell)",
-   "nameJa": "Zottman Curl (Dumbbell)",
    "primary": "BICEPS",
    "secondary": [
     "FOREARMS"
@@ -3966,7 +3766,6 @@
   {
    "key": "elbow_to_knee",
    "name": "Elbow to Knee",
-   "nameJa": "Elbow to Knee",
    "primary": "ABDOMINALS",
    "secondary": [],
    "equipment": "NONE",
@@ -3984,7 +3783,6 @@
   {
    "key": "elliptical_trainer",
    "name": "Elliptical Trainer",
-   "nameJa": "エリプティカル",
    "primary": "CARDIO",
    "secondary": [],
    "equipment": "MACHINE",
@@ -3997,7 +3795,6 @@
   {
    "key": "ez_bar_biceps_curl",
    "name": "EZ Bar Biceps Curl",
-   "nameJa": "EZ Bar Biceps Curl",
    "primary": "BICEPS",
    "secondary": [
     "FOREARMS"
@@ -4017,7 +3814,6 @@
   {
    "key": "face_pull",
    "name": "Face Pull",
-   "nameJa": "フェイスプル",
    "primary": "SHOULDERS",
    "secondary": [
     "UPPER_BACK",
@@ -4038,7 +3834,6 @@
   {
    "key": "farmers_walk",
    "name": "Farmers Walk",
-   "nameJa": "ファーマーズウォーク",
    "primary": "FULL_BODY",
    "secondary": [
     "FOREARMS",
@@ -4059,7 +3854,6 @@
   {
    "key": "fire_hydrants",
    "name": "Fire Hydrants",
-   "nameJa": "Fire Hydrants",
    "primary": "GLUTES",
    "secondary": [
     "ABDUCTORS"
@@ -4079,7 +3873,6 @@
   {
    "key": "floor_triceps_dip",
    "name": "Floor Triceps Dip",
-   "nameJa": "Floor Triceps Dip",
    "primary": "TRICEPS",
    "secondary": [
     "SHOULDERS"
@@ -4099,7 +3892,6 @@
   {
    "key": "floors_stair_machine",
    "name": "Stair Machine (Floors)",
-   "nameJa": "Stair Machine (Floors)",
    "primary": "CARDIO",
    "secondary": [],
    "equipment": "MACHINE",
@@ -4112,7 +3904,6 @@
   {
    "key": "flutter_kicks",
    "name": "Flutter Kicks",
-   "nameJa": "Flutter Kicks",
    "primary": "ABDOMINALS",
    "secondary": [],
    "equipment": "NONE",
@@ -4130,7 +3921,6 @@
   {
    "key": "frog_jumps",
    "name": "Frog Jumps",
-   "nameJa": "Frog Jumps",
    "primary": "QUADRICEPS",
    "secondary": [
     "GLUTES",
@@ -4151,7 +3941,6 @@
   {
    "key": "front_lever_hold",
    "name": "Front Lever Hold",
-   "nameJa": "Front Lever Hold",
    "primary": "FULL_BODY",
    "secondary": [
     "LATS",
@@ -4172,7 +3961,6 @@
   {
    "key": "front_lever_raise",
    "name": "Front Lever Raise",
-   "nameJa": "Front Lever Raise",
    "primary": "FULL_BODY",
    "secondary": [
     "LATS",
@@ -4193,7 +3981,6 @@
   {
    "key": "front_squat",
    "name": "Front Squat",
-   "nameJa": "フロントスクワット",
    "primary": "QUADRICEPS",
    "secondary": [
     "GLUTES",
@@ -4215,7 +4002,6 @@
   {
    "key": "full_squat",
    "name": "Full Squat",
-   "nameJa": "Full Squat",
    "primary": "QUADRICEPS",
    "secondary": [
     "GLUTES",
@@ -4237,7 +4023,6 @@
   {
    "key": "gironda_sternum_pull_up",
    "name": "Sternum Pull up (Gironda)",
-   "nameJa": "Sternum Pull up (Gironda)",
    "primary": "LATS",
    "secondary": [
     "UPPER_BACK",
@@ -4258,7 +4043,6 @@
   {
    "key": "glute_bridge",
    "name": "Glute Bridge",
-   "nameJa": "グルートブリッジ",
    "primary": "GLUTES",
    "secondary": [
     "HAMSTRINGS"
@@ -4278,7 +4062,6 @@
   {
    "key": "glute_ham_raise",
    "name": "Glute Ham Raise",
-   "nameJa": "Glute Ham Raise",
    "primary": "HAMSTRINGS",
    "secondary": [
     "GLUTES",
@@ -4299,7 +4082,6 @@
   {
    "key": "glute_kickback_on_floor",
    "name": "Glute Kickback on Floor",
-   "nameJa": "Glute Kickback on Floor",
    "primary": "GLUTES",
    "secondary": [
     "HAMSTRINGS"
@@ -4319,7 +4101,6 @@
   {
    "key": "goblet_squat",
    "name": "Goblet Squat",
-   "nameJa": "ゴブレットスクワット",
    "primary": "QUADRICEPS",
    "secondary": [
     "GLUTES",
@@ -4340,7 +4121,6 @@
   {
    "key": "hack_squat",
    "name": "Hack Squat",
-   "nameJa": "ハックスクワット",
    "primary": "QUADRICEPS",
    "secondary": [
     "GLUTES",
@@ -4362,7 +4142,6 @@
   {
    "key": "handstand_hold",
    "name": "Handstand Hold",
-   "nameJa": "Handstand Hold",
    "primary": "FULL_BODY",
    "secondary": [
     "SHOULDERS",
@@ -4383,7 +4162,6 @@
   {
    "key": "handstand_push_up",
    "name": "Handstand Push Up",
-   "nameJa": "ハンドスタンドプッシュアップ",
    "primary": "SHOULDERS",
    "secondary": [
     "TRICEPS"
@@ -4403,7 +4181,6 @@
   {
    "key": "hang_clean",
    "name": "Hang Clean",
-   "nameJa": "ハングクリーン",
    "primary": "FULL_BODY",
    "secondary": [
     "QUADRICEPS",
@@ -4424,7 +4201,6 @@
   {
    "key": "hang_snatch",
    "name": "Hang Snatch",
-   "nameJa": "Hang Snatch",
    "primary": "FULL_BODY",
    "secondary": [
     "SHOULDERS",
@@ -4445,7 +4221,6 @@
   {
    "key": "hanging_knee_raise",
    "name": "Hanging Knee Raise",
-   "nameJa": "ハンギングニーレイズ",
    "primary": "ABDOMINALS",
    "secondary": [
     "FOREARMS"
@@ -4465,7 +4240,6 @@
   {
    "key": "hanging_leg_raise",
    "name": "Hanging Leg Raise",
-   "nameJa": "ハンギングレッグレイズ",
    "primary": "ABDOMINALS",
    "secondary": [
     "FOREARMS"
@@ -4485,7 +4259,6 @@
   {
    "key": "heel_taps",
    "name": "Heel Taps",
-   "nameJa": "Heel Taps",
    "primary": "ABDOMINALS",
    "secondary": [],
    "equipment": "NONE",
@@ -4503,7 +4276,6 @@
   {
    "key": "high_knee_skips",
    "name": "High Knee Skips",
-   "nameJa": "High Knee Skips",
    "primary": "FULL_BODY",
    "secondary": [
     "CALVES"
@@ -4523,7 +4295,6 @@
   {
    "key": "high_knees",
    "name": "High Knees",
-   "nameJa": "High Knees",
    "primary": "FULL_BODY",
    "secondary": [
     "CALVES"
@@ -4543,7 +4314,6 @@
   {
    "key": "hiit",
    "name": "HIIT",
-   "nameJa": "HIIT",
    "primary": "CARDIO",
    "secondary": [],
    "equipment": "NONE",
@@ -4556,7 +4326,6 @@
   {
    "key": "hiking",
    "name": "Hiking",
-   "nameJa": "Hiking",
    "primary": "CARDIO",
    "secondary": [],
    "equipment": "NONE",
@@ -4569,7 +4338,6 @@
   {
    "key": "hip_thrust",
    "name": "Hip Thrust",
-   "nameJa": "ヒップスラスト",
    "primary": "GLUTES",
    "secondary": [
     "HAMSTRINGS"
@@ -4589,7 +4357,6 @@
   {
    "key": "hollow_rock",
    "name": "Hollow Rock",
-   "nameJa": "Hollow Rock",
    "primary": "ABDOMINALS",
    "secondary": [],
    "equipment": "NONE",
@@ -4607,7 +4374,6 @@
   {
    "key": "hyperextension_back_extension",
    "name": "Back Extension (Hyperextension)",
-   "nameJa": "バックエクステンションバックエクステンション",
    "primary": "LOWER_BACK",
    "secondary": [
     "HAMSTRINGS",
@@ -4629,7 +4395,6 @@
   {
    "key": "incline_push_ups",
    "name": "Incline Push Ups",
-   "nameJa": "インクラインプッシュアップs",
    "primary": "CHEST",
    "secondary": [
     "TRICEPS",
@@ -4650,7 +4415,6 @@
   {
    "key": "inverted_row",
    "name": "Inverted Row",
-   "nameJa": "インバーテッドロウ",
    "primary": "UPPER_BACK",
    "secondary": [
     "LATS",
@@ -4671,7 +4435,6 @@
   {
    "key": "iso_lateral_low_row",
    "name": "Iso-Lateral Low Row",
-   "nameJa": "Iso-Lateral Low Row",
    "primary": "UPPER_BACK",
    "secondary": [
     "LATS",
@@ -4692,7 +4455,6 @@
   {
    "key": "jackknife_sit_up",
    "name": "Jackknife Sit Up",
-   "nameJa": "Jackknife Sit Up",
    "primary": "ABDOMINALS",
    "secondary": [],
    "equipment": "NONE",
@@ -4710,7 +4472,6 @@
   {
    "key": "jump_rope",
    "name": "Jump Rope",
-   "nameJa": "縄跳び",
    "primary": "CARDIO",
    "secondary": [],
    "equipment": "OTHER",
@@ -4723,7 +4484,6 @@
   {
    "key": "jump_shrug",
    "name": "Jump Shrug",
-   "nameJa": "Jump Shrug",
    "primary": "FULL_BODY",
    "secondary": [
     "TRAPS",
@@ -4744,7 +4504,6 @@
   {
    "key": "jump_squat",
    "name": "Jump Squat",
-   "nameJa": "Jump Squat",
    "primary": "QUADRICEPS",
    "secondary": [
     "GLUTES",
@@ -4765,7 +4524,6 @@
   {
    "key": "jumping_jack",
    "name": "Jumping Jack",
-   "nameJa": "ジャンピングジャック",
    "primary": "FULL_BODY",
    "secondary": [
     "CALVES"
@@ -4785,7 +4543,6 @@
   {
    "key": "jumping_lunge",
    "name": "Jumping Lunge",
-   "nameJa": "Jumping Lunge",
    "primary": "QUADRICEPS",
    "secondary": [
     "GLUTES",
@@ -4806,7 +4563,6 @@
   {
    "key": "kettlebell_around_the_world",
    "name": "Kettlebell Around the World",
-   "nameJa": "Kettlebell Around the World",
    "primary": "SHOULDERS",
    "secondary": [
     "ABDOMINALS"
@@ -4826,7 +4582,6 @@
   {
    "key": "kettlebell_clean",
    "name": "Kettlebell Clean",
-   "nameJa": "ケトルベルクリーン",
    "primary": "FULL_BODY",
    "secondary": [
     "QUADRICEPS",
@@ -4847,7 +4602,6 @@
   {
    "key": "kettlebell_curl",
    "name": "Kettlebell Curl",
-   "nameJa": "ケトルベルカール",
    "primary": "BICEPS",
    "secondary": [],
    "equipment": "KETTLEBELL",
@@ -4865,7 +4619,6 @@
   {
    "key": "kettlebell_goblet_squat",
    "name": "Kettlebell Goblet Squat",
-   "nameJa": "ケトルベルゴブレットスクワット",
    "primary": "QUADRICEPS",
    "secondary": [
     "GLUTES",
@@ -4886,7 +4639,6 @@
   {
    "key": "kettlebell_gorilla_row",
    "name": "Gorilla Row (Kettlebell)",
-   "nameJa": "Gorilla Row (Kettlebell)",
    "primary": "UPPER_BACK",
    "secondary": [
     "LATS",
@@ -4907,7 +4659,6 @@
   {
    "key": "kettlebell_halo",
    "name": "Kettlebell Halo",
-   "nameJa": "Kettlebell Halo",
    "primary": "SHOULDERS",
    "secondary": [
     "TRAPS"
@@ -4927,7 +4678,6 @@
   {
    "key": "kettlebell_high_pull",
    "name": "Kettlebell High Pull",
-   "nameJa": "Kettlebell High Pull",
    "primary": "FULL_BODY",
    "secondary": [
     "TRAPS",
@@ -4948,7 +4698,6 @@
   {
    "key": "kettlebell_shoulder_press",
    "name": "Kettlebell Shoulder Press",
-   "nameJa": "ケトルベルショルダープレス",
    "primary": "SHOULDERS",
    "secondary": [
     "TRICEPS"
@@ -4968,7 +4717,6 @@
   {
    "key": "kettlebell_snatch",
    "name": "Kettlebell Snatch",
-   "nameJa": "ケトルベルスナッチ",
    "primary": "FULL_BODY",
    "secondary": [
     "SHOULDERS",
@@ -4989,7 +4737,6 @@
   {
    "key": "kettlebell_sumo_squat",
    "name": "Sumo Squat (Kettlebell)",
-   "nameJa": "スモウスクワットケトルベル",
    "primary": "QUADRICEPS",
    "secondary": [
     "ADDUCTORS",
@@ -5010,7 +4757,6 @@
   {
    "key": "kettlebell_swing",
    "name": "Kettlebell Swing",
-   "nameJa": "ケトルベルスイング",
    "primary": "FULL_BODY",
    "secondary": [
     "GLUTES",
@@ -5031,7 +4777,6 @@
   {
    "key": "kettlebell_thruster",
    "name": "Thruster (Kettlebell)",
-   "nameJa": "スラスターケトルベル",
    "primary": "FULL_BODY",
    "secondary": [
     "QUADRICEPS",
@@ -5052,7 +4797,6 @@
   {
    "key": "kettlebell_turkish_get_up",
    "name": "Kettlebell Turkish Get Up",
-   "nameJa": "ケトルベルターキッシュゲットアップ",
    "primary": "FULL_BODY",
    "secondary": [
     "ABDOMINALS",
@@ -5073,7 +4817,6 @@
   {
    "key": "kipping_pull_up",
    "name": "Kipping Pull Up",
-   "nameJa": "Kipping Pull Up",
    "primary": "LATS",
    "secondary": [
     "SHOULDERS",
@@ -5094,7 +4837,6 @@
   {
    "key": "knee_raise_parallel_bars",
    "name": "Knee Raise Parallel Bars",
-   "nameJa": "Knee Raise Parallel Bars",
    "primary": "ABDOMINALS",
    "secondary": [],
    "equipment": "MACHINE",
@@ -5112,7 +4854,6 @@
   {
    "key": "kneeling_push_up",
    "name": "Kneeling Push Up",
-   "nameJa": "ニーリングプッシュアップ",
    "primary": "CHEST",
    "secondary": [
     "TRICEPS",
@@ -5133,7 +4874,6 @@
   {
    "key": "l_sit_hold",
    "name": "L-Sit Hold",
-   "nameJa": "L-Sit Hold",
    "primary": "ABDOMINALS",
    "secondary": [
     "QUADRICEPS"
@@ -5153,7 +4893,6 @@
   {
    "key": "landmine_180",
    "name": "Landmine 180",
-   "nameJa": "Landmine 180",
    "primary": "ABDOMINALS",
    "secondary": [
     "SHOULDERS",
@@ -5174,7 +4913,6 @@
   {
    "key": "landmine_row",
    "name": "Landmine Row",
-   "nameJa": "Landmine Row",
    "primary": "UPPER_BACK",
    "secondary": [
     "LATS",
@@ -5195,7 +4933,6 @@
   {
    "key": "landmine_squat_and_press",
    "name": "Landmine Squat and Press",
-   "nameJa": "Landmine Squat and Press",
    "primary": "FULL_BODY",
    "secondary": [
     "QUADRICEPS",
@@ -5216,7 +4953,6 @@
   {
    "key": "lateral_band_walks",
    "name": "Lateral Band Walks",
-   "nameJa": "Lateral Band Walks",
    "primary": "GLUTES",
    "secondary": [
     "ABDUCTORS"
@@ -5236,7 +4972,6 @@
   {
    "key": "lateral_box_jump",
    "name": "Lateral Box Jump",
-   "nameJa": "サイドボックスジャンプ",
    "primary": "QUADRICEPS",
    "secondary": [
     "GLUTES",
@@ -5257,7 +4992,6 @@
   {
    "key": "lateral_leg_raises",
    "name": "Lateral Leg Raises",
-   "nameJa": "サイドレッグレイズs",
    "primary": "GLUTES",
    "secondary": [
     "ABDUCTORS"
@@ -5277,7 +5011,6 @@
   {
    "key": "lateral_lunge",
    "name": "Lateral Lunge",
-   "nameJa": "サイドランジ",
    "primary": "QUADRICEPS",
    "secondary": [
     "ADDUCTORS",
@@ -5298,7 +5031,6 @@
   {
    "key": "lateral_squat",
    "name": "Lateral Squat",
-   "nameJa": "サイドスクワット",
    "primary": "QUADRICEPS",
    "secondary": [
     "ADDUCTORS",
@@ -5319,7 +5051,6 @@
   {
    "key": "leg_raise_parallel_bars",
    "name": "Leg Raise Parallel Bars",
-   "nameJa": "Leg Raise Parallel Bars",
    "primary": "ABDOMINALS",
    "secondary": [],
    "equipment": "MACHINE",
@@ -5337,7 +5068,6 @@
   {
    "key": "low_cable_fly_crossovers",
    "name": "Low Cable Fly Crossovers",
-   "nameJa": "Low Cable Fly Crossovers",
    "primary": "CHEST",
    "secondary": [
     "SHOULDERS"
@@ -5357,7 +5087,6 @@
   {
    "key": "lunge",
    "name": "Lunge",
-   "nameJa": "ランジ",
    "primary": "QUADRICEPS",
    "secondary": [
     "GLUTES",
@@ -5378,7 +5107,6 @@
   {
    "key": "lying_knee_raise",
    "name": "Lying Knee Raise",
-   "nameJa": "ライイングニーレイズ",
    "primary": "ABDOMINALS",
    "secondary": [],
    "equipment": "NONE",
@@ -5396,7 +5124,6 @@
   {
    "key": "lying_leg_raise",
    "name": "Lying Leg Raise",
-   "nameJa": "ライイングレッグレイズ",
    "primary": "ABDOMINALS",
    "secondary": [],
    "equipment": "NONE",
@@ -5414,7 +5141,6 @@
   {
    "key": "lying_neck_curls",
    "name": "Lying Neck Curls",
-   "nameJa": "Lying Neck Curls",
    "primary": "NECK",
    "secondary": [],
    "equipment": "NONE",
@@ -5432,7 +5158,6 @@
   {
    "key": "lying_neck_extension",
    "name": "Lying Neck Extension",
-   "nameJa": "Lying Neck Extension",
    "primary": "NECK",
    "secondary": [],
    "equipment": "NONE",
@@ -5450,7 +5175,6 @@
   {
    "key": "machine_back_extension",
    "name": "Back Extension (Machine)",
-   "nameJa": "バックエクステンションマシン",
    "primary": "LOWER_BACK",
    "secondary": [
     "HAMSTRINGS",
@@ -5471,7 +5195,6 @@
   {
    "key": "machine_belt_squat",
    "name": "Belt Squat (Machine)",
-   "nameJa": "Belt Squat (Machine)",
    "primary": "QUADRICEPS",
    "secondary": [
     "GLUTES",
@@ -5493,7 +5216,6 @@
   {
    "key": "machine_bicep_curl",
    "name": "Bicep Curl (Machine)",
-   "nameJa": "バイセップカールマシン",
    "primary": "BICEPS",
    "secondary": [],
    "equipment": "MACHINE",
@@ -5511,7 +5233,6 @@
   {
    "key": "machine_calf_extension",
    "name": "Calf Extension (Machine)",
-   "nameJa": "Calf Extension (Machine)",
    "primary": "CALVES",
    "secondary": [],
    "equipment": "MACHINE",
@@ -5529,7 +5250,6 @@
   {
    "key": "machine_calf_press",
    "name": "Calf Press (Machine)",
-   "nameJa": "Calf Press (Machine)",
    "primary": "CALVES",
    "secondary": [],
    "equipment": "MACHINE",
@@ -5547,7 +5267,6 @@
   {
    "key": "machine_chest_fly",
    "name": "Chest Fly (Machine)",
-   "nameJa": "ダンベルフライマシン",
    "primary": "CHEST",
    "secondary": [
     "SHOULDERS"
@@ -5567,7 +5286,6 @@
   {
    "key": "machine_chest_press",
    "name": "Chest Press (Machine)",
-   "nameJa": "チェストプレスマシン",
    "primary": "CHEST",
    "secondary": [
     "SHOULDERS",
@@ -5588,7 +5306,6 @@
   {
    "key": "machine_crunch",
    "name": "Crunch (Machine)",
-   "nameJa": "クランチマシン",
    "primary": "ABDOMINALS",
    "secondary": [],
    "equipment": "MACHINE",
@@ -5606,7 +5323,6 @@
   {
    "key": "machine_decline_bench_press",
    "name": "Decline Bench Press (Machine)",
-   "nameJa": "デクラインベンチプレスマシン",
    "primary": "CHEST",
    "secondary": [
     "TRICEPS",
@@ -5627,7 +5343,6 @@
   {
    "key": "machine_glute_kickback",
    "name": "Glute Kickback (Machine)",
-   "nameJa": "Glute Kickback (Machine)",
    "primary": "GLUTES",
    "secondary": [
     "HAMSTRINGS"
@@ -5647,7 +5362,6 @@
   {
    "key": "machine_hack_squat",
    "name": "Hack Squat (Machine)",
-   "nameJa": "ハックスクワットマシン",
    "primary": "QUADRICEPS",
    "secondary": [
     "GLUTES",
@@ -5668,7 +5382,6 @@
   {
    "key": "machine_hip_abduction",
    "name": "Hip Abduction (Machine)",
-   "nameJa": "ヒップアブダクションマシン",
    "primary": "ABDUCTORS",
    "secondary": [
     "GLUTES"
@@ -5688,7 +5401,6 @@
   {
    "key": "machine_hip_adduction",
    "name": "Hip Adduction (Machine)",
-   "nameJa": "ヒップアダクションマシン",
    "primary": "ADDUCTORS",
    "secondary": [],
    "equipment": "MACHINE",
@@ -5706,7 +5418,6 @@
   {
    "key": "machine_hip_thrust",
    "name": "Hip Thrust (Machine)",
-   "nameJa": "ヒップスラストマシン",
    "primary": "GLUTES",
    "secondary": [
     "HAMSTRINGS"
@@ -5726,7 +5437,6 @@
   {
    "key": "machine_incline_chest_press",
    "name": "Incline Chest Press (Machine)",
-   "nameJa": "インクラインチェストプレスマシン",
    "primary": "CHEST",
    "secondary": [
     "SHOULDERS",
@@ -5747,7 +5457,6 @@
   {
    "key": "machine_iso_lateral_chest_press",
    "name": "Iso-Lateral Chest Press (Machine)",
-   "nameJa": "Iso-Lateral Chest Press (Machine)",
    "primary": "CHEST",
    "secondary": [
     "SHOULDERS",
@@ -5768,7 +5477,6 @@
   {
    "key": "machine_iso_lateral_high_row",
    "name": "Iso-Lateral High Row (Machine)",
-   "nameJa": "Iso-Lateral High Row (Machine)",
    "primary": "LATS",
    "secondary": [
     "UPPER_BACK",
@@ -5789,7 +5497,6 @@
   {
    "key": "machine_iso_lateral_row",
    "name": "Iso-Lateral Row (Machine)",
-   "nameJa": "Iso-Lateral Row (Machine)",
    "primary": "UPPER_BACK",
    "secondary": [
     "LATS",
@@ -5810,7 +5517,6 @@
   {
    "key": "machine_lat_pulldown",
    "name": "Lat Pulldown (Machine)",
-   "nameJa": "ラットプルダウンマシン",
    "primary": "LATS",
    "secondary": [
     "UPPER_BACK",
@@ -5831,7 +5537,6 @@
   {
    "key": "machine_lateral_raise",
    "name": "Lateral Raise (Machine)",
-   "nameJa": "サイドレイズマシン",
    "primary": "SHOULDERS",
    "secondary": [],
    "equipment": "MACHINE",
@@ -5849,7 +5554,6 @@
   {
    "key": "machine_leg_extension",
    "name": "Leg Extension (Machine)",
-   "nameJa": "レッグエクステンションマシン",
    "primary": "QUADRICEPS",
    "secondary": [],
    "equipment": "MACHINE",
@@ -5867,7 +5571,6 @@
   {
    "key": "machine_leg_press",
    "name": "Leg Press (Machine)",
-   "nameJa": "レッグプレスマシン",
    "primary": "QUADRICEPS",
    "secondary": [
     "GLUTES",
@@ -5888,7 +5591,6 @@
   {
    "key": "machine_leg_press_horizontal",
    "name": "Leg Press Horizontal (Machine)",
-   "nameJa": "Leg Press Horizontal (Machine)",
    "primary": "QUADRICEPS",
    "secondary": [
     "GLUTES",
@@ -5909,7 +5611,6 @@
   {
    "key": "machine_lying_leg_curl",
    "name": "Lying Leg Curl (Machine)",
-   "nameJa": "ライイングレッグカールマシン",
    "primary": "HAMSTRINGS",
    "secondary": [
     "GLUTES"
@@ -5929,7 +5630,6 @@
   {
    "key": "machine_pendulum_squat",
    "name": "Pendulum Squat (Machine)",
-   "nameJa": "Pendulum Squat (Machine)",
    "primary": "QUADRICEPS",
    "secondary": [
     "GLUTES",
@@ -5950,7 +5650,6 @@
   {
    "key": "machine_plates_shoulder_press",
    "name": "Shoulder Press (Machine Plates)",
-   "nameJa": "ショルダープレスマシンプレートs",
    "primary": "SHOULDERS",
    "secondary": [
     "TRICEPS"
@@ -5970,7 +5669,6 @@
   {
    "key": "machine_preacher_curl",
    "name": "Preacher Curl (Machine)",
-   "nameJa": "プリーチャーカールマシン",
    "primary": "BICEPS",
    "secondary": [],
    "equipment": "MACHINE",
@@ -5988,7 +5686,6 @@
   {
    "key": "machine_pullover",
    "name": "Pullover (Machine)",
-   "nameJa": "プルオーバーマシン",
    "primary": "LATS",
    "secondary": [
     "CHEST",
@@ -6009,7 +5706,6 @@
   {
    "key": "machine_rear_delt_reverse_fly",
    "name": "Rear Delt Reverse Fly (Machine)",
-   "nameJa": "リアデルトフライマシン",
    "primary": "SHOULDERS",
    "secondary": [
     "UPPER_BACK"
@@ -6029,7 +5725,6 @@
   {
    "key": "machine_rear_kick",
    "name": "Rear Kick (Machine)",
-   "nameJa": "Rear Kick (Machine)",
    "primary": "GLUTES",
    "secondary": [
     "HAMSTRINGS"
@@ -6049,7 +5744,6 @@
   {
    "key": "machine_seated_leg_curl",
    "name": "Seated Leg Curl (Machine)",
-   "nameJa": "シーテッドレッグカールマシン",
    "primary": "HAMSTRINGS",
    "secondary": [
     "GLUTES"
@@ -6069,7 +5763,6 @@
   {
    "key": "machine_seated_row",
    "name": "Seated Row (Machine)",
-   "nameJa": "シーテッドロウマシン",
    "primary": "UPPER_BACK",
    "secondary": [
     "LATS",
@@ -6090,7 +5783,6 @@
   {
    "key": "machine_seated_shoulder_press",
    "name": "Seated Shoulder Press (Machine)",
-   "nameJa": "シーテッドショルダープレスマシン",
    "primary": "SHOULDERS",
    "secondary": [
     "TRICEPS"
@@ -6110,7 +5802,6 @@
   {
    "key": "machine_shrug",
    "name": "Shrug (Machine)",
-   "nameJa": "シュラッグマシン",
    "primary": "TRAPS",
    "secondary": [],
    "equipment": "MACHINE",
@@ -6128,7 +5819,6 @@
   {
    "key": "machine_single_leg_press",
    "name": "Single Leg Press (Machine)",
-   "nameJa": "Single Leg Press (Machine)",
    "primary": "QUADRICEPS",
    "secondary": [
     "GLUTES",
@@ -6149,7 +5839,6 @@
   {
    "key": "machine_single_leg_standing_calf_raise",
    "name": "Single Leg Standing Calf Raise (Machine)",
-   "nameJa": "シングルレッグスタンディングカーフレイズマシン",
    "primary": "CALVES",
    "secondary": [],
    "equipment": "MACHINE",
@@ -6167,7 +5856,6 @@
   {
    "key": "machine_squat",
    "name": "Squat (Machine)",
-   "nameJa": "スクワットマシン",
    "primary": "QUADRICEPS",
    "secondary": [
     "GLUTES",
@@ -6188,7 +5876,6 @@
   {
    "key": "machine_standing_calf_raise",
    "name": "Standing Calf Raise (Machine)",
-   "nameJa": "スタンディングカーフレイズマシン",
    "primary": "CALVES",
    "secondary": [],
    "equipment": "MACHINE",
@@ -6206,7 +5893,6 @@
   {
    "key": "machine_triceps_extension",
    "name": "Triceps Extension (Machine)",
-   "nameJa": "トライセプスエクステンションマシン",
    "primary": "TRICEPS",
    "secondary": [],
    "equipment": "MACHINE",
@@ -6224,7 +5910,6 @@
   {
    "key": "machine_vertical_traction",
    "name": "Vertical Traction (Machine)",
-   "nameJa": "Vertical Traction (Machine)",
    "primary": "LATS",
    "secondary": [
     "UPPER_BACK",
@@ -6245,7 +5930,6 @@
   {
    "key": "mountain_climber",
    "name": "Mountain Climber",
-   "nameJa": "マウンテンクライマー",
    "primary": "FULL_BODY",
    "secondary": [
     "ABDOMINALS"
@@ -6265,7 +5949,6 @@
   {
    "key": "muscle_up",
    "name": "Muscle Up",
-   "nameJa": "Muscle Up",
    "primary": "FULL_BODY",
    "secondary": [
     "LATS",
@@ -6286,7 +5969,6 @@
   {
    "key": "negative_pull_up",
    "name": "Negative Pull Up",
-   "nameJa": "Negative Pull Up",
    "primary": "LATS",
    "secondary": [
     "BICEPS",
@@ -6307,7 +5989,6 @@
   {
    "key": "nordic_hamstrings_curls",
    "name": "Nordic Hamstrings Curls",
-   "nameJa": "Nordic Hamstrings Curls",
    "primary": "HAMSTRINGS",
    "secondary": [
     "GLUTES"
@@ -6327,7 +6008,6 @@
   {
    "key": "oblique_crunch",
    "name": "Oblique Crunch",
-   "nameJa": "オブリーククランチ",
    "primary": "ABDOMINALS",
    "secondary": [],
    "equipment": "NONE",
@@ -6345,7 +6025,6 @@
   {
    "key": "one_arm_push_up",
    "name": "One Arm Push Up",
-   "nameJa": "ワンハンドプッシュアップ",
    "primary": "CHEST",
    "secondary": [
     "TRICEPS",
@@ -6366,7 +6045,6 @@
   {
    "key": "overhead_dumbbell_lunge",
    "name": "Overhead Dumbbell Lunge",
-   "nameJa": "オーバーヘッドダンベルランジ",
    "primary": "QUADRICEPS",
    "secondary": [
     "SHOULDERS",
@@ -6387,7 +6065,6 @@
   {
    "key": "overhead_plate_raise",
    "name": "Overhead Plate Raise",
-   "nameJa": "Overhead Plate Raise",
    "primary": "SHOULDERS",
    "secondary": [
     "TRAPS"
@@ -6407,7 +6084,6 @@
   {
    "key": "overhead_squat",
    "name": "Overhead Squat",
-   "nameJa": "オーバーヘッドスクワット",
    "primary": "FULL_BODY",
    "secondary": [
     "SHOULDERS",
@@ -6428,7 +6104,6 @@
   {
    "key": "pec_deck_butterfly",
    "name": "Butterfly (Pec Deck)",
-   "nameJa": "Butterfly (Pec Deck)",
    "primary": "CHEST",
    "secondary": [],
    "equipment": "MACHINE",
@@ -6446,7 +6121,6 @@
   {
    "key": "pike_pushup",
    "name": "Pike Pushup",
-   "nameJa": "Pike Pushup",
    "primary": "SHOULDERS",
    "secondary": [
     "TRICEPS"
@@ -6466,7 +6140,6 @@
   {
    "key": "pilates",
    "name": "Pilates",
-   "nameJa": "ピラティス",
    "primary": "FULL_BODY",
    "secondary": [],
    "equipment": "NONE",
@@ -6479,7 +6152,6 @@
   {
    "key": "pistol_squat",
    "name": "Pistol Squat",
-   "nameJa": "ピストルスクワット",
    "primary": "QUADRICEPS",
    "secondary": [
     "GLUTES",
@@ -6500,7 +6172,6 @@
   {
    "key": "plank",
    "name": "Plank",
-   "nameJa": "プランク",
    "primary": "ABDOMINALS",
    "secondary": [
     "SHOULDERS"
@@ -6520,7 +6191,6 @@
   {
    "key": "plank_pushup",
    "name": "Plank Pushup",
-   "nameJa": "プランクプッシュアップ",
    "primary": "CHEST",
    "secondary": [
     "TRICEPS",
@@ -6541,7 +6211,6 @@
   {
    "key": "plate_curl",
    "name": "Plate Curl",
-   "nameJa": "プレートカール",
    "primary": "BICEPS",
    "secondary": [
     "FOREARMS"
@@ -6561,7 +6230,6 @@
   {
    "key": "plate_front_raise",
    "name": "Plate Front Raise",
-   "nameJa": "プレートフロントレイズ",
    "primary": "SHOULDERS",
    "secondary": [],
    "equipment": "PLATE",
@@ -6579,7 +6247,6 @@
   {
    "key": "plate_press",
    "name": "Plate Press",
-   "nameJa": "Plate Press",
    "primary": "CHEST",
    "secondary": [
     "SHOULDERS",
@@ -6600,7 +6267,6 @@
   {
    "key": "power_clean",
    "name": "Power Clean",
-   "nameJa": "パワークリーン",
    "primary": "FULL_BODY",
    "secondary": [
     "QUADRICEPS",
@@ -6621,7 +6287,6 @@
   {
    "key": "power_snatch",
    "name": "Power Snatch",
-   "nameJa": "Power Snatch",
    "primary": "FULL_BODY",
    "secondary": [
     "SHOULDERS",
@@ -6642,7 +6307,6 @@
   {
    "key": "press_under",
    "name": "Press Under",
-   "nameJa": "Press Under",
    "primary": "FULL_BODY",
    "secondary": [
     "SHOULDERS",
@@ -6663,7 +6327,6 @@
   {
    "key": "pull_up",
    "name": "Pull Up",
-   "nameJa": "プルアップ",
    "primary": "LATS",
    "secondary": [
     "BICEPS",
@@ -6684,7 +6347,6 @@
   {
    "key": "push_press",
    "name": "Push Press",
-   "nameJa": "プッシュプレス",
    "primary": "SHOULDERS",
    "secondary": [
     "TRICEPS",
@@ -6705,7 +6367,6 @@
   {
    "key": "push_up",
    "name": "Push Up",
-   "nameJa": "プッシュアップ",
    "primary": "CHEST",
    "secondary": [
     "TRICEPS",
@@ -6726,7 +6387,6 @@
   {
    "key": "push_up_close_grip",
    "name": "Push Up - Close Grip",
-   "nameJa": "プッシュアップナローグリップ",
    "primary": "CHEST",
    "secondary": [
     "TRICEPS"
@@ -6746,7 +6406,6 @@
   {
    "key": "rack_pull",
    "name": "Rack Pull",
-   "nameJa": "Rack Pull",
    "primary": "UPPER_BACK",
    "secondary": [
     "TRAPS",
@@ -6767,7 +6426,6 @@
   {
    "key": "recumbent_bike",
    "name": "Recumbent Bike",
-   "nameJa": "Recumbent Bike",
    "primary": "CARDIO",
    "secondary": [],
    "equipment": "MACHINE",
@@ -6780,7 +6438,6 @@
   {
    "key": "reverse_crunch",
    "name": "Reverse Crunch",
-   "nameJa": "リバースクランチ",
    "primary": "ABDOMINALS",
    "secondary": [],
    "equipment": "NONE",
@@ -6798,7 +6455,6 @@
   {
    "key": "reverse_grip_concentration_curl",
    "name": "Reverse Grip Concentration Curl",
-   "nameJa": "リバースグリップコンセントレーションカール",
    "primary": "BICEPS",
    "secondary": [
     "FOREARMS"
@@ -6818,7 +6474,6 @@
   {
    "key": "reverse_grip_triceps_pushdown",
    "name": "Reverse Grip Triceps Pushdown",
-   "nameJa": "リバースグリップトライセプスプッシュダウン",
    "primary": "TRICEPS",
    "secondary": [],
    "equipment": "MACHINE",
@@ -6836,7 +6491,6 @@
   {
    "key": "reverse_hyperextension",
    "name": "Reverse Hyperextension",
-   "nameJa": "リバースバックエクステンション",
    "primary": "GLUTES",
    "secondary": [
     "HAMSTRINGS",
@@ -6857,7 +6511,6 @@
   {
    "key": "reverse_lunge",
    "name": "Reverse Lunge",
-   "nameJa": "リバースランジ",
    "primary": "QUADRICEPS",
    "secondary": [
     "GLUTES",
@@ -6878,7 +6531,6 @@
   {
    "key": "reverse_plank",
    "name": "Reverse Plank",
-   "nameJa": "リバースプランク",
    "primary": "ABDOMINALS",
    "secondary": [
     "GLUTES",
@@ -6899,7 +6551,6 @@
   {
    "key": "ring_dips",
    "name": "Ring Dips",
-   "nameJa": "Ring Dips",
    "primary": "CHEST",
    "secondary": [
     "TRICEPS",
@@ -6920,7 +6571,6 @@
   {
    "key": "ring_pull_up",
    "name": "Ring Pull Up",
-   "nameJa": "Ring Pull Up",
    "primary": "LATS",
    "secondary": [
     "BICEPS",
@@ -6941,7 +6591,6 @@
   {
    "key": "ring_push_up",
    "name": "Ring Push Up",
-   "nameJa": "Ring Push Up",
    "primary": "CHEST",
    "secondary": [
     "TRICEPS",
@@ -6962,7 +6611,6 @@
   {
    "key": "rope_cable_curl",
    "name": "Rope Cable Curl",
-   "nameJa": "Rope Cable Curl",
    "primary": "BICEPS",
    "secondary": [
     "FOREARMS"
@@ -6982,7 +6630,6 @@
   {
    "key": "rope_straight_arm_pulldown",
    "name": "Rope Straight Arm Pulldown",
-   "nameJa": "Rope Straight Arm Pulldown",
    "primary": "LATS",
    "secondary": [],
    "equipment": "MACHINE",
@@ -7000,7 +6647,6 @@
   {
    "key": "rowing_machine",
    "name": "Rowing Machine",
-   "nameJa": "ローイングマシン",
    "primary": "CARDIO",
    "secondary": [],
    "equipment": "MACHINE",
@@ -7013,7 +6659,6 @@
   {
    "key": "running",
    "name": "Running",
-   "nameJa": "ランニング",
    "primary": "CARDIO",
    "secondary": [],
    "equipment": "NONE",
@@ -7026,7 +6671,6 @@
   {
    "key": "sandbag_walking_lunge",
    "name": "Walking Lunge (Sandbag)",
-   "nameJa": "Walking Lunge (Sandbag)",
    "primary": "QUADRICEPS",
    "secondary": [
     "GLUTES",
@@ -7047,7 +6691,6 @@
   {
    "key": "scapular_pull_ups",
    "name": "Scapular Pull Ups",
-   "nameJa": "Scapular Pull Ups",
    "primary": "UPPER_BACK",
    "secondary": [
     "LATS",
@@ -7068,7 +6711,6 @@
   {
    "key": "seated_cable_row_bar_grip",
    "name": "Seated Cable Row - Bar Grip",
-   "nameJa": "Seated Cable Row - Bar Grip",
    "primary": "UPPER_BACK",
    "secondary": [
     "LATS",
@@ -7089,7 +6731,6 @@
   {
    "key": "seated_cable_row_bar_wide_grip",
    "name": "Seated Cable Row - Bar Wide Grip",
-   "nameJa": "Seated Cable Row - Bar Wide Grip",
    "primary": "UPPER_BACK",
    "secondary": [
     "LATS",
@@ -7110,7 +6751,6 @@
   {
    "key": "seated_calf_raise",
    "name": "Seated Calf Raise",
-   "nameJa": "シーテッドカーフレイズ",
    "primary": "CALVES",
    "secondary": [],
    "equipment": "MACHINE",
@@ -7128,7 +6768,6 @@
   {
    "key": "seated_dip_machine",
    "name": "Seated Dip Machine",
-   "nameJa": "シーテッドディップスマシン",
    "primary": "TRICEPS",
    "secondary": [
     "CHEST",
@@ -7149,7 +6788,6 @@
   {
    "key": "seated_palms_up_wrist_curl",
    "name": "Seated Palms Up Wrist Curl",
-   "nameJa": "Seated Palms Up Wrist Curl",
    "primary": "FOREARMS",
    "secondary": [],
    "equipment": "DUMBBELL",
@@ -7167,7 +6805,6 @@
   {
    "key": "seated_triceps_press",
    "name": "Seated Triceps Press",
-   "nameJa": "Seated Triceps Press",
    "primary": "TRICEPS",
    "secondary": [],
    "equipment": "MACHINE",
@@ -7185,7 +6822,6 @@
   {
    "key": "shoulder_taps",
    "name": "Shoulder Taps",
-   "nameJa": "Shoulder Taps",
    "primary": "SHOULDERS",
    "secondary": [
     "ABDOMINALS"
@@ -7205,7 +6841,6 @@
   {
    "key": "side_bend",
    "name": "Side Bend",
-   "nameJa": "サイドベンド",
    "primary": "ABDOMINALS",
    "secondary": [],
    "equipment": "NONE",
@@ -7223,7 +6858,6 @@
   {
    "key": "side_plank",
    "name": "Side Plank",
-   "nameJa": "Side Plank",
    "primary": "ABDOMINALS",
    "secondary": [
     "SHOULDERS"
@@ -7243,7 +6877,6 @@
   {
    "key": "single_arm_cable_crossover",
    "name": "Single Arm Cable Crossover",
-   "nameJa": "Single Arm Cable Crossover",
    "primary": "CHEST",
    "secondary": [
     "SHOULDERS"
@@ -7263,7 +6896,6 @@
   {
    "key": "single_arm_cable_row",
    "name": "Single Arm Cable Row",
-   "nameJa": "ワンハンドケーブルロウ",
    "primary": "UPPER_BACK",
    "secondary": [
     "LATS",
@@ -7284,7 +6916,6 @@
   {
    "key": "single_arm_lat_pulldown",
    "name": "Single Arm Lat Pulldown",
-   "nameJa": "ワンハンドラットプルダウン",
    "primary": "LATS",
    "secondary": [
     "UPPER_BACK",
@@ -7305,7 +6936,6 @@
   {
    "key": "single_leg_extensions",
    "name": "Single Leg Extensions",
-   "nameJa": "Single Leg Extensions",
    "primary": "QUADRICEPS",
    "secondary": [],
    "equipment": "MACHINE",
@@ -7323,7 +6953,6 @@
   {
    "key": "single_leg_glute_bridge",
    "name": "Single Leg Glute Bridge",
-   "nameJa": "シングルレッググルートブリッジ",
    "primary": "GLUTES",
    "secondary": [
     "HAMSTRINGS"
@@ -7343,7 +6972,6 @@
   {
    "key": "single_leg_hip_thrust",
    "name": "Single Leg Hip Thrust",
-   "nameJa": "シングルレッグヒップスラスト",
    "primary": "GLUTES",
    "secondary": [
     "HAMSTRINGS"
@@ -7363,7 +6991,6 @@
   {
    "key": "single_leg_standing_calf_raise",
    "name": "Single Leg Standing Calf Raise",
-   "nameJa": "シングルレッグスタンディングカーフレイズ",
    "primary": "CALVES",
    "secondary": [],
    "equipment": "NONE",
@@ -7381,7 +7008,6 @@
   {
    "key": "sit_up",
    "name": "Sit Up",
-   "nameJa": "シットアップ",
    "primary": "ABDOMINALS",
    "secondary": [],
    "equipment": "NONE",
@@ -7399,7 +7025,6 @@
   {
    "key": "skating",
    "name": "Skating",
-   "nameJa": "Skating",
    "primary": "CARDIO",
    "secondary": [],
    "equipment": "NONE",
@@ -7412,7 +7037,6 @@
   {
    "key": "ski_erg",
    "name": "Ski Erg",
-   "nameJa": "Ski Erg",
    "primary": "CARDIO",
    "secondary": [],
    "equipment": "MACHINE",
@@ -7425,7 +7049,6 @@
   {
    "key": "skiing",
    "name": "Skiing",
-   "nameJa": "Skiing",
    "primary": "CARDIO",
    "secondary": [],
    "equipment": "NONE",
@@ -7438,7 +7061,6 @@
   {
    "key": "sled_pull",
    "name": "Sled Pull",
-   "nameJa": "Sled Pull",
    "primary": "FULL_BODY",
    "secondary": [
     "HAMSTRINGS",
@@ -7459,7 +7081,6 @@
   {
    "key": "sled_push",
    "name": "Sled Push",
-   "nameJa": "Sled Push",
    "primary": "FULL_BODY",
    "secondary": [
     "QUADRICEPS",
@@ -7480,7 +7101,6 @@
   {
    "key": "smith_machine_bench_press",
    "name": "Bench Press (Smith Machine)",
-   "nameJa": "ベンチプレススミスマシン",
    "primary": "CHEST",
    "secondary": [
     "SHOULDERS",
@@ -7502,7 +7122,6 @@
   {
    "key": "smith_machine_bent_over_row",
    "name": "Bent Over Row (Smith Machine)",
-   "nameJa": "ベントオーバーロウスミスマシン",
    "primary": "UPPER_BACK",
    "secondary": [
     "LATS",
@@ -7525,7 +7144,6 @@
   {
    "key": "smith_machine_deadlift",
    "name": "Deadlift (Smith Machine)",
-   "nameJa": "デッドリフトスミスマシン",
    "primary": "GLUTES",
    "secondary": [
     "HAMSTRINGS",
@@ -7546,7 +7164,6 @@
   {
    "key": "smith_machine_decline_bench_press",
    "name": "Decline Bench Press (Smith Machine)",
-   "nameJa": "デクラインベンチプレススミスマシン",
    "primary": "CHEST",
    "secondary": [
     "TRICEPS",
@@ -7567,7 +7184,6 @@
   {
    "key": "smith_machine_hip_thrust",
    "name": "Hip Thrust (Smith Machine)",
-   "nameJa": "ヒップスラストスミスマシン",
    "primary": "GLUTES",
    "secondary": [
     "HAMSTRINGS"
@@ -7587,7 +7203,6 @@
   {
    "key": "smith_machine_incline_bench_press",
    "name": "Incline Bench Press (Smith Machine)",
-   "nameJa": "インクラインベンチプレススミスマシン",
    "primary": "CHEST",
    "secondary": [
     "SHOULDERS",
@@ -7608,7 +7223,6 @@
   {
    "key": "smith_machine_overhead_press",
    "name": "Overhead Press (Smith Machine)",
-   "nameJa": "オーバーヘッドプレススミスマシン",
    "primary": "SHOULDERS",
    "secondary": [
     "TRICEPS"
@@ -7628,7 +7242,6 @@
   {
    "key": "smith_machine_romanian_deadlift",
    "name": "Romanian Deadlift (Smith Machine)",
-   "nameJa": "ルーマニアンデッドリフトスミスマシン",
    "primary": "HAMSTRINGS",
    "secondary": [
     "GLUTES",
@@ -7649,7 +7262,6 @@
   {
    "key": "smith_machine_shrug",
    "name": "Shrug (Smith Machine)",
-   "nameJa": "シュラッグスミスマシン",
    "primary": "TRAPS",
    "secondary": [],
    "equipment": "MACHINE",
@@ -7667,7 +7279,6 @@
   {
    "key": "smith_machine_squat",
    "name": "Squat (Smith Machine)",
-   "nameJa": "スクワットスミスマシン",
    "primary": "QUADRICEPS",
    "secondary": [
     "GLUTES",
@@ -7688,7 +7299,6 @@
   {
    "key": "smith_standing_calf_raise",
    "name": "Standing Calf Raise (Smith)",
-   "nameJa": "Standing Calf Raise (Smith)",
    "primary": "CALVES",
    "secondary": [],
    "equipment": "MACHINE",
@@ -7706,7 +7316,6 @@
   {
    "key": "snatch",
    "name": "Snatch",
-   "nameJa": "スナッチ",
    "primary": "FULL_BODY",
    "secondary": [
     "SHOULDERS",
@@ -7727,7 +7336,6 @@
   {
    "key": "snowboarding",
    "name": "Snowboarding",
-   "nameJa": "Snowboarding",
    "primary": "CARDIO",
    "secondary": [],
    "equipment": "NONE",
@@ -7740,7 +7348,6 @@
   {
    "key": "spiderman",
    "name": "Spiderman",
-   "nameJa": "Spiderman",
    "primary": "ABDOMINALS",
    "secondary": [
     "SHOULDERS"
@@ -7760,7 +7367,6 @@
   {
    "key": "spinning",
    "name": "Spinning",
-   "nameJa": "Spinning",
    "primary": "CARDIO",
    "secondary": [],
    "equipment": "MACHINE",
@@ -7773,7 +7379,6 @@
   {
    "key": "split_jerk",
    "name": "Split Jerk",
-   "nameJa": "Split Jerk",
    "primary": "FULL_BODY",
    "secondary": [
     "SHOULDERS",
@@ -7794,7 +7399,6 @@
   {
    "key": "sprints",
    "name": "Sprints",
-   "nameJa": "Sprints",
    "primary": "CARDIO",
    "secondary": [],
    "equipment": "NONE",
@@ -7807,7 +7411,6 @@
   {
    "key": "squat_row",
    "name": "Squat Row",
-   "nameJa": "スクワットロウ",
    "primary": "FULL_BODY",
    "secondary": [
     "QUADRICEPS",
@@ -7828,7 +7431,6 @@
   {
    "key": "standing_cable_glute_kickbacks",
    "name": "Standing Cable Glute Kickbacks",
-   "nameJa": "Standing Cable Glute Kickbacks",
    "primary": "GLUTES",
    "secondary": [
     "HAMSTRINGS"
@@ -7848,7 +7450,6 @@
   {
    "key": "standing_calf_raise",
    "name": "Standing Calf Raise",
-   "nameJa": "スタンディングカーフレイズ",
    "primary": "CALVES",
    "secondary": [],
    "equipment": "NONE",
@@ -7866,7 +7467,6 @@
   {
    "key": "standing_leg_curls",
    "name": "Standing Leg Curls",
-   "nameJa": "スタンディングレッグカールs",
    "primary": "HAMSTRINGS",
    "secondary": [
     "GLUTES"
@@ -7886,7 +7486,6 @@
   {
    "key": "step_up",
    "name": "Step Up",
-   "nameJa": "ステップアップ",
    "primary": "QUADRICEPS",
    "secondary": [
     "GLUTES",
@@ -7907,7 +7506,6 @@
   {
    "key": "steps_stair_machine",
    "name": "Stair Machine (Steps)",
-   "nameJa": "Stair Machine (Steps)",
    "primary": "CARDIO",
    "secondary": [],
    "equipment": "MACHINE",
@@ -7920,7 +7518,6 @@
   {
    "key": "straight_leg_deadlift",
    "name": "Straight Leg Deadlift",
-   "nameJa": "Straight Leg Deadlift",
    "primary": "HAMSTRINGS",
    "secondary": [
     "GLUTES",
@@ -7941,7 +7538,6 @@
   {
    "key": "stretching",
    "name": "Stretching",
-   "nameJa": "ストレッチ",
    "primary": "OTHER",
    "secondary": [],
    "equipment": "NONE",
@@ -7954,7 +7550,6 @@
   {
    "key": "sumo_deadlift",
    "name": "Sumo Deadlift",
-   "nameJa": "スモウデッドリフト",
    "primary": "GLUTES",
    "secondary": [
     "QUADRICEPS",
@@ -7976,7 +7571,6 @@
   {
    "key": "sumo_squat",
    "name": "Sumo Squat",
-   "nameJa": "スモウスクワット",
    "primary": "QUADRICEPS",
    "secondary": [
     "ADDUCTORS",
@@ -7997,7 +7591,6 @@
   {
    "key": "superman",
    "name": "Superman",
-   "nameJa": "スーパーマン",
    "primary": "LOWER_BACK",
    "secondary": [
     "GLUTES"
@@ -8017,7 +7610,6 @@
   {
    "key": "suspension_bicep_curl",
    "name": "Bicep Curl (Suspension)",
-   "nameJa": "バイセップカールサスペンション",
    "primary": "BICEPS",
    "secondary": [],
    "equipment": "SUSPENSION_BAND",
@@ -8035,7 +7627,6 @@
   {
    "key": "suspension_chest_fly",
    "name": "Chest Fly (Suspension)",
-   "nameJa": "ダンベルフライサスペンション",
    "primary": "CHEST",
    "secondary": [
     "SHOULDERS"
@@ -8055,7 +7646,6 @@
   {
    "key": "suspension_front_raise",
    "name": "Front Raise (Suspension)",
-   "nameJa": "フロントレイズサスペンション",
    "primary": "SHOULDERS",
    "secondary": [],
    "equipment": "SUSPENSION_BAND",
@@ -8073,7 +7663,6 @@
   {
    "key": "suspension_jack_knife",
    "name": "Jack Knife (Suspension)",
-   "nameJa": "Jack Knife (Suspension)",
    "primary": "ABDOMINALS",
    "secondary": [
     "SHOULDERS"
@@ -8093,7 +7682,6 @@
   {
    "key": "suspension_low_row",
    "name": "Low Row (Suspension)",
-   "nameJa": "Low Row (Suspension)",
    "primary": "UPPER_BACK",
    "secondary": [
     "LATS",
@@ -8114,7 +7702,6 @@
   {
    "key": "suspension_squat",
    "name": "Squat (Suspension)",
-   "nameJa": "スクワットサスペンション",
    "primary": "QUADRICEPS",
    "secondary": [
     "GLUTES",
@@ -8135,7 +7722,6 @@
   {
    "key": "suspension_triceps_extension",
    "name": "Triceps Extension (Suspension)",
-   "nameJa": "トライセプスエクステンションサスペンション",
    "primary": "TRICEPS",
    "secondary": [],
    "equipment": "SUSPENSION_BAND",
@@ -8153,7 +7739,6 @@
   {
    "key": "svend_press_plate_squeeze",
    "name": "Plate Squeeze (Svend Press)",
-   "nameJa": "Plate Squeeze (Svend Press)",
    "primary": "CHEST",
    "secondary": [],
    "equipment": "PLATE",
@@ -8171,7 +7756,6 @@
   {
    "key": "swimming",
    "name": "Swimming",
-   "nameJa": "スイミング",
    "primary": "CARDIO",
    "secondary": [],
    "equipment": "NONE",
@@ -8184,7 +7768,6 @@
   {
    "key": "t_bar_row",
    "name": "T Bar Row",
-   "nameJa": "T Bar Row",
    "primary": "UPPER_BACK",
    "secondary": [
     "LATS",
@@ -8205,7 +7788,6 @@
   {
    "key": "toe_touch",
    "name": "Toe Touch",
-   "nameJa": "Toe Touch",
    "primary": "ABDOMINALS",
    "secondary": [],
    "equipment": "NONE",
@@ -8223,7 +7805,6 @@
   {
    "key": "toes_to_bar",
    "name": "Toes to Bar",
-   "nameJa": "Toes to Bar",
    "primary": "ABDOMINALS",
    "secondary": [
     "LATS",
@@ -8244,7 +7825,6 @@
   {
    "key": "torso_rotation",
    "name": "Torso Rotation",
-   "nameJa": "Torso Rotation",
    "primary": "ABDOMINALS",
    "secondary": [],
    "equipment": "MACHINE",
@@ -8262,7 +7842,6 @@
   {
    "key": "trap_bar_deadlift",
    "name": "Deadlift (Trap bar)",
-   "nameJa": "Deadlift (Trap bar)",
    "primary": "GLUTES",
    "secondary": [
     "QUADRICEPS",
@@ -8284,7 +7863,6 @@
   {
    "key": "treadmill",
    "name": "Treadmill",
-   "nameJa": "トレッドミル",
    "primary": "CARDIO",
    "secondary": [],
    "equipment": "MACHINE",
@@ -8297,7 +7875,6 @@
   {
    "key": "triceps_dip",
    "name": "Triceps Dip",
-   "nameJa": "Triceps Dip",
    "primary": "TRICEPS",
    "secondary": [
     "CHEST",
@@ -8318,7 +7895,6 @@
   {
    "key": "triceps_pressdown",
    "name": "Triceps Pressdown",
-   "nameJa": "トライセプスプレスダウン",
    "primary": "TRICEPS",
    "secondary": [],
    "equipment": "MACHINE",
@@ -8336,7 +7912,6 @@
   {
    "key": "triceps_pushdown",
    "name": "Triceps Pushdown",
-   "nameJa": "トライセプスプッシュダウン",
    "primary": "TRICEPS",
    "secondary": [],
    "equipment": "MACHINE",
@@ -8354,7 +7929,6 @@
   {
    "key": "triceps_rope_pushdown",
    "name": "Triceps Rope Pushdown",
-   "nameJa": "Triceps Rope Pushdown",
    "primary": "TRICEPS",
    "secondary": [],
    "equipment": "MACHINE",
@@ -8372,7 +7946,6 @@
   {
    "key": "up_to_down_cable_twist",
    "name": "Cable Twist (Up to down)",
-   "nameJa": "Cable Twist (Up to down)",
    "primary": "ABDOMINALS",
    "secondary": [
     "SHOULDERS"
@@ -8392,7 +7965,6 @@
   {
    "key": "v_up",
    "name": "V Up",
-   "nameJa": "V Up",
    "primary": "ABDOMINALS",
    "secondary": [],
    "equipment": "NONE",
@@ -8410,7 +7982,6 @@
   {
    "key": "walking",
    "name": "Walking",
-   "nameJa": "ウォーキング",
    "primary": "CARDIO",
    "secondary": [],
    "equipment": "NONE",
@@ -8423,7 +7994,6 @@
   {
    "key": "walking_lunge",
    "name": "Walking Lunge",
-   "nameJa": "ウォーキングランジ",
    "primary": "QUADRICEPS",
    "secondary": [
     "GLUTES",
@@ -8444,7 +8014,6 @@
   {
    "key": "wall_ball",
    "name": "Wall Ball",
-   "nameJa": "ウォールボール",
    "primary": "FULL_BODY",
    "secondary": [
     "QUADRICEPS",
@@ -8465,7 +8034,6 @@
   {
    "key": "wall_sit",
    "name": "Wall Sit",
-   "nameJa": "ウォールシット",
    "primary": "QUADRICEPS",
    "secondary": [],
    "equipment": "OTHER",
@@ -8483,7 +8051,6 @@
   {
    "key": "warm_up",
    "name": "Warm Up",
-   "nameJa": "ウォームアップ",
    "primary": "FULL_BODY",
    "secondary": [],
    "equipment": "NONE",
@@ -8496,7 +8063,6 @@
   {
    "key": "weighted_chest_dip",
    "name": "Chest Dip (Weighted)",
-   "nameJa": "Chest Dip (Weighted)",
    "primary": "CHEST",
    "secondary": [
     "TRICEPS",
@@ -8517,7 +8083,6 @@
   {
    "key": "weighted_chin_up",
    "name": "Chin Up (Weighted)",
-   "nameJa": "チンアップウエイテッド",
    "primary": "LATS",
    "secondary": [
     "BICEPS",
@@ -8538,7 +8103,6 @@
   {
    "key": "weighted_crunch",
    "name": "Crunch (Weighted)",
-   "nameJa": "クランチウエイテッド",
    "primary": "ABDOMINALS",
    "secondary": [],
    "equipment": "NONE",
@@ -8556,7 +8120,6 @@
   {
    "key": "weighted_decline_crunch",
    "name": "Decline Crunch (Weighted)",
-   "nameJa": "デクラインクランチウエイテッド",
    "primary": "ABDOMINALS",
    "secondary": [],
    "equipment": "NONE",
@@ -8574,7 +8137,6 @@
   {
    "key": "weighted_hyperextension_back_extension",
    "name": "Back Extension (Weighted Hyperextension)",
-   "nameJa": "バックエクステンションウエイテッドバックエクステンション",
    "primary": "LOWER_BACK",
    "secondary": [
     "HAMSTRINGS",
@@ -8595,7 +8157,6 @@
   {
    "key": "weighted_lying_neck_curls",
    "name": "Lying Neck Curls (Weighted)",
-   "nameJa": "Lying Neck Curls (Weighted)",
    "primary": "NECK",
    "secondary": [],
    "equipment": "PLATE",
@@ -8613,7 +8174,6 @@
   {
    "key": "weighted_lying_neck_extension",
    "name": "Lying Neck Extension (Weighted)",
-   "nameJa": "Lying Neck Extension (Weighted)",
    "primary": "NECK",
    "secondary": [],
    "equipment": "PLATE",
@@ -8631,7 +8191,6 @@
   {
    "key": "weighted_pull_up",
    "name": "Pull Up (Weighted)",
-   "nameJa": "プルアップウエイテッド",
    "primary": "LATS",
    "secondary": [
     "BICEPS",
@@ -8652,7 +8211,6 @@
   {
    "key": "weighted_push_up",
    "name": "Push Up (Weighted)",
-   "nameJa": "プッシュアップウエイテッド",
    "primary": "CHEST",
    "secondary": [
     "TRICEPS",
@@ -8673,7 +8231,6 @@
   {
    "key": "weighted_russian_twist",
    "name": "Russian Twist (Weighted)",
-   "nameJa": "ロシアンツイストウエイテッド",
    "primary": "ABDOMINALS",
    "secondary": [],
    "equipment": "PLATE",
@@ -8691,7 +8248,6 @@
   {
    "key": "weighted_sissy_squat",
    "name": "Sissy Squat (Weighted)",
-   "nameJa": "Sissy Squat (Weighted)",
    "primary": "QUADRICEPS",
    "secondary": [],
    "equipment": "NONE",
@@ -8709,7 +8265,6 @@
   {
    "key": "weighted_sit_up",
    "name": "Sit Up (Weighted)",
-   "nameJa": "シットアップウエイテッド",
    "primary": "ABDOMINALS",
    "secondary": [],
    "equipment": "NONE",
@@ -8727,7 +8282,6 @@
   {
    "key": "weighted_triceps_dip",
    "name": "Triceps Dip (Weighted)",
-   "nameJa": "Triceps Dip (Weighted)",
    "primary": "TRICEPS",
    "secondary": [
     "CHEST",
@@ -8748,7 +8302,6 @@
   {
    "key": "wide_pull_up",
    "name": "Wide Pull Up",
-   "nameJa": "Wide Pull Up",
    "primary": "LATS",
    "secondary": [
     "UPPER_BACK",
@@ -8769,7 +8322,6 @@
   {
    "key": "wrist_roller",
    "name": "Wrist Roller",
-   "nameJa": "Wrist Roller",
    "primary": "FOREARMS",
    "secondary": [],
    "equipment": "MACHINE",
@@ -8787,7 +8339,6 @@
   {
    "key": "x21s_bicep_curl",
    "name": "21s Bicep Curl",
-   "nameJa": "21sバイセップカール",
    "primary": "BICEPS",
    "secondary": [],
    "equipment": "BARBELL",
@@ -8805,7 +8356,6 @@
   {
    "key": "yoga",
    "name": "Yoga",
-   "nameJa": "ヨガ",
    "primary": "FULL_BODY",
    "secondary": [],
    "equipment": "NONE",
@@ -8818,7 +8368,6 @@
   {
    "key": "zercher_squat",
    "name": "Zercher Squat",
-   "nameJa": "Zercher Squat",
    "primary": "QUADRICEPS",
    "secondary": [
     "GLUTES",

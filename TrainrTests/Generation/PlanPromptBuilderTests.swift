@@ -10,7 +10,7 @@ struct PlanPromptBuilderTests {
         equipment: Equipment = Equipment.none
     ) -> CatalogExercise {
         CatalogExercise(
-            key: key, name: key, nameJa: key, primary: muscle, secondary: [],
+            key: key, name: key, primary: muscle, secondary: [],
             equipment: equipment, measure: measure, pattern: pattern, staple: true, summary: key, steps: []
         )
     }
@@ -26,7 +26,6 @@ struct PlanPromptBuilderTests {
     private let builder = PlanPromptBuilder()
 
     private func request(
-        languageCode: String = "en",
         previousWeek: WeeklyPlan? = nil,
         units: UnitSystem = .metric
     ) -> PlanRequest {
@@ -44,7 +43,6 @@ struct PlanPromptBuilderTests {
             ),
             weekNumber: previousWeek == nil ? 1 : 2,
             startDate: Date(timeIntervalSince1970: 0),
-            languageCode: languageCode,
             previousWeek: previousWeek
         )
     }
@@ -66,11 +64,6 @@ struct PlanPromptBuilderTests {
 
         #expect(prompt.contains("Session set cap: at most 14 sets"))
         #expect(prompt.contains("Weekly set target: about 10 hard sets"))
-    }
-
-    @Test func displayCopyLanguageFollowsTheAppLanguage() {
-        #expect(builder.userPrompt(request(languageCode: "ja"), shortlist: shortlist).contains("Japanese"))
-        #expect(builder.userPrompt(request(languageCode: "tl"), shortlist: shortlist).contains("Tagalog"))
     }
 
     @Test func weekOneCarriesNoHistory() {

@@ -133,8 +133,7 @@ struct GeminiPlanGenerator: PlanGenerator {
                 limits: PlanLimits(
                     maxSetsPerSession: SessionBudget.maxSetsPerSession(request.user),
                     allowedKeys: Set(exerciseKeys),
-                    requiredPatterns: ExerciseShortlist.requiredPatterns(shortlist),
-                    languageCode: request.languageCode
+                    requiredPatterns: ExerciseShortlist.requiredPatterns(shortlist)
                 )
             ) {
             case .parsed(let plan):

@@ -5,7 +5,6 @@ import Foundation
 nonisolated struct CatalogExercise: Equatable, Sendable {
     let key: String
     let name: String
-    let nameJa: String
     let primary: MuscleGroup
     // A movement can assist several; Around The World names three.
     let secondary: [MuscleGroup]
@@ -17,10 +16,6 @@ nonisolated struct CatalogExercise: Equatable, Sendable {
     // catalog, so a form cue can never be generated.
     let summary: String
     let steps: [String]
-
-    func displayName(_ languageCode: String) -> String {
-        languageCode == "ja" && !nameJa.isEmpty ? nameJa : name
-    }
 
     // Bodyweight needs nothing, so it is available to everyone.
     func isAvailable(with owned: Set<Equipment>) -> Bool {

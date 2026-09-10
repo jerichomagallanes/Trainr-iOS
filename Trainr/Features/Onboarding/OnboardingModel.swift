@@ -23,7 +23,6 @@ final class OnboardingModel {
     private let dependencies: AppDependencies
     private let store: TrainingStore
     private let planGenerator: any PlanGenerator
-    private let languageCode: String
 
     // Only the kit the catalog actually has movements for reaches the setup
     // screen, so a chip can never lead to an empty week.
@@ -38,7 +37,6 @@ final class OnboardingModel {
         self.dependencies = dependencies
         store = dependencies.store
         planGenerator = dependencies.planGenerator
-        languageCode = dependencies.languageCode
         stockedEquipment = Set(dependencies.catalog.all.map(\.equipment))
         if let stored = dependencies.attempt("currentUser", { try store.currentUser() }) {
             profile = stored
@@ -144,8 +142,7 @@ final class OnboardingModel {
                 PlanRequest(
                     user: toSave,
                     weekNumber: Self.firstWeek,
-                    startDate: start,
-                    languageCode: languageCode
+                    startDate: start
                 )
             )
 

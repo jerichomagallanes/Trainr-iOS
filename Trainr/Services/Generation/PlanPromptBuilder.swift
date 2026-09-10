@@ -87,8 +87,8 @@ nonisolated struct PlanPromptBuilder {
         - exerciseKey is chosen from the movement list in the request and never
           invented. The app owns each movement's name, the muscle it trains and
           how it is measured, so all you choose is which movement and how much.
-        - Day titles, prescription and instructions are display copy in the
-          requested language.
+        - Day titles, prescription and instructions are display copy, written
+          in English.
         - Day titles are short and name the session's focus ("Full Body
           Strength", "Lower Body Power") - never letter or index labels like
           "Full Body A" or "Day 1".
@@ -130,7 +130,7 @@ nonisolated struct PlanPromptBuilder {
             let named = user.injuries.map(text(for:)).joined(separator: ", ")
             lines.append("- Injuries or areas to protect: \(named)")
         }
-        lines.append("- Write all display copy in: \(language(for: request.languageCode))")
+        lines.append("- Write all display copy in: English")
         let required = ExerciseShortlist.requiredPatterns(shortlist)
         if !required.isEmpty {
             let named = PatternRequirement.allCases
@@ -284,14 +284,6 @@ nonisolated struct PlanPromptBuilder {
         case .resistanceBand: "resistance bands"
         case .suspensionBand: "a suspension trainer"
         case .other: "other gym kit (ab wheel, box, sled, rings, jump rope)"
-        }
-    }
-
-    private func language(for code: String) -> String {
-        switch code {
-        case "ja": "Japanese"
-        case "tl": "Tagalog (Filipino)"
-        default: "English"
         }
     }
 }

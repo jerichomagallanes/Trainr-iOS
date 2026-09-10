@@ -11,7 +11,7 @@ struct ExerciseShortlistTests {
         staple: Bool = false
     ) -> CatalogExercise {
         CatalogExercise(
-            key: key, name: key, nameJa: key, primary: muscle, secondary: [],
+            key: key, name: key, primary: muscle, secondary: [],
             equipment: equipment, measure: .reps, pattern: pattern, staple: staple, summary: key, steps: []
         )
     }

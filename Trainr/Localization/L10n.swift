@@ -165,9 +165,6 @@ nonisolated enum L10n {
     static var intermediateDescription: String { String(localized: "intermediate_description") }
     static var intermediateLevel: String { String(localized: "intermediate_level") }
     static var kneeProblemsInjury: String { String(localized: "knee_problems_injury") }
-    static var languageEnglish: String { String(localized: "language_english") }
-    static var languageJapanese: String { String(localized: "language_japanese") }
-    static var languageTagalog: String { String(localized: "language_tagalog") }
     static var leavePlanConfirm: String { String(localized: "leave_plan_confirm") }
     static var leavePlanMessage: String { String(localized: "leave_plan_message") }
     static var leavePlanTitle: String { String(localized: "leave_plan_title") }

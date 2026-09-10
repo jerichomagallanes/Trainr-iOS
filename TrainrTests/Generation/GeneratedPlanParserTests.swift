@@ -8,7 +8,7 @@ private func catalogExercise(
     equipment: Equipment = Equipment.none
 ) -> CatalogExercise {
     CatalogExercise(
-        key: key, name: key.replacingOccurrences(of: "_", with: " "), nameJa: key,
+        key: key, name: key.replacingOccurrences(of: "_", with: " "),
         primary: muscle, secondary: [], equipment: equipment, measure: measure, pattern: pattern, staple: true,
         summary: key, steps: []
     )

@@ -9,8 +9,6 @@ final class AppDependencies {
     let planGenerator: any PlanGenerator
     let breadcrumbs: any Breadcrumbs
     let catalog: any ExerciseCatalog
-    // English-only: the plan's display copy must match the shipped English UI.
-    let languageCode = "en"
 
     init(
         store: TrainingStore,
