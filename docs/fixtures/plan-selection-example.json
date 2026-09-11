@@ -1,0 +1,39 @@
+{
+  "day1": {
+    "primary": "barbell_bench_press",
+    "secondary": "chin_up",
+    "accessory": "barbell_overhead_press",
+    "isolation_1": "around_the_world",
+    "isolation_2": "dumbbell_incline_chest_fly",
+    "core": "crunch",
+    "conditioning": "cycling",
+    "title": "Chest and Back"
+  },
+  "day2": {
+    "primary": "barbell_squat",
+    "secondary": "barbell_hip_thrust",
+    "accessory": "dumbbell_bulgarian_split_squat",
+    "core": "plank",
+    "mobility_1": "stretching",
+    "title": "Squats and Hamstrings"
+  },
+  "day4": {
+    "primary": "barbell_bench_press",
+    "secondary": "chin_up",
+    "accessory": "barbell_overhead_press",
+    "isolation_1": "dumbbell_hammer_curl",
+    "isolation_2": "barbell_seated_wrist_curl",
+    "core": "crunch",
+    "conditioning": "jump_rope",
+    "title": "Shoulders and Arms"
+  },
+  "day5": {
+    "primary": "barbell_squat",
+    "secondary": "barbell_romanian_deadlift",
+    "accessory": "dumbbell_bulgarian_split_squat",
+    "isolation_2": "machine_seated_leg_curl",
+    "core": "crunch",
+    "mobility_1": "yoga",
+    "title": "Glutes and Quads"
+  }
+}
