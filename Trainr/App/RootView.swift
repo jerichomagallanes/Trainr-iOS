@@ -88,9 +88,9 @@ struct RootView: View {
                 },
                 onUpdateProfile: { path.append(.review(fromPlan: true, profileOnly: true)) },
                 onOpenPro: { path.append(.pro) },
-                onStartNextWeek: { ask(.nextWeek, toReach: .generatingNextWeek) },
-                onRepeatWeek: { nextWeek?.repeatWeek() },
-                onRegenerateWeek: { ask(.rewrite, toReach: .regeneratingWeek) },
+                onStartNextWeek: { ask(.nextWeek) { path.append(.generatingNextWeek) } },
+                onRepeatWeek: { ask(.nextWeek) { nextWeek?.repeatWeek() } },
+                onRegenerateWeek: { ask(.rewrite) { path.append(.regeneratingWeek) } },
                 onCreatePlan: {
                     path.append(.review(fromPlan: true, profileOnly: false))
                 }
@@ -103,17 +103,17 @@ struct RootView: View {
     // new one asks for Pro.
     // Spent on a week that arrived, never on one that failed: a model that
     // refused has taken nothing.
-    private func spendFreeGeneration(for source: PlanSource) {
+    private func spendFreeGeneration() {
         guard !entitlements.isPro else { return }
-        allowance.spend(for: source)
+        allowance.markUsed()
     }
 
     // A week already generated is never taken away, so only writing a new one
     // asks for Pro, and it asks where the tap happened rather than by replacing
     // the screen.
-    private func ask(_ reason: PaywallReason, toReach route: Route) {
+    private func ask(_ reason: PaywallReason, then action: () -> Void) {
         if entitlements.isPro || !allowance.hasBeenUsed() {
-            path.append(route)
+            action()
         } else {
             prompt = reason
         }
@@ -220,7 +220,7 @@ struct RootView: View {
                         onboarding.updateProfileOnly { path = [] }
                     } else {
                         if fromPlan {
-                            ask(.freshPlan, toReach: .generating)
+                            ask(.freshPlan) { path.append(.generating) }
                         } else {
                             path.append(.generating)
                         }
@@ -235,10 +235,9 @@ struct RootView: View {
                 isReady: onboarding.isCompleted,
                 onStart: { onboarding.saveUserProfile() },
                 onDone: {
-                    // Spent once the week has arrived, so a failed generation
-                    // costs nothing. What the week that did arrive costs is the
-                    // allowance's to say.
-                    if let source = onboarding.planSource { spendFreeGeneration(for: source) }
+                    // Spent once the week has arrived, whichever tier built it,
+                    // so a failed generation costs nothing.
+                    spendFreeGeneration()
                     restartOnHome()
                 },
                 failure: onboarding.generationFailure,
@@ -285,7 +284,7 @@ struct RootView: View {
                 weekNumber: weekNumber,
                 onBack: pop,
                 onViewProgress: { path.append(.weeklyProgress) },
-                onGenerateNextWeek: { ask(.nextWeek, toReach: .generatingNextWeek) }
+                onGenerateNextWeek: { ask(.nextWeek) { path.append(.generatingNextWeek) } }
             )
 
         case .weeklyProgress:
@@ -331,8 +330,10 @@ struct RootView: View {
                 // The copy joins the plan at the end, so refreshing here would
                 // re-read the old week; home is where the copy now lives.
                 onRepeatWeek: {
-                    nextWeek?.repeatWeek(numbered: weekNumber)
-                    if nextWeek?.isReady == true { restartOnHome() }
+                    ask(.nextWeek) {
+                        nextWeek?.repeatWeek(numbered: weekNumber)
+                        if nextWeek?.isReady == true { restartOnHome() }
+                    }
                 },
                 onBack: pop
             )
@@ -348,7 +349,10 @@ struct RootView: View {
             GeneratingView(
                 isReady: nextWeek.isReady,
                 onStart: start,
-                onDone: restartOnHome,
+                onDone: {
+                    spendFreeGeneration()
+                    restartOnHome()
+                },
                 failure: nextWeek.failure,
                 failureCount: nextWeek.failureCount,
                 builtInsteadOf: nextWeek.builtInsteadOf,
