@@ -238,4 +238,38 @@ struct NextWeekModelStoreTests {
         let after = try #require(try store.plan(for: userID, weekNumber: 1))
         #expect(after.id == before.id)
     }
+
+    private final class RecordingGenerator: PlanGenerator {
+        var asked: [PlanRequest] = []
+        func generate(_ request: PlanRequest) async -> PlanGenerationResult {
+            asked.append(request)
+            return await TemplatePlanGenerator().generate(request)
+        }
+    }
+
+    // Regenerating asks for new movements, so last week's are never carried
+    // into the week being replaced.
+    @Test("Regenerating asks for new movements")
+    func regeneratingAsksForNewMovements() async throws {
+        try save(week: 1, days: [day(1)], startingDaysAgo: 0)
+        let recorder = RecordingGenerator()
+        let model = NextWeekModel(dependencies: dependencies(recorder))
+
+        model.regenerateThisWeek()
+        await settle(model)
+
+        #expect(recorder.asked.first?.freshCast == true)
+    }
+
+    @Test("The next week does not ask for new movements")
+    func theNextWeekKeepsTheMovements() async throws {
+        try save(week: 1, days: [day(1, .completed)])
+        let recorder = RecordingGenerator()
+        let model = NextWeekModel(dependencies: dependencies(recorder))
+
+        model.generateNextWeek()
+        await settle(model)
+
+        #expect(recorder.asked.first?.freshCast == false)
+    }
 }

@@ -95,7 +95,8 @@ final class AppDependencies {
     // on, and no development run spends the day's model allowance. Its weeks
     // stand in for the coach's, so the free allowance and the paywall behave
     // as they would with a real answer. Release asks the coach, and builds the
-    // week itself whenever the coach cannot answer.
+    // week itself whenever the coach cannot answer. Either way next week carries
+    // last week's movements forward when nothing forces a change.
     private static func makePlanGenerator(breadcrumbs: any Breadcrumbs) -> any PlanGenerator {
         #if DEBUG
         if let failing = UITestFixtures.failingGeneratorIfRequested() { return failing }
@@ -103,10 +104,10 @@ final class AppDependencies {
         if let builtInstead = UITestFixtures.builtInsteadGeneratorIfRequested() { return builtInstead }
         let canned = ProcessInfo.processInfo.arguments.contains("-cannedGeneration")
             || FirebaseApp.app() == nil
-        if canned { return TemplatePlanGenerator(source: .coach) }
+        if canned { return CarryForwardPlanGenerator(next: TemplatePlanGenerator(source: .coach)) }
         #endif
         let catalog = BundleExerciseCatalog()
-        return FallbackPlanGenerator(
+        let coached = FallbackPlanGenerator(
             coach: GeminiPlanGenerator(
                 client: FirebaseAIPlanModelClient(),
                 promptBuilder: PlanPromptBuilder(),
@@ -116,5 +117,6 @@ final class AppDependencies {
             ),
             template: TemplatePlanGenerator(catalog: catalog)
         )
+        return CarryForwardPlanGenerator(catalog: catalog, next: coached)
     }
 }

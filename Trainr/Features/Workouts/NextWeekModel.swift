@@ -143,7 +143,9 @@ final class NextWeekModel {
                 // The weeks before this one, so a replacement still progresses
                 // from what was lifted.
                 history: plans.filter { $0.weekNumber < current.weekNumber }
-                    .sorted { $0.weekNumber > $1.weekNumber }
+                    .sorted { $0.weekNumber > $1.weekNumber },
+                // New movements are the point of asking again.
+                freshCast: true
             )
         )
 

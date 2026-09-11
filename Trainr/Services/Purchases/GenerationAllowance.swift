@@ -50,3 +50,12 @@ final class StoredGenerationAllowance: FreeGenerationAllowance {
     private nonisolated(unsafe) static var volatile = false
     #endif
 }
+
+extension FreeGenerationAllowance {
+    // A week the app built in place of a failed answer costs nothing: the
+    // client asked for the coach and got a stand-in.
+    func spend(for source: PlanSource) {
+        guard source != .template else { return }
+        markUsed()
+    }
+}

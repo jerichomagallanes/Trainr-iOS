@@ -103,9 +103,9 @@ struct RootView: View {
     // new one asks for Pro.
     // Spent on a week that arrived, never on one that failed: a model that
     // refused has taken nothing.
-    private func spendFreeGeneration() {
+    private func spendFreeGeneration(for source: PlanSource) {
         guard !entitlements.isPro else { return }
-        allowance.markUsed()
+        allowance.spend(for: source)
     }
 
     // A week already generated is never taken away, so only writing a new one
@@ -235,9 +235,10 @@ struct RootView: View {
                 isReady: onboarding.isCompleted,
                 onStart: { onboarding.saveUserProfile() },
                 onDone: {
-                    // Only a week the coach wrote costs the free one: a week the
-                    // app built itself cost nothing to make.
-                    if onboarding.planSource == .coach { spendFreeGeneration() }
+                    // Spent once the week has arrived, so a failed generation
+                    // costs nothing. What the week that did arrive costs is the
+                    // allowance's to say.
+                    if let source = onboarding.planSource { spendFreeGeneration(for: source) }
                     restartOnHome()
                 },
                 failure: onboarding.generationFailure,
