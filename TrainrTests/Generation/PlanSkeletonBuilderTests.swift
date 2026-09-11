@@ -104,6 +104,19 @@ struct PlanSkeletonBuilderTests {
         }
     }
 
+    // The prompt no longer says a word about injuries, so the filter is the
+    // whole mechanism and every injury needs its own proof.
+    @Test func noCandidateListContainsAMovementContraindicatedForTheClientsInjuries() throws {
+        for injury in Injury.allCases {
+            for goal in FitnessGoal.allCases {
+                for key in build(user(goal: goal, days: 5, minutes: 60, injuries: [injury])).allowedKeys {
+                    let movement = try #require(catalog[key])
+                    #expect(!InjuryGuard.excludes(movement, for: [injury]), "\(injury) \(goal) \(key)")
+                }
+            }
+        }
+    }
+
     @Test func everyAnswerFitsTheSessionCap() {
         for user in everyAnswer() {
             let week = build(user)
