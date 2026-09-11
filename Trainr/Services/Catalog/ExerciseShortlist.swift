@@ -16,7 +16,10 @@ nonisolated enum ExerciseShortlist {
         carriedOver: Set<String> = []
     ) -> [CatalogExercise] {
         let owned = Set(user.availableEquipment.isEmpty ? [.none] : user.availableEquipment)
+        // Filtered before anything else, so the required patterns are worked
+        // out from what this client can actually be given.
         let available = catalog.available(with: owned)
+            .filter { !InjuryGuard.excludes($0, for: user.injuries) }
         let byKey = Dictionary(available.map { ($0.key, $0) }, uniquingKeysWith: { first, _ in first })
 
         // Last week's movements come first whatever else is dropped: a key the

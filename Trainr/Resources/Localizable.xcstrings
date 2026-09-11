@@ -375,6 +375,83 @@
         }
       }
     },
+    "caution_ankle": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keep your weight through the whole foot, and move softly."
+          }
+        }
+      }
+    },
+    "caution_hip": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Only go as deep as your hip moves without pain."
+          }
+        }
+      }
+    },
+    "caution_knee": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keep your knee in line with your toes. Stop if it hurts."
+          }
+        }
+      }
+    },
+    "caution_lower_back": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Brace and keep your back flat. Stop if it pinches."
+          }
+        }
+      }
+    },
+    "caution_neck": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keep your chin tucked and your neck relaxed."
+          }
+        }
+      }
+    },
+    "caution_shoulder": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stay in a range your shoulder is comfortable in."
+          }
+        }
+      }
+    },
+    "caution_wrist": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keep your wrist straight rather than bent back."
+          }
+        }
+      }
+    },
     "close": {
       "extractionState": "manual",
       "localizations": {

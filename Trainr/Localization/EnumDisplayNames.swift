@@ -64,6 +64,19 @@ extension Equipment {
 }
 
 extension Injury {
+    // One line on an exercise card when the movement touches this injury.
+    var cautionText: String {
+        switch self {
+        case .lowerBack: L10n.cautionLowerBack
+        case .knee: L10n.cautionKnee
+        case .shoulder: L10n.cautionShoulder
+        case .wrist: L10n.cautionWrist
+        case .ankle: L10n.cautionAnkle
+        case .hip: L10n.cautionHip
+        case .neck: L10n.cautionNeck
+        }
+    }
+
     var displayName: String {
         switch self {
         case .lowerBack: L10n.lowerBackPainInjury
