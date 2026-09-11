@@ -16,6 +16,9 @@ nonisolated struct CatalogExercise: Equatable, Sendable {
     // costs twice the time and the chip has to say so. A walking lunge
     // alternates inside the set and is not one of these.
     var unilateral = false
+    // One dumbbell rather than a pair. weightKg is always the one bell in the
+    // hand, so this is what says whether a seed for the whole load is halved.
+    var oneHanded = false
     // One line for the card, and the how-to behind a tap. Both owned by the
     // catalog, so a form cue can never be generated.
     let summary: String
