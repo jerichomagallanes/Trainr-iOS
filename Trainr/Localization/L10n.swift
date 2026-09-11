@@ -93,6 +93,7 @@ nonisolated enum L10n {
     static var errorEnterHeight: String { String(localized: "error_enter_height") }
     static var errorEnterName: String { String(localized: "error_enter_name") }
     static var errorEnterWeight: String { String(localized: "error_enter_weight") }
+    static var estimatedWeight: String { String(localized: "estimated_weight") }
     static var exerciseInProgress: String { String(localized: "exercise_in_progress") }
     static func exercisesCount(_ p1: Int) -> String {
         String.localizedStringWithFormat(String(localized: "exercises_count"), p1)
