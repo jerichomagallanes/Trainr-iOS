@@ -17,15 +17,6 @@ nonisolated enum SetFormatting {
         return "\(minutes):" + String(format: "%02d", seconds)
     }
 
-    // Typed like a microwave timer: digits fill in from the seconds end, so
-    // "500" is 5:00.
-    static func durationDigits(_ total: Int) -> String {
-        let minutes = total / Constants.Workout.secondsPerMinute
-        let seconds = total % Constants.Workout.secondsPerMinute
-        let digits = "\(minutes)" + String(format: "%02d", seconds)
-        return String(digits.drop { $0 == "0" })
-    }
-
     static func secondsFromDigits(_ digits: String) -> Int? {
         let cleaned = String(String(digits.filter(\.isNumber).suffix(4)).drop { $0 == "0" })
         guard !cleaned.isEmpty else { return nil }

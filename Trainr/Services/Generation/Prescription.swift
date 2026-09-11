@@ -2,9 +2,9 @@ import Foundation
 
 nonisolated enum PrescriptionUnit { case reps, seconds, minutes }
 
-// What the chip under an exercise says, worked out from the sets rather than
-// written by a model that could disagree with them. A value rather than a
-// string so the words live with the rest of the copy.
+// What the chip under an exercise says, worked out from the sets so it can
+// never disagree with them. A value rather than a string so the words live
+// with the rest of the copy.
 nonisolated enum Prescription: Equatable {
     case none
     case fixed(setCount: Int, unit: PrescriptionUnit, amount: Int, perSide: Bool)

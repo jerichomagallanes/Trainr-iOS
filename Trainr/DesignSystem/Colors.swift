@@ -77,12 +77,8 @@ extension Color {
     // Drawn the same in both modes, as the illustration it belongs to is.
     static let trophyGold = themed(0xDAB900, 0xDAB900)
 
-    static let shadowSpot = Color(light: .black, dark: .clear)
-    static let shadowSpotSoft = Color(light: UIColor(rgb: 0x000000, alpha: 0.05), dark: .clear)
     static let shadowSpotBrand = Color(light: UIColor(rgb: 0xD37200, alpha: 0.15), dark: .clear)
     static let shadowSpotBar = Color(light: UIColor(rgb: 0x000000, alpha: 0.08), dark: .clear)
-    static let scrim = Color(light: UIColor(rgb: 0x000000, alpha: 0.3),
-                             dark: UIColor(rgb: 0x000000, alpha: 0.7))
 
     // Nonisolated because the target is main-actor by default, which would isolate
     // this closure, and UIKit resolves a trait provider off the main thread. Both

@@ -12,10 +12,11 @@ struct ExerciseVideoCatalogTests {
         }
     }
 
-    @Test("Every key is a slug the model can be asked to use")
-    func keysAreSlugs() {
+    @Test("Every key is a catalog key")
+    func keysAreCatalogKeys() {
+        let catalog = BundleExerciseCatalog()
         for key in ExerciseVideoCatalog.videoIDs.keys {
-            #expect(key.wholeMatch(of: /[a-z0-9_]+/) != nil, "\(key)")
+            #expect(catalog[key] != nil, "\(key)")
         }
     }
 

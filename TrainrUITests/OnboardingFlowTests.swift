@@ -8,7 +8,7 @@ final class OnboardingFlowTests: XCTestCase {
     private func launch() {
         continueAfterFailure = false
         app = XCUIApplication()
-        app.launchArguments = ["-cannedGeneration", "-inMemoryStore"]
+        app.launchArguments = ["-inMemoryStore"]
         app.launch()
     }
 

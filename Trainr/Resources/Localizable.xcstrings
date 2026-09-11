@@ -1104,50 +1104,6 @@
         }
       }
     },
-    "generation_built_instead_failed": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "The AI coach did not come back with a week that held up, so this one was built from your answers. It still progresses from what you log."
-          }
-        }
-      }
-    },
-    "generation_built_instead_limit": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "You are out of AI-written plans for today, so this week was built from your answers. It still progresses from what you log."
-          }
-        }
-      }
-    },
-    "generation_built_instead_offline": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Trainr is offline, so this week was built from your answers rather than written by the AI coach. It still progresses from what you log."
-          }
-        }
-      }
-    },
-    "generation_built_instead_title": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Your plan is ready"
-          }
-        }
-      }
-    },
     "generation_failed_message": {
       "extractionState": "manual",
       "localizations": {
@@ -1159,17 +1115,6 @@
         }
       }
     },
-    "generation_failed_offline": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Trainr is offline. Check your connection and try again."
-          }
-        }
-      }
-    },
     "generation_failed_title": {
       "extractionState": "manual",
       "localizations": {
@@ -1177,28 +1122,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Could not create your workout plan"
-          }
-        }
-      }
-    },
-    "generation_limit_message": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Trainr can only write a few plans a day at the moment. The limit resets each day, so trying again now will not help.\n\nYour answers are saved. Come back later and create your plan in one tap."
-          }
-        }
-      }
-    },
-    "generation_limit_title": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Daily limit reached"
           }
         }
       }
@@ -1320,17 +1243,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "losing weight"
-          }
-        }
-      }
-    },
-    "got_it": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Got it"
           }
         }
       }
@@ -2230,50 +2142,6 @@
         }
       }
     },
-    "pro_benefit_fresh_plan": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Start a fresh plan whenever your goal changes"
-          }
-        }
-      }
-    },
-    "pro_benefit_next_week": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "A new week each week, written from what you actually lifted"
-          }
-        }
-      }
-    },
-    "pro_benefit_regenerate": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Rewrite a week that does not suit you"
-          }
-        }
-      }
-    },
-    "pro_best_value": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Best value"
-          }
-        }
-      }
-    },
     "pro_billed_annually": {
       "extractionState": "manual",
       "localizations": {
@@ -2533,7 +2401,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "No. A Gemini model writes it from the answers you gave, and progresses it from the sets you log. Plans are guidance, not medical advice."
+            "value": "No. Trainr builds it on your phone from the answers you gave, and progresses it from the sets you log. Plans are guidance, not medical advice."
           }
         }
       }
@@ -2692,17 +2560,6 @@
         }
       }
     },
-    "pro_free_note": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Your first week, every set you log, and repeating a week all stay free."
-          }
-        }
-      }
-    },
     "pro_full_access": {
       "extractionState": "manual",
       "localizations": {
@@ -2710,17 +2567,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Get the full coach"
-          }
-        }
-      }
-    },
-    "pro_headline": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Keep the coach writing"
           }
         }
       }
@@ -3072,13 +2918,13 @@
                   "one": {
                     "stringUnit": {
                       "state": "translated",
-                      "value": "%1$lld of %2$lld workouts is logged in this week. The AI coach chooses new movements, and the new week replaces it for good."
+                      "value": "%1$lld of %2$lld workouts is logged in this week. New movements are chosen, and the new week replaces it for good."
                     }
                   },
                   "other": {
                     "stringUnit": {
                       "state": "translated",
-                      "value": "%1$lld of %2$lld workouts are logged in this week. The AI coach chooses new movements, and the new week replaces them for good."
+                      "value": "%1$lld of %2$lld workouts are logged in this week. New movements are chosen, and the new week replaces them for good."
                     }
                   }
                 }

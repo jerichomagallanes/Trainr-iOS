@@ -26,8 +26,6 @@ This is the iOS version of [Trainr for Android](https://github.com/jerichomagall
 - **Observation**: `@Observable` models drive the screens with granular re-rendering
 - **SwiftData**: Local persistence with cascading relationships
 - **Swift Testing**: Unit tests with `#expect`, XCUITest for UI tests
-- **Firebase AI Logic**: Gemini generation without an API key in the app
-- **Firebase App Check**: App Attest attestation for every generation request
 - **Firebase Crashlytics**: Crash reports with hand-written breadcrumbs and no analytics
 - **YouTubePlayerKit**: In-app exercise demonstrations via the IFrame Player API
 - **SwiftLint**: Style enforcement locally and in CI
@@ -35,7 +33,7 @@ This is the iOS version of [Trainr for Android](https://github.com/jerichomagall
 ## 🏗️ Architecture
 
 - **Models**: Value types for the profile, the weekly plan and the units logic — pure Swift, no framework imports
-- **Services**: Plan generation (the Gemini model chain, prompt, schema, parser and validation), the SwiftData store, and crash diagnostics
+- **Services**: Plan generation (the skeleton builder, template and carry-forward generators, parser and validation), the SwiftData store, and crash diagnostics
 - **Features**: SwiftUI screens and their `@Observable` models, one folder per flow
 - **DesignSystem**: The shared components, colors, spacing and typography every screen is built from
 

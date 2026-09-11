@@ -65,7 +65,6 @@ nonisolated enum DeloadCheck {
         }
     }
 
-    // Each movement's first-set load and its set count, by key.
     private static func firstTargets(_ week: WeeklyPlan) -> [String: (load: Double?, sets: Int)] {
         var targets: [String: (load: Double?, sets: Int)] = [:]
         for exercise in week.workoutDays.flatMap(\.exercises) {

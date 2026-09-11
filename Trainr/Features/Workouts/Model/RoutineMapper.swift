@@ -3,8 +3,8 @@ import Foundation
 nonisolated extension WorkoutDay {
 
     // What a movement is and how it is done come from the catalog; a stored
-    // week only says which movement and how much. Copy a model once wrote is
-    // read only where the catalog has nothing to say.
+    // week only says which movement and how much. Instructions stored before
+    // the catalog owned the how-to are read only where it has nothing to say.
     func toRoutineUi(
         previousByKey: [String: [ExerciseSet]] = [:],
         catalog: (any ExerciseCatalog)? = nil,

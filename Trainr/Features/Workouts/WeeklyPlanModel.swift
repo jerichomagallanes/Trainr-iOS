@@ -28,7 +28,6 @@ nonisolated struct WeeklyPlanState: Equatable, Sendable {
     // The newest week is the one being trained; which a week is belongs to the
     // week, not to the screen it was opened from.
     var isCurrentWeek = false
-    // Offered once this week is finished or its dates have run out.
     var canStartNextWeek = false
     var canAddWeek = false
 
@@ -48,8 +47,6 @@ final class WeeklyPlanModel {
     private(set) var state = WeeklyPlanState()
 
     private let dependencies: AppDependencies
-    // Absent on home, which always shows the newest week; set when one
-    // particular week was opened from Weekly Progress.
     private let requestedWeekNumber: Int?
 
     init(dependencies: AppDependencies, weekNumber: Int? = nil) {

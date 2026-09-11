@@ -60,8 +60,7 @@ nonisolated struct ExerciseSet: Identifiable, Equatable, Sendable {
     var isCompleted = false
 }
 
-// The raw values are the wire contract with the model: the schema enumerates
-// them and every generated plan arrives speaking them.
+// The raw values are what exercise-catalog.json and the stored records spell.
 nonisolated enum ExerciseMeasure: String, Codable, CaseIterable, Sendable {
     case weightAndReps = "WEIGHT_AND_REPS"
     case reps = "REPS"

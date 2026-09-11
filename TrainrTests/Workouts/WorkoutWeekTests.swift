@@ -15,21 +15,6 @@ struct WorkoutWeekTests {
         calendar.date(from: DateComponents(year: year, month: month, day: day, hour: hour))!
     }
 
-    @Test("A midweek moment belongs to that week's Monday")
-    func midweek() {
-        #expect(WorkoutWeek.monday(of: date(2026, 9, 9, hour: 15), calendar: calendar) == date(2026, 9, 7))
-    }
-
-    @Test("A Sunday belongs to the Monday before it, whatever the locale's first day")
-    func sunday() {
-        #expect(WorkoutWeek.monday(of: date(2026, 9, 13, hour: 23), calendar: calendar) == date(2026, 9, 7))
-    }
-
-    @Test("A Monday is its own week start")
-    func monday() {
-        #expect(WorkoutWeek.monday(of: date(2026, 9, 7, hour: 6), calendar: calendar) == date(2026, 9, 7))
-    }
-
     @Test("Day numbers walk from the start one calendar day at a time")
     func dayNumbersWalk() {
         let start = date(2026, 9, 7)

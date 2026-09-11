@@ -5,7 +5,7 @@ import Foundation
 // touch real data. The names are the contract with TrainrUITests.
 enum UITestFixtures {
 
-    static let argument = "-seedFixture"
+    private static let argument = "-seedFixture"
 
     static func seedIfRequested(into store: TrainingStore) {
         let arguments = ProcessInfo.processInfo.arguments
@@ -16,7 +16,7 @@ enum UITestFixtures {
         seed(arguments[index + 1], into: store)
     }
 
-    static func seed(_ name: String, into store: TrainingStore) {
+    private static func seed(_ name: String, into store: TrainingStore) {
         let user = client()
         try? store.saveUser(user)
 
@@ -41,7 +41,7 @@ enum UITestFixtures {
         }
     }
 
-    static let stepArgument = "-startAtStep"
+    private static let stepArgument = "-startAtStep"
 
     // A screen a test can start on, with the answers before it already given.
     // Retyping five screens of answers into a hosted simulator is what made the
@@ -194,36 +194,15 @@ enum UITestFixtures {
         return plan
     }
 
-    static let failureArgument = "-generationFails"
-    static let slowArgument = "-slowGeneration"
-    static let builtInsteadArgument = "-generationBuiltInstead"
+    private static let failureArgument = "-generationFails"
+    private static let slowArgument = "-slowGeneration"
 
     static func failingGeneratorIfRequested() -> (any PlanGenerator)? {
-        failingGenerator(after: failureArgument)
+        ProcessInfo.processInfo.arguments.contains(failureArgument) ? FailingPlanGenerator() : nil
     }
 
-    // The coach failing and the app's own week handed over in its place, so a
-    // test can watch the week arrive with its reason said.
-    static func builtInsteadGeneratorIfRequested() -> (any PlanGenerator)? {
-        guard let failing = failingGenerator(after: builtInsteadArgument) else { return nil }
-        return FallbackPlanGenerator(coach: failing, template: TemplatePlanGenerator())
-    }
-
-    private static func failingGenerator(after argument: String) -> FailingPlanGenerator? {
-        let arguments = ProcessInfo.processInfo.arguments
-        guard let index = arguments.firstIndex(of: argument),
-              arguments.indices.contains(index + 1)
-        else { return nil }
-        let reason: PlanGenerationFailure = switch arguments[index + 1] {
-        case "offline": .offline
-        case "dailyLimit": .dailyLimitReached
-        default: .failed
-        }
-        return FailingPlanGenerator(reason: reason)
-    }
-
-    // A coach that answers correctly but takes its time, so a test can watch
-    // what a screen does while the real one would still be thinking.
+    // A generator that answers correctly but takes its time, so a test can
+    // watch what a screen does while the week is still being built.
     static func slowGeneratorIfRequested() -> (any PlanGenerator)? {
         let arguments = ProcessInfo.processInfo.arguments
         guard let index = arguments.firstIndex(of: slowArgument),
@@ -243,13 +222,11 @@ enum UITestFixtures {
     }
 
     private struct FailingPlanGenerator: PlanGenerator {
-        let reason: PlanGenerationFailure
-
         // A moment before answering: a failure raised in the same turn it was
         // asked in goes nil and back before the screen looks.
         func generate(_ request: PlanRequest) async -> PlanGenerationResult {
             try? await Task.sleep(for: .milliseconds(300))
-            return .failure(reason)
+            return .failed
         }
     }
 

@@ -1,7 +1,6 @@
 import Foundation
 
-// A week for previews and tests, in the shape a generated plan arrives in.
-// dayNumber is the ISO day of week.
+// A week for previews and tests.
 nonisolated enum SampleWorkoutData {
 
     static let defaultDayNumber = 3

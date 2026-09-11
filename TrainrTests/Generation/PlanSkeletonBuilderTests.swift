@@ -7,9 +7,8 @@ struct PlanSkeletonBuilderTests {
     private let catalog: any ExerciseCatalog
     private let builder: PlanSkeletonBuilder
 
-    init() throws {
-        let url = try #require(Bundle.main.url(forResource: "exercise-catalog", withExtension: "json"))
-        catalog = ExerciseCatalogReader.read(try Data(contentsOf: url))
+    init() {
+        catalog = BundleExerciseCatalog()
         builder = PlanSkeletonBuilder(catalog: catalog)
     }
 
@@ -79,8 +78,8 @@ struct PlanSkeletonBuilderTests {
         }
     }
 
-    // The model chooses one key per slot. Two slots offering the same key could
-    // put one movement in a session twice.
+    // One key is chosen per slot. Two slots offering the same key could put one
+    // movement in a session twice.
     @Test func candidatesWithinADayAreNeverEmptyAndNeverShared() {
         for user in everyAnswer() {
             for day in build(user).days {
@@ -104,8 +103,7 @@ struct PlanSkeletonBuilderTests {
         }
     }
 
-    // The prompt no longer says a word about injuries, so the filter is the
-    // whole mechanism and every injury needs its own proof.
+    // The filter is the whole mechanism, so every injury needs its own proof.
     @Test func noCandidateListContainsAMovementContraindicatedForTheClientsInjuries() throws {
         for injury in Injury.allCases {
             for goal in FitnessGoal.allCases {

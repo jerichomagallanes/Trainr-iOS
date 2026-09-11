@@ -2,12 +2,11 @@ import Foundation
 
 // The shape of a week before anything picks a movement: which days, what each
 // session is for, how many movements, in what order, with how many sets and
-// what rest, and which movements could fill each place. A model then only
-// chooses among a handful of keys per slot, and with no model at all the top
-// of each list is already a week a coach would sign.
+// what rest, and which movements could fill each place. The top of each list
+// is already a week a coach would sign.
 nonisolated final class PlanSkeletonBuilder: Sendable {
 
-    static let maxCandidates = 8
+    fileprivate static let maxCandidates = 8
 
     private let catalog: any ExerciseCatalog
 
@@ -34,10 +33,8 @@ nonisolated final class PlanSkeletonBuilder: Sendable {
         return PlanSkeleton(
             title: Self.title(for: user),
             days: built,
-            units: user.weightUnits,
             maxSetsPerSession: SessionBudget.maxSetsPerSession(user),
             sessionCeilingMinutes: SessionBudget.sessionCeilingMinutes(user),
-            weeklySetsByRegion: week.setsByRegion(built),
             uncoveredPatterns: uncovered
         )
     }
@@ -226,20 +223,6 @@ private nonisolated final class WeekBuilder {
         )
     }
 
-    func setsByRegion(_ days: [SkeletonDay]) -> [MuscleRegion: Double] {
-        var totals: [MuscleRegion: Double] = [:]
-        for slot in days.flatMap(\.slots) {
-            guard let key = slot.candidates.first, let top = catalog[key] else { continue }
-            if top.primary.region.isTrainable { totals[top.primary.region, default: 0] += Double(slot.sets) }
-            var seen: Set<MuscleRegion> = [top.primary.region]
-            for region in top.secondary.map(\.region) where region.isTrainable && !seen.contains(region) {
-                seen.insert(region)
-                totals[region, default: 0] += Double(slot.sets) * 0.5
-            }
-        }
-        return totals
-    }
-
     private func trimToCount(_ day: DayDraft, _ drop: [String]) {
         for id in drop where day.slots.count > shape.count {
             day.slots.removeAll { $0.id == id && $0.isDroppable }
@@ -289,7 +272,6 @@ private nonisolated final class WeekBuilder {
         day.slots.removeAll { $0.candidates.isEmpty }
     }
 
-    // Pass B: the minimums have to fit before anything is topped up.
     private func fitMinimums(_ day: DayDraft, _ drop: [String]) {
         for id in drop where !fits(day) {
             day.slots.removeAll { $0.id == id && $0.isDroppable }
@@ -303,11 +285,11 @@ private nonisolated final class WeekBuilder {
         }
     }
 
-    // Pass C, aimed at the session the client asked for rather than the
-    // ceiling above it: every slot to its preferred sets first, then a little
-    // more where a long session has room, then the rest of a weight-loss
-    // session to conditioning. Extra sets go to the first movements of the
-    // day, the same fatigue rule as the order itself.
+    // Aimed at the session the client asked for rather than the ceiling above
+    // it: every slot to its preferred sets first, then a little more where a
+    // long session has room, then the rest of a weight-loss session to
+    // conditioning. Extra sets go to the first movements of the day, the same
+    // fatigue rule as the order itself.
     private func topUp(_ day: DayDraft) {
         grow(day) { $0.preferredSets }
         grow(day) { $0.tier.isTimed && $0.tier != .mobility ? $0.preferredSets : $0.preferredSets + Self.stretchSets }
@@ -444,7 +426,7 @@ private nonisolated final class WeekBuilder {
     private func slot(from draft: Draft) -> SkeletonSlot {
         let top = draft.candidates.first.flatMap { catalog[$0] }
         return SkeletonSlot(
-            id: draft.id, label: Self.label(of: draft.tier), tier: draft.tier, patterns: draft.patterns,
+            id: draft.id, tier: draft.tier, patterns: draft.patterns,
             muscles: draft.muscles, candidates: draft.candidates, sets: draft.sets,
             restSeconds: rest(for: draft),
             secondsPerSet: top.flatMap { $0.measure == .duration ? seconds(for: draft, $0) : nil },
@@ -554,19 +536,6 @@ private nonisolated final class WeekBuilder {
         case .core: "core"
         case .conditioning: "conditioning"
         case .mobility: "mobility_\(instance)"
-        }
-    }
-
-    private static func label(of tier: SlotTier) -> String {
-        switch tier {
-        case .warmUp: "the warm-up"
-        case .primaryCompound: "the main lift"
-        case .secondaryCompound: "the second lift"
-        case .accessory: "the accessory lift"
-        case .isolation: "an isolation movement"
-        case .core: "the core movement"
-        case .conditioning: "the conditioning"
-        case .mobility: "the cool-down"
         }
     }
 

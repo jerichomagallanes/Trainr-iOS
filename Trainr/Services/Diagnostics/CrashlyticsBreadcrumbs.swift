@@ -9,10 +9,6 @@ struct CrashlyticsBreadcrumbs: Breadcrumbs {
         Crashlytics.crashlytics().log(event)
     }
 
-    func state(key: String, value: String) {
-        Crashlytics.crashlytics().setCustomValue(value, forKey: key)
-    }
-
     // A non-fatal, logged first so the failure reads in order with the trail.
     func report(_ error: any Error, doing action: String) {
         Crashlytics.crashlytics().log("failed: \(action)")

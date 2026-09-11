@@ -1,8 +1,8 @@
 import XCTest
 
 // Every way to reach a generation, walked as a non-subscriber. A route that
-// forgets the gate spends real money on a model call, so each one is named here
-// rather than trusted to a single check in the navigation code.
+// forgets the gate gives a paid week away, so each one is named here rather
+// than trusted to a single check in the navigation code.
 final class PaywallGateTests: XCTestCase {
 
     private var app: XCUIApplication!
@@ -15,7 +15,7 @@ final class PaywallGateTests: XCTestCase {
     private func launchedSpent(_ fixture: Fixture) -> XCUIApplication {
         let app = XCUIApplication()
         app.launchArguments = [
-            "-cannedGeneration", "-inMemoryStore", "-splashSeconds", "0",
+            "-inMemoryStore", "-splashSeconds", "0",
             "-seedFixture", fixture.rawValue, "-freeGenerationUsed"
         ]
         app.launch()
@@ -127,7 +127,7 @@ final class PaywallGateTests: XCTestCase {
     func testTheProfileMenuShowsTheSubscriptionToASubscriber() {
         app = XCUIApplication()
         app.launchArguments = [
-            "-cannedGeneration", "-inMemoryStore", "-splashSeconds", "0",
+            "-inMemoryStore", "-splashSeconds", "0",
             "-seedFixture", Fixture.midWeek.rawValue, "-proUnlocked"
         ]
         app.launch()

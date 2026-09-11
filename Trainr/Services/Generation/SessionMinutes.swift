@@ -6,10 +6,10 @@ import Foundation
 nonisolated enum SessionMinutes {
 
     // A rep at the moderate velocity ACSM asks for.
-    static let secondsPerRep = 3
+    private static let secondsPerRep = 3
 
     // Walking to the next station, changing the pin, finding a bench.
-    static let transitionSeconds = 60
+    private static let transitionSeconds = 60
 
     static func forExercise(
         measure: ExerciseMeasure,
@@ -27,7 +27,6 @@ nonisolated enum SessionMinutes {
         return max(Int((Double(work * sides + rest) / 60).rounded(.up)), 1)
     }
 
-    // The day is its exercises plus the walk between them.
     static func forDay(_ exerciseMinutes: [Int]) -> Int {
         guard !exerciseMinutes.isEmpty else { return 0 }
         let transitions = (exerciseMinutes.count - 1) * transitionSeconds

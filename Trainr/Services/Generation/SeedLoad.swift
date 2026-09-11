@@ -11,7 +11,7 @@ nonisolated enum SeedLoad {
     static let warmUpSeconds = 300
 
     // A ten-rep maximum for the whole load, calibrated at an intermediate man.
-    static func tenRepMaxKg(_ user: UserProfile, _ exercise: CatalogExercise) -> Double? {
+    private static func tenRepMaxKg(_ user: UserProfile, _ exercise: CatalogExercise) -> Double? {
         guard exercise.isLoadable else { return nil }
         let bodyweight = user.weight > 0 ? user.weight : fallbackBodyweightKg
         return bodyweight * coefficient(exercise) * muscleFactor(exercise)
@@ -20,7 +20,7 @@ nonisolated enum SeedLoad {
 
     // Epley, both ways, clamped where it stops being trustworthy. Without it a
     // strength week one is far too light and an endurance one too heavy.
-    static func atReps(_ tenRepMaxKg: Double, _ reps: Int) -> Double {
+    private static func atReps(_ tenRepMaxKg: Double, _ reps: Int) -> Double {
         let oneRepMax = tenRepMaxKg * (1 + 10 / epleyDivisor)
         return oneRepMax / (1 + Double(min(reps, epleyCeilingReps)) / epleyDivisor)
     }

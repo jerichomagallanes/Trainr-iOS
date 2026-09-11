@@ -70,7 +70,7 @@
 	<key>NSPrivacyAccessedAPITypes</key>
 	<array>
 		<dict>
-			<!-- Which models have spent their allowance today, kept in the app's
+			<!-- The free-week allowance and the appearance choice, kept in the app's
 			     own defaults and read back by the app alone. -->
 			<key>NSPrivacyAccessedAPIType</key>
 			<string>NSPrivacyAccessedAPICategoryUserDefaults</string>

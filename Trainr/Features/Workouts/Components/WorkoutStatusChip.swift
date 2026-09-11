@@ -2,7 +2,6 @@ import SwiftUI
 
 struct WorkoutStatusChip: View {
     let status: WorkoutStatus
-    // A day whose date has passed with nothing logged.
     var isMissed = false
 
     var body: some View {

@@ -17,7 +17,7 @@ nonisolated enum BodyMetricsConverter {
     // Smart punctuation turns a typed apostrophe into U+2019 and a quote into
     // U+201D, and a pasted measurement often carries the prime marks instead.
     // The filter and the parser both speak straight quotes.
-    static func straightenQuotes(_ text: String) -> String {
+    private static func straightenQuotes(_ text: String) -> String {
         var straightened = text
         for curly in ["\u{2018}", "\u{2019}", "\u{2032}"] {
             straightened = straightened.replacingOccurrences(of: curly, with: "'")

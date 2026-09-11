@@ -5,8 +5,11 @@ import Testing
 @Suite("The app's own week")
 struct TemplateDeterminismTests {
 
+    // One fixed id: a fresh UUID per profile would reseed the week per call.
+    private static let alex = UUID(uuidString: "00000000-0000-0000-0000-000000000007")!
+
     private func profile(goal: FitnessGoal = .muscleGain, duration: Int, equipment: [Equipment]) -> UserProfile {
-        var user = UserProfile(firstName: "Alex")
+        var user = UserProfile(id: Self.alex, firstName: "Alex")
         user.fitnessGoal = goal
         user.workoutDuration = duration
         user.workoutDaysPerWeek = 3
@@ -14,13 +17,20 @@ struct TemplateDeterminismTests {
         return user
     }
 
-    private func plan(_ user: UserProfile, history: [WeeklyPlan] = [], week: Int = 1) async -> WeeklyPlan? {
+    private func plan(
+        _ user: UserProfile, history: [WeeklyPlan] = [], week: Int = 1, fresh: Bool = false
+    ) async -> WeeklyPlan? {
         let result = await TemplatePlanGenerator().generate(PlanRequest(
             user: user, weekNumber: week,
-            startDate: Date(timeIntervalSince1970: Double((week - 1) * 7 * 86_400)), history: history
+            startDate: Date(timeIntervalSince1970: Double((week - 1) * 7 * 86_400)), history: history,
+            freshCast: fresh
         ))
-        guard case .generated(let plan, _, _) = result else { return nil }
+        guard case .generated(let plan) = result else { return nil }
         return plan
+    }
+
+    private func movements(_ plan: WeeklyPlan) -> [String] {
+        plan.workoutDays.flatMap { $0.exercises.map(\.exerciseKey) }
     }
 
     @Test("The same profile gets the same week every time")
@@ -92,45 +102,45 @@ struct TemplateDeterminismTests {
     @Test("A second week climbs from a first week done in full")
     func secondWeekClimbs() async throws {
         let user = profile(duration: 45, equipment: Equipment.allCases)
-        var done = try #require(await plan(user))
-        for day in done.workoutDays.indices {
-            for exercise in done.workoutDays[day].exercises.indices {
-                for index in done.workoutDays[day].exercises[exercise].sets.indices {
-                    var set = done.workoutDays[day].exercises[exercise].sets[index]
-                    set.actualReps = set.targetReps
-                    set.actualWeightKg = set.targetWeightKg
-                    set.actualSeconds = set.targetSeconds
-                    set.isCompleted = true
-                    done.workoutDays[day].exercises[exercise].sets[index] = set
-                }
-            }
-        }
+        let done = try #require(await plan(user)).logged()
 
         let second = try #require(await plan(user, history: [done], week: 2))
-        let before = Dictionary(
-            done.workoutDays.flatMap(\.exercises).map { ($0.exerciseKey, $0) }, uniquingKeysWith: { first, _ in first }
-        )
-        let climbed = second.workoutDays.flatMap(\.exercises).filter { exercise in
-            guard let now = exercise.sets.first, let then = before[exercise.exerciseKey]?.sets.first else { return false }
-            return (now.targetReps ?? 0) > (then.targetReps ?? 0)
-                || (now.targetWeightKg ?? 0) > (then.targetWeightKg ?? 0)
-                || (now.targetSeconds ?? 0) > (then.targetSeconds ?? 0)
-        }
 
-        #expect(!climbed.isEmpty)
+        #expect(!second.climbed(from: done).isEmpty)
     }
 
-    @Test("A week the app built is named for what it is")
-    func theWeekSaysTheAppBuiltIt() async throws {
-        let result = await TemplatePlanGenerator().generate(
-            PlanRequest(user: profile(duration: 45, equipment: [.dumbbell]), weekNumber: 1,
-                        startDate: Date(timeIntervalSince1970: 0))
-        )
-        guard case .generated(_, let source, let insteadOf) = result else {
-            Issue.record("expected a week, got \(result)")
-            return
+    // Two people who answered the same way should not train the same week for
+    // ever, and one person rebuilding their own week should get it back.
+    @Test("Two clients who answered the same way do not get the same week")
+    func twoClientsWhoAnsweredTheSameWayDoNotGetTheSameWeek() async throws {
+        let alex = profile(duration: 45, equipment: [.dumbbell])
+        var sam = alex
+        sam.id = UUID()
+
+        let alexWeek = movements(try #require(await plan(alex)))
+        #expect(alexWeek == movements(try #require(await plan(alex))))
+        #expect(alexWeek != movements(try #require(await plan(sam))))
+    }
+
+    @Test("Every movement chosen is still one of the best the slot offered")
+    func everyMovementChosenIsStillOneOfTheBestTheSlotOffered() async throws {
+        let user = profile(duration: 45, equipment: [.dumbbell])
+        let skeleton = PlanSkeletonBuilder(catalog: BundleExerciseCatalog())
+            .build(PlanRequest(user: user, weekNumber: 1, startDate: Date(timeIntervalSince1970: 0)))
+        let best = Set(skeleton.days.flatMap { $0.slots.flatMap { $0.candidates.prefix(2) } })
+
+        for chosen in movements(try #require(await plan(user))) {
+            #expect(best.contains(chosen), "\(chosen)")
         }
-        #expect(source == .template)
-        #expect(insteadOf == nil)
+    }
+
+    // Asking again is asking for something different.
+    @Test("A fresh cast is a different week")
+    func aFreshCastIsADifferentWeek() async throws {
+        let user = profile(duration: 45, equipment: [.dumbbell])
+        let again = movements(try #require(await plan(user, week: 2, fresh: true)))
+        let same = movements(try #require(await plan(user, week: 2, fresh: false)))
+
+        #expect(again != same)
     }
 }

@@ -215,7 +215,6 @@ final class RoutineDetailModel {
         }
     }
 
-    // Running out finishes the exercise. Returns whether the clock keeps going.
     private func tick() -> Bool {
         guard var timer = state.timer else { return false }
         if timer.advance(to: Date()) {
@@ -288,7 +287,7 @@ final class RoutineDetailModel {
     }
 
     // Stored the way it will be read back: by the PREVIOUS column, and by the
-    // prompt that builds next week.
+    // progression that builds next week.
     private func persistFilledSets(at positions: [Int]) {
         guard var day = storedDay else { return }
         for position in positions {
