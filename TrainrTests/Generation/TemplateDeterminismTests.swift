@@ -19,7 +19,7 @@ struct TemplateDeterminismTests {
             user: user, weekNumber: week,
             startDate: Date(timeIntervalSince1970: Double((week - 1) * 7 * 86_400)), history: history
         ))
-        guard case .generated(let plan) = result else { return nil }
+        guard case .generated(let plan, _, _) = result else { return nil }
         return plan
     }
 
@@ -118,5 +118,19 @@ struct TemplateDeterminismTests {
         }
 
         #expect(!climbed.isEmpty)
+    }
+
+    @Test("A week the app built is named for what it is")
+    func theWeekSaysTheAppBuiltIt() async throws {
+        let result = await TemplatePlanGenerator().generate(
+            PlanRequest(user: profile(duration: 45, equipment: [.dumbbell]), weekNumber: 1,
+                        startDate: Date(timeIntervalSince1970: 0))
+        )
+        guard case .generated(_, let source, let insteadOf) = result else {
+            Issue.record("expected a week, got \(result)")
+            return
+        }
+        #expect(source == .template)
+        #expect(insteadOf == nil)
     }
 }

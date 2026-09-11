@@ -114,6 +114,10 @@ nonisolated enum L10n {
     static var generateMyWorkoutPlan: String { String(localized: "generate_my_workout_plan") }
     static var generateNextWeek: String { String(localized: "generate_next_week") }
     static var generatingYourWorkoutRoutine: String { String(localized: "generating_your_workout_routine") }
+    static var generationBuiltInsteadFailed: String { String(localized: "generation_built_instead_failed") }
+    static var generationBuiltInsteadLimit: String { String(localized: "generation_built_instead_limit") }
+    static var generationBuiltInsteadOffline: String { String(localized: "generation_built_instead_offline") }
+    static var generationBuiltInsteadTitle: String { String(localized: "generation_built_instead_title") }
     static var generationFailedMessage: String { String(localized: "generation_failed_message") }
     static var generationFailedOffline: String { String(localized: "generation_failed_offline") }
     static var generationFailedTitle: String { String(localized: "generation_failed_title") }
@@ -324,6 +328,7 @@ nonisolated enum L10n {
     static var save: String { String(localized: "save") }
     static var saveProfile: String { String(localized: "save_profile") }
     static var scheduleLabel: String { String(localized: "schedule_label") }
+    static var seeMyPlan: String { String(localized: "see_my_plan") }
     static var selectDaysPlaceholder: String { String(localized: "select_days_placeholder") }
     static var sessionDuration: String { String(localized: "session_duration") }
     static var setColumn: String { String(localized: "set_column") }

@@ -109,7 +109,7 @@ struct GeminiPlanGeneratorTests {
 
         let result = await generator(client).generate(request())
 
-        guard case .generated(let plan) = result else {
+        guard case .generated(let plan, _, _) = result else {
             Issue.record("expected a generated plan, got \(result)")
             return
         }
@@ -316,7 +316,7 @@ struct GeminiPlanGeneratorTests {
         let second = slot.candidates[1]
         let client = answering(.text(answer { $0 == slot ? second : $0.candidates[0] }))
 
-        guard case .generated(let plan) = await generator(client).generate(request()) else {
+        guard case .generated(let plan, _, _) = await generator(client).generate(request()) else {
             Issue.record("expected a generated plan")
             return
         }
@@ -361,8 +361,8 @@ struct GeminiPlanGeneratorTests {
     // The model only ever chooses among movements: one that takes the top of
     // every list gets exactly the week the app would have built alone.
     @Test func choosingEveryTopCandidateGivesTheTemplateWeek() async {
-        guard case .generated(let coached) = await generator(answering(.text(validPlanJSON))).generate(request()),
-              case .generated(let template) = await TemplatePlanGenerator(catalog: catalog).generate(request())
+        guard case .generated(let coached, _, _) = await generator(answering(.text(validPlanJSON))).generate(request()),
+              case .generated(let template, _, _) = await TemplatePlanGenerator(catalog: catalog).generate(request())
         else {
             Issue.record("expected both weeks")
             return

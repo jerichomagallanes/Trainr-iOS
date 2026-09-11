@@ -244,4 +244,33 @@ struct OnboardingModelTests {
 
         #expect(!model.isCompleted)
     }
+
+    // Handed over rather than lost, but never passed off as the coach's.
+    @Test("A week built in place of the coach's is kept and says why")
+    func aWeekBuiltInsteadIsKeptAndSaysWhy() async throws {
+        let model = OnboardingModel(dependencies: try dependencies(
+            FallbackPlanGenerator(coach: RefusingGenerator(reason: .offline), template: TemplatePlanGenerator())
+        ))
+        answerEverything(model)
+
+        model.saveUserProfile()
+        await settle(model)
+
+        #expect(model.isCompleted)
+        #expect(model.generationFailure == nil)
+        #expect(model.planSource == .template)
+        #expect(model.builtInsteadOf == .offline)
+    }
+
+    @Test("A coached week says nothing was built instead")
+    func aCoachedWeekSaysNothing() async throws {
+        let model = OnboardingModel(dependencies: try dependencies(TemplatePlanGenerator(source: .coach)))
+        answerEverything(model)
+
+        model.saveUserProfile()
+        await settle(model)
+
+        #expect(model.planSource == .coach)
+        #expect(model.builtInsteadOf == nil)
+    }
 }

@@ -10,6 +10,10 @@ final class NextWeekModel {
     // State rather than a callback: a screen rebuilt mid-generation would never
     // hear a callback made by the one it replaced.
     private(set) var isReady = false
+    // Who chose the week just written, and what the coach failed with when the
+    // app built it instead.
+    private(set) var source: PlanSource?
+    private(set) var builtInsteadOf: PlanGenerationFailure?
 
     private let dependencies: AppDependencies
     // Generating takes the better part of a minute; without this a second ask
@@ -83,6 +87,8 @@ final class NextWeekModel {
     private func beginRun() {
         failure = nil
         isReady = false
+        source = nil
+        builtInsteadOf = nil
     }
 
     func cancelRun() {
@@ -106,7 +112,7 @@ final class NextWeekModel {
         )
 
         guard !Task.isCancelled else { return }
-        guard case .generated(let plan) = result else {
+        guard case .generated(let plan, let source, let insteadOf) = result else {
             if case .failure(let reason) = result {
                 failure = reason
                 failureCount += 1
@@ -114,6 +120,8 @@ final class NextWeekModel {
             return
         }
         dependencies.attempt("savePlan", { try dependencies.store.savePlan(plan) })
+        self.source = source
+        builtInsteadOf = insteadOf
         isReady = true
     }
 
@@ -140,13 +148,19 @@ final class NextWeekModel {
         )
 
         guard !Task.isCancelled else { return }
-        guard case .generated(let plan) = result else {
-            if case .failure(let reason) = result {
-                failure = reason
-                failureCount += 1
-            }
+        // Asked for to get a different week from the coach, so the app's own
+        // week is no answer: this one stays, and why is said.
+        let reason: PlanGenerationFailure? = switch result {
+        case .failure(let reason): reason
+        case .generated(_, _, let insteadOf): insteadOf
+        }
+        if let reason {
+            failure = reason
+            failureCount += 1
             return
         }
+        guard case .generated(let plan, let source, _) = result else { return }
+        self.source = source
         // Only now: one week per number, so the old goes with the new in hand.
         dependencies.attempt("deletePlan", { try dependencies.store.deletePlan(id: current.id) })
         dependencies.attempt("savePlan", { try dependencies.store.savePlan(plan) })

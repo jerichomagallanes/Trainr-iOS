@@ -196,10 +196,22 @@ enum UITestFixtures {
 
     static let failureArgument = "-generationFails"
     static let slowArgument = "-slowGeneration"
+    static let builtInsteadArgument = "-generationBuiltInstead"
 
     static func failingGeneratorIfRequested() -> (any PlanGenerator)? {
+        failingGenerator(after: failureArgument)
+    }
+
+    // The coach failing and the app's own week handed over in its place, so a
+    // test can watch the week arrive with its reason said.
+    static func builtInsteadGeneratorIfRequested() -> (any PlanGenerator)? {
+        guard let failing = failingGenerator(after: builtInsteadArgument) else { return nil }
+        return FallbackPlanGenerator(coach: failing, template: TemplatePlanGenerator())
+    }
+
+    private static func failingGenerator(after argument: String) -> FailingPlanGenerator? {
         let arguments = ProcessInfo.processInfo.arguments
-        guard let index = arguments.firstIndex(of: failureArgument),
+        guard let index = arguments.firstIndex(of: argument),
               arguments.indices.contains(index + 1)
         else { return nil }
         let reason: PlanGenerationFailure = switch arguments[index + 1] {
@@ -226,7 +238,7 @@ enum UITestFixtures {
 
         func generate(_ request: PlanRequest) async -> PlanGenerationResult {
             try? await Task.sleep(for: .seconds(seconds))
-            return await TemplatePlanGenerator().generate(request)
+            return await TemplatePlanGenerator(source: .coach).generate(request)
         }
     }
 

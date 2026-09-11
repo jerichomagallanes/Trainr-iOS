@@ -78,7 +78,7 @@ final class AppDependencies {
         // swiftlint:disable:next force_try
         let store = TrainingStore(container: try! TrainingStore.container(inMemory: true))
         return AppDependencies(
-            store: store, planGenerator: TemplatePlanGenerator(), breadcrumbs: NoBreadcrumbs()
+            store: store, planGenerator: TemplatePlanGenerator(source: .coach), breadcrumbs: NoBreadcrumbs()
         )
     }
 
@@ -92,21 +92,29 @@ final class AppDependencies {
 
     // Debug builds get the week the app builds with no model at all (launch
     // argument, or no Firebase credentials): the same assembly prod falls back
-    // on, and no development run spends the day's model allowance.
+    // on, and no development run spends the day's model allowance. Its weeks
+    // stand in for the coach's, so the free allowance and the paywall behave
+    // as they would with a real answer. Release asks the coach, and builds the
+    // week itself whenever the coach cannot answer.
     private static func makePlanGenerator(breadcrumbs: any Breadcrumbs) -> any PlanGenerator {
         #if DEBUG
         if let failing = UITestFixtures.failingGeneratorIfRequested() { return failing }
         if let slow = UITestFixtures.slowGeneratorIfRequested() { return slow }
+        if let builtInstead = UITestFixtures.builtInsteadGeneratorIfRequested() { return builtInstead }
         let canned = ProcessInfo.processInfo.arguments.contains("-cannedGeneration")
             || FirebaseApp.app() == nil
-        if canned { return TemplatePlanGenerator() }
+        if canned { return TemplatePlanGenerator(source: .coach) }
         #endif
-        return GeminiPlanGenerator(
-            client: FirebaseAIPlanModelClient(),
-            promptBuilder: PlanPromptBuilder(),
-            catalog: BundleExerciseCatalog(),
-            spentModels: DailySpentModels(),
-            breadcrumbs: breadcrumbs
+        let catalog = BundleExerciseCatalog()
+        return FallbackPlanGenerator(
+            coach: GeminiPlanGenerator(
+                client: FirebaseAIPlanModelClient(),
+                promptBuilder: PlanPromptBuilder(),
+                catalog: catalog,
+                spentModels: DailySpentModels(),
+                breadcrumbs: breadcrumbs
+            ),
+            template: TemplatePlanGenerator(catalog: catalog)
         )
     }
 }

@@ -11,10 +11,17 @@ nonisolated struct PlanRequest: Sendable {
     var previousWeek: WeeklyPlan? { history.first }
 }
 
-// A caller must never be able to mistake a failure for a plan: quietly
-// substituting a built-in week would claim the coach wrote one when it did not.
+// Who chose the movements: the model, last week's cast carried forward, or
+// the app's own ranking with no model at all.
+nonisolated enum PlanSource: Equatable, Sendable {
+    case coach, progressed, template
+}
+
+// A caller must never be able to mistake a failure for a plan, and a week the
+// app built in the coach's place carries what the coach failed with, so it is
+// never passed off as the coach's.
 nonisolated enum PlanGenerationResult: Equatable, Sendable {
-    case generated(WeeklyPlan)
+    case generated(WeeklyPlan, source: PlanSource = .coach, insteadOf: PlanGenerationFailure? = nil)
     case failure(PlanGenerationFailure)
 }
 
