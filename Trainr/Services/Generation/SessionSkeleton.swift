@@ -78,4 +78,8 @@ nonisolated struct PlanSkeleton: Equatable, Sendable {
     var uncoveredPatterns: Set<PatternRequirement>
 
     var allowedKeys: Set<String> { Set(days.flatMap { $0.slots.flatMap(\.candidates) }) }
+
+    // The patterns the week was actually dealt, which is what a finished plan
+    // is held to.
+    var requiredPatterns: Set<PatternRequirement> { Set(days.flatMap { $0.slots.compactMap(\.required) }) }
 }

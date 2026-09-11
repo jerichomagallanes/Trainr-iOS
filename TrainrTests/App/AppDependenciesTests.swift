@@ -20,7 +20,7 @@ struct AppDependenciesTests {
     private func dependencies(_ breadcrumbs: RecordingBreadcrumbs) throws -> AppDependencies {
         AppDependencies(
             store: TrainingStore(container: try TrainingStore.container(inMemory: true)),
-            planGenerator: CannedPlanGenerator(),
+            planGenerator: TemplatePlanGenerator(),
             breadcrumbs: breadcrumbs
         )
     }

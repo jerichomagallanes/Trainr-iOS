@@ -45,7 +45,18 @@ nonisolated struct GeneratedPlanParser {
         } catch {
             return .invalid(["not a generated plan: \(error)"])
         }
+        return parse(generated, userID: userID, weekNumber: weekNumber, startDate: startDate, limits: limits)
+    }
 
+    // The app's own plans take this door, so they are held to exactly the
+    // checks a model's answer is.
+    func parse(
+        _ generated: GeneratedPlan,
+        userID: UUID,
+        weekNumber: Int,
+        startDate: Date,
+        limits: PlanLimits = .unbounded
+    ) -> PlanParseResult {
         var errors: [String] = []
         check(generated, limits: limits, into: &errors)
         checkPatterns(generated, limits: limits, into: &errors)
@@ -149,8 +160,6 @@ nonisolated struct GeneratedPlanParser {
         if catalog[exercise.exerciseKey] == nil, !limits.allowedKeys.isEmpty {
             errors.append("\(location): '\(exercise.exerciseKey)' is not a movement the app knows")
         }
-        if exercise.prescription.isBlank { errors.append("\(location): prescription is blank") }
-        if exercise.instructions.isBlank { errors.append("\(location): instructions are blank") }
         if let rest = exercise.restSeconds, !Bounds.rest.contains(rest) {
             errors.append(
                 "\(location): restSeconds must be \(Bounds.rest.lowerBound)"

@@ -113,6 +113,14 @@ struct ExerciseCard<Extras: View>: View {
         .padding(.bottom, Spacing.screen)
     }
 
+    // A plan the app wrote itself carries no chip text; the sets below it say
+    // what it would have said.
+    private var chip: String {
+        exercise.detail.isEmpty
+            ? Prescription.of(exercise.sets, measure: exercise.measure).text
+            : exercise.detail
+    }
+
     private var prescription: some View {
         HStack(spacing: Spacing.extraSmall) {
             Image(systemName: "clock")
@@ -121,13 +129,15 @@ struct ExerciseCard<Extras: View>: View {
             Text(L10n.minutes(exercise.minutes))
                 .font(.body14)
                 .foregroundStyle(Color.onSurface)
-            Text(exercise.detail)
-                .font(.body14)
-                .foregroundStyle(Color.onSurfaceEmphasis)
-                .padding(.horizontal, Spacing.tight)
-                .padding(.vertical, Spacing.hairline)
-                .background(Color.surfaceEmphasis, in: .rect(cornerRadius: CornerRadius.medium))
-                .padding(.leading, Spacing.extraSmall)
+            if !chip.isEmpty {
+                Text(chip)
+                    .font(.body14)
+                    .foregroundStyle(Color.onSurfaceEmphasis)
+                    .padding(.horizontal, Spacing.tight)
+                    .padding(.vertical, Spacing.hairline)
+                    .background(Color.surfaceEmphasis, in: .rect(cornerRadius: CornerRadius.medium))
+                    .padding(.leading, Spacing.extraSmall)
+            }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }

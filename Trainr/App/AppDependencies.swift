@@ -78,7 +78,7 @@ final class AppDependencies {
         // swiftlint:disable:next force_try
         let store = TrainingStore(container: try! TrainingStore.container(inMemory: true))
         return AppDependencies(
-            store: store, planGenerator: CannedPlanGenerator(), breadcrumbs: NoBreadcrumbs()
+            store: store, planGenerator: TemplatePlanGenerator(), breadcrumbs: NoBreadcrumbs()
         )
     }
 
@@ -90,15 +90,16 @@ final class AppDependencies {
         #endif
     }
 
-    // Debug answers from the canned coach (launch argument, or no Firebase
-    // credentials), so no development run spends the day's model allowance.
+    // Debug builds get the week the app builds with no model at all (launch
+    // argument, or no Firebase credentials): the same assembly prod falls back
+    // on, and no development run spends the day's model allowance.
     private static func makePlanGenerator(breadcrumbs: any Breadcrumbs) -> any PlanGenerator {
         #if DEBUG
         if let failing = UITestFixtures.failingGeneratorIfRequested() { return failing }
         if let slow = UITestFixtures.slowGeneratorIfRequested() { return slow }
         let canned = ProcessInfo.processInfo.arguments.contains("-cannedGeneration")
             || FirebaseApp.app() == nil
-        if canned { return CannedPlanGenerator() }
+        if canned { return TemplatePlanGenerator() }
         #endif
         return GeminiPlanGenerator(
             client: FirebaseAIPlanModelClient(),

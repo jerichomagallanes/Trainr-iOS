@@ -11,10 +11,12 @@ nonisolated struct GeneratedDay: Codable {
     var exercises: [GeneratedExercise]
 }
 
+// The chip and the copy default to blank: the app now works both out itself,
+// and only the remote model still writes them.
 nonisolated struct GeneratedExercise: Codable {
     var exerciseKey: String
-    var prescription: String
-    var instructions: String
+    var prescription = ""
+    var instructions = ""
     var restSeconds: Int?
     var sets: [GeneratedSet]
 }

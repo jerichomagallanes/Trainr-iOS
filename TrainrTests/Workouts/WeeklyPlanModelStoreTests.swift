@@ -14,7 +14,7 @@ struct WeeklyPlanModelStoreTests {
     init() throws {
         store = TrainingStore(container: try TrainingStore.container(inMemory: true))
         dependencies = AppDependencies(
-            store: store, planGenerator: CannedPlanGenerator(), breadcrumbs: NoBreadcrumbs()
+            store: store, planGenerator: TemplatePlanGenerator(), breadcrumbs: NoBreadcrumbs()
         )
         let profile = UserProfile(firstName: "Alex", age: 30)
         try store.saveUser(profile)

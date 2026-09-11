@@ -92,7 +92,7 @@ final class NextWeekModel {
 
     private func generate() async {
         // Nothing to build on, or the week is already there: either way, ready.
-        guard let (user, latest) = nextWeekSource() else {
+        guard let (user, plans) = nextWeekSource(), let latest = plans.first else {
             isReady = true
             return
         }
@@ -101,7 +101,7 @@ final class NextWeekModel {
                 user: user,
                 weekNumber: latest.weekNumber + 1,
                 startDate: startAfter(latest),
-                previousWeek: latest
+                history: plans
             )
         )
 
@@ -132,9 +132,10 @@ final class NextWeekModel {
                 user: user,
                 weekNumber: current.weekNumber,
                 startDate: current.startDate ?? WorkoutWeek.startOfDay(),
-                // The week before this one, so a replacement still progresses
+                // The weeks before this one, so a replacement still progresses
                 // from what was lifted.
-                previousWeek: plans.first { $0.weekNumber == current.weekNumber - 1 }
+                history: plans.filter { $0.weekNumber < current.weekNumber }
+                    .sorted { $0.weekNumber > $1.weekNumber }
             )
         )
 
@@ -154,7 +155,9 @@ final class NextWeekModel {
 
     // Nothing when the next week already exists, so revisiting the completion
     // screen cannot stack duplicates.
-    private func nextWeekSource() -> (UserProfile, WeeklyPlan)? {
+    // Every stored week, newest first, so the next one can progress from more
+    // than the last.
+    private func nextWeekSource() -> (UserProfile, [WeeklyPlan])? {
         guard let user = dependencies.attempt("currentUser", { try dependencies.store.currentUser() }),
               let plans = dependencies.attempt("plans", { try dependencies.store.plans(for: user.id) }),
               let latest = plans.max(by: { $0.weekNumber < $1.weekNumber }),
@@ -163,7 +166,7 @@ final class NextWeekModel {
                   try dependencies.store.plan(for: user.id, weekNumber: latest.weekNumber + 1)
               }) == nil
         else { return nil }
-        return (user, latest)
+        return (user, plans.sorted { $0.weekNumber > $1.weekNumber })
     }
 
     // Never overlapping the week it follows, and never starting in the past.

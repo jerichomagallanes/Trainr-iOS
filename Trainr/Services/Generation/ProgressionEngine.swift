@@ -12,6 +12,9 @@ nonisolated struct ProgressionRequest: Sendable {
     var deload = false
     // The movement touches an injury the client declared.
     var cautioned = false
+    // What the day budgeted for a timed set. Conditioning starts there, so the
+    // block the session was fitted around is the block prescribed.
+    var secondsBudget: Int?
 }
 
 nonisolated struct ProgressionTarget: Equatable, Sendable {
@@ -186,7 +189,9 @@ private nonisolated struct Week {
             return secondsTarget(seconds, askedSets, sessions.isEmpty ? .calibrated : .held)
         }
         let conditioning = exercise.primary == .cardio
-        let seed = conditioning ? SeedLoad.conditioningSeconds(user) : SeedLoad.holdSeconds(user)
+        let seed = conditioning
+            ? (request.secondsBudget ?? SeedLoad.conditioningSeconds(user))
+            : SeedLoad.holdSeconds(user)
 
         if sessions.isEmpty { return secondsTarget(seed, askedSets, .calibrated, estimate: true) }
         guard let done = last else {

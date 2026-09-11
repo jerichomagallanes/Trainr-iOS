@@ -92,6 +92,7 @@ private nonisolated final class Draft {
     var required: PatternRequirement?
     var candidates: [String] = []
     var sets: Int
+    var conditioningSeconds = 0
 
     init(tier: SlotTier, id: String, patterns: [MovementPattern], scope: Set<MuscleGroup>,
          minSets: Int, preferredSets: Int) {
@@ -135,7 +136,9 @@ private nonisolated struct Shape {
     let count: Int
     let sets: [SlotTier: (Int, Int)]
     let drop: [String]
-    let conditioningSeconds: Int?
+    // Weight loss and endurance take the rest of the session as conditioning;
+    // every other goal takes a short fixed block.
+    var conditioningFillsTheSession = false
 }
 
 private nonisolated final class WeekBuilder {
@@ -169,10 +172,14 @@ private nonisolated final class WeekBuilder {
             guard let sets = shape.sets[tier] ?? (focus.isHard ? nil : (1, 1)) else { return nil }
             let instance = (counts[tier] ?? 0) + 1
             counts[tier] = instance
-            return Draft(
+            let draft = Draft(
                 tier: tier, id: Self.id(of: tier, instance), patterns: Self.family(of: focus, tier),
                 scope: tier == .core ? Self.allMuscles : scope, minSets: sets.0, preferredSets: sets.1
             )
+            draft.conditioningSeconds = shape.conditioningFillsTheSession
+                ? Self.conditioningFloorSeconds
+                : SeedLoad.conditioningSeconds(user)
+            return draft
         }
         return DayDraft(dayNumber: dayNumber, focus: focus, slots: drafts)
     }
@@ -296,28 +303,55 @@ private nonisolated final class WeekBuilder {
         }
     }
 
-    // Pass C: extra sets go to the first movements of the day, the same fatigue
-    // rule as the order itself.
+    // Pass C, aimed at the session the client asked for rather than the
+    // ceiling above it: every slot to its preferred sets first, then a little
+    // more where a long session has room, then the rest of a weight-loss
+    // session to conditioning. Extra sets go to the first movements of the
+    // day, the same fatigue rule as the order itself.
     private func topUp(_ day: DayDraft) {
+        grow(day) { $0.preferredSets }
+        grow(day) { $0.tier.isTimed && $0.tier != .mobility ? $0.preferredSets : $0.preferredSets + Self.stretchSets }
+        if shape.conditioningFillsTheSession { fillWithConditioning(day) }
+    }
+
+    private func grow(_ day: DayDraft, limit: (Draft) -> Int) {
         var grew = true
         while grew {
             grew = false
             for slot in day.slots.sorted(by: { $0.tier < $1.tier }) {
-                guard slot.sets < slot.preferredSets, slot.sets < Self.maxSetsPerSlot else { continue }
+                guard slot.sets < min(limit(slot), Self.maxSetsPerSlot) else { continue }
                 slot.sets += 1
-                if fits(day) { grew = true } else { slot.sets -= 1 }
+                if fits(day) && isWithinTheAnswer(day) { grew = true } else { slot.sets -= 1 }
             }
         }
     }
 
-    private func fits(_ day: DayDraft) -> Bool {
-        day.slots.reduce(0) { $0 + $1.sets } <= maxSets
-            && SessionMinutes.forDay(day.slots.map(minutes(of:))) <= ceiling
+    private func fillWithConditioning(_ day: DayDraft) {
+        guard let block = day.slots.first(where: { $0.tier == .conditioning }) else { return }
+        while block.conditioningSeconds + Self.conditioningStepSeconds <= Self.conditioningCeilingSeconds {
+            block.conditioningSeconds += Self.conditioningStepSeconds
+            if !fits(day) || !isWithinTheAnswer(day) {
+                block.conditioningSeconds -= Self.conditioningStepSeconds
+                return
+            }
+        }
     }
 
-    // Priced at the top of the rep window, so every week of the ladder still
-    // fits the session the client asked for.
-    private func minutes(of slot: Draft) -> Int {
+    // The hard limit: never more sets than the session pays for, and never
+    // past its ceiling even at the top of every rep window, so no week of the
+    // ladder can break it.
+    private func fits(_ day: DayDraft) -> Bool {
+        day.slots.reduce(0) { $0 + $1.sets } <= maxSets
+            && SessionMinutes.forDay(day.slots.map { minutes(of: $0, atTop: true) }) <= ceiling
+    }
+
+    // The aim: about as long as the answer, priced at the reps a set is
+    // typically done at rather than the most it could ever ask.
+    private func isWithinTheAnswer(_ day: DayDraft) -> Bool {
+        SessionMinutes.forDay(day.slots.map { minutes(of: $0, atTop: false) }) <= user.workoutDuration
+    }
+
+    private func minutes(of slot: Draft, atTop: Bool) -> Int {
         guard let key = slot.candidates.first, let top = catalog[key] else { return 0 }
         if top.measure == .duration {
             return SessionMinutes.forExercise(
@@ -325,9 +359,10 @@ private nonisolated final class WeekBuilder {
                 restSeconds: rest(for: slot)
             )
         }
+        let window = RepWindow.forExercise(user, top)
+        let reps = atTop ? window.upperBound : min(window.lowerBound + Self.typicalRepClimb, window.upperBound)
         return SessionMinutes.forExercise(
-            measure: top.measure,
-            perSet: Array(repeating: RepWindow.forExercise(user, top).upperBound, count: slot.sets),
+            measure: top.measure, perSet: Array(repeating: reps, count: slot.sets),
             restSeconds: rest(for: slot), unilateral: top.unilateral
         )
     }
@@ -336,7 +371,7 @@ private nonisolated final class WeekBuilder {
         switch slot.tier {
         case .warmUp: top.key == Self.warmUpKey ? SeedLoad.warmUpSeconds : SeedLoad.mobilitySeconds
         case .mobility: SeedLoad.mobilitySeconds
-        case .conditioning: shape.conditioningSeconds ?? SeedLoad.conditioningSeconds(user)
+        case .conditioning: slot.conditioningSeconds
         default: Self.holdBudgetSeconds
         }
     }
@@ -441,31 +476,27 @@ private nonisolated final class WeekBuilder {
             Shape(count: 6, sets: [
                 .warmUp: (1, 1), .primaryCompound: (3, 5), .secondaryCompound: (2, 4), .accessory: (2, 3),
                 .isolation: (2, 2), .core: (1, 2), .conditioning: (1, 1),
-            ], drop: ["isolation_2", "conditioning", "mobility_1", "accessory", "core", "isolation_1"],
-            conditioningSeconds: 600)
+            ], drop: ["isolation_2", "conditioning", "mobility_1", "accessory", "core", "isolation_1"])
         case .muscleGain:
             Shape(count: 8, sets: [
                 .warmUp: (1, 1), .primaryCompound: (2, 4), .secondaryCompound: (2, 3), .accessory: (2, 3),
                 .isolation: (2, 3), .core: (1, 3), .conditioning: (1, 1), .mobility: (1, 1),
-            ], drop: ["mobility_1", "conditioning", "isolation_2", "core", "accessory", "isolation_1"],
-            conditioningSeconds: 600)
+            ], drop: ["mobility_1", "conditioning", "isolation_2", "core", "accessory", "isolation_1"])
         case .generalFitness:
             Shape(count: 8, sets: [
                 .warmUp: (1, 1), .primaryCompound: (2, 3), .secondaryCompound: (2, 3), .accessory: (2, 3),
                 .isolation: (2, 3), .core: (1, 3), .conditioning: (1, 1), .mobility: (1, 1),
-            ], drop: ["mobility_1", "isolation_2", "isolation_1", "core", "conditioning", "accessory"],
-            conditioningSeconds: 900)
+            ], drop: ["mobility_1", "isolation_2", "isolation_1", "core", "conditioning", "accessory"])
         case .weightLoss, .endurance:
             Shape(count: 7, sets: [
                 .warmUp: (1, 1), .primaryCompound: (2, 3), .secondaryCompound: (2, 3), .accessory: (2, 3),
                 .isolation: (2, 2), .core: (2, 3), .conditioning: (1, 1), .mobility: (1, 1),
             ], drop: ["isolation_2", "isolation_1", "accessory", "mobility_1", "secondary", "core"],
-            conditioningSeconds: nil)
+            conditioningFillsTheSession: true)
         case .flexibility:
             Shape(count: 6, sets: [
                 .warmUp: (1, 1), .core: (1, 2), .conditioning: (1, 1), .mobility: (3, 4),
-            ], drop: ["core", "conditioning", "mobility_4", "mobility_3"],
-            conditioningSeconds: 600)
+            ], drop: ["core", "conditioning", "mobility_4", "mobility_3"])
         }
     }
 
@@ -542,5 +573,10 @@ private nonisolated final class WeekBuilder {
     private static let maxWeeklyUses = 3
     private static let maxSetsPerSlot = 10
     private static let holdBudgetSeconds = 90
+    private static let stretchSets = 2
+    private static let typicalRepClimb = 2
+    private static let conditioningFloorSeconds = 300
+    private static let conditioningStepSeconds = 60
+    private static let conditioningCeilingSeconds = 3600
     private static let warmUpKey = "warm_up"
 }
