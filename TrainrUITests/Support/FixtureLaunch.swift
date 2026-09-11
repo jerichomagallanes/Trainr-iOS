@@ -43,6 +43,13 @@ extension XCUIApplication {
     }
 
     @MainActor
+    static func launchedToBuildInstead(_ reason: String, startingAt step: String) -> XCUIApplication {
+        let app = XCUIApplication()
+        app.launchArguments = ["-inMemoryStore", "-generationBuiltInstead", reason, "-startAtStep", step]
+        app.launch()
+        return app
+    }
+
     static func launchedToFail(
         _ reason: String, startingAt step: String? = nil
     ) -> XCUIApplication {

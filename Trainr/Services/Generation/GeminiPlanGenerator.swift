@@ -44,7 +44,7 @@ struct GeminiPlanGenerator: PlanGenerator {
         // Nothing left to choose, so asking would spend an allowance on nothing.
         if skeleton.days.allSatisfy({ $0.openSlots.isEmpty }) {
             return assembler.assemble(skeleton, selection: PlanSelection(), request: request)
-                .map(PlanGenerationResult.generated) ?? .failure(.failed)
+                .map { PlanGenerationResult.generated($0) } ?? .failure(.failed)
         }
 
         let basePrompt = promptBuilder.userPrompt(request, skeleton: skeleton)

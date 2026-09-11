@@ -19,6 +19,10 @@ final class OnboardingModel {
     private(set) var generationFailure: PlanGenerationFailure?
     // A counter, not the failure alone: cleared and set again in one turn reads as unchanged.
     private(set) var failureCount = 0
+    // Who chose the week just written, and what the coach failed with when the
+    // app built it instead.
+    private(set) var planSource: PlanSource?
+    private(set) var builtInsteadOf: PlanGenerationFailure?
 
     private let dependencies: AppDependencies
     private let store: TrainingStore
@@ -122,6 +126,8 @@ final class OnboardingModel {
         isLoading = true
         isCompleted = false
         generationFailure = nil
+        planSource = nil
+        builtInsteadOf = nil
 
         run = Task {
             defer { isWorking = false }
@@ -141,7 +147,7 @@ final class OnboardingModel {
                 )
             )
 
-            guard case .generated(var plan) = result else {
+            guard case .generated(var plan, let source, let insteadOf) = result else {
                 // Only for a first profile: saving replaces, dropping an existing client's weeks.
                 if existing == nil {
                     dependencies.attempt("saveUser", { try store.saveUser(toSave) })
@@ -159,6 +165,8 @@ final class OnboardingModel {
                 try store.saveUser(toSave)
                 plan.userID = toSave.id
                 try store.savePlan(plan)
+                planSource = source
+                builtInsteadOf = insteadOf
                 isLoading = false
                 isCompleted = true
                 onSuccess()

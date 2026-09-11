@@ -1093,6 +1093,50 @@
         }
       }
     },
+    "generation_built_instead_failed": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The AI coach did not come back with a week that held up, so this one was built from your answers. It still progresses from what you log."
+          }
+        }
+      }
+    },
+    "generation_built_instead_limit": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You are out of AI-written plans for today, so this week was built from your answers. It still progresses from what you log."
+          }
+        }
+      }
+    },
+    "generation_built_instead_offline": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trainr is offline, so this week was built from your answers rather than written by the AI coach. It still progresses from what you log."
+          }
+        }
+      }
+    },
+    "generation_built_instead_title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your plan is ready"
+          }
+        }
+      }
+    },
     "generation_failed_message": {
       "extractionState": "manual",
       "localizations": {
@@ -3139,6 +3183,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Schedule"
+          }
+        }
+      }
+    },
+    "see_my_plan": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "See my plan"
           }
         }
       }

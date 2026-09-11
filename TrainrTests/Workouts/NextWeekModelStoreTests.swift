@@ -205,4 +205,37 @@ struct NextWeekModelStoreTests {
         let after = try #require(try store.plan(for: userID, weekNumber: 1))
         #expect(after.workoutDays.map(\.title) == before.workoutDays.map(\.title))
     }
+
+    @Test("A next week built in the coach's place is written and says why")
+    func aNextWeekBuiltInsteadIsWrittenAndSaysWhy() async throws {
+        try save(week: 1, days: [day(1, .completed)])
+        let model = NextWeekModel(dependencies: dependencies(
+            FallbackPlanGenerator(coach: RefusingGenerator(reason: .dailyLimitReached), template: TemplatePlanGenerator())
+        ))
+
+        model.generateNextWeek()
+        await settle(model)
+
+        #expect(try storedWeeks() == [1, 2])
+        #expect(model.failure == nil)
+        #expect(model.source == .template)
+        #expect(model.builtInsteadOf == .dailyLimitReached)
+    }
+
+    // Regenerating is asked for to get a different week from the coach, so
+    // the app's own week is no answer to it.
+    @Test("A regeneration the coach could not answer leaves the week and says why")
+    func aRegenerationTheCoachCouldNotAnswerLeavesTheWeek() async throws {
+        let before = try save(week: 1, days: [day(1)], startingDaysAgo: 0)
+        let model = NextWeekModel(dependencies: dependencies(
+            FallbackPlanGenerator(coach: RefusingGenerator(reason: .offline), template: TemplatePlanGenerator())
+        ))
+
+        model.regenerateThisWeek()
+        await settle(model)
+
+        #expect(model.failure == .offline)
+        let after = try #require(try store.plan(for: userID, weekNumber: 1))
+        #expect(after.id == before.id)
+    }
 }

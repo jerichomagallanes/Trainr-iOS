@@ -61,7 +61,7 @@ struct PlanPromptBuilderTests {
 
     @Test func historyNeverReachesThePrompt() async throws {
         let first = PlanRequest(user: user(), weekNumber: 1, startDate: Date(timeIntervalSince1970: 0))
-        guard case .generated(let lastWeek) = await TemplatePlanGenerator().generate(first) else {
+        guard case .generated(let lastWeek, _, _) = await TemplatePlanGenerator().generate(first) else {
             Issue.record("expected a first week")
             return
         }

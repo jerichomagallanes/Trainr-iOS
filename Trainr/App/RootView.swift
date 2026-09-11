@@ -235,11 +235,14 @@ struct RootView: View {
                 isReady: onboarding.isCompleted,
                 onStart: { onboarding.saveUserProfile() },
                 onDone: {
-                    spendFreeGeneration()
+                    // Only a week the coach wrote costs the free one: a week the
+                    // app built itself cost nothing to make.
+                    if onboarding.planSource == .coach { spendFreeGeneration() }
                     restartOnHome()
                 },
                 failure: onboarding.generationFailure,
                 failureCount: onboarding.failureCount,
+                builtInsteadOf: onboarding.builtInsteadOf,
                 onRetry: { onboarding.saveUserProfile() },
                 // Nothing was written yet, and cancelRun stops the abandoned
                 // run from writing one.
@@ -347,6 +350,7 @@ struct RootView: View {
                 onDone: restartOnHome,
                 failure: nextWeek.failure,
                 failureCount: nextWeek.failureCount,
+                builtInsteadOf: nextWeek.builtInsteadOf,
                 onRetry: start,
                 onGiveUp: {
                     nextWeek.cancelRun()
