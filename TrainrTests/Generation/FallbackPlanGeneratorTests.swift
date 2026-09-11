@@ -55,19 +55,6 @@ struct FallbackPlanGeneratorTests {
         }
     }
 
-    // Standing in for the coach is a debug build's arrangement; a week that
-    // replaced a failed answer is always named for what it is.
-    @Test func aWeekBuiltInsteadIsATemplateWhateverTheTemplateCallsItself() async {
-        let result = await FallbackPlanGenerator(
-            coach: Answering(result: .failure(.offline)), template: TemplatePlanGenerator(source: .coach)
-        ).generate(request)
-
-        guard case .generated(_, let source, _) = result else {
-            Issue.record("expected a week, got \(result)")
-            return
-        }
-        #expect(source == .template)
-    }
 
     @Test func withNothingToBuildFromTheCoachsOwnReasonIsReported() async {
         let result = await FallbackPlanGenerator(

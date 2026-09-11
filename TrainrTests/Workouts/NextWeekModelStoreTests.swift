@@ -218,7 +218,6 @@ struct NextWeekModelStoreTests {
 
         #expect(try storedWeeks() == [1, 2])
         #expect(model.failure == nil)
-        #expect(model.source == .template)
         #expect(model.builtInsteadOf == .dailyLimitReached)
     }
 

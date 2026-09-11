@@ -78,7 +78,7 @@ final class AppDependencies {
         // swiftlint:disable:next force_try
         let store = TrainingStore(container: try! TrainingStore.container(inMemory: true))
         return AppDependencies(
-            store: store, planGenerator: TemplatePlanGenerator(source: .coach), breadcrumbs: NoBreadcrumbs()
+            store: store, planGenerator: TemplatePlanGenerator(), breadcrumbs: NoBreadcrumbs()
         )
     }
 
@@ -94,9 +94,9 @@ final class AppDependencies {
     // argument, or no Firebase credentials): the same assembly prod falls back
     // on, and no development run spends the day's model allowance. Its weeks
     // stand in for the coach's, so the free allowance and the paywall behave
-    // as they would with a real answer. Release asks the coach, and builds the
-    // week itself whenever the coach cannot answer. Either way next week carries
-    // last week's movements forward when nothing forces a change.
+    // Release asks the coach, and builds the week itself whenever the coach
+    // cannot answer. Either way next week carries last week's movements forward
+    // when nothing forces a change.
     private static func makePlanGenerator(breadcrumbs: any Breadcrumbs) -> any PlanGenerator {
         #if DEBUG
         if let failing = UITestFixtures.failingGeneratorIfRequested() { return failing }
@@ -104,7 +104,7 @@ final class AppDependencies {
         if let builtInstead = UITestFixtures.builtInsteadGeneratorIfRequested() { return builtInstead }
         let canned = ProcessInfo.processInfo.arguments.contains("-cannedGeneration")
             || FirebaseApp.app() == nil
-        if canned { return CarryForwardPlanGenerator(next: TemplatePlanGenerator(source: .coach)) }
+        if canned { return CarryForwardPlanGenerator(next: TemplatePlanGenerator()) }
         #endif
         let catalog = BundleExerciseCatalog()
         let coached = FallbackPlanGenerator(
