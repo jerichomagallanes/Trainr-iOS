@@ -4,19 +4,15 @@ import Observation
 @Observable
 final class NextWeekModel {
 
-    private(set) var failure: PlanGenerationFailure?
+    private(set) var failure: PlanGenerationResult?
     // Counts up so a repeated failure still registers as a new one.
     private(set) var failureCount = 0
     // State rather than a callback: a screen rebuilt mid-generation would never
     // hear a callback made by the one it replaced.
     private(set) var isReady = false
-    // What the coach failed with, when the week just written was built in its
-    // place.
-    private(set) var builtInsteadOf: PlanGenerationFailure?
 
     private let dependencies: AppDependencies
-    // Generating takes the better part of a minute; without this a second ask
-    // runs alongside the first and both write a week.
+    // Without this a second ask runs alongside the first and both write a week.
     private var isWorking = false
     // The request runs to completion either way, having no cancellation point
     // of its own; cancelling only stops the week being written.
@@ -26,8 +22,8 @@ final class NextWeekModel {
         self.dependencies = dependencies
     }
 
-    // The finished week seeds the request, so the model progresses from what
-    // was lifted rather than the intake answers.
+    // The finished week seeds the request, so the next week progresses from
+    // what was lifted rather than the intake answers.
     func generateNextWeek() {
         guard !isWorking else { return }
         isWorking = true
@@ -39,23 +35,16 @@ final class NextWeekModel {
         }
     }
 
-    // The same sessions and loads with every log cleared, asking nothing of the
-    // network. The copy joins the plan at the end and takes its dates from
-    // there, so repeating an old week never reaches into weeks already trained.
+    // The same sessions and loads with every log cleared. The copy joins the
+    // plan at the end and takes its dates from there, so repeating an old week
+    // never reaches into weeks already trained.
     func repeatWeek(numbered sourceWeekNumber: Int? = nil) {
         guard !isWorking else { return }
         isWorking = true
         beginRun()
         defer { isWorking = false }
 
-        guard let user = dependencies.attempt("currentUser", { try dependencies.store.currentUser() }),
-              let plans = dependencies.attempt("plans", { try dependencies.store.plans(for: user.id) }),
-              let latest = plans.max(by: { $0.weekNumber < $1.weekNumber }),
-              latest.isReadyForTheNextWeek(),
-              dependencies.attempt("plan", {
-                  try dependencies.store.plan(for: user.id, weekNumber: latest.weekNumber + 1)
-              }) == nil
-        else { return }
+        guard let (_, plans) = nextWeekSource(), let latest = plans.first else { return }
 
         let source = sourceWeekNumber
             .flatMap { number in plans.first { $0.weekNumber == number } } ?? latest
@@ -68,8 +57,7 @@ final class NextWeekModel {
     }
 
     // Replaces the week you are in rather than adding one after it: the number
-    // and the dates stay. The model is asked first and the old week goes only
-    // once a replacement exists.
+    // and the dates stay. The old week goes only once a replacement exists.
     func regenerateThisWeek() {
         guard !isWorking else { return }
         isWorking = true
@@ -86,7 +74,6 @@ final class NextWeekModel {
     private func beginRun() {
         failure = nil
         isReady = false
-        builtInsteadOf = nil
     }
 
     func cancelRun() {
@@ -110,15 +97,12 @@ final class NextWeekModel {
         )
 
         guard !Task.isCancelled else { return }
-        guard case .generated(let plan, _, let insteadOf) = result else {
-            if case .failure(let reason) = result {
-                failure = reason
-                failureCount += 1
-            }
+        guard case .generated(let plan) = result else {
+            failure = result
+            failureCount += 1
             return
         }
         dependencies.attempt("savePlan", { try dependencies.store.savePlan(plan) })
-        builtInsteadOf = insteadOf
         isReady = true
     }
 
@@ -147,18 +131,11 @@ final class NextWeekModel {
         )
 
         guard !Task.isCancelled else { return }
-        // Asked for to get a different week from the coach, so the app's own
-        // week is no answer: this one stays, and why is said.
-        let reason: PlanGenerationFailure? = switch result {
-        case .failure(let reason): reason
-        case .generated(_, _, let insteadOf): insteadOf
-        }
-        if let reason {
-            failure = reason
+        guard case .generated(let plan) = result else {
+            failure = result
             failureCount += 1
             return
         }
-        guard case .generated(let plan, _, _) = result else { return }
         // Only now: one week per number, so the old goes with the new in hand.
         dependencies.attempt("deletePlan", { try dependencies.store.deletePlan(id: current.id) })
         dependencies.attempt("savePlan", { try dependencies.store.savePlan(plan) })

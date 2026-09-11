@@ -1,7 +1,7 @@
 import Foundation
 
 // One movement, described well enough that the app can decide whether a client
-// can perform it and what it trains, rather than asking a model to assert both.
+// can perform it and what it trains.
 nonisolated struct CatalogExercise: Equatable, Sendable {
     let key: String
     let name: String
@@ -19,8 +19,7 @@ nonisolated struct CatalogExercise: Equatable, Sendable {
     // One dumbbell rather than a pair. weightKg is always the one bell in the
     // hand, so this is what says whether a seed for the whole load is halved.
     var oneHanded = false
-    // One line for the card, and the how-to behind a tap. Both owned by the
-    // catalog, so a form cue can never be generated.
+    // One line for the card, and the how-to behind a tap.
     let summary: String
     let steps: [String]
 

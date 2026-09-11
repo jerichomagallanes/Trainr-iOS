@@ -99,10 +99,7 @@ struct RootView: View {
         }
     }
 
-    // A week already generated is never taken away, so only the act of writing a
-    // new one asks for Pro.
-    // Spent on a week that arrived, never on one that failed: a model that
-    // refused has taken nothing.
+    // Spent only on a week that arrived.
     private func spendFreeGeneration() {
         guard !entitlements.isPro else { return }
         allowance.markUsed()
@@ -137,7 +134,7 @@ struct RootView: View {
         return 2
     }
 
-    static var version: String {
+    fileprivate static var version: String {
         Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? ""
     }
 
@@ -242,7 +239,6 @@ struct RootView: View {
                 },
                 failure: onboarding.generationFailure,
                 failureCount: onboarding.failureCount,
-                builtInsteadOf: onboarding.builtInsteadOf,
                 onRetry: { onboarding.saveUserProfile() },
                 // Nothing was written yet, and cancelRun stops the abandoned
                 // run from writing one.
@@ -355,7 +351,6 @@ struct RootView: View {
                 },
                 failure: nextWeek.failure,
                 failureCount: nextWeek.failureCount,
-                builtInsteadOf: nextWeek.builtInsteadOf,
                 onRetry: start,
                 onGiveUp: {
                     nextWeek.cancelRun()
@@ -379,7 +374,7 @@ struct RootView: View {
     }
 }
 
-struct SplashView: View {
+private struct SplashView: View {
     var body: some View {
         VStack(spacing: Spacing.medium) {
             Image("Wordmark")

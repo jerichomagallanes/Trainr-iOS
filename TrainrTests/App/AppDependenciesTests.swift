@@ -9,7 +9,6 @@ struct AppDependenciesTests {
         var events: [String] = []
         var reported: [(String, String)] = []
         func record(_ event: String) { events.append(event) }
-        func state(key: String, value: String) {}
         func report(_ error: any Error, doing action: String) {
             reported.append((action, String(describing: error)))
         }

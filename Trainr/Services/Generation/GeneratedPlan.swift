@@ -1,5 +1,4 @@
-// The shape a generated weekly plan arrives in; everything else on the domain
-// model is app state or derived. docs/generation-contract.md annotates it.
+// The intermediate shape PlanExpander hands to GeneratedPlanParser.
 nonisolated struct GeneratedPlan: Codable {
     var title: String
     var days: [GeneratedDay]
@@ -11,8 +10,8 @@ nonisolated struct GeneratedDay: Codable {
     var exercises: [GeneratedExercise]
 }
 
-// The chip and the copy default to blank: the app now works both out itself,
-// and only the remote model still writes them.
+// Both default blank: PlanExpander fills instructions from the catalog and
+// leaves prescription empty, the chip being derived from the sets.
 nonisolated struct GeneratedExercise: Codable {
     var exerciseKey: String
     var prescription = ""

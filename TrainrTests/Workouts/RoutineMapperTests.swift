@@ -75,8 +75,8 @@ struct RoutineMapperTests {
         #expect(routine.exercises[1].previousSets.isEmpty)
     }
 
-    // The muscles and the how-to belong to the catalog, not to the model that
-    // wrote the week: a plan carries only the key.
+    // The muscles and the how-to belong to the catalog, not to the week that
+    // stored them: a plan carries only the key.
     @Test func theCatalogSuppliesWhatEachMovementTrainsAndHowToPerformIt() {
         let day = SampleWorkoutData.day(for: SampleWorkoutData.defaultDayNumber)
 
@@ -102,10 +102,7 @@ struct RoutineMapperTests {
         #expect(named.allSatisfy { $0.first?.isUppercase == true })
     }
 
-    private let catalog: any ExerciseCatalog = {
-        let url = Bundle.main.url(forResource: "exercise-catalog", withExtension: "json")!
-        return ExerciseCatalogReader.read(try! Data(contentsOf: url))
-    }()
+    private let catalog: any ExerciseCatalog = BundleExerciseCatalog()
 
     @Test func theCatalogSaysHowAMovementIsDoneWhateverTheStoredWeekSays() {
         let routine = day([exercise("Goblet Squat")]).toRoutineUi(catalog: catalog)
@@ -114,13 +111,13 @@ struct RoutineMapperTests {
     }
 
     @Test func theChipIsReadOffTheSetsNotTheStoredText() {
-        var stored = exercise("Squat", prescription: "a model's words")
+        var stored = exercise("Squat", prescription: "stale stored text")
         stored.sets = (1...3).map { ExerciseSet(setNumber: $0, targetReps: 10) }
 
         let mapped = day([stored]).toRoutineUi().exercises[0]
 
         #expect(mapped.prescription == Prescription.of(stored.sets, measure: stored.measure))
-        #expect(mapped.prescription.text != "a model's words")
+        #expect(mapped.prescription.text != "stale stored text")
     }
 
     @Test func aOneSidedMovementIsCountedPerSide() throws {

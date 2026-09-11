@@ -21,13 +21,7 @@ struct SetFormattingTests {
         #expect(SetFormatting.secondsFromDigits("130") == 90)
         #expect(SetFormatting.secondsFromDigits("") == nil)
         #expect(SetFormatting.secondsFromDigits("00130") == 90)
-    }
-
-    @Test("A stored duration types back to the digits that made it")
-    func digitsRoundTrip() {
-        for total in [5, 45, 90, 300, 3599] {
-            #expect(SetFormatting.secondsFromDigits(SetFormatting.durationDigits(total)) == total)
-        }
+        #expect(SetFormatting.secondsFromDigits("5959") == 3599)
     }
 
     @Test("A weight drops a trailing zero but keeps a real fraction")

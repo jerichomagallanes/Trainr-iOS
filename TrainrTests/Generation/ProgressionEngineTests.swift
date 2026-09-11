@@ -156,7 +156,7 @@ struct ProgressionEngineTests {
         #expect((layoff.sets[0].targetWeightKg ?? 99) <= 70)
     }
 
-    // Plans written by the old model carry unsnapped kilograms.
+    // Weeks stored before loads were snapped carry unsnapped kilograms.
     @Test func anUnsnappedWeightInHistoryIsSnappedDownBeforeAnythingElse() {
         #expect(next(logged(6, kg: 61.3)).sets[0].targetWeightKg == 60)
     }

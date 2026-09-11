@@ -1,5 +1,5 @@
 // Hand-verified tutorials keyed by exerciseKey: the generator never writes
-// video URLs, because a model can only invent ID-shaped strings.
+// video URLs.
 nonisolated enum ExerciseVideoCatalog {
 
     static func url(for exerciseKey: String) -> String? {

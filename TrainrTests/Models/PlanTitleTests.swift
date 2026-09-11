@@ -23,7 +23,7 @@ struct PlanTitleTests {
         #expect("Weekend Warrior".withoutWeekNumber == "Weekend Warrior")
     }
 
-    // Stripping it to nothing would fail validation and cost the client a retry.
+    // Stripping it to nothing would fail validation.
     @Test func aTitleThatIsOnlyANumberKeepsIt() {
         #expect("Week 2".withoutWeekNumber == "Week 2")
     }

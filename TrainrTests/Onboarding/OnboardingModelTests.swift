@@ -7,8 +7,7 @@ import Testing
 struct OnboardingModelTests {
 
     private struct RefusingGenerator: PlanGenerator {
-        let reason: PlanGenerationFailure
-        func generate(_ request: PlanRequest) async -> PlanGenerationResult { .failure(reason) }
+        func generate(_ request: PlanRequest) async -> PlanGenerationResult { .failed }
     }
 
     private func dependencies(_ generator: any PlanGenerator = TemplatePlanGenerator()) throws -> AppDependencies {
@@ -111,14 +110,14 @@ struct OnboardingModelTests {
 
     @Test("A failed generation writes no plan, keeps the first profile, and says why")
     func failureKeepsProfileWritesNoPlan() async throws {
-        let deps = try dependencies(RefusingGenerator(reason: .offline))
+        let deps = try dependencies(RefusingGenerator())
         let model = OnboardingModel(dependencies: deps)
         answerEverything(model)
 
         model.saveUserProfile()
         await settle(model)
 
-        #expect(model.generationFailure == .offline)
+        #expect(model.generationFailure == .failed)
         #expect(!model.isCompleted)
         let user = try #require(try deps.store.currentUser())
         #expect(try deps.store.plans(for: user.id).isEmpty)
@@ -136,7 +135,7 @@ struct OnboardingModelTests {
         let before = try store.plans(for: user.id)
 
         let again = OnboardingModel(dependencies: AppDependencies(
-            store: store, planGenerator: RefusingGenerator(reason: .failed), breadcrumbs: NoBreadcrumbs()))
+            store: store, planGenerator: RefusingGenerator(), breadcrumbs: NoBreadcrumbs()))
         again.saveUserProfile()
         await settle(again)
 
@@ -243,32 +242,5 @@ struct OnboardingModelTests {
         model.saveUserProfile()
 
         #expect(!model.isCompleted)
-    }
-
-    // Handed over rather than lost, but never passed off as the coach's.
-    @Test("A week built in place of the coach's is kept and says why")
-    func aWeekBuiltInsteadIsKeptAndSaysWhy() async throws {
-        let model = OnboardingModel(dependencies: try dependencies(
-            FallbackPlanGenerator(coach: RefusingGenerator(reason: .offline), template: TemplatePlanGenerator())
-        ))
-        answerEverything(model)
-
-        model.saveUserProfile()
-        await settle(model)
-
-        #expect(model.isCompleted)
-        #expect(model.generationFailure == nil)
-        #expect(model.builtInsteadOf == .offline)
-    }
-
-    @Test("A coached week says nothing was built instead")
-    func aCoachedWeekSaysNothing() async throws {
-        let model = OnboardingModel(dependencies: try dependencies())
-        answerEverything(model)
-
-        model.saveUserProfile()
-        await settle(model)
-
-        #expect(model.builtInsteadOf == nil)
     }
 }

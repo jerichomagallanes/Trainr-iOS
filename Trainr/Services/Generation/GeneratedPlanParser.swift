@@ -1,7 +1,7 @@
 import Foundation
 
-// What the client's own answers make possible, so a plan that cannot be
-// performed is rejected while the model still has an attempt left to fix it.
+// What the client's own answers make possible, so a week that cannot be
+// performed is never saved.
 nonisolated struct PlanLimits {
     var maxSetsPerSession: Int
     // Empty means the vocabulary is not being enforced, which is only true in
@@ -22,13 +22,13 @@ nonisolated enum PlanParseResult {
     case invalid([String])
 }
 
-// The generator never writes ids, dates, week numbers or completion state — the
-// model has no clock — so those arrive as parameters instead of JSON.
+// Ids, dates, week numbers and completion state arrive as parameters, never
+// inside the plan.
 nonisolated struct GeneratedPlanParser {
 
     private let catalog: any ExerciseCatalog
 
-    init(catalog: any ExerciseCatalog = InMemoryExerciseCatalog([])) {
+    init(catalog: any ExerciseCatalog) {
         self.catalog = catalog
     }
 
@@ -48,8 +48,6 @@ nonisolated struct GeneratedPlanParser {
         return parse(generated, userID: userID, weekNumber: weekNumber, startDate: startDate, limits: limits)
     }
 
-    // The app's own plans take this door, so they are held to exactly the
-    // checks a model's answer is.
     func parse(
         _ generated: GeneratedPlan,
         userID: UUID,
@@ -216,8 +214,7 @@ nonisolated struct GeneratedPlanParser {
         catalog[exercise.exerciseKey]?.measure ?? .reps
     }
 
-    // How long the exercise takes is arithmetic on what was prescribed, not a
-    // fourth number for the model to keep in agreement with the other three.
+    // How long the exercise takes is arithmetic on what was prescribed.
     // A rep is about three seconds at the moderate velocity ACSM asks for.
     // Shared with the budgeting side so a plan can never be built that its own
     // ceiling check then rejects.
@@ -234,8 +231,7 @@ nonisolated struct GeneratedPlanParser {
         )
     }
 
-    // Bounds, not tastes: a number outside these is one no client could
-    // perform, and it costs less to ask again than to show it to them.
+    // Bounds, not tastes: a number outside these is one no client could perform.
     private enum Bounds {
         static let maxExercisesPerDay = 12
         static let maxSetsPerExercise = 10
@@ -246,8 +242,7 @@ nonisolated struct GeneratedPlanParser {
     }
 
     // The day's kit is the union of what its movements need, which the
-    // catalog already knows; asking a model to restate it only gave it a way
-    // to name equipment the client does not own.
+    // catalog already knows.
     private func day(_ generated: GeneratedDay) -> WorkoutDay {
         var kit: [String] = []
         for item in generated.exercises.compactMap({ catalog[$0.exerciseKey] })

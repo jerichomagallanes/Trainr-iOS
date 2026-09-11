@@ -19,7 +19,6 @@ nonisolated struct ProgressionRequest: Sendable {
 
 nonisolated struct ProgressionTarget: Equatable, Sendable {
     var sets: [ExerciseSet]
-    var repRange: ClosedRange<Int>?
     // A guess the client's first session will correct, and the card says so.
     var isEstimate = false
     var outcome: ProgressionOutcome
@@ -39,10 +38,9 @@ nonisolated enum ProgressionNote: Hashable, Sendable {
     case needsHarderVariation, lighterThanTheBar
 }
 
-// Next week's targets from what the client actually did. Every rule is here as
-// arithmetic because a model asked to do it in prose invents kilograms, and
-// because the default tick-off logs exactly the target: progression has to key
-// off hitting it, not beating it. docs/stage1-reshape.md section 2 is the table.
+// Next week's targets from what the client actually did. The default tick-off
+// logs exactly the target, so progression has to key off hitting it, not
+// beating it.
 nonisolated enum ProgressionEngine {
 
     static func next(_ request: ProgressionRequest) -> ProgressionTarget {
@@ -330,7 +328,7 @@ private nonisolated struct Week {
             sets: setNumbers(sets).map {
                 ExerciseSet(setNumber: $0, targetReps: clamp(reps, Self.repBounds), targetWeightKg: weight)
             },
-            repRange: window, isEstimate: estimate, outcome: outcome, notes: notes, stallCount: stall
+            isEstimate: estimate, outcome: outcome, notes: notes, stallCount: stall
         )
     }
 
@@ -340,7 +338,7 @@ private nonisolated struct Week {
     ) -> ProgressionTarget {
         ProgressionTarget(
             sets: setNumbers(sets).map { ExerciseSet(setNumber: $0, targetReps: clamp(reps, Self.repBounds)) },
-            repRange: window, isEstimate: estimate, outcome: outcome, notes: notes
+            isEstimate: estimate, outcome: outcome, notes: notes
         )
     }
 
@@ -352,7 +350,7 @@ private nonisolated struct Week {
             sets: setNumbers(sets).map {
                 ExerciseSet(setNumber: $0, targetSeconds: clamp(seconds, Self.secondBounds))
             },
-            repRange: nil, isEstimate: estimate, outcome: outcome, notes: notes
+            isEstimate: estimate, outcome: outcome, notes: notes
         )
     }
 

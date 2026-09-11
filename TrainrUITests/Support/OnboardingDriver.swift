@@ -5,7 +5,7 @@ extension XCUIApplication {
     @MainActor
     static func launchedFresh() -> XCUIApplication {
         let app = XCUIApplication()
-        app.launchArguments = ["-cannedGeneration", "-inMemoryStore", "-splashSeconds", "0"]
+        app.launchArguments = ["-inMemoryStore", "-splashSeconds", "0"]
         app.launch()
         return app
     }
@@ -16,7 +16,7 @@ extension XCUIApplication {
     static func launched(startingAt step: String) -> XCUIApplication {
         let app = XCUIApplication()
         app.launchArguments = [
-            "-cannedGeneration", "-inMemoryStore", "-splashSeconds", "0",
+            "-inMemoryStore", "-splashSeconds", "0",
             "-startAtStep", step
         ]
         app.launch()

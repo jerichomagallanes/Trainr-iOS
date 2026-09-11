@@ -7,18 +7,15 @@ nonisolated struct ExerciseUi: Identifiable, Equatable, Sendable {
     var minutes: Int
     var measure = ExerciseMeasure.reps
     var sets: [ExerciseSet] = []
-    // The last completed day's sets for the same exerciseKey; empty with no
-    // history.
     var previousSets: [ExerciseSet] = []
     var videoURL: String?
     // What the movement trains and how to perform it, both owned by the
-    // catalog rather than the model that wrote the week.
+    // catalog rather than stored with the week.
     var primaryMuscle = ""
     var secondaryMuscles: [String] = []
     var steps: [String] = []
     // Counted per side, so the chip says so.
     var unilateral = false
-    // The injury the client declared that this movement asks care with.
     var caution: Injury?
     var isCompleted = false
 
@@ -91,9 +88,5 @@ nonisolated struct ExerciseTimerUi: Equatable, Sendable {
         isRunning = false
     }
 
-    var display: String {
-        let minutes = remainingSeconds / Constants.Workout.secondsPerMinute
-        let seconds = remainingSeconds % Constants.Workout.secondsPerMinute
-        return "\(minutes):" + String(format: "%02d", seconds)
-    }
+    var display: String { SetFormatting.seconds(remainingSeconds) }
 }

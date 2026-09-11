@@ -5,14 +5,11 @@ protocol Breadcrumbs {
 
     func record(_ event: String)
 
-    func state(key: String, value: String)
-
     // `action` names what was being attempted, never what it was attempted on.
     func report(_ error: any Error, doing action: String)
 }
 
 struct NoBreadcrumbs: Breadcrumbs {
     func record(_ event: String) {}
-    func state(key: String, value: String) {}
     func report(_ error: any Error, doing action: String) {}
 }

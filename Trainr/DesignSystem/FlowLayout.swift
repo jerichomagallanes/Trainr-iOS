@@ -49,34 +49,3 @@ struct FlowLayout: Layout {
     }
 }
 
-struct SingleSelectChipGroup: View {
-    let items: [String]
-    let selectedItem: String?
-    let onSelect: (String) -> Void
-
-    var body: some View {
-        FlowLayout {
-            ForEach(items, id: \.self) { item in
-                ToggleChip(text: item, isSelected: item == selectedItem) {
-                    onSelect(item)
-                }
-            }
-        }
-    }
-}
-
-struct MultiSelectChipGroup: View {
-    let items: [String]
-    let selectedItems: Set<String>
-    let onToggle: (String) -> Void
-
-    var body: some View {
-        FlowLayout {
-            ForEach(items, id: \.self) { item in
-                ToggleChip(text: item, isSelected: selectedItems.contains(item)) {
-                    onToggle(item)
-                }
-            }
-        }
-    }
-}

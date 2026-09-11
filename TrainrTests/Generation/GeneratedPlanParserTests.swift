@@ -115,8 +115,7 @@ struct GeneratedPlanParserTests {
 
     // Five minutes of jogging, then two sets of twenty at three seconds a rep
     // with thirty seconds between them: eight minutes of work, plus the minute
-    // spent walking from one to the other, whatever the model would have
-    // claimed.
+    // spent walking from one to the other.
     @Test func aDaysNumbersAreDerivedNotAccepted() throws {
         let cardio = try #require(parseGood().workoutDays.first { $0.dayNumber == 3 })
 
@@ -164,7 +163,7 @@ struct GeneratedPlanParserTests {
     }
 
     // How a movement is measured is a fact about the movement, so it comes
-    // from the catalog and the model never gets to disagree with it.
+    // from the catalog.
     @Test func theCatalogDecidesHowAMovementIsMeasured() throws {
         let plan = try parseGood()
         let jog = try #require(
@@ -178,8 +177,7 @@ struct GeneratedPlanParserTests {
         #expect(squat.measure == .weightAndReps)
     }
 
-    // Asking a model to restate the day's kit only gave it a way to name
-    // equipment the client does not own.
+    // The day's kit is the union of what its movements need.
     @Test func theDaysEquipmentComesFromItsMovements() throws {
         let loaded = GeneratedPlanParser(catalog: InMemoryExerciseCatalog([
             catalogExercise("goblet_squat", .quadriceps, .weightAndReps, .squat,
@@ -275,7 +273,7 @@ struct GeneratedPlanParserTests {
     }
 
     // A session is a time budget: three sets is not something a two-set
-    // session pays for, and the model is told so before it is asked again.
+    // session pays for.
     @Test func aDayThatOverspendsTheSessionIsRejected() throws {
         let result = parser.parse(
             goodJSON,
@@ -302,8 +300,7 @@ struct GeneratedPlanParserTests {
         #expect(errors == ["day 3, warm_up_jog: has no sets"])
     }
 
-    // An answer is sent back with every problem it has, so one retry can fix
-    // them all rather than one each.
+    // A rejected week names every problem it has, not only the first.
     @Test func everyProblemIsReportedNotJustTheFirst() throws {
         let errors = try errors(
             of: goodJSON(replacing: "\"restSeconds\": 30,", with: "\"restSeconds\": -30,")

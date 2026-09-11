@@ -115,15 +115,8 @@ nonisolated enum L10n {
     static var generateMyWorkoutPlan: String { String(localized: "generate_my_workout_plan") }
     static var generateNextWeek: String { String(localized: "generate_next_week") }
     static var generatingYourWorkoutRoutine: String { String(localized: "generating_your_workout_routine") }
-    static var generationBuiltInsteadFailed: String { String(localized: "generation_built_instead_failed") }
-    static var generationBuiltInsteadLimit: String { String(localized: "generation_built_instead_limit") }
-    static var generationBuiltInsteadOffline: String { String(localized: "generation_built_instead_offline") }
-    static var generationBuiltInsteadTitle: String { String(localized: "generation_built_instead_title") }
     static var generationFailedMessage: String { String(localized: "generation_failed_message") }
-    static var generationFailedOffline: String { String(localized: "generation_failed_offline") }
     static var generationFailedTitle: String { String(localized: "generation_failed_title") }
-    static var generationLimitMessage: String { String(localized: "generation_limit_message") }
-    static var generationLimitTitle: String { String(localized: "generation_limit_title") }
     static var getStarted: String { String(localized: "get_started") }
     static var getStronger: String { String(localized: "get_stronger") }
     static var getStrongerDescription: String { String(localized: "get_stronger_description") }
@@ -135,7 +128,6 @@ nonisolated enum L10n {
     static var goalFocusGetStronger: String { String(localized: "goal_focus_get_stronger") }
     static var goalFocusImproveEndurance: String { String(localized: "goal_focus_improve_endurance") }
     static var goalFocusLoseWeight: String { String(localized: "goal_focus_lose_weight") }
-    static var gotIt: String { String(localized: "got_it") }
     static var healthDisclaimer: String { String(localized: "health_disclaimer") }
     static var heightCm: String { String(localized: "height_cm") }
     static func heightCmFormat(_ p1: Int) -> String {
@@ -233,10 +225,6 @@ nonisolated enum L10n {
     static var previousColumn: String { String(localized: "previous_column") }
     static var proActive: String { String(localized: "pro_active") }
     static var proAndMore: String { String(localized: "pro_and_more") }
-    static var proBenefitFreshPlan: String { String(localized: "pro_benefit_fresh_plan") }
-    static var proBenefitNextWeek: String { String(localized: "pro_benefit_next_week") }
-    static var proBenefitRegenerate: String { String(localized: "pro_benefit_regenerate") }
-    static var proBestValue: String { String(localized: "pro_best_value") }
     static var proBilledAnnually: String { String(localized: "pro_billed_annually") }
     static var proBilledMonthly: String { String(localized: "pro_billed_monthly") }
     static var proBuyLifetime: String { String(localized: "pro_buy_lifetime") }
@@ -275,9 +263,7 @@ nonisolated enum L10n {
     static var proFeatureSupportBody: String { String(localized: "pro_feature_support_body") }
     static var proFeatureSupportTitle: String { String(localized: "pro_feature_support_title") }
     static var proFreeLimit: String { String(localized: "pro_free_limit") }
-    static var proFreeNote: String { String(localized: "pro_free_note") }
     static var proFullAccess: String { String(localized: "pro_full_access") }
-    static var proHeadline: String { String(localized: "pro_headline") }
     static var proLifetime: String { String(localized: "pro_lifetime") }
     static var proManage: String { String(localized: "pro_manage") }
     static var proMonthly: String { String(localized: "pro_monthly") }

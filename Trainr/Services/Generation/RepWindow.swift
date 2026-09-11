@@ -17,14 +17,6 @@ nonisolated enum RepWindow {
         return widened(window, for: user)
     }
 
-    static func holdSeconds(_ user: UserProfile) -> ClosedRange<Int> {
-        switch user.fitnessGoal {
-        case .flexibility: 45...60
-        case .strength, .muscleGain: 30...45
-        default: 30...60
-        }
-    }
-
     // How much load a successful week adds. Bigger muscles tolerate a bigger
     // jump than a lateral raise does.
     static func loadStepFraction(_ user: UserProfile, _ exercise: CatalogExercise) -> Double {

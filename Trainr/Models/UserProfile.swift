@@ -131,9 +131,8 @@ extension Equipment {
     }
 }
 
-// Stored and sent as these constants, never as the words on the chip: a
-// profile filled in Japanese used to reach the model as Japanese injury names,
-// and stopped matching its own chips the moment the phone changed language.
+// Stored as these constants, never as the words on the chip, so a phone
+// changing language keeps matching its own chips.
 nonisolated enum Injury: String, Codable, CaseIterable, Sendable {
     case lowerBack
     case knee

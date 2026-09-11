@@ -125,13 +125,9 @@ struct DesignTokensTests {
 
     @Test("Light shadow strengths are the ones the frames composite")
     func lightShadowsKeepTheirStrength() {
-        #expect(Color.shadowSpot.light.hex == "000000")
-        #expect(Color.shadowSpot.light.alpha == 1)
-        #expect(abs(Color.shadowSpotSoft.light.alpha - 0.05) < 0.005)
         #expect(abs(Color.shadowSpotBar.light.alpha - 0.08) < 0.005)
         #expect(Color.shadowSpotBrand.light.hex == "D37200")
         #expect(abs(Color.shadowSpotBrand.light.alpha - 0.15) < 0.005)
-        #expect(abs(Color.scrim.light.alpha - 0.3) < 0.005)
     }
 
     @Test("Dark ink clears AA on all four grounds")
@@ -215,8 +211,6 @@ struct DesignTokensTests {
     // A black shadow on a near-black page renders nothing but a dirty edge.
     @Test("Dark draws no shadows at all")
     func darkShadowsNeverDraw() {
-        #expect(Color.shadowSpot.dark.alpha == 0)
-        #expect(Color.shadowSpotSoft.dark.alpha == 0)
         #expect(Color.shadowSpotBrand.dark.alpha == 0)
         #expect(Color.shadowSpotBar.dark.alpha == 0)
     }

@@ -1,8 +1,8 @@
 import Foundation
 
-// A skeleton and whatever was chosen for it, made into a week and held to the
-// same parser and limits whoever did the choosing. Nil means the app's own
-// arithmetic produced something it would reject from a model.
+// A skeleton and a selection made into a week and checked against the
+// skeleton's own limits. Nil means the app's arithmetic produced something the
+// checks turn down.
 nonisolated struct PlanAssembler {
 
     private let expander: PlanExpander

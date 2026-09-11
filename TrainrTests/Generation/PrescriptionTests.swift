@@ -75,8 +75,7 @@ struct PrescriptionTests {
     @Test func everyChipTheAppCanProduceStaysShortEnoughForTheCard() {
         var longest = ""
         for measure in [ExerciseMeasure.weightAndReps, .reps, .duration] {
-            // Bounded by what RepWindow and holdSeconds can actually return,
-            // not by what the schema would accept.
+            // Bounded by what RepWindow and SeedLoad.holdSeconds can actually return.
             let lows = measure == .duration ? [30, 45, 60, 120, 300, 1800] : [1, 3, 8, 15, 25]
             for setCount in 1...10 {
                 for low in lows {

@@ -1,7 +1,7 @@
 import Foundation
 
-// Next week is last week's movements, progressed from what was lifted, with no
-// model asked: a lift only moves on while it stays in the programme. A profile
+// Next week is last week's movements, progressed from what was lifted: a lift
+// only moves on while it stays in the programme. A profile
 // edit that rules a movement out, a split with no room for it, or a client
 // asking for new movements hands the week to the generator behind this one.
 struct CarryForwardPlanGenerator: PlanGenerator {
@@ -10,7 +10,7 @@ struct CarryForwardPlanGenerator: PlanGenerator {
     private let assembler: PlanAssembler
     private let next: any PlanGenerator
 
-    init(catalog: any ExerciseCatalog = BundleExerciseCatalog(), next: any PlanGenerator) {
+    init(catalog: any ExerciseCatalog, next: any PlanGenerator) {
         builder = PlanSkeletonBuilder(catalog: catalog)
         assembler = PlanAssembler(catalog: catalog)
         self.next = next
@@ -18,7 +18,7 @@ struct CarryForwardPlanGenerator: PlanGenerator {
 
     func generate(_ request: PlanRequest) async -> PlanGenerationResult {
         if !request.freshCast, let previous = request.previousWeek, let carried = carry(previous, request) {
-            return .generated(carried, source: .progressed)
+            return .generated(carried)
         }
         return await next.generate(request)
     }

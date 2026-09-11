@@ -2,7 +2,7 @@ import Foundation
 
 // Session order. Whatever is trained first gains most (Nunes 2021), so the
 // tier a slot sits at is a fatigue rule, not a presentation choice.
-nonisolated enum SlotTier: Int, CaseIterable, Comparable, Sendable {
+nonisolated enum SlotTier: Int, Comparable, Sendable {
     case warmUp, primaryCompound, secondaryCompound, accessory
     case isolation, core, conditioning, mobility
 
@@ -13,7 +13,7 @@ nonisolated enum SlotTier: Int, CaseIterable, Comparable, Sendable {
     static func < (lhs: SlotTier, rhs: SlotTier) -> Bool { lhs.rawValue < rhs.rawValue }
 }
 
-nonisolated enum SessionFocus: CaseIterable, Sendable {
+nonisolated enum SessionFocus: Sendable {
     case fullBody, upper, lower, push, pull, legs, activeRecovery, mobilityFlow
 
     var title: String {
@@ -33,9 +33,8 @@ nonisolated enum SessionFocus: CaseIterable, Sendable {
 }
 
 nonisolated struct SkeletonSlot: Equatable, Sendable {
-    // Wire id, unique within its day: "primary", "isolation_2".
+    // Unique within its day: "primary", "isolation_2".
     var id: String
-    var label: String
     var tier: SlotTier
     var patterns: [MovementPattern]
     var muscles: Set<MuscleGroup>
@@ -68,12 +67,8 @@ nonisolated struct SkeletonDay: Equatable, Sendable {
 nonisolated struct PlanSkeleton: Equatable, Sendable {
     var title: String
     var days: [SkeletonDay]
-    var units: UnitSystem
     var maxSetsPerSession: Int
     var sessionCeilingMinutes: Int
-    // What the week buys per region, counted the way SessionBudget counts: one
-    // for the muscle trained, half for each assisted.
-    var weeklySetsByRegion: [MuscleRegion: Double]
     // Named so the caller stops asking for what the week cannot hold.
     var uncoveredPatterns: Set<PatternRequirement>
 

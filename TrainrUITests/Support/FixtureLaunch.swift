@@ -19,7 +19,7 @@ extension XCUIApplication {
     static func launched(_ fixture: Fixture, pro: Bool = false) -> XCUIApplication {
         let app = XCUIApplication()
         app.launchArguments = [
-            "-cannedGeneration", "-inMemoryStore", "-seedFixture", fixture.rawValue,
+            "-inMemoryStore", "-seedFixture", fixture.rawValue,
             "-splashSeconds", "0"
         ]
         if pro { app.launchArguments += ["-proUnlocked"] }
@@ -42,19 +42,9 @@ extension XCUIApplication {
         Thread.sleep(forTimeInterval: 0.4)
     }
 
-    @MainActor
-    static func launchedToBuildInstead(_ reason: String, startingAt step: String) -> XCUIApplication {
+    static func launchedToFail(startingAt step: String? = nil) -> XCUIApplication {
         let app = XCUIApplication()
-        app.launchArguments = ["-inMemoryStore", "-generationBuiltInstead", reason, "-startAtStep", step]
-        app.launch()
-        return app
-    }
-
-    static func launchedToFail(
-        _ reason: String, startingAt step: String? = nil
-    ) -> XCUIApplication {
-        let app = XCUIApplication()
-        app.launchArguments = ["-inMemoryStore", "-generationFails", reason]
+        app.launchArguments = ["-inMemoryStore", "-generationFails"]
         if let step { app.launchArguments += ["-startAtStep", step] }
         app.launch()
         return app

@@ -7,9 +7,8 @@ struct PlanExpanderTests {
     private let catalog: any ExerciseCatalog
     private let expander: PlanExpander
 
-    init() throws {
-        let url = try #require(Bundle.main.url(forResource: "exercise-catalog", withExtension: "json"))
-        catalog = ExerciseCatalogReader.read(try Data(contentsOf: url))
+    init() {
+        catalog = BundleExerciseCatalog()
         expander = PlanExpander(catalog: catalog)
     }
 
@@ -29,11 +28,10 @@ struct PlanExpanderTests {
         PlanSkeleton(
             title: "Test Week",
             days: [SkeletonDay(dayNumber: 1, focus: .fullBody, slots: [SkeletonSlot(
-                id: "primary", label: "the main lift", tier: tier, patterns: [], muscles: [],
+                id: "primary", tier: tier, patterns: [], muscles: [],
                 candidates: keys, sets: 3, restSeconds: 120, secondsPerSet: secondsPerSet
             )])],
-            units: .metric, maxSetsPerSession: 20, sessionCeilingMinutes: 90,
-            weeklySetsByRegion: [:], uncoveredPatterns: []
+            maxSetsPerSession: 20, sessionCeilingMinutes: 90, uncoveredPatterns: []
         )
     }
 
@@ -48,7 +46,7 @@ struct PlanExpanderTests {
         ))
     }
 
-    // What a movement is and how it is done is the catalog's, never a model's.
+    // What a movement is and how it is done is the catalog's, never the week's.
     @Test func theCopyComesFromTheCatalog() {
         let squat = only(expand(skeleton(["goblet_squat"])))
 
