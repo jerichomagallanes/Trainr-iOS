@@ -3061,13 +3061,13 @@
                   "one": {
                     "stringUnit": {
                       "state": "translated",
-                      "value": "%1$lld of %2$lld workouts is logged in this week. A new week replaces it for good."
+                      "value": "%1$lld of %2$lld workouts is logged in this week. The AI coach chooses new movements, and the new week replaces it for good."
                     }
                   },
                   "other": {
                     "stringUnit": {
                       "state": "translated",
-                      "value": "%1$lld of %2$lld workouts are logged in this week. A new week replaces them for good."
+                      "value": "%1$lld of %2$lld workouts are logged in this week. The AI coach chooses new movements, and the new week replaces them for good."
                     }
                   }
                 }

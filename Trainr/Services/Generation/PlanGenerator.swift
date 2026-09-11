@@ -7,6 +7,8 @@ nonisolated struct PlanRequest: Sendable {
     // Newest first. A stall is two short weeks and a ramp back spans three, so
     // one previous week is not enough to progress from.
     var history: [WeeklyPlan] = []
+    // New movements were asked for, so last week's are not carried into it.
+    var freshCast = false
 
     var previousWeek: WeeklyPlan? { history.first }
 }
