@@ -77,6 +77,10 @@ nonisolated struct PlanSkeleton: Equatable, Sendable {
     // Named so the caller stops asking for what the week cannot hold.
     var uncoveredPatterns: Set<PatternRequirement>
 
+    // A day with nothing in it is one the catalog could not fill, and no
+    // amount of choosing makes a week out of it.
+    var isComplete: Bool { !days.isEmpty && !days.contains { $0.slots.isEmpty } }
+
     var allowedKeys: Set<String> { Set(days.flatMap { $0.slots.flatMap(\.candidates) }) }
 
     // The patterns the week was actually dealt, which is what a finished plan

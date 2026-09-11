@@ -8,7 +8,7 @@ struct GeminiPlanGeneratorTests {
         private var remaining: [GeminiResponse]
         var modelsAsked: [String] = []
         var prompts: [String] = []
-        var offered: [[String]] = []
+        var skeletons: [PlanSkeleton] = []
 
         init(_ answers: [GeminiResponse]) {
             remaining = answers
@@ -18,11 +18,11 @@ struct GeminiPlanGeneratorTests {
             model: String,
             systemInstruction: String,
             userPrompt: String,
-            exerciseKeys: [String]
+            skeleton: PlanSkeleton
         ) async -> GeminiResponse {
             modelsAsked.append(model)
             prompts.append(userPrompt)
-            offered.append(exerciseKeys)
+            skeletons.append(skeleton)
             return remaining.isEmpty ? .failed : remaining.removeFirst()
         }
     }
@@ -51,13 +51,12 @@ struct GeminiPlanGeneratorTests {
         func everything() -> [String] { events + states.keys + states.values }
     }
 
-    private let catalog = InMemoryExerciseCatalog([
-        CatalogExercise(
-            key: "goblet_squat", name: "Goblet Squat",
-            primary: .quadriceps, secondary: [], equipment: Equipment.none,
-            measure: .weightAndReps, pattern: .squat, staple: true, summary: "Goblet Squat", steps: []
-        )
-    ])
+    private let catalog: any ExerciseCatalog
+
+    init() throws {
+        let url = try #require(Bundle.main.url(forResource: "exercise-catalog", withExtension: "json"))
+        catalog = ExerciseCatalogReader.read(try Data(contentsOf: url))
+    }
 
     private func generator(
         _ client: any PlanModelClient,
@@ -84,30 +83,26 @@ struct GeminiPlanGeneratorTests {
         )
     }
 
-    private let validPlanJSON = """
-        {
-          "title": "Week 1",
-          "days": [
-            {
-              "dayNumber": 1,
-              "title": "Full Body",
-              "exercises": [
-                {
-                  "exerciseKey": "goblet_squat",
-                  "prescription": "3 sets of 12 reps",
-                  "instructions": "Squat holding a dumbbell at your chest.",
-                  "restSeconds": 60,
-                  "sets": [
-                    { "reps": 12, "weightKg": 20 },
-                    { "reps": 12, "weightKg": 20 },
-                    { "reps": 12, "weightKg": 20 }
-                  ]
-                }
-              ]
-            }
-          ]
+    private func skeleton(_ given: PlanRequest? = nil) -> PlanSkeleton {
+        PlanSkeletonBuilder(catalog: catalog).build(given ?? request())
+    }
+
+    // What a model that did its job would send: one of each slot's own
+    // movements, and a name for every session.
+    private func answer(
+        for given: PlanRequest? = nil,
+        pick: (SkeletonSlot) -> String = { $0.candidates[0] }
+    ) -> String {
+        var object: [String: [String: String]] = [:]
+        for day in skeleton(given).days where !day.openSlots.isEmpty {
+            var fields = ["title": "Whole Body Strength"]
+            for slot in day.openSlots { fields[slot.id] = pick(slot) }
+            object[day.id] = fields
         }
-        """
+        return String(decoding: try! JSONSerialization.data(withJSONObject: object), as: UTF8.self)
+    }
+
+    private var validPlanJSON: String { answer() }
 
     @Test func aValidResponseBecomesAPlan() async throws {
         let client = answering(.text(validPlanJSON))
@@ -120,7 +115,7 @@ struct GeminiPlanGeneratorTests {
         }
         #expect(plan.userID == userID)
         #expect(plan.startDate == Date(timeIntervalSince1970: 1))
-        #expect(plan.workoutDays.first?.exercises.first?.exerciseKey == "goblet_squat")
+        #expect(!plan.workoutDays.isEmpty)
         #expect(client.modelsAsked == [PlanModelChain.models[0]])
     }
 
@@ -135,26 +130,16 @@ struct GeminiPlanGeneratorTests {
         }
         #expect(client.prompts.count == 2)
         #expect(client.prompts[1].contains("rejected"))
-        #expect(client.prompts[1].contains("plan: has no days"))
+        #expect(client.prompts[1].contains("You left out day"))
     }
 
-    @Test func theWrongNumberOfDaysIsRejectedAndRetried() async {
-        let client = answering(.text(validPlanJSON), .text(validPlanJSON), .text(validPlanJSON))
-
-        let result = await generator(client).generate(request(daysPerWeek: 3))
-
-        #expect(result == .failure(.failed))
-        #expect(client.prompts.count == 3)
-        #expect(client.prompts[1].contains("asked for exactly 3"))
-    }
-
-    @Test func persistentGarbageGivesUpAfterThreeAttempts() async {
+    @Test func persistentGarbageGivesUpAfterTwoAttempts() async {
         let client = answering(repeating: .text("not json at all"), count: 4)
 
         let result = await generator(client).generate(request())
 
         #expect(result == .failure(.failed))
-        #expect(client.prompts.count == 3)
+        #expect(client.prompts.count == 2)
     }
 
     @Test func aModelThatWillNotAnswerHandsOverToTheNextOne() async {
@@ -324,5 +309,72 @@ struct GeminiPlanGeneratorTests {
         for secret in ["Jericho", "31", "178", "75", "rotator cuff"] {
             #expect(!trailText.contains(secret))
         }
+    }
+
+    @Test func theMovementTheModelChoseIsTheOneTrained() async throws {
+        let slot = try #require(skeleton().days.flatMap(\.openSlots).first { $0.candidates.count > 1 })
+        let second = slot.candidates[1]
+        let client = answering(.text(answer { $0 == slot ? second : $0.candidates[0] }))
+
+        guard case .generated(let plan) = await generator(client).generate(request()) else {
+            Issue.record("expected a generated plan")
+            return
+        }
+        #expect(plan.workoutDays.flatMap(\.exercises).map(\.exerciseKey).contains(second))
+    }
+
+    // One slip in a week is the app's to fix; asking again would spend a
+    // request from the day's allowance on it.
+    @Test func anAnswerWithASlipIsRepairedRatherThanAskedAgain() async throws {
+        let threeDays = request(daysPerWeek: 3)
+        let slot = try #require(skeleton(threeDays).days.first { !$0.openSlots.isEmpty }?.openSlots.first)
+        let trail = FakeBreadcrumbs()
+        let client = answering(.text(answer(for: threeDays) { $0 == slot ? "not_a_movement" : $0.candidates[0] }))
+
+        let result = await generator(client, breadcrumbs: trail).generate(threeDays)
+
+        guard case .generated = result else {
+            Issue.record("expected a generated plan, got \(result)")
+            return
+        }
+        #expect(client.prompts.count == 1)
+        #expect(trail.events.contains("generation: answer used, 1 slots repaired"))
+    }
+
+    @Test func anAnswerThatIsNotAnObjectIsSentBackWithoutQuotingIt() async {
+        let client = answering(.text("Sure! Here is the week."), .text(validPlanJSON))
+
+        _ = await generator(client).generate(request())
+
+        #expect(client.prompts[1].contains(PlanSelectionRepair.notAnObject))
+        #expect(!client.prompts[1].contains("Sure!"))
+    }
+
+    @Test func theModelIsGivenTheSkeletonToChooseWithin() async {
+        let client = answering(.text(validPlanJSON))
+
+        _ = await generator(client).generate(request())
+
+        #expect(client.skeletons == [skeleton()])
+    }
+
+    // The model only ever chooses among movements: one that takes the top of
+    // every list gets exactly the week the app would have built alone.
+    @Test func choosingEveryTopCandidateGivesTheTemplateWeek() async {
+        guard case .generated(let coached) = await generator(answering(.text(validPlanJSON))).generate(request()),
+              case .generated(let template) = await TemplatePlanGenerator(catalog: catalog).generate(request())
+        else {
+            Issue.record("expected both weeks")
+            return
+        }
+
+        func shape(_ plan: WeeklyPlan) -> [String] {
+            plan.workoutDays.flatMap(\.exercises).map { exercise in
+                exercise.exerciseKey + " " + exercise.sets.map {
+                    "\($0.targetReps ?? 0)/\($0.targetWeightKg ?? 0)/\($0.targetSeconds ?? 0)"
+                }.joined(separator: ",")
+            }
+        }
+        #expect(shape(coached) == shape(template))
     }
 }

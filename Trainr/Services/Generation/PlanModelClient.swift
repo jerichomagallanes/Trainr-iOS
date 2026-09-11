@@ -22,13 +22,15 @@ nonisolated enum GeminiResponse: Equatable, Sendable {
 // reports only what a single ask did.
 protocol PlanModelClient {
 
-    // The movement keys become the schema's exerciseKey enum, so an answer
-    // naming a movement this client cannot perform is not representable.
+    // The skeleton becomes the response schema, each open slot an enum of its
+    // own candidates, so an answer naming a movement the slot does not offer
+    // is not representable. The app's type rather than the SDK's, so an
+    // on-device model can build its own grammar from the same thing.
     func generate(
         model: String,
         systemInstruction: String,
         userPrompt: String,
-        exerciseKeys: [String]
+        skeleton: PlanSkeleton
     ) async -> GeminiResponse
 }
 

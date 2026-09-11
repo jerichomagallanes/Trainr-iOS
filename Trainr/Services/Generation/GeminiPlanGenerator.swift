@@ -1,22 +1,24 @@
 import Foundation
 
-// Ask, validate, and on an answer that breaks the contract ask again quoting
-// every problem. Never ship a plan that failed validation.
+// Ask which movement fills each slot, repair what the schema could not rule
+// out, and work out everything else here. Never ship a week the parser failed.
 struct GeminiPlanGenerator: PlanGenerator {
 
     private let client: any PlanModelClient
-    private let parser: GeneratedPlanParser
     private let promptBuilder: PlanPromptBuilder
     private let catalog: any ExerciseCatalog
-    // Nothing from the profile goes in here. See Breadcrumbs.
     private let spentModels: any SpentModels
+    // Nothing from the profile goes in here. See Breadcrumbs.
     private let breadcrumbs: any Breadcrumbs
     private let pause: (Duration) async -> Void
+    private let builder: PlanSkeletonBuilder
+    private let assembler: PlanAssembler
+    private let repair = PlanSelectionRepair()
 
     init(
         client: any PlanModelClient,
         promptBuilder: PlanPromptBuilder = PlanPromptBuilder(),
-        catalog: any ExerciseCatalog = InMemoryExerciseCatalog([]),
+        catalog: any ExerciseCatalog = BundleExerciseCatalog(),
         spentModels: any SpentModels,
         breadcrumbs: any Breadcrumbs = NoBreadcrumbs(),
         pause: @escaping (Duration) async -> Void = { try? await Task.sleep(for: $0) }
@@ -24,25 +26,28 @@ struct GeminiPlanGenerator: PlanGenerator {
         self.client = client
         self.promptBuilder = promptBuilder
         self.catalog = catalog
-        parser = GeneratedPlanParser(catalog: catalog)
         self.spentModels = spentModels
         self.breadcrumbs = breadcrumbs
         self.pause = pause
+        builder = PlanSkeletonBuilder(catalog: catalog)
+        assembler = PlanAssembler(catalog: catalog)
     }
 
     func generate(_ request: PlanRequest) async -> PlanGenerationResult {
-        // Last week's movements stay reachable whatever the shortlist would
-        // otherwise drop, or progression loses the lift it was tracking.
-        let carriedOver = Set(
-            (request.previousWeek?.workoutDays ?? [])
-                .flatMap(\.exercises)
-                .map(\.exerciseKey)
-        )
-        let shortlist = ExerciseShortlist.forRequest(
-            catalog: catalog, user: request.user, carriedOver: carriedOver
-        )
-        let exerciseKeys = shortlist.map(\.key)
-        let basePrompt = promptBuilder.userPrompt(request, shortlist: shortlist)
+        guard !catalog.all.isEmpty else { return .failure(.failed) }
+        let skeleton = builder.build(request)
+        guard skeleton.isComplete else { return .failure(.failed) }
+
+        breadcrumbs.state(key: "week", value: String(request.weekNumber))
+        breadcrumbs.state(key: "movements_offered", value: String(skeleton.allowedKeys.count))
+
+        // Nothing left to choose, so asking would spend an allowance on nothing.
+        if skeleton.days.allSatisfy({ $0.openSlots.isEmpty }) {
+            return assembler.assemble(skeleton, selection: PlanSelection(), request: request)
+                .map(PlanGenerationResult.generated) ?? .failure(.failed)
+        }
+
+        let basePrompt = promptBuilder.userPrompt(request, skeleton: skeleton)
         var feedback: [String] = []
         var failure = PlanGenerationFailure.failed
 
@@ -51,7 +56,6 @@ struct GeminiPlanGenerator: PlanGenerator {
         // model list costs nothing from that budget, because the allowance is
         // counted per model. Models known to be spent today are not asked at all.
         let spent = spentModels.spentToday()
-        breadcrumbs.state(key: "week", value: String(request.weekNumber))
         breadcrumbs.state(key: "models_spent_today", value: String(spent.count))
         var models = PlanModelChain.models.filter { !spent.contains($0) }
         if models.isEmpty {
@@ -72,18 +76,17 @@ struct GeminiPlanGenerator: PlanGenerator {
                 await pause(.milliseconds(Self.retryDelayMilliseconds * attemptsSpent))
             }
 
+            let model = models[modelIndex]
             let prompt = feedback.isEmpty ? basePrompt : withFeedback(basePrompt, feedback)
 
-            breadcrumbs.record(
-                "generation: asking \(models[modelIndex]), attempt \(attemptsSpent + 1)"
-            )
+            breadcrumbs.record("generation: asking \(model), attempt \(attemptsSpent + 1)")
 
-            let json: String
+            let json: String?
             switch await client.generate(
-                model: models[modelIndex],
+                model: model,
                 systemInstruction: promptBuilder.systemInstruction(),
                 userPrompt: prompt,
-                exerciseKeys: exerciseKeys
+                skeleton: skeleton
             ) {
             case .text(let value):
                 json = value
@@ -100,8 +103,8 @@ struct GeminiPlanGenerator: PlanGenerator {
 
             // Remembered, so the next generation skips this model.
             case .quotaSpent:
-                breadcrumbs.record("generation: \(models[modelIndex]) out of allowance")
-                spentModels.markSpent(models[modelIndex])
+                breadcrumbs.record("generation: \(model) out of allowance")
+                spentModels.markSpent(model)
                 refusedOnQuota += 1
                 failure = .failed
                 modelIndex += 1
@@ -110,53 +113,42 @@ struct GeminiPlanGenerator: PlanGenerator {
             // Not counted against the attempts — asking again cannot help — and
             // not remembered, since this one may answer in a minute.
             case .modelUnavailable:
-                breadcrumbs.record("generation: \(models[modelIndex]) unavailable")
+                breadcrumbs.record("generation: \(model) unavailable")
                 failure = .failed
                 modelIndex += 1
                 continue
 
-            // As often transient as fatal, so it spends an attempt, not all of them.
             case .failed:
-                breadcrumbs.record("generation: \(models[modelIndex]) gave no usable answer")
+                json = nil
+            }
+
+            // Every answer we cannot use spends an attempt and moves on: a
+            // safety block on one model is often not one on the next, and the
+            // next is a genuinely different opinion.
+            attemptsSpent += 1
+            modelIndex += 1
+
+            guard let json else {
+                breadcrumbs.record("generation: \(model) gave no usable answer")
                 failure = .failed
-                attemptsSpent += 1
                 continue
             }
 
-            attemptsSpent += 1
+            switch repair.repair(json, skeleton: skeleton) {
+            case .rejected(let problems):
+                // How many problems, never what they were: the messages quote
+                // the model's answer, written from the profile.
+                breadcrumbs.record("generation: answer rejected, \(problems.count) problems")
+                feedback = problems
+                failure = .failed
 
-            switch parser.parse(
-                json,
-                userID: request.user.id,
-                weekNumber: request.weekNumber,
-                startDate: request.startDate,
-                limits: PlanLimits(
-                    maxSetsPerSession: SessionBudget.maxSetsPerSession(request.user),
-                    allowedKeys: Set(exerciseKeys),
-                    requiredPatterns: ExerciseShortlist.requiredPatterns(
-                        shortlist, goal: request.user.fitnessGoal
-                    ),
-                    sessionMinutes: request.user.workoutDuration,
-                    sessionCeilingMinutes: SessionBudget.sessionCeilingMinutes(request.user)
-                )
-            ) {
-            case .parsed(let plan):
-                if plan.workoutDays.count == request.user.workoutDaysPerWeek {
+            case .accepted(let selection, let repairs):
+                breadcrumbs.record("generation: answer used, \(repairs) slots repaired")
+                if let plan = assembler.assemble(skeleton, selection: selection, request: request) {
                     breadcrumbs.record("generation: plan accepted")
                     return .generated(plan)
                 }
-                breadcrumbs.record("generation: wrong number of days back")
-                feedback = [
-                    "plan: has \(plan.workoutDays.count) days but the client "
-                        + "asked for exactly \(request.user.workoutDaysPerWeek)"
-                ]
-                failure = .failed
-
-            case .invalid(let errors):
-                // How many problems, never what they were: a validation message
-                // can quote the model's own text, written from the profile.
-                breadcrumbs.record("generation: answer rejected, \(errors.count) problems")
-                feedback = errors
+                breadcrumbs.record("generation: the assembled week failed its own checks")
                 failure = .failed
             }
         }
@@ -175,10 +167,12 @@ struct GeminiPlanGenerator: PlanGenerator {
     private func withFeedback(_ basePrompt: String, _ errors: [String]) -> String {
         var lines = [basePrompt, "Your previous answer was rejected for these reasons:"]
         lines.append(contentsOf: errors.map { "- \($0)" })
-        lines.append("Produce the corrected plan, fixing every problem listed.")
+        lines.append("Choose again, fixing every problem listed.")
         return lines.joined(separator: "\n") + "\n"
     }
 
-    private static let maxAttempts = 3
+    // Two, not three: with the answer this small, a third attempt can only
+    // repeat a transport failure at the cost of one more request.
+    private static let maxAttempts = 2
     private static let retryDelayMilliseconds = 1_500
 }

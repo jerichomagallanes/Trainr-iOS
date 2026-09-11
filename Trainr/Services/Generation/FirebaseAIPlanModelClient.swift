@@ -10,14 +10,14 @@ struct FirebaseAIPlanModelClient: PlanModelClient {
         model: String,
         systemInstruction: String,
         userPrompt: String,
-        exerciseKeys: [String]
+        skeleton: PlanSkeleton
     ) async -> GeminiResponse {
         let generativeModel = FirebaseAI.firebaseAI(backend: .googleAI()).generativeModel(
             modelName: model,
             generationConfig: GenerationConfig(
                 temperature: Self.temperature,
                 responseMIMEType: "application/json",
-                responseSchema: GeneratedPlanSchema.schema(exerciseKeys: exerciseKeys)
+                responseSchema: Self.schema(PlanSelectionSchema.schema(for: skeleton))
             ),
             systemInstruction: ModelContent(parts: systemInstruction),
             // Capped: without it the SDK waits its own much longer timeout, and
@@ -36,6 +36,19 @@ struct FirebaseAIPlanModelClient: PlanModelClient {
                 .error("\(model, privacy: .public) refused: \(String(describing: error), privacy: .public)")
             #endif
             return Self.response(for: error)
+        }
+    }
+
+    private static func schema(_ selection: SelectionSchema) -> Schema {
+        switch selection {
+        case .object(let properties):
+            .object(
+                properties: Dictionary(uniqueKeysWithValues: properties.map { ($0.name, schema($0.schema)) }),
+                // Slots before the title, so a session is named after what it holds.
+                propertyOrdering: properties.map(\.name)
+            )
+        case .oneOf(let values, let description): .enumeration(values: values, description: description)
+        case .text(let description): .string(description: description)
         }
     }
 
@@ -74,7 +87,8 @@ struct FirebaseAIPlanModelClient: PlanModelClient {
 
     private static let backendErrorDomain = "com.google.firebase.firebaseai"
 
-    // A whole week normally lands in twenty to thirty seconds.
+    // Generous: the answer is a few hundred tokens, so a call that has not
+    // landed by now has stalled.
     private static let callTimeoutSeconds: TimeInterval = 45
 
     private static let temperature: Float = 0.4
