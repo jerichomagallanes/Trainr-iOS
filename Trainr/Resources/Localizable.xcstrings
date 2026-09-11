@@ -872,6 +872,17 @@
         }
       }
     },
+    "estimated_weight": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Estimated weight"
+          }
+        }
+      }
+    },
     "exercise_in_progress": {
       "extractionState": "manual",
       "localizations": {

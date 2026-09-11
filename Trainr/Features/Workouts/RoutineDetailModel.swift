@@ -79,7 +79,7 @@ final class RoutineDetailModel {
 
         state = RoutineDetailState(
             routine: day.toRoutineUi(
-                previousByKey: previousByKey, units: units, catalog: dependencies.catalog
+                previousByKey: previousByKey, catalog: dependencies.catalog, injuries: user.injuries
             ),
             equipment: day.equipment,
             date: plan.startDate.map { WorkoutWeek.date(of: day.dayNumber, startingFrom: $0) }

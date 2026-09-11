@@ -85,11 +85,22 @@ struct ExerciseCard<Extras: View>: View {
                     muscles
                 }
 
-                Text(exercise.description)
-                    .font(.body14)
-                    .lineSpacing(4)
-                    .foregroundStyle(Color.onSurface)
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                if !exercise.description.isEmpty {
+                    Text(exercise.description)
+                        .font(.body14)
+                        .lineSpacing(4)
+                        .foregroundStyle(Color.onSurface)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+
+                // One line, for the first injury the client declared that this
+                // movement asks care with.
+                if let caution = exercise.caution {
+                    Text(caution.cautionText)
+                        .font(.body14)
+                        .foregroundStyle(Color.dangerInk)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
             }
 
             prescription
@@ -113,13 +124,7 @@ struct ExerciseCard<Extras: View>: View {
         .padding(.bottom, Spacing.screen)
     }
 
-    // A plan the app wrote itself carries no chip text; the sets below it say
-    // what it would have said.
-    private var chip: String {
-        exercise.detail.isEmpty
-            ? Prescription.of(exercise.sets, measure: exercise.measure).text
-            : exercise.detail
-    }
+    private var chip: String { exercise.prescription.text }
 
     private var prescription: some View {
         HStack(spacing: Spacing.extraSmall) {
@@ -136,6 +141,15 @@ struct ExerciseCard<Extras: View>: View {
                     .padding(.horizontal, Spacing.tight)
                     .padding(.vertical, Spacing.hairline)
                     .background(Color.surfaceEmphasis, in: .rect(cornerRadius: CornerRadius.medium))
+                    .padding(.leading, Spacing.extraSmall)
+            }
+            if exercise.isEstimated {
+                Text(L10n.estimatedWeight)
+                    .font(.body14)
+                    .foregroundStyle(Color.onSurfaceMuted)
+                    .padding(.horizontal, Spacing.tight)
+                    .padding(.vertical, Spacing.hairline)
+                    .overlay(RoundedRectangle(cornerRadius: CornerRadius.medium).stroke(Color.cardEdge))
                     .padding(.leading, Spacing.extraSmall)
             }
         }
