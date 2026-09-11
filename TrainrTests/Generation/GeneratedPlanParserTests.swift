@@ -302,17 +302,16 @@ struct GeneratedPlanParserTests {
         #expect(errors == ["day 3, warm_up_jog: has no sets"])
     }
 
+    // An answer is sent back with every problem it has, so one retry can fix
+    // them all rather than one each.
     @Test func everyProblemIsReportedNotJustTheFirst() throws {
         let errors = try errors(
-            of: goodJSON(replacing: "\"prescription\": \"5 minutes\"",
-                         with: "\"prescription\": \"\"")
-                .replacingOccurrences(of: "\"instructions\": \"Alternate elbow to knee.\"",
-                                      with: "\"instructions\": \" \"")
+            of: goodJSON(replacing: "\"restSeconds\": 30,", with: "\"restSeconds\": -30,")
+                .replacingOccurrences(of: "\"weightKg\": 22.5", with: "\"weightKg\": 0")
         )
 
-        #expect(errors == [
-            "day 3, warm_up_jog: prescription is blank",
-            "day 3, bicycle_crunch: instructions are blank"
-        ])
+        #expect(errors.count == 2)
+        #expect(errors.contains { $0.hasPrefix("day 1, goblet_squat, set 3: weightKg must be between") })
+        #expect(errors.contains { $0.hasPrefix("day 3, bicycle_crunch: restSeconds must be") })
     }
 }

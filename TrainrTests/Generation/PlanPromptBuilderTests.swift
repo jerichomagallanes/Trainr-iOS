@@ -43,7 +43,7 @@ struct PlanPromptBuilderTests {
             ),
             weekNumber: previousWeek == nil ? 1 : 2,
             startDate: Date(timeIntervalSince1970: 0),
-            previousWeek: previousWeek
+            history: previousWeek.map { [$0] } ?? []
         )
     }
 

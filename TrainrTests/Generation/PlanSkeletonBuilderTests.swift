@@ -34,7 +34,7 @@ struct PlanSkeletonBuilderTests {
 
     private func build(_ user: UserProfile, previous: WeeklyPlan? = nil) -> PlanSkeleton {
         builder.build(PlanRequest(user: user, weekNumber: 1, startDate: Date(timeIntervalSince1970: 0),
-                                  previousWeek: previous))
+                                  history: previous.map { [$0] } ?? []))
     }
 
     private func everyAnswer() -> [UserProfile] {

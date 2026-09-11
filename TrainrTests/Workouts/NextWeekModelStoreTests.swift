@@ -14,7 +14,7 @@ struct NextWeekModelStoreTests {
     private struct SlowGenerator: PlanGenerator {
         func generate(_ request: PlanRequest) async -> PlanGenerationResult {
             try? await Task.sleep(for: .milliseconds(200))
-            return await CannedPlanGenerator().generate(request)
+            return await TemplatePlanGenerator().generate(request)
         }
     }
 
@@ -29,7 +29,7 @@ struct NextWeekModelStoreTests {
         userID = profile.id
     }
 
-    private func dependencies(_ generator: any PlanGenerator = CannedPlanGenerator()) -> AppDependencies {
+    private func dependencies(_ generator: any PlanGenerator = TemplatePlanGenerator()) -> AppDependencies {
         AppDependencies(store: store, planGenerator: generator, breadcrumbs: NoBreadcrumbs())
     }
 

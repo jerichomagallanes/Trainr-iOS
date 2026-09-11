@@ -4,7 +4,11 @@ nonisolated struct PlanRequest: Sendable {
     var user: UserProfile
     var weekNumber: Int
     var startDate: Date
-    var previousWeek: WeeklyPlan?
+    // Newest first. A stall is two short weeks and a ramp back spans three, so
+    // one previous week is not enough to progress from.
+    var history: [WeeklyPlan] = []
+
+    var previousWeek: WeeklyPlan? { history.first }
 }
 
 // A caller must never be able to mistake a failure for a plan: quietly
