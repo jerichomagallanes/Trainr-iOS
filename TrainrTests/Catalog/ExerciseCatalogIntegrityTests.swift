@@ -223,6 +223,23 @@ struct ExerciseCatalogIntegrityTests {
         #expect(catalog["clean"]?.role == .compound)
     }
 
+    // A key renamed in the catalog would stop the guard excluding anything,
+    // and nothing would say so.
+    @Test func everyMovementTheInjuryGuardNamesExists() {
+        #expect(InjuryGuard.namedKeys.filter { catalog[$0] == nil }.isEmpty)
+    }
+
+    // The worst case the setup screen allows is every injury and no
+    // equipment, and that client still has to be able to squat, press and pull.
+    @Test func everyInjuryAtOnceWithNoEquipmentStillLeavesASquatAPressAndAPull() {
+        let left = catalog.available(with: [Equipment.none])
+            .filter { !InjuryGuard.excludes($0, for: Injury.allCases) }
+
+        #expect(left.contains { $0.pattern.isLowerPush })
+        #expect(left.contains { $0.pattern.isPush })
+        #expect(left.contains { $0.pattern.isPull })
+    }
+
     private static let reviewedUnilateral = [
         "assisted_pistol_squats",
         "barbell_bulgarian_split_squat",

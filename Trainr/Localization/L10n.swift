@@ -42,6 +42,13 @@ nonisolated enum L10n {
     static var buildMuscleDescription: String { String(localized: "build_muscle_description") }
     static var buildMuscleGoal: String { String(localized: "build_muscle_goal") }
     static var cancel: String { String(localized: "cancel") }
+    static var cautionAnkle: String { String(localized: "caution_ankle") }
+    static var cautionHip: String { String(localized: "caution_hip") }
+    static var cautionKnee: String { String(localized: "caution_knee") }
+    static var cautionLowerBack: String { String(localized: "caution_lower_back") }
+    static var cautionNeck: String { String(localized: "caution_neck") }
+    static var cautionShoulder: String { String(localized: "caution_shoulder") }
+    static var cautionWrist: String { String(localized: "caution_wrist") }
     static var close: String { String(localized: "close") }
     static var completed: String { String(localized: "completed") }
     static var createMyPlan: String { String(localized: "create_my_plan") }
