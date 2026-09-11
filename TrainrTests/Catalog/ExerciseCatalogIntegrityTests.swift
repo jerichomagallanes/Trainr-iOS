@@ -240,6 +240,43 @@ struct ExerciseCatalogIntegrityTests {
         #expect(left.contains { $0.pattern.isPull })
     }
 
+    // The engine calibrates every movement for whoever turns up; none of those
+    // first weeks may carry a number the parser would reject or the kit cannot
+    // make.
+    @Test func everyMovementCalibratesToNumbersTheParserAccepts() {
+        var strong = UserProfile()
+        strong.age = 30; strong.gender = .male; strong.weight = 110
+        strong.fitnessGoal = .strength; strong.experienceLevel = .advanced
+        var older = UserProfile()
+        older.age = 72; older.gender = .female; older.weight = 45
+        older.fitnessGoal = .endurance; older.experienceLevel = .beginner
+        var young = UserProfile()
+        young.age = 15; young.gender = .preferNotToSay; young.weight = 55
+        young.fitnessGoal = .flexibility; young.experienceLevel = .beginner
+
+        for movement in catalog.all {
+            for person in [strong, older, young] {
+                let target = ProgressionEngine.next(ProgressionRequest(user: person, exercise: movement, sets: 3))
+                let place = "\(movement.key) for \(person.fitnessGoal)"
+
+                #expect(!target.sets.isEmpty, "\(place)")
+                for set in target.sets {
+                    if movement.measure == .duration {
+                        #expect((5...5400).contains(set.targetSeconds ?? 0), "\(place)")
+                    } else {
+                        #expect((1...100).contains(set.targetReps ?? 0), "\(place)")
+                    }
+                    if let kg = set.targetWeightKg {
+                        #expect(kg >= 0.5 && kg <= LoadStep.ceilingKg(movement.equipment), "\(place)")
+                    }
+                    if movement.measure == .weightAndReps {
+                        #expect(set.targetWeightKg != nil, "\(place)")
+                    }
+                }
+            }
+        }
+    }
+
     private static let reviewedUnilateral = [
         "assisted_pistol_squats",
         "barbell_bulgarian_split_squat",

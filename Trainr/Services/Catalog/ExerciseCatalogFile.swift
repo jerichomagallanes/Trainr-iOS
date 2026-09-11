@@ -22,6 +22,7 @@ private nonisolated struct CatalogEntry: Decodable {
     // back to a property default the way kotlinx.serialization does, so the
     // wire type has to be optional or the whole file stops decoding.
     var unilateral: Bool?
+    var oneHanded: Bool?
 }
 
 nonisolated enum ExerciseCatalogReader {
@@ -45,6 +46,7 @@ nonisolated enum ExerciseCatalogReader {
             secondary: entry.secondary.compactMap(MuscleGroup.init(rawValue:)),
             equipment: kit, measure: measure, pattern: pattern, staple: entry.staple,
             unilateral: entry.unilateral ?? false,
+            oneHanded: entry.oneHanded ?? false,
             summary: entry.summary, steps: entry.steps
         )
     }

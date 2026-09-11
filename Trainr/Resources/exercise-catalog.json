@@ -2317,6 +2317,7 @@
    "measure": "WEIGHT_AND_REPS",
    "pattern": "ISOLATION",
    "unilateral": true,
+   "oneHanded": true,
    "staple": false,
    "summary": "A seated single-arm curl with the elbow braced on your thigh.",
    "steps": [
@@ -2868,6 +2869,7 @@
    "equipment": "DUMBBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "HINGE",
+   "oneHanded": true,
    "staple": false,
    "summary": "A short-range glute pump with the soles of the feet together.",
    "steps": [
@@ -2942,6 +2944,7 @@
    "equipment": "DUMBBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "HINGE",
+   "oneHanded": true,
    "staple": false,
    "summary": "A thrust with a dumbbell across the hips. Tuck your ribs down.",
    "steps": [
@@ -3094,6 +3097,7 @@
    "equipment": "DUMBBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "ISOLATION",
+   "oneHanded": true,
    "staple": false,
    "summary": "An overhead stretch for the lats. Keep your ribs down.",
    "steps": [
@@ -3375,6 +3379,7 @@
    "measure": "WEIGHT_AND_REPS",
    "pattern": "CORE",
    "unilateral": true,
+   "oneHanded": true,
    "staple": false,
    "summary": "A loaded side bend. Hold weight in one hand only.",
    "steps": [
@@ -3393,6 +3398,7 @@
    "measure": "WEIGHT_AND_REPS",
    "pattern": "ISOLATION",
    "unilateral": true,
+   "oneHanded": true,
    "staple": false,
    "summary": "A one-arm overhead extension. Hold your elbow to keep it still.",
    "steps": [
@@ -3413,6 +3419,7 @@
    "measure": "WEIGHT_AND_REPS",
    "pattern": "HINGE",
    "unilateral": true,
+   "oneHanded": true,
    "staple": false,
    "summary": "A one-legged thrust. Keep your hips square as you lift.",
    "steps": [
@@ -3489,6 +3496,7 @@
    "equipment": "DUMBBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "CONDITIONING",
+   "oneHanded": true,
    "staple": false,
    "summary": "Floor to overhead with one arm. Drive with the hips, not the arm.",
    "steps": [
@@ -3645,6 +3653,7 @@
    "equipment": "DUMBBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "SQUAT",
+   "oneHanded": true,
    "staple": false,
    "summary": "A wide squat holding one dumbbell between your legs.",
    "steps": [
@@ -3680,6 +3689,7 @@
    "measure": "WEIGHT_AND_REPS",
    "pattern": "ISOLATION",
    "unilateral": true,
+   "oneHanded": true,
    "staple": false,
    "summary": "A short-range triceps squeeze. The upper arm never moves.",
    "steps": [
@@ -4131,6 +4141,7 @@
    "equipment": "DUMBBELL",
    "measure": "WEIGHT_AND_REPS",
    "pattern": "SQUAT",
+   "oneHanded": true,
    "staple": true,
    "summary": "A squat holding one weight at your chest, which keeps you upright.",
    "steps": [
@@ -6491,6 +6502,7 @@
    "measure": "WEIGHT_AND_REPS",
    "pattern": "ISOLATION",
    "unilateral": true,
+   "oneHanded": true,
    "staple": false,
    "summary": "A concentration curl with the palm down, which shifts work to the forearm.",
    "steps": [
