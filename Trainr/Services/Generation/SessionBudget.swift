@@ -2,9 +2,7 @@ import Foundation
 
 // A session is a time budget, and rest spends most of it. Heavy strength work
 // asks 3-5 minutes between sets (ACSM 2009; Schoenfeld 2016), so half an hour
-// buys six working sets, not the dozen a model will happily write. Working the
-// count out here turns "sum close to the session length" - three numbers the
-// model has to keep in agreement - into one number it is handed.
+// buys six working sets.
 nonisolated enum SessionBudget {
 
     // Warm-up, changing, and the walk between stations.
@@ -25,19 +23,31 @@ nonisolated enum SessionBudget {
         }
     }
 
+    // Isolation work does not need the three minutes a heavy compound does;
+    // the existing brief already asked for 90-120 on multi-joint and 60-90 on
+    // isolation, and this is that, worked out rather than written out.
+    static func restSeconds(for goal: FitnessGoal, role: ExerciseRole) -> Int {
+        switch role {
+        case .timed: timedRest
+        case .compound: restSeconds(for: goal)
+        case .isolation: max(restSeconds(for: goal) * 3 / 4 / restGranularity * restGranularity,
+                             timedRest)
+        }
+    }
+
     static func maxSetsPerSession(_ user: UserProfile) -> Int {
         let usableSeconds = (user.workoutDuration - overheadMinutes) * 60
         let perSet = workSecondsPerSet + restSeconds(for: user.fitnessGoal)
         return max(floorSets, usableSeconds / perSet)
     }
 
-    // The floor worth programming is 4 hard sets per muscle group per week
-    // (Iversen 2021); growth keeps improving up to 10 and beyond (Schoenfeld
-    // 2017), which only fits once there are days to spread it over.
-    static func weeklySetsPerMuscle(_ user: UserProfile) -> Int {
-        switch user.fitnessGoal {
-        case .muscleGain, .strength: user.workoutDaysPerWeek >= 3 ? 10 : 6
-        default: 6
-        }
+    // The session length is what the client answered; this is the point past
+    // which the day is no longer that session. Half again as long as "about
+    // 45 minutes" is not about 45 minutes.
+    static func sessionCeilingMinutes(_ user: UserProfile) -> Int {
+        user.workoutDuration * 3 / 2
     }
+
+    private static let timedRest = 30
+    private static let restGranularity = 15
 }

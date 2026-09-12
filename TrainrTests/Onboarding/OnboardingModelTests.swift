@@ -7,11 +7,10 @@ import Testing
 struct OnboardingModelTests {
 
     private struct RefusingGenerator: PlanGenerator {
-        let reason: PlanGenerationFailure
-        func generate(_ request: PlanRequest) async -> PlanGenerationResult { .failure(reason) }
+        func generate(_ request: PlanRequest) async -> PlanGenerationResult { .failed }
     }
 
-    private func dependencies(_ generator: any PlanGenerator = CannedPlanGenerator()) throws -> AppDependencies {
+    private func dependencies(_ generator: any PlanGenerator = WeekPlanGenerator()) throws -> AppDependencies {
         AppDependencies(
             store: TrainingStore(container: try TrainingStore.container(inMemory: true)),
             planGenerator: generator,
@@ -22,10 +21,10 @@ struct OnboardingModelTests {
     private func answerEverything(_ model: OnboardingModel, liftingUnits: UnitSystem? = .metric) {
         model.updateBasicInfo(firstName: "Alex", age: 30, gender: .male, experience: .beginner)
         model.updateBodyMetrics(height: 175, weight: 72, units: .imperial)
-        model.updateFitnessGoal(.muscleGain, workoutType: .strength)
+        model.updateFitnessGoal(.muscleGain)
         model.updateWorkoutSetup(
-            location: .home, equipment: [.dumbbells], liftingUnits: liftingUnits,
-            daysPerWeek: 3, duration: 45, preferredTime: .morning
+            equipment: [.dumbbell], liftingUnits: liftingUnits,
+            daysPerWeek: 3, duration: 45
         )
         model.updateLimitations(injuries: [.lowerBack])
     }
@@ -59,12 +58,9 @@ struct OnboardingModelTests {
         #expect(model.profile.height == 175)
         #expect(model.profile.weight == 72)
         #expect(model.profile.fitnessGoal == .muscleGain)
-        #expect(model.profile.workoutType == .strength)
-        #expect(model.profile.workoutLocation == .home)
-        #expect(model.profile.availableEquipment == [.dumbbells])
+        #expect(model.profile.availableEquipment == [.dumbbell])
         #expect(model.profile.workoutDaysPerWeek == 3)
         #expect(model.profile.workoutDuration == 45)
-        #expect(model.profile.preferredWorkoutTime == .morning)
         #expect(model.profile.injuries == [.lowerBack])
         #expect(model.filled(for: .setup, editing: false) != nil)
     }
@@ -86,12 +82,12 @@ struct OnboardingModelTests {
         #expect(model.profile.weightUnits == .imperial)
     }
 
-    @Test("Limitations leave the workout style alone")
-    func limitationsLeaveStyleAlone() throws {
+    @Test("Limitations leave the goal alone")
+    func limitationsLeaveGoalAlone() throws {
         let model = OnboardingModel(dependencies: try dependencies())
-        model.updateFitnessGoal(.endurance, workoutType: .cardio)
+        model.updateFitnessGoal(.endurance)
         model.updateLimitations(injuries: [])
-        #expect(model.profile.workoutType == .cardio)
+        #expect(model.profile.fitnessGoal == .endurance)
     }
 
     @Test("A successful save stores the user and a plan against them, and says so")
@@ -114,14 +110,14 @@ struct OnboardingModelTests {
 
     @Test("A failed generation writes no plan, keeps the first profile, and says why")
     func failureKeepsProfileWritesNoPlan() async throws {
-        let deps = try dependencies(RefusingGenerator(reason: .offline))
+        let deps = try dependencies(RefusingGenerator())
         let model = OnboardingModel(dependencies: deps)
         answerEverything(model)
 
         model.saveUserProfile()
         await settle(model)
 
-        #expect(model.generationFailure == .offline)
+        #expect(model.generationFailure == .failed)
         #expect(!model.isCompleted)
         let user = try #require(try deps.store.currentUser())
         #expect(try deps.store.plans(for: user.id).isEmpty)
@@ -131,7 +127,7 @@ struct OnboardingModelTests {
     func failedRegenerationLeavesPlan() async throws {
         let store = TrainingStore(container: try TrainingStore.container(inMemory: true))
         let first = OnboardingModel(dependencies: AppDependencies(
-            store: store, planGenerator: CannedPlanGenerator(), breadcrumbs: NoBreadcrumbs()))
+            store: store, planGenerator: WeekPlanGenerator(), breadcrumbs: NoBreadcrumbs()))
         answerEverything(first)
         first.saveUserProfile()
         await settle(first)
@@ -139,7 +135,7 @@ struct OnboardingModelTests {
         let before = try store.plans(for: user.id)
 
         let again = OnboardingModel(dependencies: AppDependencies(
-            store: store, planGenerator: RefusingGenerator(reason: .failed), breadcrumbs: NoBreadcrumbs()))
+            store: store, planGenerator: RefusingGenerator(), breadcrumbs: NoBreadcrumbs()))
         again.saveUserProfile()
         await settle(again)
 
@@ -173,7 +169,7 @@ struct OnboardingModelTests {
         let model = OnboardingModel(dependencies: try dependencies())
 
         model.updateBasicInfo(firstName: "Alex", age: 30, gender: .male, experience: .beginner)
-        model.updateFitnessGoal(.muscleGain, workoutType: .strength)
+        model.updateFitnessGoal(.muscleGain)
 
         #expect(model.answeredSteps == [.basicInfo, .goals])
     }
@@ -227,7 +223,7 @@ struct OnboardingModelTests {
     private struct SlowGenerator: PlanGenerator {
         func generate(_ request: PlanRequest) async -> PlanGenerationResult {
             try? await Task.sleep(for: .milliseconds(400))
-            return await CannedPlanGenerator().generate(request)
+            return await WeekPlanGenerator().generate(request)
         }
     }
 

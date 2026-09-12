@@ -1,11 +1,18 @@
 import Foundation
 
-// What the client's own answers make possible, so a plan that cannot be
-// performed is rejected while the model still has an attempt left to fix it.
+// What the client's own answers make possible, so a week that cannot be
+// performed is never saved.
 nonisolated struct PlanLimits {
     var maxSetsPerSession: Int
-
-    static let unbounded = PlanLimits(maxSetsPerSession: .max)
+    // Empty means the vocabulary is not being enforced, which is only true in
+    // tests: a real request always has a shortlist.
+    var allowedKeys: Set<String> = []
+    var requiredPatterns: Set<PatternRequirement> = []
+    // Zero means unchecked, which is only true in tests: the set cap is a
+    // proxy for time and a timed set breaks it, so the minutes are what
+    // actually has to fit.
+    var sessionMinutes = 0
+    var sessionCeilingMinutes = 0
 }
 
 nonisolated enum PlanParseResult {
@@ -13,26 +20,26 @@ nonisolated enum PlanParseResult {
     case invalid([String])
 }
 
-// The generator never writes ids, dates, week numbers or completion state — the
-// model has no clock — so those arrive as parameters instead of JSON.
+// Ids, dates, week numbers and completion state arrive as parameters, never
+// inside the plan.
 nonisolated struct GeneratedPlanParser {
 
+    private let catalog: any ExerciseCatalog
+
+    init(catalog: any ExerciseCatalog) {
+        self.catalog = catalog
+    }
+
     func parse(
-        _ json: String,
+        _ generated: GeneratedPlan,
         userID: UUID,
         weekNumber: Int,
         startDate: Date,
-        limits: PlanLimits = .unbounded
+        limits: PlanLimits
     ) -> PlanParseResult {
-        let generated: GeneratedPlan
-        do {
-            generated = try JSONDecoder().decode(GeneratedPlan.self, from: Data(json.utf8))
-        } catch {
-            return .invalid(["not a generated plan: \(error)"])
-        }
-
         var errors: [String] = []
         check(generated, limits: limits, into: &errors)
+        checkPatterns(generated, limits: limits, into: &errors)
         if !errors.isEmpty { return .invalid(errors) }
 
         return .parsed(
@@ -49,6 +56,23 @@ nonisolated struct GeneratedPlanParser {
     }
 
     private let keyShape = /[a-z][a-z0-9_]*/
+
+    // The three patterns that earn the most for the time they take. Checked
+    // across the week rather than the day, because a split spreads them.
+    private func checkPatterns(
+        _ plan: GeneratedPlan,
+        limits: PlanLimits,
+        into errors: inout [String]
+    ) {
+        guard !limits.requiredPatterns.isEmpty else { return }
+        let patterns = plan.days
+            .flatMap(\.exercises)
+            .compactMap { catalog[$0.exerciseKey]?.pattern }
+        for requirement in limits.requiredPatterns.sorted(by: { $0.rawValue < $1.rawValue })
+        where !patterns.contains(where: requirement.isMet(by:)) {
+            errors.append("plan: the week has no \(requirement.label), and needs one")
+        }
+    }
 
     private func check(_ plan: GeneratedPlan, limits: PlanLimits, into errors: inout [String]) {
         if plan.title.isBlank { errors.append("plan: title is blank") }
@@ -80,16 +104,24 @@ nonisolated struct GeneratedPlanParser {
                     + "\(limits.maxSetsPerSession), warm-up included"
             )
         }
+        let dayMinutes = SessionMinutes.forDay(day.exercises.map { minutes(of: $0) })
+        if limits.sessionCeilingMinutes > 0, dayMinutes > limits.sessionCeilingMinutes {
+            errors.append(
+                "\(location): runs about \(dayMinutes) minutes of work and rest, and the "
+                    + "client asked for about \(limits.sessionMinutes)"
+            )
+        }
         for (key, count) in Dictionary(grouping: day.exercises, by: \.exerciseKey)
             .mapValues(\.count).sorted(by: { $0.key < $1.key }) where count > 1 {
             errors.append("\(location): exerciseKey '\(key)' appears more than once")
         }
-        for exercise in day.exercises { check(exercise, at: location, into: &errors) }
+        for exercise in day.exercises { check(exercise, at: location, limits: limits, into: &errors) }
     }
 
     private func check(
         _ exercise: GeneratedExercise,
         at dayLocation: String,
+        limits: PlanLimits,
         into errors: inout [String]
     ) {
         let slug = exercise.exerciseKey.isBlank ? "exercise" : exercise.exerciseKey
@@ -99,9 +131,15 @@ nonisolated struct GeneratedPlanParser {
                 "\(location): exerciseKey '\(exercise.exerciseKey)' is not a lower_snake_case slug"
             )
         }
-        if exercise.name.isBlank { errors.append("\(location): name is blank") }
-        if exercise.prescription.isBlank { errors.append("\(location): prescription is blank") }
-        if exercise.instructions.isBlank { errors.append("\(location): instructions are blank") }
+        if !limits.allowedKeys.isEmpty, !limits.allowedKeys.contains(exercise.exerciseKey) {
+            errors.append(
+                "\(location): '\(exercise.exerciseKey)' is not one of the movements offered; "
+                    + "choose only from that list"
+            )
+        }
+        if catalog[exercise.exerciseKey] == nil, !limits.allowedKeys.isEmpty {
+            errors.append("\(location): '\(exercise.exerciseKey)' is not a movement the app knows")
+        }
         if let rest = exercise.restSeconds, !Bounds.rest.contains(rest) {
             errors.append(
                 "\(location): restSeconds must be \(Bounds.rest.lowerBound)"
@@ -117,7 +155,7 @@ nonisolated struct GeneratedPlanParser {
         }
         for (index, set) in exercise.sets.enumerated() {
             check(set, at: "\(location), set \(index + 1)",
-                  measuredBy: exercise.resolvedMeasure, into: &errors)
+                  measuredBy: resolvedMeasure(of: exercise), into: &errors)
         }
     }
 
@@ -151,8 +189,31 @@ nonisolated struct GeneratedPlanParser {
         }
     }
 
-    // Bounds, not tastes: a number outside these is one no client could
-    // perform, and it costs less to ask again than to show it to them.
+    // How a movement is measured is a property of the movement, so the
+    // catalog answers it. A key the catalog does not know degrades to reps,
+    // the same fallback the store uses.
+    private func resolvedMeasure(of exercise: GeneratedExercise) -> ExerciseMeasure {
+        catalog[exercise.exerciseKey]?.measure ?? .reps
+    }
+
+    // How long the exercise takes is arithmetic on what was prescribed.
+    // A rep is about three seconds at the moderate velocity ACSM asks for.
+    // Shared with the budgeting side so a plan can never be built that its own
+    // ceiling check then rejects.
+    private func minutes(of exercise: GeneratedExercise) -> Int {
+        let measure = resolvedMeasure(of: exercise)
+        let perSet = measure == .duration
+            ? exercise.sets.map { $0.seconds ?? 0 }
+            : exercise.sets.map { $0.reps ?? 0 }
+        return SessionMinutes.forExercise(
+            measure: measure,
+            perSet: perSet,
+            restSeconds: exercise.restSeconds ?? 0,
+            unilateral: catalog[exercise.exerciseKey]?.unilateral == true
+        )
+    }
+
+    // Bounds, not tastes: a number outside these is one no client could perform.
     private enum Bounds {
         static let maxExercisesPerDay = 12
         static let maxSetsPerExercise = 10
@@ -162,31 +223,37 @@ nonisolated struct GeneratedPlanParser {
         static let weightKg = 0.5...500.0
     }
 
+    // The day's kit is the union of what its movements need, which the
+    // catalog already knows.
     private func day(_ generated: GeneratedDay) -> WorkoutDay {
-        WorkoutDay(
+        var kit: [String] = []
+        for item in generated.exercises.compactMap({ catalog[$0.exerciseKey] })
+            .map(\.equipment).filter({ $0 != Equipment.none })
+            .map(\.catalogDisplayText) where !kit.contains(item) {
+            kit.append(item)
+        }
+        return WorkoutDay(
             dayNumber: generated.dayNumber,
             title: generated.title,
-            duration: generated.exercises.reduce(0) { $0 + $1.minutes },
+            duration: SessionMinutes.forDay(generated.exercises.map { minutes(of: $0) }),
             exerciseCount: generated.exercises.count,
-            equipment: generated.equipment ?? [],
+            equipment: kit,
             exercises: generated.exercises.map(exercise)
         )
     }
 
     private func exercise(_ generated: GeneratedExercise) -> WorkoutExercise {
-        let measure = generated.resolvedMeasure
+        let measure = resolvedMeasure(of: generated)
         return WorkoutExercise(
             exerciseKey: generated.exerciseKey,
-            name: generated.name,
+            name: catalog[generated.exerciseKey]?.name ?? generated.exerciseKey,
             measure: measure,
             sets: generated.sets.enumerated().map { index, set in
                 self.set(set, number: index + 1, measuredBy: measure)
             },
             setCount: generated.sets.count,
-            durationMinutes: generated.minutes,
-            prescription: generated.prescription,
-            restTime: generated.restSeconds,
-            instructions: generated.instructions
+            durationMinutes: minutes(of: generated),
+            restTime: generated.restSeconds
         )
     }
 
@@ -209,23 +276,15 @@ nonisolated struct GeneratedPlanParser {
     }
 }
 
-extension GeneratedExercise {
-    // How long the exercise takes is arithmetic on what was prescribed, not a
-    // fourth number for the model to keep in agreement with the other three.
-    // A rep is about three seconds at the moderate velocity ACSM asks for.
-    nonisolated var minutes: Int {
-        let secondsPerRep = 3
-        let work = switch resolvedMeasure {
-        case .duration: sets.reduce(0) { $0 + ($1.seconds ?? 0) }
-        default: sets.reduce(0) { $0 + ($1.reps ?? 0) * secondsPerRep }
+extension Equipment {
+    // The day's kit chip, spelled the same way the Android app spells it so
+    // the two never disagree on screen. Not localized: the localized names
+    // live behind L10n, which the parser cannot reach.
+    nonisolated var catalogDisplayText: String {
+        rawValue.reduce(into: "") { text, character in
+            if character.isUppercase, !text.isEmpty { text.append(" ") }
+            text.append(text.isEmpty ? Character(character.uppercased()) : character)
         }
-        let rest = (restSeconds ?? 0) * max(0, sets.count - 1)
-        return max(1, Int((Double(work + rest) / 60).rounded(.up)))
-    }
-
-    // Unknown measures degrade to reps, the same fallback the store uses.
-    nonisolated var resolvedMeasure: ExerciseMeasure {
-        ExerciseMeasure(rawValue: measure) ?? .reps
     }
 }
 

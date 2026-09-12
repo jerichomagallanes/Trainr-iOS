@@ -1,8 +1,8 @@
 import XCTest
 
 // Every way to reach a generation, walked as a non-subscriber. A route that
-// forgets the gate spends real money on a model call, so each one is named here
-// rather than trusted to a single check in the navigation code.
+// forgets the gate gives a paid week away, so each one is named here rather
+// than trusted to a single check in the navigation code.
 final class PaywallGateTests: XCTestCase {
 
     private var app: XCUIApplication!
@@ -15,7 +15,7 @@ final class PaywallGateTests: XCTestCase {
     private func launchedSpent(_ fixture: Fixture) -> XCUIApplication {
         let app = XCUIApplication()
         app.launchArguments = [
-            "-cannedGeneration", "-inMemoryStore", "-splashSeconds", "0",
+            "-inMemoryStore", "-splashSeconds", "0",
             "-seedFixture", fixture.rawValue, "-freeGenerationUsed"
         ]
         app.launch()
@@ -30,7 +30,7 @@ final class PaywallGateTests: XCTestCase {
         XCTAssertTrue(app.staticTexts["Upgrade to Trainr Pro"].waitForExistence(timeout: 15))
         XCTAssertFalse(app.staticTexts["Generating your workout plan"].exists)
         app.buttons["CONTINUE"].tap()
-        XCTAssertTrue(app.staticTexts["Get the full coach"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.staticTexts["Unlock every week"].waitForExistence(timeout: 10))
     }
 
     @MainActor
@@ -96,14 +96,15 @@ final class PaywallGateTests: XCTestCase {
         assertNoPrompt()
     }
 
-    // Repeating a week is a local copy, so it must stay free too.
+    // Repeating a week is another week of training, and only the first of those
+    // is free, so the local copy is behind the gate like everything else.
     @MainActor
-    func testRepeatingAWeekStaysFree() {
+    func testRepeatingAWeekAsksForPro() {
         app = launchedSpent(.finishedWeek)
         XCTAssertTrue(app.staticTexts["YOUR WEEKLY WORKOUT PLAN"].waitForExistence(timeout: 20))
         app.buttons["Workout plan options"].tap()
         app.buttons["Repeat this week"].tap()
-        assertNoPrompt()
+        assertPromptThenPaywall()
     }
 
     // The profile menu is the only way in for someone who has not hit the limit,
@@ -116,7 +117,7 @@ final class PaywallGateTests: XCTestCase {
         app.buttons["Trainr Pro"].tap()
         // Straight to the offer: nothing was reached for, so there is no limit
         // to explain first.
-        XCTAssertTrue(app.staticTexts["Get the full coach"].waitForExistence(timeout: 15))
+        XCTAssertTrue(app.staticTexts["Unlock every week"].waitForExistence(timeout: 15))
         XCTAssertFalse(app.staticTexts["Upgrade to Trainr Pro"].exists)
     }
 
@@ -126,7 +127,7 @@ final class PaywallGateTests: XCTestCase {
     func testTheProfileMenuShowsTheSubscriptionToASubscriber() {
         app = XCUIApplication()
         app.launchArguments = [
-            "-cannedGeneration", "-inMemoryStore", "-splashSeconds", "0",
+            "-inMemoryStore", "-splashSeconds", "0",
             "-seedFixture", Fixture.midWeek.rawValue, "-proUnlocked"
         ]
         app.launch()
@@ -135,7 +136,7 @@ final class PaywallGateTests: XCTestCase {
         app.buttons["Trainr Pro"].tap()
         XCTAssertTrue(app.staticTexts["Your subscription is active"].waitForExistence(timeout: 15))
         XCTAssertTrue(app.buttons["Restore purchase"].exists)
-        XCTAssertFalse(app.staticTexts["Get the full coach"].exists)
+        XCTAssertFalse(app.staticTexts["Unlock every week"].exists)
     }
 
     // The very first plan is the free one, so a fresh install must not be asked.

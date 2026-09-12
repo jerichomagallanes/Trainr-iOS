@@ -143,9 +143,7 @@ final class TrainingStore {
         record.measure = exercise.measure.rawValue
         record.setCount = exercise.setCount
         record.durationMinutes = exercise.durationMinutes
-        record.prescription = exercise.prescription
         record.restTime = exercise.restTime
-        record.instructions = exercise.instructions
         record.videoTutorialURL = exercise.videoTutorialURL
         record.isCompleted = exercise.isCompleted
         record.notes = exercise.notes

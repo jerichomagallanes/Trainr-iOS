@@ -9,6 +9,8 @@ struct ExerciseCard<Extras: View>: View {
     var onDeleteSet: (ExerciseSet) -> Void = { _ in }
     @ViewBuilder let extras: Extras
 
+    @ScaledMetric(relativeTo: .caption) private var muscleSize = TextRole.body12.size
+
     private var accentInk: Color { exercise.isCompleted ? .statusDoneInk : .onSurface }
     private var accentOutline: Color { exercise.isCompleted ? .statusDoneEdge : .cardEdge }
     private var accentDivider: Color { exercise.isCompleted ? .statusDoneEdge : .cardRule }
@@ -29,6 +31,20 @@ struct ExerciseCard<Extras: View>: View {
             RoundedRectangle(cornerRadius: CornerRadius.medium)
                 .strokeBorder(accentOutline, lineWidth: 1)
         }
+    }
+
+    private var muscles: some View {
+        Text(
+            MuscleLine.text(
+                primary: exercise.primaryMuscle,
+                secondary: exercise.secondaryMuscles,
+                primaryFont: TextRole.labelSmall.font(at: muscleSize),
+                primaryColor: accentInk
+            )
+        )
+        .font(.body12)
+        .foregroundStyle(Color.onSurfaceMuted)
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     private var header: some View {
@@ -62,11 +78,30 @@ struct ExerciseCard<Extras: View>: View {
 
     private func body(padding: CGFloat) -> some View {
         VStack(alignment: .leading, spacing: Spacing.screen) {
-            Text(exercise.description)
-                .font(.body14)
-                .lineSpacing(4)
-                .foregroundStyle(Color.onSurface)
-                .frame(maxWidth: .infinity, alignment: .leading)
+            // The muscles belong to the movement's name, not to the coaching
+            // note under it, so the pair sits closer than the card's rhythm.
+            VStack(alignment: .leading, spacing: Spacing.extraSmall) {
+                if !exercise.primaryMuscle.isEmpty {
+                    muscles
+                }
+
+                if !exercise.description.isEmpty {
+                    Text(exercise.description)
+                        .font(.body14)
+                        .lineSpacing(4)
+                        .foregroundStyle(Color.onSurface)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+
+                // One line, for the first injury the client declared that this
+                // movement asks care with.
+                if let caution = exercise.caution {
+                    Text(caution.cautionText)
+                        .font(.body14)
+                        .foregroundStyle(Color.dangerInk)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+            }
 
             prescription
 
@@ -89,6 +124,8 @@ struct ExerciseCard<Extras: View>: View {
         .padding(.bottom, Spacing.screen)
     }
 
+    private var chip: String { exercise.prescription.text }
+
     private var prescription: some View {
         HStack(spacing: Spacing.extraSmall) {
             Image(systemName: "clock")
@@ -97,13 +134,24 @@ struct ExerciseCard<Extras: View>: View {
             Text(L10n.minutes(exercise.minutes))
                 .font(.body14)
                 .foregroundStyle(Color.onSurface)
-            Text(exercise.detail)
-                .font(.body14)
-                .foregroundStyle(Color.onSurfaceEmphasis)
-                .padding(.horizontal, Spacing.tight)
-                .padding(.vertical, Spacing.hairline)
-                .background(Color.surfaceEmphasis, in: .rect(cornerRadius: CornerRadius.medium))
-                .padding(.leading, Spacing.extraSmall)
+            if !chip.isEmpty {
+                Text(chip)
+                    .font(.body14)
+                    .foregroundStyle(Color.onSurfaceEmphasis)
+                    .padding(.horizontal, Spacing.tight)
+                    .padding(.vertical, Spacing.hairline)
+                    .background(Color.surfaceEmphasis, in: .rect(cornerRadius: CornerRadius.medium))
+                    .padding(.leading, Spacing.extraSmall)
+            }
+            if exercise.isEstimated {
+                Text(L10n.estimatedWeight)
+                    .font(.body14)
+                    .foregroundStyle(Color.onSurfaceMuted)
+                    .padding(.horizontal, Spacing.tight)
+                    .padding(.vertical, Spacing.hairline)
+                    .overlay(RoundedRectangle(cornerRadius: CornerRadius.medium).stroke(Color.cardEdge))
+                    .padding(.leading, Spacing.extraSmall)
+            }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }

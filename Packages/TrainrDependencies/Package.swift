@@ -21,8 +21,6 @@ let package = Package(
         .target(
             name: "TrainrDependencies",
             dependencies: [
-                .product(name: "FirebaseAILogic", package: "firebase-ios-sdk"),
-                .product(name: "FirebaseAppCheck", package: "firebase-ios-sdk"),
                 // Re-exported by Exports.swift and imported by name in the app.
                 // It resolved transitively before, so a restructuring upstream
                 // would have broken the app with nothing here to point at.

@@ -88,9 +88,9 @@ struct RootView: View {
                 },
                 onUpdateProfile: { path.append(.review(fromPlan: true, profileOnly: true)) },
                 onOpenPro: { path.append(.pro) },
-                onStartNextWeek: { ask(.nextWeek, toReach: .generatingNextWeek) },
-                onRepeatWeek: { nextWeek?.repeatWeek() },
-                onRegenerateWeek: { ask(.rewrite, toReach: .regeneratingWeek) },
+                onStartNextWeek: { ask(.nextWeek) { path.append(.generatingNextWeek) } },
+                onRepeatWeek: { ask(.nextWeek) { nextWeek?.repeatWeek() } },
+                onRegenerateWeek: { ask(.rewrite) { path.append(.regeneratingWeek) } },
                 onCreatePlan: {
                     path.append(.review(fromPlan: true, profileOnly: false))
                 }
@@ -99,10 +99,7 @@ struct RootView: View {
         }
     }
 
-    // A week already generated is never taken away, so only the act of writing a
-    // new one asks for Pro.
-    // Spent on a week that arrived, never on one that failed: a model that
-    // refused has taken nothing.
+    // Spent only on a week that arrived.
     private func spendFreeGeneration() {
         guard !entitlements.isPro else { return }
         allowance.markUsed()
@@ -111,9 +108,9 @@ struct RootView: View {
     // A week already generated is never taken away, so only writing a new one
     // asks for Pro, and it asks where the tap happened rather than by replacing
     // the screen.
-    private func ask(_ reason: PaywallReason, toReach route: Route) {
+    private func ask(_ reason: PaywallReason, then action: () -> Void) {
         if entitlements.isPro || !allowance.hasBeenUsed() {
-            path.append(route)
+            action()
         } else {
             prompt = reason
         }
@@ -137,7 +134,7 @@ struct RootView: View {
         return 2
     }
 
-    static var version: String {
+    fileprivate static var version: String {
         Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? ""
     }
 
@@ -178,8 +175,8 @@ struct RootView: View {
             FitnessGoalView(
                 initial: onboarding.filled(for: .goals, editing: editing),
                 isEditing: editing,
-                onNext: { goal, workoutType in
-                    onboarding.updateFitnessGoal(goal, workoutType: workoutType)
+                onNext: { goal in
+                    onboarding.updateFitnessGoal(goal)
                     step(editing: editing, next: .workoutSetup(editing: false))
                 },
                 onBack: pop
@@ -187,12 +184,13 @@ struct RootView: View {
 
         case .workoutSetup(let editing):
             WorkoutSetupView(
+                stockedEquipment: onboarding.stockedEquipment,
                 initial: onboarding.filled(for: .setup, editing: editing),
                 isEditing: editing,
-                onNext: { location, equipment, liftingUnits, days, duration, time in
+                onNext: { equipment, liftingUnits, days, duration in
                     onboarding.updateWorkoutSetup(
-                        location: location, equipment: equipment, liftingUnits: liftingUnits,
-                        daysPerWeek: days, duration: duration, preferredTime: time)
+                        equipment: equipment, liftingUnits: liftingUnits,
+                        daysPerWeek: days, duration: duration)
                     step(editing: editing, next: .limitations(editing: false))
                 },
                 onBack: pop
@@ -219,7 +217,7 @@ struct RootView: View {
                         onboarding.updateProfileOnly { path = [] }
                     } else {
                         if fromPlan {
-                            ask(.freshPlan, toReach: .generating)
+                            ask(.freshPlan) { path.append(.generating) }
                         } else {
                             path.append(.generating)
                         }
@@ -234,6 +232,8 @@ struct RootView: View {
                 isReady: onboarding.isCompleted,
                 onStart: { onboarding.saveUserProfile() },
                 onDone: {
+                    // Spent once the week has arrived, whichever tier built it,
+                    // so a failed generation costs nothing.
                     spendFreeGeneration()
                     restartOnHome()
                 },
@@ -280,7 +280,7 @@ struct RootView: View {
                 weekNumber: weekNumber,
                 onBack: pop,
                 onViewProgress: { path.append(.weeklyProgress) },
-                onGenerateNextWeek: { ask(.nextWeek, toReach: .generatingNextWeek) }
+                onGenerateNextWeek: { ask(.nextWeek) { path.append(.generatingNextWeek) } }
             )
 
         case .weeklyProgress:
@@ -326,8 +326,10 @@ struct RootView: View {
                 // The copy joins the plan at the end, so refreshing here would
                 // re-read the old week; home is where the copy now lives.
                 onRepeatWeek: {
-                    nextWeek?.repeatWeek(numbered: weekNumber)
-                    if nextWeek?.isReady == true { restartOnHome() }
+                    ask(.nextWeek) {
+                        nextWeek?.repeatWeek(numbered: weekNumber)
+                        if nextWeek?.isReady == true { restartOnHome() }
+                    }
                 },
                 onBack: pop
             )
@@ -343,7 +345,10 @@ struct RootView: View {
             GeneratingView(
                 isReady: nextWeek.isReady,
                 onStart: start,
-                onDone: restartOnHome,
+                onDone: {
+                    spendFreeGeneration()
+                    restartOnHome()
+                },
                 failure: nextWeek.failure,
                 failureCount: nextWeek.failureCount,
                 onRetry: start,
@@ -369,7 +374,7 @@ struct RootView: View {
     }
 }
 
-struct SplashView: View {
+private struct SplashView: View {
     var body: some View {
         VStack(spacing: Spacing.medium) {
             Image("Wordmark")

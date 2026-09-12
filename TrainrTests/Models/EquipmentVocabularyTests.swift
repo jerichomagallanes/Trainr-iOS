@@ -3,39 +3,38 @@ import Testing
 
 struct EquipmentVocabularyTests {
 
-    // The three movements worth the time they take are a leg press, an upper
-    // push and an upper pull. A gym list with nothing to pull from leaves the
-    // model to invent the equipment or skip the pattern.
-    @Test func aGymCanPull() {
-        let gym = Equipment.available(at: .gym)
-
-        #expect(gym.contains(.pullUpBar))
-        #expect(gym.contains(.cableMachine))
-        #expect(gym.contains(.machines))
+    // The setup screen asks in the catalog's own vocabulary, so a chip and a
+    // movement's category are the same word or the filter silently misses.
+    @Test func theChipsAreTheCatalogsOwnNineCategories() {
+        #expect(Equipment.choices == [
+            Equipment.none, .barbell, .dumbbell, .kettlebell, .machine,
+            .plate, .resistanceBand, .suspensionBand, .other
+        ])
     }
 
-    // A garage with a barbell is a home gym, and a bench is the most common
-    // thing in one after the dumbbells.
-    @Test func aHomeCanBeLoaded() {
-        let home = Equipment.available(at: .home)
+    // "I have no equipment" is one of the nine answers, not a special case of
+    // where someone stands: a gym member can still be given a push-up.
+    @Test func everyCategoryIncludingBodyweightIsOffered() {
+        let offered = Equipment.available()
 
-        #expect(home.contains(.bench))
-        #expect(home.contains(.barbell))
-        #expect(home.contains(.squatRack))
+        #expect(Set(offered).count == offered.count)
+        #expect(offered == Equipment.choices)
+        #expect(offered.contains(Equipment.none))
     }
 
-    // Training in both places used to mean being asked only about the gym.
-    @Test func bothIsTheUnionAndNotTheGymList() {
-        let both = Equipment.available(at: .both)
+    // A category the catalog cannot serve is a chip that leads nowhere.
+    @Test func aCategoryNothingIsStockedForIsNotOffered() {
+        let offered = Equipment.available(stocked: [Equipment.none, .dumbbell])
 
-        #expect(both.contains(.jumpRope))
-        #expect(both.contains(.machines))
-        #expect(!both.contains(Equipment.none))
-        #expect(Set(both).count == both.count)
+        #expect(offered == [Equipment.none, .dumbbell])
     }
 
-    @Test func bodyweightOnlyIsOfferedOnlyWhereItIsAnAnswer() {
-        #expect(Equipment.available(at: .home).contains(Equipment.none))
-        #expect(!Equipment.available(at: .gym).contains(Equipment.none))
+    // Plates are loaded in whatever the gym stamps on them, so a client who
+    // owns only plates still has to be asked which unit that is.
+    @Test func everyCategoryTheClientLoadsCountsAsLoaded() {
+        #expect(Equipment.loaded == [.dumbbell, .barbell, .kettlebell, .machine, .plate])
+        #expect(Equipment.loaded.contains(.plate))
+        #expect(!Equipment.loaded.contains(Equipment.none))
+        #expect(!Equipment.loaded.contains(.resistanceBand))
     }
 }

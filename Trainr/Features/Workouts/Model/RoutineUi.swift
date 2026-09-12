@@ -109,7 +109,7 @@ nonisolated struct RoutineUi: Equatable, Sendable {
 private nonisolated extension ExerciseUi {
 
     // A blank set records what was asked for: otherwise a finished day stores
-    // nothing, and the PREVIOUS column and next week's prompt read it as
+    // nothing, and the PREVIOUS column and next week's progression read it as
     // skipped.
     func loggedAsPrescribed() -> ExerciseUi {
         var logged = self

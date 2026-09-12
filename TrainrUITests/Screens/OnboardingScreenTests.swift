@@ -205,33 +205,30 @@ final class OnboardingScreenTests: XCTestCase {
     // MARK: - Goals
 
     @MainActor
-    func testGoalsNeedBothAnswers() {
+    func testGoalsNeedAGoal() {
         app = .launched(startingAt: "goals")
         XCTAssertTrue(app.staticTexts["YOUR FITNESS GOALS"].waitForExistence(timeout: 20))
 
         let next = app.buttons["NEXT"]
         XCTAssertFalse(next.isEnabled)
         app.button(startingWith: "Build Muscle").tap()
-        XCTAssertFalse(next.isEnabled)
-
-        let style = app.button(startingWith: "Strength Training")
-        app.scrollUntilHittable(style)
-        style.tap()
         XCTAssertTrue(next.isEnabled)
     }
 
     // MARK: - Setup
 
     @MainActor
-    func testSetupOffersEveryLocationAndALocationAloneIsNotEnough() {
+    func testSetupAsksForEquipmentAndNotWhereTheClientStands() {
         app = .launched(startingAt: "setup")
         XCTAssertTrue(app.staticTexts["SET UP YOUR WORKOUT"].waitForExistence(timeout: 20))
 
-        for location in ["Home", "Gym", "Both"] {
-            XCTAssertTrue(app.buttons[location].exists)
+        XCTAssertTrue(app.staticTexts["Available Equipment"].exists)
+        for gone in ["Home", "Gym", "Both"] {
+            XCTAssertFalse(app.buttons[gone].exists)
         }
-        app.buttons["Home"].tap()
-        XCTAssertTrue(app.staticTexts["Available Equipment"].waitForExistence(timeout: 3))
+        for kit in ["Bodyweight only", "Barbell", "Dumbbell", "Machine"] {
+            XCTAssertTrue(app.buttons[kit].exists, kit)
+        }
         XCTAssertTrue(app.buttons["Choose how many days"].exists)
         XCTAssertFalse(app.buttons["NEXT"].isEnabled)
     }
@@ -254,11 +251,10 @@ final class OnboardingScreenTests: XCTestCase {
     // MARK: - Limitations
 
     @MainActor
-    func testLimitationsAreOptionalAndAskNothingAboutStyle() {
+    func testLimitationsAreOptional() {
         app = .launched(startingAt: "limitations")
         XCTAssertTrue(app.staticTexts["LET'S KEEP YOU SAFE"].waitForExistence(timeout: 20))
 
-        XCTAssertFalse(app.staticTexts["Preferred Workout Style"].exists)
         app.submitLimitations(injury: nil)
         XCTAssertTrue(app.staticTexts["None"].exists)
     }
@@ -274,7 +270,6 @@ final class OnboardingScreenTests: XCTestCase {
         XCTAssertTrue(app.staticTexts["Alex"].exists)
         XCTAssertTrue(app.staticTexts["30 years old"].exists)
         XCTAssertTrue(app.staticTexts["Build Muscle"].exists)
-        XCTAssertTrue(app.staticTexts["Strength Training"].exists)
         XCTAssertTrue(app.staticTexts["Lower Back Pain"].exists)
         XCTAssertEqual(app.buttons.matching(identifier: "Edit").count, 5)
         XCTAssertTrue(app.buttons["Back"].exists)
@@ -286,7 +281,7 @@ final class OnboardingScreenTests: XCTestCase {
         app = .launched(startingAt: "review")
         XCTAssertTrue(app.staticTexts["YOUR FITNESS PROFILE"].waitForExistence(timeout: 20))
 
-        let preview = app.staticTexts["AI Workout Plan"]
+        let preview = app.staticTexts["Your Workout Plan"]
         app.scrollUntilHittable(preview)
         XCTAssertTrue(preview.exists)
         XCTAssertTrue(app.text(containing: "building muscle").exists)
@@ -323,7 +318,7 @@ final class OnboardingScreenTests: XCTestCase {
         XCTAssertFalse(app.buttons["Back"].exists)
         XCTAssertFalse(app.otherElements["stepProgress"].exists)
         XCTAssertFalse(app.buttons["GENERATE MY WORKOUT PLAN"].exists)
-        XCTAssertFalse(app.staticTexts["AI Workout Plan"].exists)
+        XCTAssertFalse(app.staticTexts["Your Workout Plan"].exists)
         XCTAssertFalse(app.text(containing: "not medical advice").exists)
 
         app.buttons["SAVE PROFILE"].tap()

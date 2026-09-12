@@ -11,7 +11,7 @@ extension String {
         let trimmed = stripped.replacing(trailingPunctuation, with: "")
             .trimmingCharacters(in: .whitespaces)
         // A title that was nothing but its week number keeps what it had: an
-        // empty one fails validation and costs a retry.
+        // empty one fails validation.
         return trimmed.isEmpty ? trimmingCharacters(in: .whitespaces) : trimmed
     }
 }

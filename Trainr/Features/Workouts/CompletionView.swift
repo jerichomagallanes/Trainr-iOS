@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct CompletionView: View {
+private struct CompletionView: View {
     let systemImage: String
     let iconSize: CGFloat
     var iconColor = Color.brand

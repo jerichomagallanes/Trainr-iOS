@@ -6,15 +6,12 @@ import Testing
 struct RoutineMapperTests {
 
     private func exercise(
-        _ name: String, key: String = "goblet_squat", minutes: Int = 10,
-        prescription: String = "3 sets of 12 reps", video: String? = nil,
+        _ name: String, key: String = "goblet_squat", minutes: Int = 10, video: String? = nil,
         weightKg: Double? = nil
     ) -> WorkoutExercise {
         var exercise = WorkoutExercise(name: name)
         exercise.exerciseKey = key
-        exercise.instructions = "Do it well."
         exercise.durationMinutes = minutes
-        exercise.prescription = prescription
         exercise.measure = weightKg == nil ? .reps : .weightAndReps
         exercise.videoTutorialURL = video
         exercise.sets = [ExerciseSet(setNumber: 1, targetReps: 12, targetWeightKg: weightKg)]
@@ -33,18 +30,10 @@ struct RoutineMapperTests {
         #expect(routine.title == "Full Body")
         #expect(routine.exercises.map(\.position) == [1, 2])
         #expect(routine.exercises[0].name == "Goblet Squats")
-        #expect(routine.exercises[0].description == "Do it well.")
+        #expect(routine.exercises[0].description.isEmpty)
         #expect(routine.exercises[0].minutes == 10)
-        #expect(routine.exercises[0].detail == "3 sets of 12 reps")
+        #expect(routine.totalMinutes == 20)
         #expect(routine.exercises[0].sets.count == 1)
-    }
-
-    @Test("The allotted minutes and the prescription are independent")
-    func totalIsSeparateFromPrescription() {
-        let routine = day([exercise("Intervals", minutes: 10, prescription: "5 sets of 1 minute")]).toRoutineUi()
-        #expect(routine.exercises[0].minutes == 10)
-        #expect(routine.totalMinutes == 10)
-        #expect(routine.exercises[0].detail == "5 sets of 1 minute")
     }
 
     @Test("A day with no exercises maps to an empty, unfinished routine")
@@ -77,16 +66,77 @@ struct RoutineMapperTests {
         #expect(routine.exercises[1].previousSets.isEmpty)
     }
 
-    @Test("A client in pounds is prescribed a weight they can actually load")
-    func poundsAreLoadable() throws {
-        let routine = day([exercise("Goblet Squats", weightKg: 20)]).toRoutineUi(units: .imperial)
-        let target = try #require(routine.exercises[0].sets[0].targetWeightKg)
-        #expect(WeightUnit.forDisplay(target, in: .imperial) == 45)
+    // The muscles and the how-to belong to the catalog, not to the week that
+    // stored them: a plan carries only the key.
+    @Test func theCatalogSuppliesWhatEachMovementTrainsAndHowToPerformIt() {
+        let day = SampleWorkoutData.day(for: SampleWorkoutData.defaultDayNumber)
+
+        let withCatalog = day.toRoutineUi(catalog: SampleWorkoutData.catalog)
+        let without = day.toRoutineUi()
+
+        let described = withCatalog.exercises.filter { !$0.primaryMuscle.isEmpty }
+        #expect(!described.isEmpty)
+        #expect(described.contains { !$0.steps.isEmpty })
+        #expect(without.exercises.allSatisfy { $0.primaryMuscle.isEmpty && $0.steps.isEmpty })
     }
 
-    @Test("A client in kilograms keeps the prescription as written")
-    func kilogramsUntouched() {
-        let routine = day([exercise("Goblet Squats", weightKg: 12)]).toRoutineUi(units: .metric)
-        #expect(routine.exercises[0].sets[0].targetWeightKg == 12)
+    // LOWER_BACK is Lower Back, not lowerBack and not LOWER_BACK.
+    @Test func muscleNamesReadAsWordsRatherThanConstants() {
+        let day = SampleWorkoutData.day(for: SampleWorkoutData.defaultDayNumber)
+
+        let named = day.toRoutineUi(catalog: SampleWorkoutData.catalog)
+            .exercises.flatMap { [$0.primaryMuscle] + $0.secondaryMuscles }
+            .filter { !$0.isEmpty }
+
+        #expect(!named.isEmpty)
+        #expect(named.allSatisfy { !$0.contains("_") })
+        #expect(named.allSatisfy { $0.first?.isUppercase == true })
+    }
+
+    private let catalog: any ExerciseCatalog = BundleExerciseCatalog()
+
+    @Test func theCatalogSaysHowAMovementIsDone() {
+        let routine = day([exercise("Goblet Squat")]).toRoutineUi(catalog: catalog)
+
+        #expect(routine.exercises[0].description == catalog["goblet_squat"]?.summary)
+    }
+
+    @Test func theChipIsReadOffTheSets() {
+        var stored = exercise("Squat")
+        stored.sets = (1...3).map { ExerciseSet(setNumber: $0, targetReps: 10) }
+
+        let mapped = day([stored]).toRoutineUi().exercises[0]
+
+        #expect(mapped.prescription == Prescription.of(stored.sets, measure: stored.measure))
+    }
+
+    @Test func aOneSidedMovementIsCountedPerSide() throws {
+        let oneSided = try #require(catalog.all.first { $0.unilateral && $0.measure != .duration })
+
+        let mapped = day([exercise(oneSided.name, key: oneSided.key)]).toRoutineUi(catalog: catalog).exercises[0]
+
+        #expect(mapped.unilateral)
+        #expect(mapped.prescription == Prescription.of(mapped.sets, measure: mapped.measure, unilateral: true))
+    }
+
+    @Test func aMovementAnInjuryAsksCareWithSaysWhichOnlyForThatClient() throws {
+        let squat = try #require(catalog.all.first { InjuryGuard.caution(for: $0, injuries: [.knee]) != nil })
+        let stored = day([exercise(squat.name, key: squat.key)])
+
+        #expect(stored.toRoutineUi(catalog: catalog, injuries: [.knee]).exercises[0].caution == .knee)
+        #expect(stored.toRoutineUi(catalog: catalog).exercises[0].caution == nil)
+    }
+
+    // Never lifted before means the weight is the app's guess; once there is
+    // history, it is the client's own number moved on.
+    @Test func aWeightNeverLiftedBeforeIsMarkedAsAGuess() {
+        var logged = ExerciseSet(setNumber: 1, targetReps: 12, targetWeightKg: 20)
+        logged.actualReps = 12
+        logged.isCompleted = true
+        let weighted = day([exercise("Goblet Squats", weightKg: 20)])
+
+        #expect(weighted.toRoutineUi().exercises[0].isEstimated)
+        #expect(!weighted.toRoutineUi(previousByKey: ["goblet_squat": [logged]]).exercises[0].isEstimated)
+        #expect(!day([exercise("Plank", key: "plank")]).toRoutineUi().exercises[0].isEstimated)
     }
 }

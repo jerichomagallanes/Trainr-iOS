@@ -36,13 +36,10 @@ nonisolated struct WorkoutExercise: Identifiable, Equatable, Sendable {
     var setCount: Int?
     var reps: String?
     var duration: String?
-    // Independent of each other — ten minutes of "5 sets of 1 minute" is not
-    // five minutes — so neither can be derived from the other.
+    // Not derived from the sets: ten minutes of five one-minute sets is not five.
     var durationMinutes = 0
-    var prescription = ""
     var restTime: Int?
     var equipment: [String] = []
-    var instructions = ""
     var videoTutorialURL: String?
     var isCompleted = false
     var notes = ""
@@ -60,8 +57,7 @@ nonisolated struct ExerciseSet: Identifiable, Equatable, Sendable {
     var isCompleted = false
 }
 
-// The raw values are the wire contract with the model: the schema enumerates
-// them and every generated plan arrives speaking them.
+// The raw values are what exercise-catalog.json and the stored records spell.
 nonisolated enum ExerciseMeasure: String, Codable, CaseIterable, Sendable {
     case weightAndReps = "WEIGHT_AND_REPS"
     case reps = "REPS"

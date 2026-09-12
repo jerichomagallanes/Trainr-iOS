@@ -32,7 +32,7 @@ enum TextRole {
         }
     }
 
-    var weight: Font.Weight {
+    fileprivate var weight: Font.Weight {
         switch self {
         case .fieldLabel: .bold
         case .sectionTitle, .labelLarge: .semibold
@@ -44,14 +44,14 @@ enum TextRole {
         }
     }
 
-    var face: String? {
+    fileprivate var face: String? {
         switch self {
         case .screenTitle: "Rubik-Bold"
         default: nil
         }
     }
 
-    var textStyle: Font.TextStyle {
+    fileprivate var textStyle: Font.TextStyle {
         switch self {
         case .screenTitle: .title3
         default:

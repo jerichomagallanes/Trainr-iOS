@@ -4,7 +4,7 @@ import Observation
 @Observable
 final class NextWeekModel {
 
-    private(set) var failure: PlanGenerationFailure?
+    private(set) var failure: PlanGenerationResult?
     // Counts up so a repeated failure still registers as a new one.
     private(set) var failureCount = 0
     // State rather than a callback: a screen rebuilt mid-generation would never
@@ -12,8 +12,7 @@ final class NextWeekModel {
     private(set) var isReady = false
 
     private let dependencies: AppDependencies
-    // Generating takes the better part of a minute; without this a second ask
-    // runs alongside the first and both write a week.
+    // Without this a second ask runs alongside the first and both write a week.
     private var isWorking = false
     // The request runs to completion either way, having no cancellation point
     // of its own; cancelling only stops the week being written.
@@ -23,8 +22,8 @@ final class NextWeekModel {
         self.dependencies = dependencies
     }
 
-    // The finished week seeds the request, so the model progresses from what
-    // was lifted rather than the intake answers.
+    // The finished week seeds the request, so the next week progresses from
+    // what was lifted rather than the intake answers.
     func generateNextWeek() {
         guard !isWorking else { return }
         isWorking = true
@@ -36,23 +35,16 @@ final class NextWeekModel {
         }
     }
 
-    // The same sessions and loads with every log cleared, asking nothing of the
-    // network. The copy joins the plan at the end and takes its dates from
-    // there, so repeating an old week never reaches into weeks already trained.
+    // The same sessions and loads with every log cleared. The copy joins the
+    // plan at the end and takes its dates from there, so repeating an old week
+    // never reaches into weeks already trained.
     func repeatWeek(numbered sourceWeekNumber: Int? = nil) {
         guard !isWorking else { return }
         isWorking = true
         beginRun()
         defer { isWorking = false }
 
-        guard let user = dependencies.attempt("currentUser", { try dependencies.store.currentUser() }),
-              let plans = dependencies.attempt("plans", { try dependencies.store.plans(for: user.id) }),
-              let latest = plans.max(by: { $0.weekNumber < $1.weekNumber }),
-              latest.isReadyForTheNextWeek(),
-              dependencies.attempt("plan", {
-                  try dependencies.store.plan(for: user.id, weekNumber: latest.weekNumber + 1)
-              }) == nil
-        else { return }
+        guard let (_, plans) = nextWeekSource(), let latest = plans.first else { return }
 
         let source = sourceWeekNumber
             .flatMap { number in plans.first { $0.weekNumber == number } } ?? latest
@@ -65,8 +57,7 @@ final class NextWeekModel {
     }
 
     // Replaces the week you are in rather than adding one after it: the number
-    // and the dates stay. The model is asked first and the old week goes only
-    // once a replacement exists.
+    // and the dates stay. The old week goes only once a replacement exists.
     func regenerateThisWeek() {
         guard !isWorking else { return }
         isWorking = true
@@ -92,7 +83,7 @@ final class NextWeekModel {
 
     private func generate() async {
         // Nothing to build on, or the week is already there: either way, ready.
-        guard let (user, latest) = nextWeekSource() else {
+        guard let (user, plans) = nextWeekSource(), let latest = plans.first else {
             isReady = true
             return
         }
@@ -101,17 +92,14 @@ final class NextWeekModel {
                 user: user,
                 weekNumber: latest.weekNumber + 1,
                 startDate: startAfter(latest),
-                languageCode: dependencies.languageCode,
-                previousWeek: latest
+                history: plans
             )
         )
 
         guard !Task.isCancelled else { return }
         guard case .generated(let plan) = result else {
-            if case .failure(let reason) = result {
-                failure = reason
-                failureCount += 1
-            }
+            failure = result
+            failureCount += 1
             return
         }
         dependencies.attempt("savePlan", { try dependencies.store.savePlan(plan) })
@@ -133,19 +121,19 @@ final class NextWeekModel {
                 user: user,
                 weekNumber: current.weekNumber,
                 startDate: current.startDate ?? WorkoutWeek.startOfDay(),
-                languageCode: dependencies.languageCode,
-                // The week before this one, so a replacement still progresses
+                // The weeks before this one, so a replacement still progresses
                 // from what was lifted.
-                previousWeek: plans.first { $0.weekNumber == current.weekNumber - 1 }
+                history: plans.filter { $0.weekNumber < current.weekNumber }
+                    .sorted { $0.weekNumber > $1.weekNumber },
+                // New movements are the point of asking again.
+                freshCast: true
             )
         )
 
         guard !Task.isCancelled else { return }
         guard case .generated(let plan) = result else {
-            if case .failure(let reason) = result {
-                failure = reason
-                failureCount += 1
-            }
+            failure = result
+            failureCount += 1
             return
         }
         // Only now: one week per number, so the old goes with the new in hand.
@@ -156,7 +144,9 @@ final class NextWeekModel {
 
     // Nothing when the next week already exists, so revisiting the completion
     // screen cannot stack duplicates.
-    private func nextWeekSource() -> (UserProfile, WeeklyPlan)? {
+    // Every stored week, newest first, so the next one can progress from more
+    // than the last.
+    private func nextWeekSource() -> (UserProfile, [WeeklyPlan])? {
         guard let user = dependencies.attempt("currentUser", { try dependencies.store.currentUser() }),
               let plans = dependencies.attempt("plans", { try dependencies.store.plans(for: user.id) }),
               let latest = plans.max(by: { $0.weekNumber < $1.weekNumber }),
@@ -165,7 +155,7 @@ final class NextWeekModel {
                   try dependencies.store.plan(for: user.id, weekNumber: latest.weekNumber + 1)
               }) == nil
         else { return nil }
-        return (user, latest)
+        return (user, plans.sorted { $0.weekNumber > $1.weekNumber })
     }
 
     // Never overlapping the week it follows, and never starting in the past.

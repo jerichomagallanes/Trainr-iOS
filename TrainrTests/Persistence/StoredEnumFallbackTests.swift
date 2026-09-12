@@ -39,16 +39,10 @@ struct StoredEnumFallbackTests {
         let record = try storedRecord(UserProfile(firstName: "Alex", age: 30))
         record.fitnessGoal = "becomeABird"
         record.experienceLevel = "olympian"
-        record.workoutLocation = "moon"
-        record.preferredWorkoutTime = "thirdWatch"
-        record.workoutType = "interpretiveDance"
 
         let profile = record.profile
         #expect(profile.fitnessGoal == .generalFitness)
         #expect(profile.experienceLevel == .beginner)
-        #expect(profile.workoutLocation == .home)
-        #expect(profile.preferredWorkoutTime == .anytime)
-        #expect(profile.workoutType == .mixed)
     }
 
     // Dropped rather than defaulted: equipment the client does not have must
@@ -56,10 +50,10 @@ struct StoredEnumFallbackTests {
     @Test("Unknown equipment is dropped, and what is recognised is kept")
     func unknownEquipmentIsDroppedNotDefaulted() throws {
         let record = try storedRecord(UserProfile(firstName: "Alex", age: 30))
-        record.availableEquipment = ["dumbbells", "antigravityBoots", "kettlebells"]
+        record.availableEquipment = ["dumbbell", "antigravityBoots", "kettlebell"]
 
         let equipment = record.profile.availableEquipment
-        #expect(equipment == [.dumbbells, .kettlebells])
+        #expect(equipment == [.dumbbell, .kettlebell])
         #expect(equipment.count == 2)
     }
 
@@ -87,5 +81,15 @@ struct StoredEnumFallbackTests {
         day.status = "abandonedHalfway"
 
         #expect(day.day.status == .notStarted)
+    }
+
+    // Nine categories replaced a longer list, and a profile saved under the
+    // old names must not come back with no equipment at all.
+    @Test("Equipment saved under the old names still reads back")
+    func equipmentSavedUnderTheOldNamesStillReadsBack() throws {
+        let record = try storedRecord(UserProfile(firstName: "Alex", age: 30))
+        record.availableEquipment = ["dumbbells", "cableMachine", "pullUpBar", "squatRack"]
+
+        #expect(record.profile.availableEquipment == [.dumbbell, .machine, .machine, .barbell])
     }
 }

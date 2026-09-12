@@ -4,7 +4,7 @@ struct GeneratingView: View {
     let isReady: Bool
     let onStart: () -> Void
     let onDone: () -> Void
-    var failure: PlanGenerationFailure?
+    var failure: PlanGenerationResult?
     var failureCount = 0
     var onRetry: () -> Void = {}
     var onGiveUp: () -> Void = {}
@@ -66,27 +66,11 @@ struct GeneratingView: View {
         .onChange(of: failureCount, initial: true) { _, _ in
             isShowingFailure = failure != nil
         }
-        .alert(
-            failure == .dailyLimitReached ? L10n.generationLimitTitle : L10n.generationFailedTitle,
-            isPresented: $isShowingFailure
-        ) {
-            // Retrying a spent allowance cannot work, so that dialog does not offer it.
-            if failure == .dailyLimitReached {
-                Button(L10n.gotIt, action: onGiveUp)
-            } else {
-                Button(L10n.tryAgain, action: onRetry)
-                Button(giveUpLabel, role: .cancel, action: onGiveUp)
-            }
+        .alert(L10n.generationFailedTitle, isPresented: $isShowingFailure) {
+            Button(L10n.tryAgain, action: onRetry)
+            Button(giveUpLabel, role: .cancel, action: onGiveUp)
         } message: {
-            Text(failureMessage)
-        }
-    }
-
-    private var failureMessage: String {
-        switch failure {
-        case .offline: L10n.generationFailedOffline
-        case .dailyLimitReached: L10n.generationLimitMessage
-        case .failed, nil: L10n.generationFailedMessage
+            Text(L10n.generationFailedMessage)
         }
     }
 

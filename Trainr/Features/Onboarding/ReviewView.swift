@@ -66,8 +66,7 @@ struct ReviewView: View {
                 ProfileSection(
                     title: L10n.fitnessGoalsLabel,
                     items: [
-                        (L10n.mainGoalLabel, profile.fitnessGoal.displayName),
-                        (L10n.workoutStyleLabel, profile.workoutType.displayName)
+                        (L10n.mainGoalLabel, profile.fitnessGoal.displayName)
                     ],
                     onEdit: { onEdit(.fitnessGoal(editing: true)) }
                 )
@@ -122,7 +121,6 @@ struct ReviewView: View {
 
     private var setupItems: [(String, String)] {
         var items: [(String, String)] = [
-            (L10n.locationLabel, profile.workoutLocation.displayName),
             (L10n.equipmentLabelFull, equipmentText)
         ]
         if let liftingUnits = profile.liftingUnitSystem {
@@ -135,7 +133,6 @@ struct ReviewView: View {
             ? L10n.flexibleSchedule
             : L10n.daysPerWeekFormat(profile.workoutDaysPerWeek)))
         items.append((L10n.durationLabel, L10n.durationMinutesFormat(profile.workoutDuration)))
-        items.append((L10n.preferredTimeLabel, profile.preferredWorkoutTime.displayName))
         return items
     }
 
@@ -195,14 +192,13 @@ private struct AIPreviewCard: View {
                     .foregroundStyle(Color.onSurfaceEmphasis)
                     .accessibilityHidden(true)
                 VStack(alignment: .leading, spacing: Spacing.extraSmall) {
-                    Text(L10n.aiRoutinePreviewLabel)
+                    Text(L10n.routinePreviewLabel)
                         .font(.fieldLabel)
                         .foregroundStyle(Color.onSurfaceEmphasis)
-                    Text(L10n.aiRoutineDescription(
+                    Text(L10n.routineDescription(
                         profile.workoutDaysPerWeek == 0
                             ? L10n.flexibleSchedule
                             : L10n.programLengthFormat(profile.workoutDaysPerWeek),
-                        profile.workoutType.programPhrase,
                         profile.fitnessGoal.focusPhrase
                     ))
                     .font(.body14)

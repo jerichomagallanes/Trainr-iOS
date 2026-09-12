@@ -35,12 +35,9 @@ struct SessionBudgetTests {
         #expect(SessionBudget.maxSetsPerSession(profile(minutes: 30, goal: .strength)) >= 4)
     }
 
-    // Ten sets a muscle a week needs days to spread over; one or two days a
-    // week cannot hold it, so it is not promised.
-    @Test func theWeeklyTargetOnlyReachesTenWhenThereAreDaysToSpreadItOver() {
-        #expect(SessionBudget.weeklySetsPerMuscle(
-            profile(minutes: 45, goal: .muscleGain, days: 4)) == 10)
-        #expect(SessionBudget.weeklySetsPerMuscle(
-            profile(minutes: 45, goal: .muscleGain, days: 2)) == 6)
+    // A day half again as long as the answer is not that answer.
+    @Test func theSessionCeilingSitsAboveTheAnswerWithoutLeavingIt() {
+        #expect(SessionBudget.sessionCeilingMinutes(
+            profile(minutes: 45, goal: .muscleGain)) == 67)
     }
 }

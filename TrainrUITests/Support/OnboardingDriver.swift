@@ -5,7 +5,7 @@ extension XCUIApplication {
     @MainActor
     static func launchedFresh() -> XCUIApplication {
         let app = XCUIApplication()
-        app.launchArguments = ["-cannedGeneration", "-inMemoryStore", "-splashSeconds", "0"]
+        app.launchArguments = ["-inMemoryStore", "-splashSeconds", "0"]
         app.launch()
         return app
     }
@@ -16,7 +16,7 @@ extension XCUIApplication {
     static func launched(startingAt step: String) -> XCUIApplication {
         let app = XCUIApplication()
         app.launchArguments = [
-            "-cannedGeneration", "-inMemoryStore", "-splashSeconds", "0",
+            "-inMemoryStore", "-splashSeconds", "0",
             "-startAtStep", step
         ]
         app.launch()
@@ -72,27 +72,18 @@ extension XCUIApplication {
     @MainActor
     func fillGoals() {
         buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "Build Muscle")).firstMatch.tap()
-        let style = buttons.matching(
-            NSPredicate(format: "label BEGINSWITH %@", "Strength Training")
-        ).firstMatch
-        scrollUntilHittable(style)
-        style.tap()
         buttons["NEXT"].tap()
         XCTAssertTrue(staticTexts["SET UP YOUR WORKOUT"].waitForExistence(timeout: 5))
     }
 
     @MainActor
     func fillSetup() {
-        buttons["Home"].tap()
-        buttons["Dumbbells"].tap()
+        buttons["Dumbbell"].tap()
         XCTAssertTrue(staticTexts["What are the weights marked in?"].waitForExistence(timeout: 5))
         buttons["kg"].tap()
         buttons["Choose how many days"].tap()
         buttons["3 days"].tap()
         buttons["45 mins"].tap()
-        let morning = buttons["Morning (7-12 PM)"]
-        scrollUntilHittable(morning)
-        morning.tap()
         let next = buttons["NEXT"]
         scrollUntilHittable(next)
         next.tap()

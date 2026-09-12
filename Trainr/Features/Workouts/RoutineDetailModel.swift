@@ -9,6 +9,7 @@ nonisolated struct RoutineDetailState: Equatable, Sendable {
     // One tutorial open at a time: a player exists for as long as its section
     // is open, not only while playing.
     var expandedVideo: Int?
+    var expandedHowTo: Int?
     var dayNumber = 1
     var weekNumber = 1
     var completesTheWeek = false
@@ -77,7 +78,9 @@ final class RoutineDetailModel {
         }) ?? [:]
 
         state = RoutineDetailState(
-            routine: day.toRoutineUi(previousByKey: previousByKey, units: units),
+            routine: day.toRoutineUi(
+                previousByKey: previousByKey, catalog: dependencies.catalog, injuries: user.injuries
+            ),
             equipment: day.equipment,
             date: plan.startDate.map { WorkoutWeek.date(of: day.dayNumber, startingFrom: $0) }
                 ?? SampleWorkoutData.date(of: day.dayNumber),
@@ -160,6 +163,12 @@ final class RoutineDetailModel {
         state.expandedVideo = state.expandedVideo == position ? nil : position
     }
 
+    // Kept apart from the video: collapsing the section should not also lose
+    // the player someone left open inside it.
+    func toggleHowTo(at position: Int) {
+        state.expandedHowTo = state.expandedHowTo == position ? nil : position
+    }
+
     // MARK: - Timer
 
     func startTimer(for exercise: ExerciseUi) {
@@ -206,7 +215,6 @@ final class RoutineDetailModel {
         }
     }
 
-    // Running out finishes the exercise. Returns whether the clock keeps going.
     private func tick() -> Bool {
         guard var timer = state.timer else { return false }
         if timer.advance(to: Date()) {
@@ -279,7 +287,7 @@ final class RoutineDetailModel {
     }
 
     // Stored the way it will be read back: by the PREVIOUS column, and by the
-    // prompt that builds next week.
+    // progression that builds next week.
     private func persistFilledSets(at positions: [Int]) {
         guard var day = storedDay else { return }
         for position in positions {
@@ -326,7 +334,7 @@ final class RoutineDetailModel {
         let day = days[index]
 
         return RoutineDetailState(
-            routine: day.toRoutineUi(),
+            routine: day.toRoutineUi(catalog: SampleWorkoutData.catalog),
             equipment: day.equipment,
             date: SampleWorkoutData.date(of: day.dayNumber),
             dayNumber: index + 1,

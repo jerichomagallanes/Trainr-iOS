@@ -20,7 +20,7 @@ final class Entitlements {
     // A sandbox key validates nothing a real buyer does. Rather than ship a build
     // that takes money and grants nothing, refuse to configure and leave every
     // paid path open, which costs a few generations instead of a customer.
-    static var keyIsShippable: Bool {
+    private static var keyIsShippable: Bool {
         #if DEBUG
         true
         #else
