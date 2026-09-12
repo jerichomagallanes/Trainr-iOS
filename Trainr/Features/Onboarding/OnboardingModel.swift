@@ -85,7 +85,7 @@ final class OnboardingModel {
         profile.preferredWorkoutTime = preferredTime
     }
 
-    func updateLimitations(injuries: [String]) {
+    func updateLimitations(injuries: [Injury]) {
         answeredSteps.insert(.limitations)
         profile.injuries = injuries
     }

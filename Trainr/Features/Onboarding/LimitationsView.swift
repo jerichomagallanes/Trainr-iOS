@@ -2,15 +2,16 @@ import SwiftUI
 
 struct LimitationsView: View {
     var isEditing = false
-    let onNext: ([String]) -> Void
+    let onNext: ([Injury]) -> Void
     let onBack: () -> Void
 
-    @State private var selectedInjuries: Set<String>
+    @State private var selectedInjuries: Set<Injury>
+    @State private var noneSelected = false
 
     init(
         initial: UserProfile? = nil,
         isEditing: Bool = false,
-        onNext: @escaping ([String]) -> Void,
+        onNext: @escaping ([Injury]) -> Void,
         onBack: @escaping () -> Void
     ) {
         self.isEditing = isEditing
@@ -19,25 +20,10 @@ struct LimitationsView: View {
         _selectedInjuries = State(initialValue: Set(initial?.injuries ?? []))
     }
 
-    private var injuryOptions: [String] {
-        [
-            L10n.lowerBackPainInjury,
-            L10n.kneeProblemsInjury,
-            L10n.shoulderInjuryInjury,
-            L10n.wristPainInjury,
-            L10n.ankleIssuesInjury,
-            L10n.hipProblemsInjury,
-            L10n.neckPainInjury,
-            L10n.noneInjury
-        ]
-    }
-
     var body: some View {
         ScreenScaffold(onBack: onBack, closeInsteadOfBack: isEditing) {
             PrimaryButton(title: isEditing ? L10n.save : L10n.submit) {
-                onNext(selectedInjuries.filter { $0 != L10n.none }.sorted {
-                    injuryOptions.firstIndex(of: $0) ?? 0 < injuryOptions.firstIndex(of: $1) ?? 0
-                })
+                onNext(Injury.allCases.filter { selectedInjuries.contains($0) })
             }
         } content: {
             if !isEditing {
@@ -57,30 +43,37 @@ struct LimitationsView: View {
                 Spacer().frame(height: Spacing.medium)
 
                 VStack(spacing: Spacing.card) {
-                    ForEach(injuryOptions, id: \.self) { injury in
+                    ForEach(Injury.allCases, id: \.self) { injury in
                         CheckboxChip(
-                            text: injury,
+                            text: injury.displayName,
                             isChecked: Binding(
                                 get: { selectedInjuries.contains(injury) },
                                 set: { isChecked in toggle(injury, to: isChecked) }
                             )
                         )
                     }
+
+                    CheckboxChip(
+                        text: L10n.noneInjury,
+                        isChecked: Binding(
+                            get: { noneSelected },
+                            set: { isChecked in
+                                noneSelected = isChecked
+                                if isChecked { selectedInjuries = [] }
+                            }
+                        )
+                    )
                 }
             }
         }
     }
 
-    private func toggle(_ injury: String, to isChecked: Bool) {
-        if injury == L10n.noneInjury {
-            selectedInjuries = isChecked ? [injury] : []
+    private func toggle(_ injury: Injury, to isChecked: Bool) {
+        noneSelected = false
+        if isChecked {
+            selectedInjuries.insert(injury)
         } else {
-            selectedInjuries.remove(L10n.noneInjury)
-            if isChecked {
-                selectedInjuries.insert(injury)
-            } else {
-                selectedInjuries.remove(injury)
-            }
+            selectedInjuries.remove(injury)
         }
     }
 }

@@ -87,7 +87,7 @@ struct ReviewView: View {
                     items: [
                         (L10n.injuriesConcernsLabel, profile.injuries.isEmpty
                             ? L10n.noneLabel
-                            : profile.injuries.joined(separator: ", "))
+                            : profile.injuries.map(\.displayName).joined(separator: ", "))
                     ],
                     onEdit: { onEdit(.limitations(editing: true)) }
                 )

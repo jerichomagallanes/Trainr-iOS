@@ -91,8 +91,24 @@ extension Equipment {
         case .kettlebells: L10n.kettlebells
         case .squatRack: L10n.squatRack
         case .cableMachine: L10n.cableMachine
+        case .machines: L10n.weightMachines
         case .cardioMachines: L10n.cardioEquipment
-        case .others: L10n.others
+        case .mat: L10n.exerciseMat
+        case .jumpRope: L10n.jumpRope
+        }
+    }
+}
+
+extension Injury {
+    var displayName: String {
+        switch self {
+        case .lowerBack: L10n.lowerBackPainInjury
+        case .knee: L10n.kneeProblemsInjury
+        case .shoulder: L10n.shoulderInjuryInjury
+        case .wrist: L10n.wristPainInjury
+        case .ankle: L10n.ankleIssuesInjury
+        case .hip: L10n.hipProblemsInjury
+        case .neck: L10n.neckPainInjury
         }
     }
 }

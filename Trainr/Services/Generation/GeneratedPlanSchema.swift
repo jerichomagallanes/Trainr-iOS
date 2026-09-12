@@ -30,7 +30,6 @@ enum GeneratedPlanSchema {
                 ),
                 "name": .string(),
                 "measure": .enumeration(values: ["WEIGHT_AND_REPS", "REPS", "DURATION"]),
-                "durationMinutes": .integer(),
                 "prescription": .string(),
                 "instructions": .string(),
                 "restSeconds": .integer(nullable: true),

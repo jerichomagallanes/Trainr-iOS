@@ -136,7 +136,10 @@ struct CannedPlanGenerator: PlanGenerator {
         case .squatRack: "Squat rack"
         case .cableMachine: "Cable machine"
         case .cardioMachines: "Cardio equipment"
-        case .none, .others: bodyweight
+        case .machines: "Weight machines"
+        case .mat: "Exercise mat"
+        case .jumpRope: "Jump rope"
+        case .none: bodyweight
         }
     }
 

@@ -105,10 +105,13 @@ struct GeneratedPlanParserTests {
         #expect(try parseGood().workoutDays.map(\.dayNumber) == [1, 3])
     }
 
+    // Five minutes of jogging, then two sets of twenty at three seconds a rep
+    // with thirty seconds between them: eight minutes, whatever the model
+    // would have claimed.
     @Test func aDaysNumbersAreDerivedNotAccepted() throws {
         let cardio = try #require(parseGood().workoutDays.first { $0.dayNumber == 3 })
 
-        #expect(cardio.duration == 9)
+        #expect(cardio.duration == 8)
         #expect(cardio.exerciseCount == 2)
     }
 
@@ -119,7 +122,7 @@ struct GeneratedPlanParserTests {
         #expect(squat.exerciseKey == "goblet_squat")
         #expect(squat.name == "Goblet Squats")
         #expect(squat.measure == .weightAndReps)
-        #expect(squat.durationMinutes == 8)
+        #expect(squat.durationMinutes == 4)
         #expect(squat.prescription == "3 sets of 12 reps")
         #expect(squat.restTime == 60)
         #expect(squat.setCount == 3)
@@ -224,20 +227,41 @@ struct GeneratedPlanParserTests {
         let secondsErrors = try errors(
             of: goodJSON(replacing: "{ \"seconds\": 300 }", with: "{ \"reps\": 300 }"))
 
-        #expect(repsErrors == ["day 1, goblet_squat, set 1: needs reps above zero"])
-        #expect(secondsErrors == ["day 3, warm_up_jog, set 1: needs seconds above zero"])
+        #expect(repsErrors == ["day 1, goblet_squat, set 1: needs reps between 1 and 100"])
+        #expect(secondsErrors == ["day 3, warm_up_jog, set 1: needs seconds between 5 and 5400"])
     }
 
-    @Test func nonPositiveNumbersAreRejected() throws {
-        #expect(try errors(of: goodJSON(replacing: "\"durationMinutes\": 5,",
-                                        with: "\"durationMinutes\": 0,"))
-            == ["day 3, warm_up_jog: durationMinutes must be above zero"])
+    @Test func numbersNoClientCouldPerformAreRejected() throws {
         #expect(try errors(of: goodJSON(replacing: "\"restSeconds\": 30,",
                                         with: "\"restSeconds\": -30,"))
-            == ["day 3, bicycle_crunch: restSeconds must be above zero"])
+            == ["day 3, bicycle_crunch: restSeconds must be 5..600"])
         #expect(try errors(of: goodJSON(replacing: "\"weightKg\": 22.5",
                                         with: "\"weightKg\": 0"))
-            == ["day 1, goblet_squat, set 3: weightKg must be above zero"])
+            == ["day 1, goblet_squat, set 3: weightKg must be between 0.5 and 500.0"])
+        #expect(try errors(of: goodJSON(replacing: "{ \"reps\": 12, \"weightKg\": 20 },",
+                                        with: "{ \"reps\": 400 },"))
+            == ["day 1, goblet_squat, set 1: needs reps between 1 and 100"])
+    }
+
+    // A session is a time budget: three sets is not something a two-set
+    // session pays for, and the model is told so before it is asked again.
+    @Test func aDayThatOverspendsTheSessionIsRejected() throws {
+        let result = parser.parse(
+            goodJSON,
+            userID: userID,
+            weekNumber: 2,
+            startDate: startDate,
+            limits: PlanLimits(maxSetsPerSession: 2)
+        )
+
+        guard case .invalid(let errors) = result else {
+            Issue.record("expected the plan to be rejected")
+            return
+        }
+        #expect(errors == [
+            "day 3: has 3 sets but the client's session length allows at most 2, warm-up included",
+            "day 1: has 3 sets but the client's session length allows at most 2, warm-up included"
+        ])
     }
 
     @Test func anExerciseWithNoSetsIsRejected() throws {

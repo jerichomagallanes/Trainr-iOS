@@ -115,7 +115,7 @@ enum UITestFixtures {
                     preferredTime: .morning
                 )
             case .limitations:
-                model.updateLimitations(injuries: ["Lower Back Pain"])
+                model.updateLimitations(injuries: [.lowerBack])
             }
         }
     }

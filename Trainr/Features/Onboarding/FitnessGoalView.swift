@@ -66,6 +66,8 @@ struct FitnessGoalView: View {
                                   L10n.strengthTrainingDescription, .strength)
                         styleCard("figure.run", L10n.cardio, L10n.cardioDescription, .cardio)
                         styleCard("bolt.fill", L10n.hiit, L10n.hiitDescription, .hiit)
+                        styleCard("figure.mind.and.body", L10n.mobilityYoga,
+                                  L10n.mobilityYogaDescription, .yoga)
                         styleCard("figure.arms.open", L10n.mixedBalanced,
                                   L10n.mixedBalancedDescription, .mixed)
                     }

@@ -113,7 +113,8 @@ struct GeminiPlanGenerator: PlanGenerator {
                 json,
                 userID: request.user.id,
                 weekNumber: request.weekNumber,
-                startDate: request.startDate
+                startDate: request.startDate,
+                limits: PlanLimits(maxSetsPerSession: SessionBudget.maxSetsPerSession(request.user))
             ) {
             case .parsed(let plan):
                 if plan.workoutDays.count == request.user.workoutDaysPerWeek {

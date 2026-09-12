@@ -42,7 +42,7 @@ final class UserRecord {
         workoutDaysPerWeek = profile.workoutDaysPerWeek
         workoutDuration = profile.workoutDuration
         preferredWorkoutTime = profile.preferredWorkoutTime.rawValue
-        injuries = profile.injuries
+        injuries = profile.injuries.map(\.rawValue)
         workoutType = profile.workoutType.rawValue
         bodyUnitSystem = profile.bodyUnitSystem.rawValue
         liftingUnitSystem = profile.liftingUnitSystem?.rawValue
@@ -64,7 +64,7 @@ final class UserRecord {
             workoutDaysPerWeek: workoutDaysPerWeek,
             workoutDuration: workoutDuration,
             preferredWorkoutTime: WorkoutTime(rawValue: preferredWorkoutTime) ?? .anytime,
-            injuries: injuries,
+            injuries: injuries.compactMap(Injury.init(rawValue:)),
             workoutType: WorkoutType(rawValue: workoutType) ?? .mixed,
             bodyUnitSystem: UnitSystem(rawValue: bodyUnitSystem) ?? .standard,
             liftingUnitSystem: liftingUnitSystem.flatMap(UnitSystem.init(rawValue:)),
@@ -85,7 +85,7 @@ final class UserRecord {
         workoutDaysPerWeek = profile.workoutDaysPerWeek
         workoutDuration = profile.workoutDuration
         preferredWorkoutTime = profile.preferredWorkoutTime.rawValue
-        injuries = profile.injuries
+        injuries = profile.injuries.map(\.rawValue)
         workoutType = profile.workoutType.rawValue
         bodyUnitSystem = profile.bodyUnitSystem.rawValue
         liftingUnitSystem = profile.liftingUnitSystem?.rawValue
