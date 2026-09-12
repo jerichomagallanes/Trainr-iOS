@@ -107,7 +107,7 @@ final class Entitlements {
         }
     }
 
-    private static let entitlement = "trainr_ai_workout_plans_pro"
+    private static let entitlement = "trainr_workout_planner_pro"
 
     // A RevenueCat public SDK key is meant to ship inside the app; it authorises
     // nothing a receipt does not already prove.
