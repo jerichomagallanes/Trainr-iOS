@@ -19,6 +19,7 @@ struct RootView: View {
     // Bumped to give home a new identity, and with it a model that re-reads.
     @State private var planGeneration = 0
     @State private var prompt: PaywallReason?
+    @State private var afterPrompt: Route?
 
     var body: some View {
         NavigationStack(path: $path) {
@@ -37,10 +38,10 @@ struct RootView: View {
         // Reading the entitlement is a network round trip, so it runs beside
         // startup rather than in front of it. Nothing on the first screen depends
         // on it, and the paywall refreshes again when it opens.
-        .sheet(item: $prompt) { reason in
+        .sheet(item: $prompt, onDismiss: openAfterPrompt) { reason in
             ProPromptSheet(reason: reason) {
+                afterPrompt = .paywall(reason: reason)
                 prompt = nil
-                path.append(.paywall(reason: reason))
             } onDismiss: {
                 prompt = nil
             }
@@ -97,6 +98,13 @@ struct RootView: View {
             )
             .id(planGeneration)
         }
+    }
+
+    // Run once the sheet has finished dismissing, the earliest point a push survives.
+    private func openAfterPrompt() {
+        guard let next = afterPrompt else { return }
+        afterPrompt = nil
+        path.append(next)
     }
 
     // Spent only on a week that arrived.
