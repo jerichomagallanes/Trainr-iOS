@@ -9,6 +9,8 @@ import TrainrDependencies
 final class Entitlements {
 
     private(set) var isPro = false
+    // A lifetime purchase has no expiry, and nothing to manage or cancel.
+    private(set) var isLifetime = false
     private(set) var offering: Offering?
 
     private let breadcrumbs: any Breadcrumbs
@@ -59,8 +61,7 @@ final class Entitlements {
         do {
             let result = try await Purchases.shared.purchase(package: package)
             guard !result.userCancelled else { return false }
-            isPro = result.customerInfo.entitlements.all[Self.entitlement]?.isActive == true
-            return isPro
+            return read(result.customerInfo)
         } catch {
             breadcrumbs.report(error, doing: "purchase")
             return false
@@ -73,8 +74,7 @@ final class Entitlements {
         guard Purchases.isConfigured else { return false }
         do {
             let info = try await Purchases.shared.restorePurchases()
-            isPro = info.entitlements.all[Self.entitlement]?.isActive == true
-            return isPro
+            return read(info)
         } catch {
             breadcrumbs.report(error, doing: "restorePurchases")
             return false
@@ -84,11 +84,19 @@ final class Entitlements {
     private func readEntitlement() async {
         do {
             let info = try await Purchases.shared.customerInfo()
-            isPro = info.entitlements.all[Self.entitlement]?.isActive == true
+            read(info)
         } catch {
             // Left as it was: a network blip must not revoke a paid week.
             breadcrumbs.report(error, doing: "customerInfo")
         }
+    }
+
+    @discardableResult
+    private func read(_ info: CustomerInfo) -> Bool {
+        let pro = info.entitlements.all[Self.entitlement]
+        isPro = pro?.isActive == true
+        isLifetime = isPro && pro?.expirationDate == nil
+        return isPro
     }
 
     private func readOffering() async {
@@ -103,5 +111,5 @@ final class Entitlements {
 
     // A RevenueCat public SDK key is meant to ship inside the app; it authorises
     // nothing a receipt does not already prove.
-    private static let apiKey = "test_WMIQYjVmrPgWhTvqwpfnkobWhAB"
+    private static let apiKey = "appl_OoKNqPSHTcELxvPPsIYIkrQVSup"
 }

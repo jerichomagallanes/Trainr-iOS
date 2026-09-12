@@ -415,11 +415,11 @@ struct ProPaywallView: View {
         Row(label: L10n.proCompareLogging, free: .yes, pro: .yes),
         Row(label: L10n.proCompareTimer, free: .yes, pro: .yes),
         Row(label: L10n.proCompareHistory, free: .yes, pro: .yes),
-        Row(label: L10n.proCompareRepeat, free: .yes, pro: .yes),
         // Every week, not unlimited: a new week is offered once the current one
         // is finished or over, which is a promise the plan screen keeps.
         Row(label: L10n.proCompareGenerated,
             free: .text(L10n.proCompareOne), pro: .text(L10n.proCompareEveryWeek)),
+        Row(label: L10n.proCompareRepeat, free: .no, pro: .yes),
         Row(label: L10n.proCompareRewrite, free: .no, pro: .yes),
         Row(label: L10n.proCompareFresh, free: .no, pro: .yes)
     ]

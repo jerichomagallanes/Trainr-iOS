@@ -1958,7 +1958,18 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Your subscription is active"
+            "value": "Pro is active"
+          }
+        }
+      }
+    },
+    "pro_active_lifetime": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pro is yours for good"
           }
         }
       }
@@ -2211,7 +2222,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Your first week, every set you log, the rest timer, the video on every exercise, all your past weeks and progress, and repeating a week as often as you like."
+            "value": "Your first week, every set you log, the rest timer, the video on every exercise, and all your past weeks and progress."
           }
         }
       }
@@ -2255,7 +2266,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Pro unlocks new weeks: build next week from what you lifted, rewrite a week that does not suit you, and start a fresh plan whenever your goal changes."
+            "value": "Pro unlocks every week after your first: build next week from what you lifted, repeat a week that went well, rewrite one that does not suit you, and start a fresh plan whenever your goal changes."
           }
         }
       }
@@ -2277,7 +2288,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Yes. Monthly and Yearly renew at the end of each period, until you cancel."
+            "value": "Monthly and Yearly renew at the end of each period until you cancel. Lifetime is a single payment and never renews."
           }
         }
       }
@@ -2574,7 +2585,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Your subscription is back."
+            "value": "Pro is back."
           }
         }
       }
@@ -2618,7 +2629,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Having trouble with your subscription?"
+            "value": "Having trouble with your purchase?"
           }
         }
       }
@@ -2651,7 +2662,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Subscriptions are not available right now. Please try again later."
+            "value": "Pro is not available right now. Please try again later."
           }
         }
       }

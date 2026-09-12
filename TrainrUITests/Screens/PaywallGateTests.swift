@@ -134,7 +134,7 @@ final class PaywallGateTests: XCTestCase {
         XCTAssertTrue(app.staticTexts["YOUR WEEKLY WORKOUT PLAN"].waitForExistence(timeout: 20))
         app.buttons["Profile and app"].tap()
         app.buttons["Trainr Pro"].tap()
-        XCTAssertTrue(app.staticTexts["Your subscription is active"].waitForExistence(timeout: 15))
+        XCTAssertTrue(app.staticTexts["Pro is active"].waitForExistence(timeout: 15))
         XCTAssertTrue(app.buttons["Restore purchase"].exists)
         XCTAssertFalse(app.staticTexts["Unlock every week"].exists)
     }
