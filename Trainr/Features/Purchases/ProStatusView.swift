@@ -1,10 +1,10 @@
 import SwiftUI
 import TrainrDependencies
 
-// Where a subscriber can see that they are subscribed, restore a purchase after
-// a reinstall, and reach the only place a subscription can actually be
-// cancelled. The paywall cannot serve any of that: it closes itself for anyone
-// who already has Pro.
+// Where someone with Pro can see that they have it, restore a purchase after a
+// reinstall, and reach the only place a subscription can actually be cancelled.
+// The paywall cannot serve any of that: it closes itself for anyone who already
+// has Pro.
 struct ProStatusView: View {
     let onClose: () -> Void
 
@@ -37,7 +37,7 @@ struct ProStatusView: View {
                 .padding(.horizontal, Spacing.extraSmall)
                 .padding(.vertical, 3)
                 .background(Color.brandLarge, in: .rect(cornerRadius: CornerRadius.small))
-            Text(L10n.proActive)
+            Text(entitlements.isLifetime ? L10n.proActiveLifetime : L10n.proActive)
                 .font(.screenTitle)
                 .foregroundStyle(Color.onSurface)
         }
@@ -62,9 +62,11 @@ struct ProStatusView: View {
 
     private var actions: some View {
         VStack(alignment: .leading, spacing: Spacing.medium) {
-            Link(L10n.proManage, destination: ProLinks.subscriptions)
-                .font(.labelMedium)
-                .foregroundStyle(Color.brandStrong)
+            if !entitlements.isLifetime {
+                Link(L10n.proManage, destination: ProLinks.subscriptions)
+                    .font(.labelMedium)
+                    .foregroundStyle(Color.brandStrong)
+            }
             Button(L10n.proRestore) { Task { await restore() } }
                 .font(.labelMedium)
                 .foregroundStyle(Color.brandStrong)

@@ -1958,7 +1958,18 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Your subscription is active"
+            "value": "Pro is active"
+          }
+        }
+      }
+    },
+    "pro_active_lifetime": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pro is yours for good"
           }
         }
       }
@@ -2277,7 +2288,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Yes. Monthly and Yearly renew at the end of each period, until you cancel."
+            "value": "Monthly and Yearly renew at the end of each period until you cancel. Lifetime is a single payment and never renews."
           }
         }
       }
@@ -2574,7 +2585,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Your subscription is back."
+            "value": "Pro is back."
           }
         }
       }
@@ -2618,7 +2629,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Having trouble with your subscription?"
+            "value": "Having trouble with your purchase?"
           }
         }
       }
@@ -2651,7 +2662,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Subscriptions are not available right now. Please try again later."
+            "value": "Pro is not available right now. Please try again later."
           }
         }
       }

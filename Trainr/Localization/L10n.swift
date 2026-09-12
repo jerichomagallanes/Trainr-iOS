@@ -196,6 +196,7 @@ nonisolated enum L10n {
     static var preferredFirstName: String { String(localized: "preferred_first_name") }
     static var previousColumn: String { String(localized: "previous_column") }
     static var proActive: String { String(localized: "pro_active") }
+    static var proActiveLifetime: String { String(localized: "pro_active_lifetime") }
     static var proAndMore: String { String(localized: "pro_and_more") }
     static var proBilledAnnually: String { String(localized: "pro_billed_annually") }
     static var proBilledMonthly: String { String(localized: "pro_billed_monthly") }
