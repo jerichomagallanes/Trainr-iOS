@@ -117,6 +117,10 @@ final class RoutineDetailScreenTests: XCTestCase {
     @MainActor
     func testTheVideoTutorialTogglesOpenAndClosed() {
         openUnstartedDay()
+        // The tutorial lives inside How to perform now, so that opens first.
+        let howTo = app.buttons["How to perform"].firstMatch
+        app.scrollUntilHittable(howTo)
+        howTo.tap()
         let show = app.buttons["Show video tutorial"].firstMatch
         app.scrollUntilHittable(show)
         show.tap()
@@ -191,5 +195,20 @@ final class RoutineDetailScreenTests: XCTestCase {
 
         XCTAssertTrue(app.buttons["SLIDE TO FINISH THIS WORKOUT"].waitForExistence(timeout: 3))
         XCTAssertFalse(app.buttons["Mark exercise as not complete"].exists)
+    }
+
+    // The muscles are the catalog's answer to "what does this train", and the
+    // steps its answer to "how do I do it": both were in the data and shown
+    // nowhere.
+    @MainActor
+    func testTheCardNamesTheMusclesAndCanTeachTheMovement() {
+        openUnstartedDay()
+
+        let howTo = app.buttons["How to perform"].firstMatch
+        app.scrollUntilHittable(howTo)
+        howTo.tap()
+
+        XCTAssertTrue(app.buttons["Hide how to perform"].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.staticTexts["1"].firstMatch.exists)
     }
 }

@@ -10,54 +10,66 @@ struct WelcomeView: View {
 
     private let pages = [
         OnboardingPage(imageName: "Skipping", title: L10n.personalizedWorkoutPlans),
-        OnboardingPage(imageName: "Exercising", title: L10n.aiGeneratedRoutines),
+        OnboardingPage(imageName: "Exercising", title: L10n.routinesBuiltAroundYou),
         OnboardingPage(imageName: "TaskDone", title: L10n.trackYourProgress)
     ]
 
     @State private var currentPage = 0
 
     var body: some View {
-        GeometryReader { geometry in
+        GeometryReader { screen in
             VStack(spacing: 0) {
-                header(topInset: geometry.safeAreaInsets.top)
+                header(topInset: screen.safeAreaInsets.top, screen: screen.size)
 
-                Spacer().frame(height: Spacing.extraLarge + Spacing.large)
+                // Whatever the header leaves. The illustration is sized against it
+                // as well as the width, so a short phone shrinks the picture rather
+                // than pushing the button off the bottom.
+                GeometryReader { rest in
+                    let side = min(rest.size.width * 0.65, rest.size.height * 0.45)
+                    VStack(spacing: 0) {
+                        Spacer().frame(height: Spacing.extraLarge + Spacing.large)
 
-                LoopingPager(items: pages, currentIndex: $currentPage) { page in
-                    pageContent(page, width: geometry.size.width)
+                        LoopingPager(items: pages, currentIndex: $currentPage) { page in
+                            pageContent(page, side: side, width: rest.size.width)
+                        }
+                        .frame(height: side + Spacing.large + 48)
+
+                        Spacer().frame(height: Spacing.large)
+
+                        pageIndicator
+
+                        Spacer(minLength: Spacing.large)
+
+                        PrimaryButton(title: L10n.getStarted, action: onGetStarted)
+                            .padding(.horizontal, Spacing.screen)
+                            .padding(.bottom, Spacing.large)
+                    }
                 }
-                .frame(height: geometry.size.width * 0.65 + Spacing.large + 48)
-
-                Spacer().frame(height: Spacing.large)
-
-                pageIndicator
-
-                Spacer()
-
-                PrimaryButton(title: L10n.getStarted, action: onGetStarted)
-                    .padding(.horizontal, Spacing.screen)
-                    .padding(.bottom, Spacing.large)
             }
         }
         .background(Color.surfacePage)
         .toolbar(.hidden, for: .navigationBar)
     }
 
-    // The design measures the heading 151pt from the physical screen top, status bar inside it.
-    private func header(topInset: CGFloat) -> some View {
-        VStack(spacing: Spacing.small) {
+    // The design measures the heading 151pt from the physical screen top, status
+    // bar inside it; a short screen gives most of that back.
+    private func header(topInset: CGFloat, screen: CGSize) -> some View {
+        let topMargin: CGFloat = screen.height < Self.shortScreenHeight ? 96 : 151
+        let narrow = screen.width < Self.headerFullWidth
+        return VStack(spacing: Spacing.small) {
             HStack(alignment: .center, spacing: Spacing.small) {
                 Text(L10n.welcomeTo)
-                    .font(.custom("FugazOne-Regular", size: 30, relativeTo: .largeTitle))
+                    .font(.custom("FugazOne-Regular", size: narrow ? 24 : 30, relativeTo: .largeTitle))
+                    .lineLimit(1)
                     .foregroundStyle(Color.onSurface)
                 Image("Wordmark")
                     .resizable()
                     .scaledToFit()
-                    .frame(height: 52)
+                    .frame(height: narrow ? 42 : 52)
                     .accessibilityLabel(L10n.trainr)
             }
             (Text(L10n.your + " ")
-                + Text(L10n.aiPowered).foregroundStyle(Color.brandStrong).bold()
+                + Text(L10n.trainerAdjective).foregroundStyle(Color.brandStrong).bold()
                 + Text(" " + L10n.personalTrainer))
                 .font(.body16)
                 .fontWeight(.medium)
@@ -66,15 +78,18 @@ struct WelcomeView: View {
         }
         .frame(maxWidth: .infinity)
         .padding(.horizontal, Spacing.large)
-        .padding(.top, max(151 - topInset, 0))
+        .padding(.top, max(topMargin - topInset, 0))
     }
 
-    private func pageContent(_ page: OnboardingPage, width: CGFloat) -> some View {
+    private static let shortScreenHeight: CGFloat = 700
+    private static let headerFullWidth: CGFloat = 380
+
+    private func pageContent(_ page: OnboardingPage, side: CGFloat, width: CGFloat) -> some View {
         VStack(spacing: Spacing.large) {
             Image(page.imageName)
                 .resizable()
                 .scaledToFit()
-                .frame(width: width * 0.65, height: width * 0.65)
+                .frame(width: side, height: side)
                 .accessibilityHidden(true)
             Text(page.title)
                 .font(.sectionTitle)

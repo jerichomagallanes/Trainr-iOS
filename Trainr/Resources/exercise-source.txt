@@ -1,0 +1,486 @@
+# The exercise list this app's catalog is built from, transcribed from the
+# source's own equipment filters. One line per movement:
+#
+#     EQUIPMENT|Name exactly as the source spells it|PRIMARY|SECONDARY
+#
+# SECONDARY is empty everywhere for now; the source carries it but we have not
+# read it off yet, so the catalog stores null rather than a guess.
+#
+# exercise-catalog.json must match this file exactly, both ways, and
+# ExerciseCatalogIntegrityTest enforces that. Nothing reaches a client's plan
+# unless it is on this list, so an entry added here without a source to read
+# it off is the one thing this file exists to prevent.
+#
+# 451 movements. The source counts 452 in total; the one left out is a
+# user-made "custom" entry, which is somebody's own superset rather than part
+# of the list.
+
+
+# NONE
+NONE|Ab Scissors|ABDOMINALS|
+NONE|Aerobics|CARDIO|
+NONE|Assisted Pistol Squats|QUADRICEPS|
+NONE|Bear Crawl|FULL_BODY|
+NONE|Bicycle Crunch|ABDOMINALS|
+NONE|Bicycle Crunch Raised Legs|ABDOMINALS|
+NONE|Bird Dog|GLUTES|
+NONE|Boxing|CARDIO|
+NONE|Burpee|FULL_BODY|
+NONE|Burpee Broad Jumps|FULL_BODY|
+NONE|Burpee Over the Bar|FULL_BODY|
+NONE|Clap Push Ups|CHEST|
+NONE|Climbing|CARDIO|
+NONE|Crunch|ABDOMINALS|
+NONE|Crunch (Weighted)|ABDOMINALS|
+NONE|Dead Bug|ABDOMINALS|
+NONE|Dead Hang|UPPER_BACK|
+NONE|Decline Crunch|ABDOMINALS|
+NONE|Decline Crunch (Weighted)|ABDOMINALS|
+NONE|Diamond Push Up|TRICEPS|
+NONE|Downward Dog|FULL_BODY|
+NONE|Dragon Flag|ABDOMINALS|
+NONE|Dragonfly|ABDOMINALS|
+NONE|Elbow to Knee|ABDOMINALS|
+NONE|Fire Hydrants|GLUTES|
+NONE|Floor Triceps Dip|TRICEPS|
+NONE|Flutter Kicks|ABDOMINALS|
+NONE|Frog Jumps|QUADRICEPS|
+NONE|Front Lever Hold|FULL_BODY|
+NONE|Front Lever Raise|FULL_BODY|
+NONE|Glute Bridge|GLUTES|
+NONE|Glute Kickback on Floor|GLUTES|
+NONE|Handstand Hold|FULL_BODY|
+NONE|Handstand Push Up|SHOULDERS|
+NONE|Hanging Knee Raise|ABDOMINALS|
+NONE|Hanging Leg Raise|ABDOMINALS|
+NONE|Heel Taps|ABDOMINALS|
+NONE|High Knee Skips|FULL_BODY|
+NONE|High Knees|FULL_BODY|
+NONE|HIIT|CARDIO|
+NONE|Hiking|CARDIO|
+NONE|Hip Thrust|GLUTES|
+NONE|Hollow Rock|ABDOMINALS|
+NONE|Incline Push Ups|CHEST|
+NONE|Jackknife Sit Up|ABDOMINALS|
+NONE|Jump Squat|QUADRICEPS|
+NONE|Jumping Jack|FULL_BODY|
+NONE|Jumping Lunge|QUADRICEPS|
+NONE|Kneeling Push Up|CHEST|
+NONE|L-Sit Hold|ABDOMINALS|
+NONE|Lateral Leg Raises|GLUTES|
+NONE|Lateral Lunge|QUADRICEPS|
+NONE|Lateral Squat|QUADRICEPS|
+NONE|Lunge|QUADRICEPS|
+NONE|Lying Knee Raise|ABDOMINALS|
+NONE|Lying Leg Raise|ABDOMINALS|
+NONE|Lying Neck Curls|NECK|
+NONE|Lying Neck Extension|NECK|
+NONE|Mountain Climber|FULL_BODY|
+NONE|Negative Pull Up|LATS|
+NONE|Nordic Hamstrings Curls|HAMSTRINGS|
+NONE|Oblique Crunch|ABDOMINALS|
+NONE|One Arm Push Up|CHEST|
+NONE|Pike Pushup|SHOULDERS|
+NONE|Pilates|FULL_BODY|
+NONE|Pistol Squat|QUADRICEPS|
+NONE|Plank|ABDOMINALS|
+NONE|Plank Pushup|CHEST|
+NONE|Push Up|CHEST|
+NONE|Push Up (Weighted)|CHEST|
+NONE|Push Up - Close Grip|CHEST|
+NONE|Reverse Crunch|ABDOMINALS|
+NONE|Reverse Lunge|QUADRICEPS|
+NONE|Reverse Plank|ABDOMINALS|
+NONE|Ring Dips|CHEST|
+NONE|Running|CARDIO|
+NONE|Russian Twist (Bodyweight)|ABDOMINALS|
+NONE|Scapular Pull Ups|UPPER_BACK|
+NONE|Shoulder Taps|SHOULDERS|
+NONE|Side Bend|ABDOMINALS|
+NONE|Side Plank|ABDOMINALS|
+NONE|Single Leg Glute Bridge|GLUTES|
+NONE|Single Leg Hip Thrust|GLUTES|
+NONE|Single Leg Standing Calf Raise|CALVES|
+NONE|Sissy Squat (Weighted)|QUADRICEPS|
+NONE|Sit Up|ABDOMINALS|
+NONE|Sit Up (Weighted)|ABDOMINALS|
+NONE|Skating|CARDIO|
+NONE|Skiing|CARDIO|
+NONE|Snowboarding|CARDIO|
+NONE|Spiderman|ABDOMINALS|
+NONE|Sprints|CARDIO|
+NONE|Squat (Bodyweight)|QUADRICEPS|
+NONE|Standing Calf Raise|CALVES|
+NONE|Stretching|OTHER|
+NONE|Sumo Squat|QUADRICEPS|
+NONE|Superman|LOWER_BACK|
+NONE|Swimming|CARDIO|
+NONE|Toe Touch|ABDOMINALS|
+NONE|Toes to Bar|ABDOMINALS|
+NONE|V Up|ABDOMINALS|
+NONE|Walking|CARDIO|
+NONE|Walking Lunge|QUADRICEPS|
+NONE|Warm Up|FULL_BODY|
+NONE|Yoga|FULL_BODY|
+
+# BARBELL
+BARBELL|21s Bicep Curl|BICEPS|
+BARBELL|Behind the Back Wrist Curl (Barbell)|FOREARMS|
+BARBELL|Bench Press (Barbell)|CHEST|
+BARBELL|Bench Press - Close Grip (Barbell)|TRICEPS|
+BARBELL|Bench Press - Wide Grip (Barbell)|CHEST|
+BARBELL|Bent Over Row (Barbell)|UPPER_BACK|
+BARBELL|Bicep Curl (Barbell)|BICEPS|
+BARBELL|Box Squat (Barbell)|QUADRICEPS|
+BARBELL|Bulgarian Split Squat (Barbell)|QUADRICEPS|
+BARBELL|Clean|FULL_BODY|
+BARBELL|Clean and Jerk|FULL_BODY|
+BARBELL|Clean and Press|FULL_BODY|
+BARBELL|Clean Pull|FULL_BODY|
+BARBELL|Deadlift (Barbell)|GLUTES|
+BARBELL|Deadlift (Trap bar)|GLUTES|
+BARBELL|Deadlift High Pull|FULL_BODY|
+BARBELL|Decline Bench Press (Barbell)|CHEST|
+BARBELL|Drag Curl|BICEPS|
+BARBELL|EZ Bar Biceps Curl|BICEPS|
+BARBELL|Feet Up Bench Press (Barbell)|CHEST|
+BARBELL|Floor Press (Barbell)|CHEST|
+BARBELL|Front Raise (Barbell)|SHOULDERS|
+BARBELL|Front Squat|QUADRICEPS|
+BARBELL|Full Squat|QUADRICEPS|
+BARBELL|Glute Bridge (Barbell)|GLUTES|
+BARBELL|Good Morning (Barbell)|HAMSTRINGS|
+BARBELL|Hack Squat|QUADRICEPS|
+BARBELL|Hang Clean|FULL_BODY|
+BARBELL|Hang Snatch|FULL_BODY|
+BARBELL|Hip Thrust (Barbell)|GLUTES|
+BARBELL|Incline Bench Press (Barbell)|CHEST|
+BARBELL|JM Press (Barbell)|TRICEPS|
+BARBELL|Jump Shrug|FULL_BODY|
+BARBELL|Landmine 180|ABDOMINALS|
+BARBELL|Landmine Row|UPPER_BACK|
+BARBELL|Landmine Squat and Press|FULL_BODY|
+BARBELL|Lunge (Barbell)|QUADRICEPS|
+BARBELL|Meadows Rows (Barbell)|UPPER_BACK|
+BARBELL|Overhead Press (Barbell)|SHOULDERS|
+BARBELL|Overhead Squat|FULL_BODY|
+BARBELL|Partial Glute Bridge (Barbell)|GLUTES|
+BARBELL|Pause Squat (Barbell)|QUADRICEPS|
+BARBELL|Pendlay Row (Barbell)|UPPER_BACK|
+BARBELL|Power Clean|FULL_BODY|
+BARBELL|Power Snatch|FULL_BODY|
+BARBELL|Preacher Curl (Barbell)|BICEPS|
+BARBELL|Press Under|FULL_BODY|
+BARBELL|Push Press|SHOULDERS|
+BARBELL|Rack Pull|UPPER_BACK|
+BARBELL|Reverse Curl (Barbell)|BICEPS|
+BARBELL|Reverse Lunge (Barbell)|QUADRICEPS|
+BARBELL|Romanian Deadlift (Barbell)|HAMSTRINGS|
+BARBELL|Seal Row (Barbell)|UPPER_BACK|
+BARBELL|Seated Overhead Press (Barbell)|SHOULDERS|
+BARBELL|Seated Wrist Curl (Barbell)|FOREARMS|
+BARBELL|Seated Wrist Extension (Barbell)|FOREARMS|
+BARBELL|Shrug (Barbell)|TRAPS|
+BARBELL|Single Arm Landmine Press (Barbell)|SHOULDERS|
+BARBELL|Single Leg Romanian Deadlift (Barbell)|HAMSTRINGS|
+BARBELL|Single Leg Standing Calf Raise (Barbell)|CALVES|
+BARBELL|Skullcrusher (Barbell)|TRICEPS|
+BARBELL|Snatch|FULL_BODY|
+BARBELL|Spider Curl (Barbell)|BICEPS|
+BARBELL|Split Jerk|FULL_BODY|
+BARBELL|Squat (Barbell)|QUADRICEPS|
+BARBELL|Standing Calf Raise (Barbell)|CALVES|
+BARBELL|Standing Military Press (Barbell)|SHOULDERS|
+BARBELL|Straight Leg Deadlift|HAMSTRINGS|
+BARBELL|Sumo Deadlift|GLUTES|
+BARBELL|Sumo Squat (Barbell)|QUADRICEPS|
+BARBELL|Thruster (Barbell)|FULL_BODY|
+BARBELL|Triceps Extension (Barbell)|TRICEPS|
+BARBELL|Upright Row (Barbell)|SHOULDERS|
+BARBELL|Zercher Squat|QUADRICEPS|
+
+# DUMBBELL
+DUMBBELL|Arnold Press (Dumbbell)|SHOULDERS|
+DUMBBELL|Around The World|CHEST|
+DUMBBELL|Bench Press (Dumbbell)|CHEST|
+DUMBBELL|Bent Over Row (Dumbbell)|UPPER_BACK|
+DUMBBELL|Bicep Curl (Dumbbell)|BICEPS|
+DUMBBELL|Bulgarian Split Squat (Dumbbell)|QUADRICEPS|
+DUMBBELL|Chest Fly (Dumbbell)|CHEST|
+DUMBBELL|Chest Supported Incline Row (Dumbbell)|UPPER_BACK|
+DUMBBELL|Chest Supported Reverse Fly (Dumbbell)|SHOULDERS|
+DUMBBELL|Chest Supported Y Raise (Dumbbell)|SHOULDERS|
+DUMBBELL|Concentration Curl|BICEPS|
+DUMBBELL|Cross Body Hammer Curl|BICEPS|
+DUMBBELL|Curtsy Lunge (Dumbbell)|QUADRICEPS|
+DUMBBELL|Deadlift (Dumbbell)|GLUTES|
+DUMBBELL|Decline Bench Press (Dumbbell)|CHEST|
+DUMBBELL|Decline Chest Fly (Dumbbell)|CHEST|
+DUMBBELL|Dumbbell Row|LATS|
+DUMBBELL|Dumbbell Snatch|FULL_BODY|
+DUMBBELL|Dumbbell Squeeze Press|CHEST|
+DUMBBELL|Dumbbell Step Up|QUADRICEPS|
+DUMBBELL|Floor Press (Dumbbell)|CHEST|
+DUMBBELL|Frog Pumps (Dumbbell)|GLUTES|
+DUMBBELL|Front Raise (Dumbbell)|SHOULDERS|
+DUMBBELL|Goblet Squat|QUADRICEPS|
+DUMBBELL|Hammer Curl (Dumbbell)|BICEPS|
+DUMBBELL|Hex Press (Dumbbell)|CHEST|
+DUMBBELL|Hip Thrust (Dumbbell)|GLUTES|
+DUMBBELL|Incline Bench Press (Dumbbell)|CHEST|
+DUMBBELL|Incline Chest Fly (Dumbbell)|CHEST|
+DUMBBELL|Lateral Raise (Dumbbell)|SHOULDERS|
+DUMBBELL|Lunge (Dumbbell)|QUADRICEPS|
+DUMBBELL|Overhead Dumbbell Lunge|QUADRICEPS|
+DUMBBELL|Overhead Press (Dumbbell)|SHOULDERS|
+DUMBBELL|Pinwheel Curl (Dumbbell)|BICEPS|
+DUMBBELL|Preacher Curl (Dumbbell)|BICEPS|
+DUMBBELL|Pullover (Dumbbell)|LATS|
+DUMBBELL|Rear Delt Reverse Fly (Dumbbell)|SHOULDERS|
+DUMBBELL|Renegade Row (Dumbbell)|UPPER_BACK|
+DUMBBELL|Reverse Curl (Dumbbell)|BICEPS|
+DUMBBELL|Reverse Grip Concentration Curl|BICEPS|
+DUMBBELL|Reverse Lunge (Dumbbell)|QUADRICEPS|
+DUMBBELL|Reverse Wrist Curl (Dumbbell)|FOREARMS|
+DUMBBELL|Romanian Deadlift (Dumbbell)|HAMSTRINGS|
+DUMBBELL|Seal Row (Dumbbell)|UPPER_BACK|
+DUMBBELL|Seated Incline Curl (Dumbbell)|BICEPS|
+DUMBBELL|Seated Incline Hammer Curl (Dumbbell)|BICEPS|
+DUMBBELL|Seated Lateral Raise (Dumbbell)|SHOULDERS|
+DUMBBELL|Seated Overhead Press (Dumbbell)|SHOULDERS|
+DUMBBELL|Seated Palms Up Wrist Curl|FOREARMS|
+DUMBBELL|Shoulder Press (Dumbbell)|SHOULDERS|
+DUMBBELL|Shrug (Dumbbell)|TRAPS|
+DUMBBELL|Side Bend (Dumbbell)|ABDOMINALS|
+DUMBBELL|Single Arm Tricep Extension (Dumbbell)|TRICEPS|
+DUMBBELL|Single Leg Hip Thrust (Dumbbell)|GLUTES|
+DUMBBELL|Single Leg Romanian Deadlift (Dumbbell)|HAMSTRINGS|
+DUMBBELL|Single Leg Standing Calf Raise (Dumbbell)|CALVES|
+DUMBBELL|Skullcrusher (Dumbbell)|TRICEPS|
+DUMBBELL|Spider Curl (Dumbbell)|BICEPS|
+DUMBBELL|Split Squat (Dumbbell)|QUADRICEPS|
+DUMBBELL|Squat (Dumbbell)|QUADRICEPS|
+DUMBBELL|Standing Calf Raise (Dumbbell)|CALVES|
+DUMBBELL|Suitcase Carry (Dumbbell)|FULL_BODY|
+DUMBBELL|Sumo Squat (Dumbbell)|QUADRICEPS|
+DUMBBELL|Triceps Extension (Dumbbell)|TRICEPS|
+DUMBBELL|Triceps Kickback (Dumbbell)|TRICEPS|
+DUMBBELL|Upright Row (Dumbbell)|SHOULDERS|
+DUMBBELL|Waiter Curl (Dumbbell)|BICEPS|
+DUMBBELL|Walking Lunge (Dumbbell)|QUADRICEPS|
+DUMBBELL|Wide-Elbow Triceps Press (Dumbbell)|TRICEPS|
+DUMBBELL|Zottman Curl (Dumbbell)|BICEPS|
+
+# KETTLEBELL
+KETTLEBELL|Gorilla Row (Kettlebell)|UPPER_BACK|
+KETTLEBELL|Kettlebell Around the World|SHOULDERS|
+KETTLEBELL|Kettlebell Clean|FULL_BODY|
+KETTLEBELL|Kettlebell Curl|BICEPS|
+KETTLEBELL|Kettlebell Goblet Squat|QUADRICEPS|
+KETTLEBELL|Kettlebell Halo|SHOULDERS|
+KETTLEBELL|Kettlebell High Pull|FULL_BODY|
+KETTLEBELL|Kettlebell Shoulder Press|SHOULDERS|
+KETTLEBELL|Kettlebell Snatch|FULL_BODY|
+KETTLEBELL|Kettlebell Swing|FULL_BODY|
+KETTLEBELL|Kettlebell Turkish Get Up|FULL_BODY|
+KETTLEBELL|Sumo Squat (Kettlebell)|QUADRICEPS|
+KETTLEBELL|Thruster (Kettlebell)|FULL_BODY|
+
+# MACHINE
+MACHINE|Air Bike|CARDIO|
+MACHINE|Back Extension (Hyperextension)|LOWER_BACK|
+MACHINE|Back Extension (Machine)|LOWER_BACK|
+MACHINE|Back Extension (Weighted Hyperextension)|LOWER_BACK|
+MACHINE|Battle Ropes|CARDIO|
+MACHINE|Behind the Back Curl (Cable)|BICEPS|
+MACHINE|Belt Squat (Machine)|QUADRICEPS|
+MACHINE|Bench Press (Cable)|CHEST|
+MACHINE|Bench Press (Smith Machine)|CHEST|
+MACHINE|Bent Over Row (Smith Machine)|UPPER_BACK|
+MACHINE|Bicep Curl (Cable)|BICEPS|
+MACHINE|Bicep Curl (Machine)|BICEPS|
+MACHINE|Butterfly (Pec Deck)|CHEST|
+MACHINE|Cable Core Pallof Press|ABDOMINALS|
+MACHINE|Cable Crunch|ABDOMINALS|
+MACHINE|Cable Fly Crossovers|CHEST|
+MACHINE|Cable Pull Through|GLUTES|
+MACHINE|Cable Twist (Down to up)|ABDOMINALS|
+MACHINE|Cable Twist (Up to down)|ABDOMINALS|
+MACHINE|Calf Extension (Machine)|CALVES|
+MACHINE|Calf Press (Machine)|CALVES|
+MACHINE|Chest Dip|CHEST|
+MACHINE|Chest Dip (Assisted)|CHEST|
+MACHINE|Chest Dip (Weighted)|CHEST|
+MACHINE|Chest Fly (Machine)|CHEST|
+MACHINE|Chest Press (Machine)|CHEST|
+MACHINE|Chest Supported T Bar Row|UPPER_BACK|
+MACHINE|Chin Up|LATS|
+MACHINE|Chin Up (Assisted)|LATS|
+MACHINE|Chin Up (Weighted)|LATS|
+MACHINE|Crunch (Machine)|ABDOMINALS|
+MACHINE|Cycling|CARDIO|
+MACHINE|Deadlift (Smith Machine)|GLUTES|
+MACHINE|Decline Bench Press (Machine)|CHEST|
+MACHINE|Decline Bench Press (Smith Machine)|CHEST|
+MACHINE|Elliptical Trainer|CARDIO|
+MACHINE|Face Pull|SHOULDERS|
+MACHINE|Front Raise (Cable)|SHOULDERS|
+MACHINE|Glute Ham Raise|HAMSTRINGS|
+MACHINE|Glute Kickback (Machine)|GLUTES|
+MACHINE|Hack Squat (Machine)|QUADRICEPS|
+MACHINE|Hammer Curl (Cable)|BICEPS|
+MACHINE|Hip Abduction (Cable)|ABDUCTORS|
+MACHINE|Hip Abduction (Machine)|ABDUCTORS|
+MACHINE|Hip Adduction (Cable)|ADDUCTORS|
+MACHINE|Hip Adduction (Machine)|ADDUCTORS|
+MACHINE|Hip Thrust (Machine)|GLUTES|
+MACHINE|Hip Thrust (Smith Machine)|GLUTES|
+MACHINE|Incline Bench Press (Smith Machine)|CHEST|
+MACHINE|Incline Chest Press (Machine)|CHEST|
+MACHINE|Inverted Row|UPPER_BACK|
+MACHINE|Iso-Lateral Chest Press (Machine)|CHEST|
+MACHINE|Iso-Lateral High Row (Machine)|LATS|
+MACHINE|Iso-Lateral Low Row|UPPER_BACK|
+MACHINE|Iso-Lateral Row (Machine)|UPPER_BACK|
+MACHINE|Kipping Pull Up|LATS|
+MACHINE|Knee Raise Parallel Bars|ABDOMINALS|
+MACHINE|Kneeling Pulldown (band)|LATS|
+MACHINE|Lat Pulldown (Cable)|LATS|
+MACHINE|Lat Pulldown (Machine)|LATS|
+MACHINE|Lat Pulldown - Close Grip (Cable)|LATS|
+MACHINE|Lateral Raise (Cable)|SHOULDERS|
+MACHINE|Lateral Raise (Machine)|SHOULDERS|
+MACHINE|Leg Extension (Machine)|QUADRICEPS|
+MACHINE|Leg Press (Machine)|QUADRICEPS|
+MACHINE|Leg Press Horizontal (Machine)|QUADRICEPS|
+MACHINE|Leg Raise Parallel Bars|ABDOMINALS|
+MACHINE|Low Cable Fly Crossovers|CHEST|
+MACHINE|Lying Leg Curl (Machine)|HAMSTRINGS|
+MACHINE|Muscle Up|FULL_BODY|
+MACHINE|Overhead Curl (Cable)|BICEPS|
+MACHINE|Overhead Press (Smith Machine)|SHOULDERS|
+MACHINE|Overhead Triceps Extension (Cable)|TRICEPS|
+MACHINE|Pendulum Squat (Machine)|QUADRICEPS|
+MACHINE|Preacher Curl (Machine)|BICEPS|
+MACHINE|Pull Up|LATS|
+MACHINE|Pull Up (Assisted)|LATS|
+MACHINE|Pull Up (Weighted)|LATS|
+MACHINE|Pullover (Machine)|LATS|
+MACHINE|Rear Delt Reverse Fly (Cable)|SHOULDERS|
+MACHINE|Rear Delt Reverse Fly (Machine)|SHOULDERS|
+MACHINE|Rear Kick (Machine)|GLUTES|
+MACHINE|Recumbent Bike|CARDIO|
+MACHINE|Reverse Curl (Cable)|BICEPS|
+MACHINE|Reverse Fly Single Arm (Cable)|SHOULDERS|
+MACHINE|Reverse Grip Lat Pulldown (Cable)|LATS|
+MACHINE|Reverse Grip Triceps Pushdown|TRICEPS|
+MACHINE|Reverse Hyperextension|GLUTES|
+MACHINE|Romanian Deadlift (Smith Machine)|HAMSTRINGS|
+MACHINE|Rope Cable Curl|BICEPS|
+MACHINE|Rope Straight Arm Pulldown|LATS|
+MACHINE|Rowing Machine|CARDIO|
+MACHINE|Seated Cable Row - Bar Grip|UPPER_BACK|
+MACHINE|Seated Cable Row - Bar Wide Grip|UPPER_BACK|
+MACHINE|Seated Cable Row - V Grip (Cable)|UPPER_BACK|
+MACHINE|Seated Calf Raise|CALVES|
+MACHINE|Seated Chest Flys (Cable)|CHEST|
+MACHINE|Seated Dip Machine|TRICEPS|
+MACHINE|Seated Leg Curl (Machine)|HAMSTRINGS|
+MACHINE|Seated Row (Machine)|UPPER_BACK|
+MACHINE|Seated Shoulder Press (Machine)|SHOULDERS|
+MACHINE|Seated Triceps Press|TRICEPS|
+MACHINE|Shoulder Press (Machine Plates)|SHOULDERS|
+MACHINE|Shrug (Cable)|TRAPS|
+MACHINE|Shrug (Machine)|TRAPS|
+MACHINE|Shrug (Smith Machine)|TRAPS|
+MACHINE|Single Arm Cable Crossover|CHEST|
+MACHINE|Single Arm Cable Row|UPPER_BACK|
+MACHINE|Single Arm Curl (Cable)|BICEPS|
+MACHINE|Single Arm Lat Pulldown|LATS|
+MACHINE|Single Arm Lateral Raise (Cable)|SHOULDERS|
+MACHINE|Single Arm Triceps Pushdown (Cable)|TRICEPS|
+MACHINE|Single Leg Extensions|QUADRICEPS|
+MACHINE|Single Leg Press (Machine)|QUADRICEPS|
+MACHINE|Single Leg Standing Calf Raise (Machine)|CALVES|
+MACHINE|Ski Erg|CARDIO|
+MACHINE|Spinning|CARDIO|
+MACHINE|Squat (Machine)|QUADRICEPS|
+MACHINE|Squat (Smith Machine)|QUADRICEPS|
+MACHINE|Squat Row|FULL_BODY|
+MACHINE|Stair Machine (Floors)|CARDIO|
+MACHINE|Stair Machine (Steps)|CARDIO|
+MACHINE|Standing Cable Glute Kickbacks|GLUTES|
+MACHINE|Standing Calf Raise (Machine)|CALVES|
+MACHINE|Standing Calf Raise (Smith)|CALVES|
+MACHINE|Standing Leg Curls|HAMSTRINGS|
+MACHINE|Standing Y Raise (Cable)|SHOULDERS|
+MACHINE|Sternum Pull up (Gironda)|LATS|
+MACHINE|Straight Arm Lat Pulldown (Cable)|LATS|
+MACHINE|T Bar Row|UPPER_BACK|
+MACHINE|Torso Rotation|ABDOMINALS|
+MACHINE|Treadmill|CARDIO|
+MACHINE|Triceps Dip|TRICEPS|
+MACHINE|Triceps Dip (Assisted)|TRICEPS|
+MACHINE|Triceps Dip (Weighted)|TRICEPS|
+MACHINE|Triceps Extension (Cable)|TRICEPS|
+MACHINE|Triceps Extension (Machine)|TRICEPS|
+MACHINE|Triceps Kickback (Cable)|TRICEPS|
+MACHINE|Triceps Pressdown|TRICEPS|
+MACHINE|Triceps Pushdown|TRICEPS|
+MACHINE|Triceps Rope Pushdown|TRICEPS|
+MACHINE|Upright Row (Cable)|SHOULDERS|
+MACHINE|Vertical Traction (Machine)|LATS|
+MACHINE|Wide Pull Up|LATS|
+MACHINE|Wrist Roller|FOREARMS|
+
+# PLATE
+PLATE|Lying Neck Curls (Weighted)|NECK|
+PLATE|Lying Neck Extension (Weighted)|NECK|
+PLATE|Overhead Plate Raise|SHOULDERS|
+PLATE|Plate Curl|BICEPS|
+PLATE|Plate Front Raise|SHOULDERS|
+PLATE|Plate Press|CHEST|
+PLATE|Plate Squeeze (Svend Press)|CHEST|
+PLATE|Russian Twist (Weighted)|ABDOMINALS|
+
+# RESISTANCE_BAND
+RESISTANCE_BAND|Band Pullaparts|SHOULDERS|
+RESISTANCE_BAND|Bent Over Row (Band)|UPPER_BACK|
+RESISTANCE_BAND|Chest Fly (Band)|CHEST|
+RESISTANCE_BAND|Chest Press (Band)|CHEST|
+RESISTANCE_BAND|Clamshell|GLUTES|
+RESISTANCE_BAND|Deadlift (Band)|GLUTES|
+RESISTANCE_BAND|Front Raise (Band)|SHOULDERS|
+RESISTANCE_BAND|Hammer Curl (Band)|BICEPS|
+RESISTANCE_BAND|Lat Pulldown (Band)|LATS|
+RESISTANCE_BAND|Lateral Band Walks|GLUTES|
+RESISTANCE_BAND|Lateral Raise (Band)|SHOULDERS|
+RESISTANCE_BAND|Pull Up (Band)|LATS|
+RESISTANCE_BAND|Squat (Band)|QUADRICEPS|
+
+# SUSPENSION_BAND
+SUSPENSION_BAND|Bicep Curl (Suspension)|BICEPS|
+SUSPENSION_BAND|Chest Fly (Suspension)|CHEST|
+SUSPENSION_BAND|Front Raise (Suspension)|SHOULDERS|
+SUSPENSION_BAND|Jack Knife (Suspension)|ABDOMINALS|
+SUSPENSION_BAND|Low Row (Suspension)|UPPER_BACK|
+SUSPENSION_BAND|Squat (Suspension)|QUADRICEPS|
+SUSPENSION_BAND|Triceps Extension (Suspension)|TRICEPS|
+
+# OTHER
+OTHER|Ab Wheel|ABDOMINALS|
+OTHER|Ball Slams|FULL_BODY|
+OTHER|Bench Dip|TRICEPS|
+OTHER|Box Jump|QUADRICEPS|
+OTHER|Decline Push Up|CHEST|
+OTHER|Farmers Walk|FULL_BODY|
+OTHER|Jump Rope|CARDIO|
+OTHER|Lateral Box Jump|QUADRICEPS|
+OTHER|Ring Pull Up|LATS|
+OTHER|Ring Push Up|CHEST|
+OTHER|Sled Pull|FULL_BODY|
+OTHER|Sled Push|FULL_BODY|
+OTHER|Step Up|QUADRICEPS|
+OTHER|Walking Lunge (Sandbag)|QUADRICEPS|
+OTHER|Wall Ball|FULL_BODY|
+OTHER|Wall Sit|QUADRICEPS|

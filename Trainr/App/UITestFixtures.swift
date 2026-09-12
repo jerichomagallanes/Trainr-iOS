@@ -5,7 +5,7 @@ import Foundation
 // touch real data. The names are the contract with TrainrUITests.
 enum UITestFixtures {
 
-    static let argument = "-seedFixture"
+    private static let argument = "-seedFixture"
 
     static func seedIfRequested(into store: TrainingStore) {
         let arguments = ProcessInfo.processInfo.arguments
@@ -16,7 +16,7 @@ enum UITestFixtures {
         seed(arguments[index + 1], into: store)
     }
 
-    static func seed(_ name: String, into store: TrainingStore) {
+    private static func seed(_ name: String, into store: TrainingStore) {
         let user = client()
         try? store.saveUser(user)
 
@@ -41,7 +41,7 @@ enum UITestFixtures {
         }
     }
 
-    static let stepArgument = "-startAtStep"
+    private static let stepArgument = "-startAtStep"
 
     // A screen a test can start on, with the answers before it already given.
     // Retyping five screens of answers into a hosted simulator is what made the
@@ -104,18 +104,16 @@ enum UITestFixtures {
             case .bodyMetrics:
                 model.updateBodyMetrics(height: 175, weight: 72, units: .metric)
             case .goals:
-                model.updateFitnessGoal(.muscleGain, workoutType: .strength)
+                model.updateFitnessGoal(.muscleGain)
             case .setup:
                 model.updateWorkoutSetup(
-                    location: .home,
-                    equipment: [.dumbbells],
+                    equipment: [.dumbbell],
                     liftingUnits: .metric,
                     daysPerWeek: 3,
-                    duration: 45,
-                    preferredTime: .morning
+                    duration: 45
                 )
             case .limitations:
-                model.updateLimitations(injuries: ["Lower Back Pain"])
+                model.updateLimitations(injuries: [.lowerBack])
             }
         }
     }
@@ -143,7 +141,7 @@ enum UITestFixtures {
         user.height = 175
         user.weight = 72
         user.fitnessGoal = .muscleGain
-        user.availableEquipment = [.dumbbells]
+        user.availableEquipment = [.dumbbell]
         user.workoutDaysPerWeek = 3
         user.workoutDuration = 45
         user.liftingUnitSystem = .metric
@@ -196,24 +194,15 @@ enum UITestFixtures {
         return plan
     }
 
-    static let failureArgument = "-generationFails"
-    static let slowArgument = "-slowGeneration"
+    private static let failureArgument = "-generationFails"
+    private static let slowArgument = "-slowGeneration"
 
     static func failingGeneratorIfRequested() -> (any PlanGenerator)? {
-        let arguments = ProcessInfo.processInfo.arguments
-        guard let index = arguments.firstIndex(of: failureArgument),
-              arguments.indices.contains(index + 1)
-        else { return nil }
-        let reason: PlanGenerationFailure = switch arguments[index + 1] {
-        case "offline": .offline
-        case "dailyLimit": .dailyLimitReached
-        default: .failed
-        }
-        return FailingPlanGenerator(reason: reason)
+        ProcessInfo.processInfo.arguments.contains(failureArgument) ? FailingPlanGenerator() : nil
     }
 
-    // A coach that answers correctly but takes its time, so a test can watch
-    // what a screen does while the real one would still be thinking.
+    // A generator that answers correctly but takes its time, so a test can
+    // watch what a screen does while the week is still being built.
     static func slowGeneratorIfRequested() -> (any PlanGenerator)? {
         let arguments = ProcessInfo.processInfo.arguments
         guard let index = arguments.firstIndex(of: slowArgument),
@@ -228,18 +217,16 @@ enum UITestFixtures {
 
         func generate(_ request: PlanRequest) async -> PlanGenerationResult {
             try? await Task.sleep(for: .seconds(seconds))
-            return await CannedPlanGenerator().generate(request)
+            return await WeekPlanGenerator().generate(request)
         }
     }
 
     private struct FailingPlanGenerator: PlanGenerator {
-        let reason: PlanGenerationFailure
-
         // A moment before answering: a failure raised in the same turn it was
         // asked in goes nil and back before the screen looks.
         func generate(_ request: PlanRequest) async -> PlanGenerationResult {
             try? await Task.sleep(for: .milliseconds(300))
-            return .failure(reason)
+            return .failed
         }
     }
 

@@ -16,14 +16,17 @@ final class OnboardingModel {
     private(set) var answeredSteps: Set<OnboardingStep> = []
     private(set) var isLoading = false
     private(set) var isCompleted = false
-    private(set) var generationFailure: PlanGenerationFailure?
+    private(set) var generationFailure: PlanGenerationResult?
     // A counter, not the failure alone: cleared and set again in one turn reads as unchanged.
     private(set) var failureCount = 0
 
     private let dependencies: AppDependencies
     private let store: TrainingStore
     private let planGenerator: any PlanGenerator
-    private let languageCode: String
+
+    // Only the kit the catalog actually has movements for reaches the setup
+    // screen, so a chip can never lead to an empty week.
+    let stockedEquipment: Set<Equipment>
 
     // One plan at a time; the model outlives the screen, so a rerun must not begin complete.
     private var isWorking = false
@@ -34,7 +37,7 @@ final class OnboardingModel {
         self.dependencies = dependencies
         store = dependencies.store
         planGenerator = dependencies.planGenerator
-        languageCode = dependencies.languageCode
+        stockedEquipment = Set(dependencies.catalog.all.map(\.equipment))
         if let stored = dependencies.attempt("currentUser", { try store.currentUser() }) {
             profile = stored
         }
@@ -62,30 +65,25 @@ final class OnboardingModel {
         profile.bodyUnitSystem = units
     }
 
-    func updateFitnessGoal(_ goal: FitnessGoal, workoutType: WorkoutType) {
+    func updateFitnessGoal(_ goal: FitnessGoal) {
         answeredSteps.insert(.goals)
         profile.fitnessGoal = goal
-        profile.workoutType = workoutType
     }
 
     func updateWorkoutSetup(
-        location: WorkoutLocation,
         equipment: [Equipment],
         liftingUnits: UnitSystem?,
         daysPerWeek: Int,
         duration: Int,
-        preferredTime: WorkoutTime
     ) {
         answeredSteps.insert(.setup)
-        profile.workoutLocation = location
         profile.liftingUnitSystem = liftingUnits
         profile.availableEquipment = equipment
         profile.workoutDaysPerWeek = daysPerWeek
         profile.workoutDuration = duration
-        profile.preferredWorkoutTime = preferredTime
     }
 
-    func updateLimitations(injuries: [String]) {
+    func updateLimitations(injuries: [Injury]) {
         answeredSteps.insert(.limitations)
         profile.injuries = injuries
     }
@@ -139,8 +137,7 @@ final class OnboardingModel {
                 PlanRequest(
                     user: toSave,
                     weekNumber: Self.firstWeek,
-                    startDate: start,
-                    languageCode: languageCode
+                    startDate: start
                 )
             )
 
@@ -150,10 +147,8 @@ final class OnboardingModel {
                     dependencies.attempt("saveUser", { try store.saveUser(toSave) })
                 }
                 isLoading = false
-                if case .failure(let failure) = result {
-                    generationFailure = failure
-                    failureCount += 1
-                }
+                generationFailure = .failed
+                failureCount += 1
                 return
             }
 

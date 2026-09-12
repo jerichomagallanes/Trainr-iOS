@@ -8,7 +8,7 @@ final class OnboardingFlowTests: XCTestCase {
     private func launch() {
         continueAfterFailure = false
         app = XCUIApplication()
-        app.launchArguments = ["-cannedGeneration", "-inMemoryStore"]
+        app.launchArguments = ["-inMemoryStore"]
         app.launch()
     }
 
@@ -59,18 +59,15 @@ final class OnboardingFlowTests: XCTestCase {
 
         XCTAssertTrue(app.staticTexts["YOUR FITNESS GOALS"].waitForExistence(timeout: 5))
         app.button(startingWith: "Build Muscle").tap()
-        app.select(app.button(startingWith: "Strength Training"))
         app.buttons["NEXT"].tap()
 
         XCTAssertTrue(app.staticTexts["SET UP YOUR WORKOUT"].waitForExistence(timeout: 5))
-        app.buttons["Home"].tap()
-        app.buttons["Dumbbells"].tap()
+        app.buttons["Dumbbell"].tap()
         XCTAssertTrue(app.staticTexts["What are the weights marked in?"].waitForExistence(timeout: 5))
         app.buttons["kg"].tap()
         app.buttons["Choose how many days"].tap()
         app.buttons["3 days"].tap()
         app.buttons["45 mins"].tap()
-        app.select(app.buttons["Morning (7-12 PM)"])
         let setupNext = app.buttons["NEXT"]
         XCTAssertTrue(setupNext.isEnabled)
         setupNext.tap()
@@ -121,15 +118,16 @@ final class OnboardingFlowTests: XCTestCase {
 
     @MainActor
     private func trainTheFirstSession() {
-        app.buttons.matching(
+        let start = app.buttons.matching(
             NSPredicate(format: "label BEGINSWITH %@", "START")
-        ).firstMatch.tap()
-
-        // Same reason: the routine is loaded and laid out, not pushed.
-        XCTAssertTrue(app.staticTexts["Set"].waitForExistence(timeout: 30))
+        ).firstMatch
+        XCTAssertTrue(
+            app.tap(start, until: app.staticTexts["Set"]),
+            "the routine never opened from the plan"
+        )
         XCTAssertTrue(app.buttons["Add set"].firstMatch.exists)
         XCTAssertTrue(app.buttons["Start timer"].firstMatch.exists)
-        XCTAssertTrue(app.staticTexts["Equipment: Dumbbells"].exists)
+        XCTAssertTrue(app.staticTexts["Equipment: Dumbbell"].exists)
 
         let slider = app.buttons["SLIDE TO FINISH THIS WORKOUT"]
         XCTAssertTrue(slider.waitForExistence(timeout: 5))
@@ -184,12 +182,11 @@ final class OnboardingFlowTests: XCTestCase {
     @MainActor
     func testARangeBreakingAgeIsToldTheRule() {
         launch()
-        let getStarted = app.buttons["GET STARTED"]
-        XCTAssertTrue(getStarted.waitForExistence(timeout: 10))
-        getStarted.tap()
-
         let ageField = app.textFields["Enter your age"]
-        XCTAssertTrue(ageField.waitForExistence(timeout: 5))
+        XCTAssertTrue(
+            app.tap(app.buttons["GET STARTED"], until: ageField),
+            "Basic Info never opened from the welcome screen"
+        )
         ageField.tap()
         ageField.typeText("300")
         // Leaving the field is what surfaces the complaint.

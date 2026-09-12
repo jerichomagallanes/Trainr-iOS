@@ -2,33 +2,31 @@ import SwiftUI
 
 struct FitnessGoalView: View {
     var isEditing = false
-    let onNext: (FitnessGoal, WorkoutType) -> Void
+    let onNext: (FitnessGoal) -> Void
     let onBack: () -> Void
 
     @State private var selectedGoal: FitnessGoal?
-    @State private var selectedStyle: WorkoutType?
 
     init(
         initial: UserProfile? = nil,
         isEditing: Bool = false,
-        onNext: @escaping (FitnessGoal, WorkoutType) -> Void,
+        onNext: @escaping (FitnessGoal) -> Void,
         onBack: @escaping () -> Void
     ) {
         self.isEditing = isEditing
         self.onNext = onNext
         self.onBack = onBack
         _selectedGoal = State(initialValue: initial?.fitnessGoal)
-        _selectedStyle = State(initialValue: initial?.workoutType)
     }
 
     var body: some View {
         ScreenScaffold(onBack: onBack, closeInsteadOfBack: isEditing) {
             PrimaryButton(
                 title: isEditing ? L10n.save : L10n.next,
-                isEnabled: selectedGoal != nil && selectedStyle != nil
+                isEnabled: selectedGoal != nil
             ) {
-                guard let goal = selectedGoal, let style = selectedStyle else { return }
-                onNext(goal, style)
+                guard let goal = selectedGoal else { return }
+                onNext(goal)
             }
         } content: {
             if !isEditing {
@@ -60,17 +58,6 @@ struct FitnessGoalView: View {
                     }
                 }
 
-                FormSection(title: L10n.preferredWorkoutStyle) {
-                    VStack(spacing: Spacing.card) {
-                        styleCard("dumbbell.fill", L10n.strengthTraining,
-                                  L10n.strengthTrainingDescription, .strength)
-                        styleCard("figure.run", L10n.cardio, L10n.cardioDescription, .cardio)
-                        styleCard("bolt.fill", L10n.hiit, L10n.hiitDescription, .hiit)
-                        styleCard("figure.arms.open", L10n.mixedBalanced,
-                                  L10n.mixedBalancedDescription, .mixed)
-                    }
-                }
-
                 Spacer().frame(height: Spacing.medium)
             }
         }
@@ -85,16 +72,8 @@ struct FitnessGoalView: View {
         }
     }
 
-    private func styleCard(
-        _ symbol: String, _ title: String, _ description: String, _ style: WorkoutType
-    ) -> some View {
-        IconCard(symbol: symbol, title: title, description: description,
-                 isSelected: selectedStyle == style) {
-            selectedStyle = style
-        }
-    }
 }
 
 #Preview {
-    FitnessGoalView(onNext: { _, _ in }, onBack: {})
+    FitnessGoalView(onNext: { _ in }, onBack: {})
 }

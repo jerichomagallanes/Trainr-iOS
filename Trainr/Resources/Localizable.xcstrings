@@ -56,28 +56,6 @@
         }
       }
     },
-    "afternoon": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Afternoon"
-          }
-        }
-      }
-    },
-    "afternoon_time": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Afternoon (12-5 PM)"
-          }
-        }
-      }
-    },
     "age": {
       "extractionState": "manual",
       "localizations": {
@@ -100,46 +78,46 @@
         }
       }
     },
-    "ai_generated_routines": {
+    "routines_built_around_you": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "AI-generated routines"
+            "value": "Routines built around you"
           }
         }
       }
     },
-    "ai_powered": {
+    "trainer_adjective": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "AI-powered"
+            "value": "pocket"
           }
         }
       }
     },
-    "ai_routine_description": {
+    "routine_description": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Based on your profile, we'll create a %1$@ %2$@ plan focused on %3$@."
+            "value": "Based on your profile, we'll create a %1$@ plan focused on %2$@."
           }
         }
       }
     },
-    "ai_routine_preview_label": {
+    "routine_preview_label": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "AI Workout Plan"
+            "value": "Your Workout Plan"
           }
         }
       }
@@ -172,7 +150,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Your workout plans are written for you by AI from the fitness profile you set."
+            "value": "Your workout plans are built on your phone from the fitness profile you set."
           }
         }
       }
@@ -287,17 +265,6 @@
         }
       }
     },
-    "barbell_plates": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Barbell & plates"
-          }
-        }
-      }
-    },
     "beginner": {
       "extractionState": "manual",
       "localizations": {
@@ -327,17 +294,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Beginner"
-          }
-        }
-      }
-    },
-    "bench": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bench"
           }
         }
       }
@@ -375,28 +331,6 @@
         }
       }
     },
-    "both": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Both"
-          }
-        }
-      }
-    },
-    "both_location": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Both"
-          }
-        }
-      }
-    },
     "build_muscle": {
       "extractionState": "manual",
       "localizations": {
@@ -430,17 +364,6 @@
         }
       }
     },
-    "cable_machine": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Cable machine"
-          }
-        }
-      }
-    },
     "cancel": {
       "extractionState": "manual",
       "localizations": {
@@ -452,46 +375,79 @@
         }
       }
     },
-    "cardio": {
+    "caution_ankle": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Cardio"
+            "value": "Keep your weight through the whole foot, and move softly."
           }
         }
       }
     },
-    "cardio_description": {
+    "caution_hip": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Improve endurance and burn calories."
+            "value": "Only go as deep as your hip moves without pain."
           }
         }
       }
     },
-    "cardio_equipment": {
+    "caution_knee": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Cardio equipment"
+            "value": "Keep your knee in line with your toes. Stop if it hurts."
           }
         }
       }
     },
-    "cardio_style": {
+    "caution_lower_back": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Cardio"
+            "value": "Brace and keep your back flat. Stop if it pinches."
+          }
+        }
+      }
+    },
+    "caution_neck": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keep your chin tucked and your neck relaxed."
+          }
+        }
+      }
+    },
+    "caution_shoulder": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stay in a range your shoulder is comfortable in."
+          }
+        }
+      }
+    },
+    "caution_wrist": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keep your wrist straight rather than bent back."
           }
         }
       }
@@ -695,17 +651,6 @@
         }
       }
     },
-    "dumbbells": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Dumbbells"
-          }
-        }
-      }
-    },
     "duration_label": {
       "extractionState": "manual",
       "localizations": {
@@ -736,28 +681,6 @@
                 }
               }
             }
-          }
-        }
-      }
-    },
-    "early_morning": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Early Morning"
-          }
-        }
-      }
-    },
-    "early_morning_time": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Early Morning (5-7 AM)"
           }
         }
       }
@@ -795,6 +718,39 @@
         }
       }
     },
+    "equipment_barbell": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Barbell"
+          }
+        }
+      }
+    },
+    "equipment_dumbbell": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dumbbell"
+          }
+        }
+      }
+    },
+    "equipment_kettlebell": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kettlebell"
+          }
+        }
+      }
+    },
     "equipment_label": {
       "extractionState": "manual",
       "localizations": {
@@ -813,6 +769,61 @@
           "stringUnit": {
             "state": "translated",
             "value": "Equipment"
+          }
+        }
+      }
+    },
+    "equipment_machine": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Machine"
+          }
+        }
+      }
+    },
+    "equipment_other": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Other"
+          }
+        }
+      }
+    },
+    "equipment_plate": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Plate"
+          }
+        }
+      }
+    },
+    "equipment_resistance_band": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Resistance Band"
+          }
+        }
+      }
+    },
+    "equipment_suspension_band": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Suspension Band"
           }
         }
       }
@@ -861,24 +872,13 @@
         }
       }
     },
-    "evening": {
+    "estimated_weight": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Evening"
-          }
-        }
-      }
-    },
-    "evening_time": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Evening (5-10 PM)"
+            "value": "Estimated weight"
           }
         }
       }
@@ -1005,39 +1005,6 @@
         }
       }
     },
-    "flexibility_mobility_style": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Flexibility & Mobility"
-          }
-        }
-      }
-    },
-    "flexible_anytime": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Flexible/Anytime"
-          }
-        }
-      }
-    },
-    "flexible_anytime_time": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Flexible/Anytime"
-          }
-        }
-      }
-    },
     "flexible_schedule": {
       "extractionState": "manual",
       "localizations": {
@@ -1148,17 +1115,6 @@
         }
       }
     },
-    "generation_failed_offline": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Trainr is offline. Check your connection and try again."
-          }
-        }
-      }
-    },
     "generation_failed_title": {
       "extractionState": "manual",
       "localizations": {
@@ -1166,28 +1122,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Could not create your workout plan"
-          }
-        }
-      }
-    },
-    "generation_limit_message": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Trainr can only write a few plans a day at the moment. The limit resets each day, so trying again now will not help.\n\nYour answers are saved. Come back later and create your plan in one tap."
-          }
-        }
-      }
-    },
-    "generation_limit_title": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Daily limit reached"
           }
         }
       }
@@ -1313,46 +1247,13 @@
         }
       }
     },
-    "got_it": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Got it"
-          }
-        }
-      }
-    },
-    "gym": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Gym"
-          }
-        }
-      }
-    },
-    "gym_location": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Gym"
-          }
-        }
-      }
-    },
     "health_disclaimer": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Plans are generated by AI and are not medical advice. Check with a doctor before you start, and stop if something hurts."
+            "value": "Plans are built by the app and are not medical advice. Check with a doctor before you start, and stop if something hurts."
           }
         }
       }
@@ -1423,6 +1324,17 @@
         }
       }
     },
+    "hide_how_to_perform": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hide how to perform"
+          }
+        }
+      }
+    },
     "hide_video_tutorial": {
       "extractionState": "manual",
       "localizations": {
@@ -1434,39 +1346,6 @@
         }
       }
     },
-    "hiit": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "HIIT"
-          }
-        }
-      }
-    },
-    "hiit_description": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "High intensity interval training."
-          }
-        }
-      }
-    },
-    "hiit_style": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "HIIT"
-          }
-        }
-      }
-    },
     "hip_problems_injury": {
       "extractionState": "manual",
       "localizations": {
@@ -1474,28 +1353,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Hip Problems"
-          }
-        }
-      }
-    },
-    "home": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Home"
-          }
-        }
-      }
-    },
-    "home_location": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Home"
           }
         }
       }
@@ -1588,17 +1445,6 @@
         }
       }
     },
-    "kettlebells": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kettlebells"
-          }
-        }
-      }
-    },
     "knee_problems_injury": {
       "extractionState": "manual",
       "localizations": {
@@ -1606,39 +1452,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Knee Problems"
-          }
-        }
-      }
-    },
-    "language_english": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "English"
-          }
-        }
-      }
-    },
-    "language_japanese": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "日本語"
-          }
-        }
-      }
-    },
-    "language_tagalog": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tagalog"
           }
         }
       }
@@ -1705,17 +1518,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Limitations"
-          }
-        }
-      }
-    },
-    "location_label": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Location"
           }
         }
       }
@@ -1908,61 +1710,6 @@
         }
       }
     },
-    "mixed_balanced": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Mixed/Balanced"
-          }
-        }
-      }
-    },
-    "mixed_balanced_description": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Combination of different training styles."
-          }
-        }
-      }
-    },
-    "mixed_balanced_style": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Mixed/Balanced"
-          }
-        }
-      }
-    },
-    "morning": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Morning"
-          }
-        }
-      }
-    },
-    "morning_time": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Morning (7-12 PM)"
-          }
-        }
-      }
-    },
     "move_earlier": {
       "extractionState": "manual",
       "localizations": {
@@ -2036,17 +1783,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "No workout plan"
-          }
-        }
-      }
-    },
-    "none": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "None"
           }
         }
       }
@@ -2150,17 +1886,6 @@
         }
       }
     },
-    "others": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Others"
-          }
-        }
-      }
-    },
     "overweight": {
       "extractionState": "manual",
       "localizations": {
@@ -2238,35 +1963,148 @@
         }
       }
     },
-    "preferred_time_label": {
+    "prescription_minutes": {
       "extractionState": "manual",
       "localizations": {
         "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Preferred Time"
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld minute"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld minutes"
+                }
+              }
+            }
           }
         }
       }
     },
-    "preferred_workout_style": {
+    "prescription_per_side": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Preferred Workout Style"
+            "value": "%1$@ per side"
           }
         }
       }
     },
-    "preferred_workout_time": {
+    "prescription_range_minutes": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Preferred Workout Time"
+            "value": "%1$lld-%2$lld minutes"
+          }
+        }
+      }
+    },
+    "prescription_range_reps": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld-%2$lld reps"
+          }
+        }
+      }
+    },
+    "prescription_range_seconds": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld-%2$lld seconds"
+          }
+        }
+      }
+    },
+    "prescription_reps": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld rep"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld reps"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "prescription_seconds": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld second"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld seconds"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "prescription_sets": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%#@count@"
+          },
+          "substitutions": {
+            "count": {
+              "argNum": 1,
+              "formatSpecifier": "lld",
+              "variations": {
+                "plural": {
+                  "one": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%1$lld set of %2$@"
+                    }
+                  },
+                  "other": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%1$lld sets of %2$@"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -2300,50 +2138,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "And more included with Pro"
-          }
-        }
-      }
-    },
-    "pro_benefit_fresh_plan": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Start a fresh plan whenever your goal changes"
-          }
-        }
-      }
-    },
-    "pro_benefit_next_week": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "A new week each week, written from what you actually lifted"
-          }
-        }
-      }
-    },
-    "pro_benefit_regenerate": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Rewrite a week that does not suit you"
-          }
-        }
-      }
-    },
-    "pro_best_value": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Best value"
           }
         }
       }
@@ -2392,6 +2186,17 @@
         }
       }
     },
+    "pro_compare_every_week": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Every week"
+          }
+        }
+      }
+    },
     "pro_compare_free": {
       "extractionState": "manual",
       "localizations": {
@@ -2420,7 +2225,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "AI-written weeks"
+            "value": "Weeks built for you"
           }
         }
       }
@@ -2513,17 +2318,6 @@
         }
       }
     },
-    "pro_compare_unlimited": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Unlimited"
-          }
-        }
-      }
-    },
     "pro_continue": {
       "extractionState": "manual",
       "localizations": {
@@ -2585,7 +2379,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Your first AI-written week, every set you log, the rest timer, the video on every exercise, all your past weeks and progress, and repeating a week as often as you like."
+            "value": "Your first week, every set you log, the rest timer, the video on every exercise, all your past weeks and progress, and repeating a week as often as you like."
           }
         }
       }
@@ -2607,7 +2401,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "No. A Gemini model writes it from the answers you gave, and progresses it from the sets you log. Plans are guidance, not medical advice."
+            "value": "No. Trainr builds it on your phone from the answers you gave, and progresses it from the sets you log. Plans are guidance, not medical advice."
           }
         }
       }
@@ -2629,7 +2423,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Pro unlocks new AI-written weeks: generate next week from what you lifted, rewrite a week that does not suit you, and start a fresh plan whenever your goal changes."
+            "value": "Pro unlocks new weeks: build next week from what you lifted, rewrite a week that does not suit you, and start a fresh plan whenever your goal changes."
           }
         }
       }
@@ -2651,7 +2445,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Monthly and Yearly renew automatically at the end of each period. Lifetime is a single payment that never renews."
+            "value": "Yes. Monthly and Yearly renew at the end of each period, until you cancel."
           }
         }
       }
@@ -2662,7 +2456,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Is Pro a one-time payment or does it renew?"
+            "value": "Does Pro renew automatically?"
           }
         }
       }
@@ -2739,7 +2533,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Subscriptions pay for the model that writes your plans"
+            "value": "Trainr is made by one person, with no accounts, ads or server of its own"
           }
         }
       }
@@ -2761,18 +2555,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Free limit: one AI-written week"
-          }
-        }
-      }
-    },
-    "pro_free_note": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Your first week, every set you log, and repeating a week all stay free."
+            "value": "Free limit: your first week"
           }
         }
       }
@@ -2783,18 +2566,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Get the full coach"
-          }
-        }
-      }
-    },
-    "pro_headline": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Keep the coach writing"
+            "value": "Unlock every week"
           }
         }
       }
@@ -2893,7 +2665,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "You have used your free AI-written week. Pro lets you start a fresh plan whenever your goal, your kit or your days change."
+            "value": "You have used your free week. Pro lets you start a fresh plan whenever your goal, your kit or your days change."
           }
         }
       }
@@ -2904,7 +2676,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "You have used your free AI-written week. Pro writes you a new one each week, from the sets you actually logged."
+            "value": "You have used your free week. Pro builds you a new one each week, from the sets you actually logged."
           }
         }
       }
@@ -2915,7 +2687,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "You have used your free AI-written week. Pro lets you ask for a different week whenever one does not suit you."
+            "value": "You have used your free week. Pro lets you ask for a different week whenever one does not suit you."
           }
         }
       }
@@ -3085,39 +2857,6 @@
         }
       }
     },
-    "program_cardio": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "cardio"
-          }
-        }
-      }
-    },
-    "program_flexibility": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "mobility"
-          }
-        }
-      }
-    },
-    "program_hiit": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "HIIT"
-          }
-        }
-      }
-    },
     "program_length_format": {
       "extractionState": "manual",
       "localizations": {
@@ -3125,39 +2864,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "%lld-day"
-          }
-        }
-      }
-    },
-    "program_mixed": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "balanced"
-          }
-        }
-      }
-    },
-    "program_strength": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "strength"
-          }
-        }
-      }
-    },
-    "pull_up_bar": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Pull-up bar"
           }
         }
       }
@@ -3212,13 +2918,13 @@
                   "one": {
                     "stringUnit": {
                       "state": "translated",
-                      "value": "%1$lld of %2$lld workouts is logged in this week. A new week replaces it for good."
+                      "value": "%1$lld of %2$lld workouts is logged in this week. New movements are chosen, and the new week replaces it for good."
                     }
                   },
                   "other": {
                     "stringUnit": {
                       "state": "translated",
-                      "value": "%1$lld of %2$lld workouts are logged in this week. A new week replaces them for good."
+                      "value": "%1$lld of %2$lld workouts are logged in this week. New movements are chosen, and the new week replaces them for good."
                     }
                   }
                 }
@@ -3268,17 +2974,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Reset"
-          }
-        }
-      }
-    },
-    "resistance_bands": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Resistance bands"
           }
         }
       }
@@ -3349,6 +3044,17 @@
         }
       }
     },
+    "see_my_plan": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "See my plan"
+          }
+        }
+      }
+    },
     "select_days_placeholder": {
       "extractionState": "manual",
       "localizations": {
@@ -3404,6 +3110,17 @@
         }
       }
     },
+    "show_how_to_perform": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "How to perform"
+          }
+        }
+      }
+    },
     "show_video_tutorial": {
       "extractionState": "manual",
       "localizations": {
@@ -3433,17 +3150,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "SLIDE TO FINISH THIS WORKOUT"
-          }
-        }
-      }
-    },
-    "squat_rack": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Squat rack"
           }
         }
       }
@@ -3543,39 +3249,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Stop"
-          }
-        }
-      }
-    },
-    "strength_training": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Strength Training"
-          }
-        }
-      }
-    },
-    "strength_training_description": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Focus on building muscle and strength."
-          }
-        }
-      }
-    },
-    "strength_training_style": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Strength Training"
           }
         }
       }
@@ -3943,17 +3616,6 @@
         }
       }
     },
-    "where_will_you_work_out": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Where will you work out?"
-          }
-        }
-      }
-    },
     "workout_days_option": {
       "extractionState": "manual",
       "localizations": {
@@ -3995,17 +3657,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Workout Setup"
-          }
-        }
-      }
-    },
-    "workout_style_label": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Workout Style"
           }
         }
       }

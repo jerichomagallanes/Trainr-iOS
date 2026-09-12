@@ -14,13 +14,10 @@ final class UserRecord {
     var weight: Double
     var fitnessGoal: String
     var experienceLevel: String
-    var workoutLocation: String
     var availableEquipment: [String]
     var workoutDaysPerWeek: Int
     var workoutDuration: Int
-    var preferredWorkoutTime: String
     var injuries: [String]
-    var workoutType: String
     var bodyUnitSystem: String
     var liftingUnitSystem: String?
     var createdAt: Date
@@ -37,13 +34,10 @@ final class UserRecord {
         weight = profile.weight
         fitnessGoal = profile.fitnessGoal.rawValue
         experienceLevel = profile.experienceLevel.rawValue
-        workoutLocation = profile.workoutLocation.rawValue
         availableEquipment = profile.availableEquipment.map(\.rawValue)
         workoutDaysPerWeek = profile.workoutDaysPerWeek
         workoutDuration = profile.workoutDuration
-        preferredWorkoutTime = profile.preferredWorkoutTime.rawValue
-        injuries = profile.injuries
-        workoutType = profile.workoutType.rawValue
+        injuries = profile.injuries.map(\.rawValue)
         bodyUnitSystem = profile.bodyUnitSystem.rawValue
         liftingUnitSystem = profile.liftingUnitSystem?.rawValue
         createdAt = profile.createdAt
@@ -59,13 +53,10 @@ final class UserRecord {
             weight: weight,
             fitnessGoal: FitnessGoal(rawValue: fitnessGoal) ?? .generalFitness,
             experienceLevel: ExperienceLevel(rawValue: experienceLevel) ?? .beginner,
-            workoutLocation: WorkoutLocation(rawValue: workoutLocation) ?? .home,
-            availableEquipment: availableEquipment.compactMap(Equipment.init(rawValue:)),
+            availableEquipment: availableEquipment.compactMap(Equipment.stored),
             workoutDaysPerWeek: workoutDaysPerWeek,
             workoutDuration: workoutDuration,
-            preferredWorkoutTime: WorkoutTime(rawValue: preferredWorkoutTime) ?? .anytime,
-            injuries: injuries,
-            workoutType: WorkoutType(rawValue: workoutType) ?? .mixed,
+            injuries: injuries.compactMap(Injury.init(rawValue:)),
             bodyUnitSystem: UnitSystem(rawValue: bodyUnitSystem) ?? .standard,
             liftingUnitSystem: liftingUnitSystem.flatMap(UnitSystem.init(rawValue:)),
             createdAt: createdAt
@@ -80,13 +71,10 @@ final class UserRecord {
         weight = profile.weight
         fitnessGoal = profile.fitnessGoal.rawValue
         experienceLevel = profile.experienceLevel.rawValue
-        workoutLocation = profile.workoutLocation.rawValue
         availableEquipment = profile.availableEquipment.map(\.rawValue)
         workoutDaysPerWeek = profile.workoutDaysPerWeek
         workoutDuration = profile.workoutDuration
-        preferredWorkoutTime = profile.preferredWorkoutTime.rawValue
-        injuries = profile.injuries
-        workoutType = profile.workoutType.rawValue
+        injuries = profile.injuries.map(\.rawValue)
         bodyUnitSystem = profile.bodyUnitSystem.rawValue
         liftingUnitSystem = profile.liftingUnitSystem?.rawValue
         createdAt = profile.createdAt
@@ -185,10 +173,8 @@ final class WorkoutExerciseRecord {
     var reps: String?
     var duration: String?
     var durationMinutes: Int
-    var prescription: String
     var restTime: Int?
     var equipment: [String]
-    var instructions: String
     var videoTutorialURL: String?
     var isCompleted: Bool
     var notes: String
@@ -207,10 +193,8 @@ final class WorkoutExerciseRecord {
         reps = exercise.reps
         duration = exercise.duration
         durationMinutes = exercise.durationMinutes
-        prescription = exercise.prescription
         restTime = exercise.restTime
         equipment = exercise.equipment
-        instructions = exercise.instructions
         videoTutorialURL = exercise.videoTutorialURL
         isCompleted = exercise.isCompleted
         notes = exercise.notes
@@ -227,10 +211,8 @@ final class WorkoutExerciseRecord {
             reps: reps,
             duration: duration,
             durationMinutes: durationMinutes,
-            prescription: prescription,
             restTime: restTime,
             equipment: equipment,
-            instructions: instructions,
             videoTutorialURL: videoTutorialURL,
             isCompleted: isCompleted,
             notes: notes

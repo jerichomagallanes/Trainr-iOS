@@ -1,22 +1,35 @@
 import Foundation
 
-// `detail` is the prescription chip ("3 sets of 20 reps"). WorkoutExercise has
-// one duration field, so it cannot express it alongside `minutes`.
 nonisolated struct ExerciseUi: Identifiable, Equatable, Sendable {
     var position: Int
     var name: String
     var description: String
     var minutes: Int
-    var detail: String
     var measure = ExerciseMeasure.reps
     var sets: [ExerciseSet] = []
-    // The last completed day's sets for the same exerciseKey; empty with no
-    // history.
     var previousSets: [ExerciseSet] = []
     var videoURL: String?
+    // What the movement trains and how to perform it, both owned by the
+    // catalog rather than stored with the week.
+    var primaryMuscle = ""
+    var secondaryMuscles: [String] = []
+    var steps: [String] = []
+    // Counted per side, so the chip says so.
+    var unilateral = false
+    var caution: Injury?
     var isCompleted = false
 
     var id: Int { position }
+
+    // Read off the sets rather than stored beside them, so a set added or
+    // taken away on the day re-reads.
+    var prescription: Prescription { Prescription.of(sets, measure: measure, unilateral: unilateral) }
+
+    // A weight never lifted before is the app's guess from the profile, and
+    // the card says so.
+    var isEstimated: Bool {
+        measure == .weightAndReps && previousSets.isEmpty && sets.contains { $0.targetWeightKg != nil }
+    }
 }
 
 // A countdown that knows when it ends rather than counting ticks: a late tick,
@@ -75,9 +88,5 @@ nonisolated struct ExerciseTimerUi: Equatable, Sendable {
         isRunning = false
     }
 
-    var display: String {
-        let minutes = remainingSeconds / Constants.Workout.secondsPerMinute
-        let seconds = remainingSeconds % Constants.Workout.secondsPerMinute
-        return "\(minutes):" + String(format: "%02d", seconds)
-    }
+    var display: String { SetFormatting.seconds(remainingSeconds) }
 }

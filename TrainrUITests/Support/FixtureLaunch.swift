@@ -19,7 +19,7 @@ extension XCUIApplication {
     static func launched(_ fixture: Fixture, pro: Bool = false) -> XCUIApplication {
         let app = XCUIApplication()
         app.launchArguments = [
-            "-cannedGeneration", "-inMemoryStore", "-seedFixture", fixture.rawValue,
+            "-inMemoryStore", "-seedFixture", fixture.rawValue,
             "-splashSeconds", "0"
         ]
         if pro { app.launchArguments += ["-proUnlocked"] }
@@ -42,12 +42,9 @@ extension XCUIApplication {
         Thread.sleep(forTimeInterval: 0.4)
     }
 
-    @MainActor
-    static func launchedToFail(
-        _ reason: String, startingAt step: String? = nil
-    ) -> XCUIApplication {
+    static func launchedToFail(startingAt step: String? = nil) -> XCUIApplication {
         let app = XCUIApplication()
-        app.launchArguments = ["-inMemoryStore", "-generationFails", reason]
+        app.launchArguments = ["-inMemoryStore", "-generationFails"]
         if let step { app.launchArguments += ["-startAtStep", step] }
         app.launch()
         return app
@@ -55,6 +52,20 @@ extension XCUIApplication {
 
     // Insists the tap took: the selection state is the truth, not the synthesized event.
     @MainActor
+    // Retried rather than waited on. A tap sent while a screen is still
+    // animating can land where the control no longer is, and a tap that never
+    // landed does not arrive later however long the next wait is — which is how
+    // three separate onboarding failures read as timeouts.
+    @discardableResult
+    func tap(_ control: XCUIElement, until arrival: XCUIElement, attempts: Int = 3) -> Bool {
+        for _ in 0..<attempts {
+            guard control.waitForExistence(timeout: 10) else { continue }
+            control.tap()
+            if arrival.waitForExistence(timeout: 10) { return true }
+        }
+        return false
+    }
+
     func select(_ element: XCUIElement) {
         scrollUntilHittable(element)
         element.tap()

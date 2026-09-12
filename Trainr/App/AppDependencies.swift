@@ -1,4 +1,3 @@
-import FirebaseCore
 import Foundation
 import SwiftData
 
@@ -8,13 +7,18 @@ final class AppDependencies {
     let store: TrainingStore
     let planGenerator: any PlanGenerator
     let breadcrumbs: any Breadcrumbs
-    // English-only: the plan's display copy must match the shipped English UI.
-    let languageCode = "en"
+    let catalog: any ExerciseCatalog
 
-    init(store: TrainingStore, planGenerator: any PlanGenerator, breadcrumbs: any Breadcrumbs) {
+    init(
+        store: TrainingStore,
+        planGenerator: any PlanGenerator,
+        breadcrumbs: any Breadcrumbs,
+        catalog: any ExerciseCatalog = BundleExerciseCatalog()
+    ) {
         self.store = store
         self.planGenerator = planGenerator
         self.breadcrumbs = breadcrumbs
+        self.catalog = catalog
     }
 
     // Reported with the action's name and never its subject.
@@ -64,7 +68,7 @@ final class AppDependencies {
         let breadcrumbs = CrashlyticsBreadcrumbs()
         return AppDependencies(
             store: store,
-            planGenerator: makePlanGenerator(breadcrumbs: breadcrumbs),
+            planGenerator: makePlanGenerator(),
             breadcrumbs: breadcrumbs
         )
     }
@@ -73,7 +77,7 @@ final class AppDependencies {
         // swiftlint:disable:next force_try
         let store = TrainingStore(container: try! TrainingStore.container(inMemory: true))
         return AppDependencies(
-            store: store, planGenerator: CannedPlanGenerator(), breadcrumbs: NoBreadcrumbs()
+            store: store, planGenerator: WeekPlanGenerator(), breadcrumbs: NoBreadcrumbs()
         )
     }
 
@@ -85,23 +89,13 @@ final class AppDependencies {
         #endif
     }
 
-    // Debug answers from the canned coach (launch argument, or no Firebase
-    // credentials), so no development run spends the day's model allowance.
-    private static func makePlanGenerator(breadcrumbs: any Breadcrumbs) -> any PlanGenerator {
+    // Last week's movements carried forward wherever nothing forces a change,
+    // and a week built from the catalog otherwise.
+    private static func makePlanGenerator() -> any PlanGenerator {
         #if DEBUG
         if let failing = UITestFixtures.failingGeneratorIfRequested() { return failing }
         if let slow = UITestFixtures.slowGeneratorIfRequested() { return slow }
-        let canned = ProcessInfo.processInfo.arguments.contains("-cannedGeneration")
-            || FirebaseApp.app() == nil
-        if canned { return CannedPlanGenerator() }
         #endif
-        return GeminiPlanGenerator(
-            client: FirebaseAIPlanModelClient(),
-            promptBuilder: PlanPromptBuilder(
-                canonicalKeys: Set(ExerciseVideoCatalog.videoIDs.keys)
-            ),
-            spentModels: DailySpentModels(),
-            breadcrumbs: breadcrumbs
-        )
+        return WeekPlanGenerator()
     }
 }

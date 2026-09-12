@@ -7,14 +7,13 @@ import Testing
 struct NextWeekModelStoreTests {
 
     private struct RefusingGenerator: PlanGenerator {
-        let reason: PlanGenerationFailure
-        func generate(_ request: PlanRequest) async -> PlanGenerationResult { .failure(reason) }
+        func generate(_ request: PlanRequest) async -> PlanGenerationResult { .failed }
     }
 
     private struct SlowGenerator: PlanGenerator {
         func generate(_ request: PlanRequest) async -> PlanGenerationResult {
             try? await Task.sleep(for: .milliseconds(200))
-            return await CannedPlanGenerator().generate(request)
+            return await WeekPlanGenerator().generate(request)
         }
     }
 
@@ -29,7 +28,7 @@ struct NextWeekModelStoreTests {
         userID = profile.id
     }
 
-    private func dependencies(_ generator: any PlanGenerator = CannedPlanGenerator()) -> AppDependencies {
+    private func dependencies(_ generator: any PlanGenerator = WeekPlanGenerator()) -> AppDependencies {
         AppDependencies(store: store, planGenerator: generator, breadcrumbs: NoBreadcrumbs())
     }
 
@@ -41,7 +40,7 @@ struct NextWeekModelStoreTests {
                 WorkoutExercise(
                     exerciseKey: "goblet_squat", name: "Goblet Squat",
                     sets: [ExerciseSet(setNumber: 1, targetReps: 10, actualReps: 9)],
-                    durationMinutes: 10, prescription: "3 sets"
+                    durationMinutes: 10
                 )
             ]
         )
@@ -72,7 +71,7 @@ struct NextWeekModelStoreTests {
 
     // MARK: - Generating the next week
 
-    @Test("A finished week is followed by the week the coach writes")
+    @Test("A finished week is followed by the next one")
     func generatingAddsTheNextWeek() async throws {
         try save(week: 1, days: [day(1, .completed)])
         let model = NextWeekModel(dependencies: dependencies())
@@ -99,17 +98,17 @@ struct NextWeekModelStoreTests {
     @Test("A refused generation writes nothing and says why")
     func aFailedGenerationSavesNothing() async throws {
         try save(week: 1, days: [day(1, .completed)])
-        let model = NextWeekModel(dependencies: dependencies(RefusingGenerator(reason: .offline)))
+        let model = NextWeekModel(dependencies: dependencies(RefusingGenerator()))
 
         model.generateNextWeek()
         await settle(model)
 
-        #expect(model.failure == .offline)
+        #expect(model.failure == .failed)
         #expect(model.failureCount == 1)
         #expect(try storedWeeks() == [1])
     }
 
-    @Test("A second tap while the coach is writing is ignored")
+    @Test("A second tap while the week is being built is ignored")
     func aSecondTapDoesNotStartASecondRun() async throws {
         try save(week: 1, days: [day(1, .completed)])
         let model = NextWeekModel(dependencies: dependencies(SlowGenerator()))
@@ -196,7 +195,7 @@ struct NextWeekModelStoreTests {
     @Test("A refused regeneration leaves the week it was rewriting alone")
     func aFailedRegenerationKeepsTheWeek() async throws {
         let before = try save(week: 1, days: [day(1)], startingDaysAgo: 0)
-        let model = NextWeekModel(dependencies: dependencies(RefusingGenerator(reason: .failed)))
+        let model = NextWeekModel(dependencies: dependencies(RefusingGenerator()))
 
         model.regenerateThisWeek()
         await settle(model)
@@ -204,5 +203,39 @@ struct NextWeekModelStoreTests {
         #expect(model.failure == .failed)
         let after = try #require(try store.plan(for: userID, weekNumber: 1))
         #expect(after.workoutDays.map(\.title) == before.workoutDays.map(\.title))
+    }
+
+    private final class RecordingGenerator: PlanGenerator {
+        var asked: [PlanRequest] = []
+        func generate(_ request: PlanRequest) async -> PlanGenerationResult {
+            asked.append(request)
+            return await WeekPlanGenerator().generate(request)
+        }
+    }
+
+    // Regenerating asks for new movements, so last week's are never carried
+    // into the week being replaced.
+    @Test("Regenerating asks for new movements")
+    func regeneratingAsksForNewMovements() async throws {
+        try save(week: 1, days: [day(1)], startingDaysAgo: 0)
+        let recorder = RecordingGenerator()
+        let model = NextWeekModel(dependencies: dependencies(recorder))
+
+        model.regenerateThisWeek()
+        await settle(model)
+
+        #expect(recorder.asked.first?.freshCast == true)
+    }
+
+    @Test("The next week does not ask for new movements")
+    func theNextWeekKeepsTheMovements() async throws {
+        try save(week: 1, days: [day(1, .completed)])
+        let recorder = RecordingGenerator()
+        let model = NextWeekModel(dependencies: dependencies(recorder))
+
+        model.generateNextWeek()
+        await settle(model)
+
+        #expect(recorder.asked.first?.freshCast == false)
     }
 }
