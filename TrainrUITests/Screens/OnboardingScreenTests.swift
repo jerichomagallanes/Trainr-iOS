@@ -281,7 +281,7 @@ final class OnboardingScreenTests: XCTestCase {
         app = .launched(startingAt: "review")
         XCTAssertTrue(app.staticTexts["YOUR FITNESS PROFILE"].waitForExistence(timeout: 20))
 
-        let preview = app.staticTexts["AI Workout Plan"]
+        let preview = app.staticTexts["Your Workout Plan"]
         app.scrollUntilHittable(preview)
         XCTAssertTrue(preview.exists)
         XCTAssertTrue(app.text(containing: "building muscle").exists)
@@ -318,7 +318,7 @@ final class OnboardingScreenTests: XCTestCase {
         XCTAssertFalse(app.buttons["Back"].exists)
         XCTAssertFalse(app.otherElements["stepProgress"].exists)
         XCTAssertFalse(app.buttons["GENERATE MY WORKOUT PLAN"].exists)
-        XCTAssertFalse(app.staticTexts["AI Workout Plan"].exists)
+        XCTAssertFalse(app.staticTexts["Your Workout Plan"].exists)
         XCTAssertFalse(app.text(containing: "not medical advice").exists)
 
         app.buttons["SAVE PROFILE"].tap()

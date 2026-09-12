@@ -1,14 +1,13 @@
-# 🏋️ Trainr - AI-Powered Personal Training App
+# 🏋️ Trainr - Personal Training App
 
-Trainr is an iOS fitness application that creates personalized workout routines using AI. Built with Swift and SwiftUI, it keeps a clean separation between its models, services and features to provide users with customized training plans based on their individual fitness goals, experience level, and available equipment.
+Trainr is an iOS fitness application that builds your workout plan on your phone from your answers, and progresses it from the sets you log. Built with Swift and SwiftUI, it keeps a clean separation between its models, services and features to provide users with customized training plans based on their individual fitness goals, experience level, and available equipment.
 
 This is the iOS version of [Trainr for Android](https://github.com/jerichomagallanes/Trainr).
 
 ## 📋 Features
 
 - **Personalized Onboarding**: Complete fitness assessment including age, gender, experience level, and body metrics
-- **Custom Workout Plans**: AI-generated routines tailored to your fitness goals and available equipment
-- **Flexible Setup**: Support for home, gym, or hybrid workout environments
+- **Custom Workout Plans**: Routines built around your fitness goals and available equipment, and progressed week to week from what you actually lifted
 - **Equipment Adaptation**: Workouts adapt to your available equipment (bodyweight, dumbbells, barbells, etc.)
 - **Goal-Oriented Training**: Specialized programs for weight loss, muscle gain, strength, endurance, and general fitness
 - **Injury Considerations**: Safe workout modifications based on reported limitations
@@ -33,24 +32,23 @@ This is the iOS version of [Trainr for Android](https://github.com/jerichomagall
 ## 🏗️ Architecture
 
 - **Models**: Value types for the profile, the weekly plan and the units logic — pure Swift, no framework imports
-- **Services**: Plan generation (the skeleton builder, template and carry-forward generators, parser and validation), the SwiftData store, and crash diagnostics
+- **Services**: Plan generation (the skeleton builder, `WeekPlanGenerator`, the expander and the parser), the SwiftData store, and crash diagnostics
 - **Features**: SwiftUI screens and their `@Observable` models, one folder per flow
 - **DesignSystem**: The shared components, colors, spacing and typography every screen is built from
 
-Generation is a conversation with a deadline: the app asks a chain of Gemini models in order, validates every answer against the plan contract, retries with the validation errors quoted back, skips models whose free daily allowance is already spent, and reports honestly — offline, failed, or daily limit reached — when it cannot deliver. A development run answers from a canned coach instead and never spends the allowance.
+Generation runs entirely on the phone: `PlanSkeletonBuilder` lays out the week and ranks the movements each slot could hold, `WeekPlanGenerator` carries last week's movements forward or seeds a choice from the client's answers, `PlanExpander` asks the progression engine for every set, and `GeneratedPlanParser` checks the result against the skeleton's own limits. Nothing is sent anywhere.
 
 ## 🚀 Getting Started
 
 1. Open `Trainr.xcodeproj` in Xcode 26 or later.
-2. Build and run. Without Firebase credentials the app runs fully offline against the canned coach.
-3. For live generation, register an iOS app on the Firebase project and drop its `GoogleService-Info.plist` into `Trainr/Resources/` (it is gitignored).
+2. Build and run. Generation needs no credentials; `GoogleService-Info.plist` in `Trainr/Resources/` (gitignored) is only for Crashlytics.
 
 Tests: `xcodebuild test -project Trainr.xcodeproj -scheme Trainr -destination 'platform=iOS Simulator,name=iPhone 17 Pro 27'`
 
 The simulator must run iOS 27: the stock iOS 26.2 simulators crash on SwiftData built against the iOS 27 SDK.
 
-UI tests run on a throwaway clone of the simulator unless you pass `-parallel-testing-enabled NO`, which drives the visible device instead. Debug builds also accept a few launch arguments the UI tests rely on: `-inMemoryStore` for a store that dies with the process, `-cannedGeneration` to answer from the built-in coach, `-seedFixture <noPlan|midWeek|finishedWeek|twoWeeks|freshWeek|missedDay|lastDayLeft>` to start on a known plan, `-generationFails <offline|failed|dailyLimit>` to make the coach fail that way, `-slowGeneration <seconds>` to answer correctly but slowly, and `-splashSeconds <n>` to hold the splash.
+UI tests run on a throwaway clone of the simulator unless you pass `-parallel-testing-enabled NO`, which drives the visible device instead. Debug builds also accept a few launch arguments the UI tests rely on: `-inMemoryStore` for a store that dies with the process, `-seedFixture <noPlan|midWeek|finishedWeek|twoWeeks|freshWeek|missedDay|lastDayLeft>` to start on a known plan, `-generationFails` to make generation fail, `-slowGeneration <seconds>` to answer correctly but slowly, and `-splashSeconds <n>` to hold the splash.
 
 ## 🔒 Privacy
 
-Trainr stores your profile and training history on your device. Generation requests carry the profile to Gemini through Firebase AI Logic; crash reports say what broke, never who you are. The full policy: [Privacy Policy](https://jerichomagallanes.github.io/Trainr/privacy-policy).
+Trainr stores your profile and training history on your device. Nothing leaves the device to build a plan; crash reports say what broke, never who you are. The full policy: [Privacy Policy](https://jerichomagallanes.github.io/Trainr/privacy-policy).

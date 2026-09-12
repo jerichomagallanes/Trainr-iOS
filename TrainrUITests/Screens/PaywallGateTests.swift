@@ -30,7 +30,7 @@ final class PaywallGateTests: XCTestCase {
         XCTAssertTrue(app.staticTexts["Upgrade to Trainr Pro"].waitForExistence(timeout: 15))
         XCTAssertFalse(app.staticTexts["Generating your workout plan"].exists)
         app.buttons["CONTINUE"].tap()
-        XCTAssertTrue(app.staticTexts["Get the full coach"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.staticTexts["Unlock every week"].waitForExistence(timeout: 10))
     }
 
     @MainActor
@@ -117,7 +117,7 @@ final class PaywallGateTests: XCTestCase {
         app.buttons["Trainr Pro"].tap()
         // Straight to the offer: nothing was reached for, so there is no limit
         // to explain first.
-        XCTAssertTrue(app.staticTexts["Get the full coach"].waitForExistence(timeout: 15))
+        XCTAssertTrue(app.staticTexts["Unlock every week"].waitForExistence(timeout: 15))
         XCTAssertFalse(app.staticTexts["Upgrade to Trainr Pro"].exists)
     }
 
@@ -136,7 +136,7 @@ final class PaywallGateTests: XCTestCase {
         app.buttons["Trainr Pro"].tap()
         XCTAssertTrue(app.staticTexts["Your subscription is active"].waitForExistence(timeout: 15))
         XCTAssertTrue(app.buttons["Restore purchase"].exists)
-        XCTAssertFalse(app.staticTexts["Get the full coach"].exists)
+        XCTAssertFalse(app.staticTexts["Unlock every week"].exists)
     }
 
     // The very first plan is the free one, so a fresh install must not be asked.
