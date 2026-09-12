@@ -111,5 +111,5 @@ final class Entitlements {
 
     // A RevenueCat public SDK key is meant to ship inside the app; it authorises
     // nothing a receipt does not already prove.
-    private static let apiKey = "test_WMIQYjVmrPgWhTvqwpfnkobWhAB"
+    private static let apiKey = "appl_OoKNqPSHTcELxvPPsIYIkrQVSup"
 }
