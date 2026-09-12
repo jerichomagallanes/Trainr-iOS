@@ -159,22 +159,15 @@ struct RoutineDetailView: View {
                                 onReset: model.resetTimer,
                                 onStop: model.stopTimer
                             )
-                            let video = YouTubeVideo.from(exercise.videoURL)
-                            if !exercise.steps.isEmpty || video != nil {
+                            if !exercise.steps.isEmpty {
                                 HowToSection(
                                     steps: exercise.steps,
                                     isExpanded: state.expandedHowTo == exercise.position,
                                     onToggle: { model.toggleHowTo(at: exercise.position) },
-                                    video: {
-                                        if let video {
-                                            VideoTutorial(
-                                                video: video,
-                                                isExpanded: state.expandedVideo == exercise.position,
-                                                onToggle: { model.toggleVideo(at: exercise.position) }
-                                            )
-                                        }
-                                    }
+                                    video: { tutorial(for: exercise) }
                                 )
+                            } else {
+                                tutorial(for: exercise)
                             }
                         }
                     }
@@ -182,6 +175,17 @@ struct RoutineDetailView: View {
             }
         }
         .padding(.top, Spacing.section)
+    }
+
+    @ViewBuilder
+    private func tutorial(for exercise: ExerciseUi) -> some View {
+        if let video = YouTubeVideo.from(exercise.videoURL) {
+            VideoTutorial(
+                video: video,
+                isExpanded: state.expandedVideo == exercise.position,
+                onToggle: { model.toggleVideo(at: exercise.position) }
+            )
+        }
     }
 
     @ViewBuilder

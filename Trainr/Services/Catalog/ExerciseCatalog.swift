@@ -13,8 +13,8 @@ nonisolated struct CatalogExercise: Equatable, Sendable {
     let pattern: MovementPattern
     let staple: Bool
     // Reps are performed on one side and repeated on the other, so the set
-    // costs twice the time and the chip has to say so. A walking lunge
-    // alternates inside the set and is not one of these.
+    // costs twice the time. A walking lunge alternates inside the set and is
+    // not one of these.
     var unilateral = false
     // One dumbbell rather than a pair. weightKg is always the one bell in the
     // hand, so this is what says whether a seed for the whole load is halved.

@@ -103,19 +103,28 @@ struct ExerciseCard<Extras: View>: View {
                 }
             }
 
-            prescription
+            duration
 
-            // Drawn even with no sets: gating it takes the Add set button away
-            // with the last row, leaving no way to get one back.
-            ExerciseSetTable(
-                measure: exercise.measure,
-                sets: exercise.sets,
-                previousSets: exercise.previousSets,
-                units: units,
-                onSetChanged: onSetChanged,
-                onAddSet: onAddSet,
-                onDeleteSet: onDeleteSet
-            )
+            VStack(alignment: .leading, spacing: Spacing.small) {
+                // Drawn even with no sets: gating it takes the Add set button away
+                // with the last row, leaving no way to get one back.
+                ExerciseSetTable(
+                    measure: exercise.measure,
+                    sets: exercise.sets,
+                    previousSets: exercise.previousSets,
+                    units: units,
+                    onSetChanged: onSetChanged,
+                    onAddSet: onAddSet,
+                    onDeleteSet: onDeleteSet
+                )
+
+                if exercise.isEstimated {
+                    Text(L10n.estimatedWeightNote)
+                        .font(.body12)
+                        .foregroundStyle(Color.onSurfaceMuted)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+            }
 
             extras
         }
@@ -124,9 +133,7 @@ struct ExerciseCard<Extras: View>: View {
         .padding(.bottom, Spacing.screen)
     }
 
-    private var chip: String { exercise.prescription.text }
-
-    private var prescription: some View {
+    private var duration: some View {
         HStack(spacing: Spacing.extraSmall) {
             Image(systemName: "clock")
                 .font(.oneOff(15))
@@ -134,24 +141,6 @@ struct ExerciseCard<Extras: View>: View {
             Text(L10n.minutes(exercise.minutes))
                 .font(.body14)
                 .foregroundStyle(Color.onSurface)
-            if !chip.isEmpty {
-                Text(chip)
-                    .font(.body14)
-                    .foregroundStyle(Color.onSurfaceEmphasis)
-                    .padding(.horizontal, Spacing.tight)
-                    .padding(.vertical, Spacing.hairline)
-                    .background(Color.surfaceEmphasis, in: .rect(cornerRadius: CornerRadius.medium))
-                    .padding(.leading, Spacing.extraSmall)
-            }
-            if exercise.isEstimated {
-                Text(L10n.estimatedWeight)
-                    .font(.body14)
-                    .foregroundStyle(Color.onSurfaceMuted)
-                    .padding(.horizontal, Spacing.tight)
-                    .padding(.vertical, Spacing.hairline)
-                    .overlay(RoundedRectangle(cornerRadius: CornerRadius.medium).stroke(Color.cardEdge))
-                    .padding(.leading, Spacing.extraSmall)
-            }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }

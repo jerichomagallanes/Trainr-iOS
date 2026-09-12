@@ -121,25 +121,4 @@ struct RoutineUiTests {
         #expect(RoutineDetailModel.completesTheWeek(days, dayNumber: 2))
         #expect(!RoutineDetailModel.completesTheWeek(days, dayNumber: 1))
     }
-
-    @Test("The chip follows the sets")
-    func theChipFollowsTheSets() {
-        var exercise = routine(sets: [set(1), set(2), set(3)]).exercises[0]
-        let three = exercise.prescription
-
-        exercise.sets.append(set(4))
-        #expect(exercise.prescription != three)
-
-        exercise.sets.removeLast()
-        #expect(exercise.prescription == three)
-    }
-
-    @Test("Clearing the day's progress leaves the chip alone")
-    func clearingLeavesTheChip() {
-        let base = routine(sets: [set(1), set(2)])
-
-        let cleared = base.toggleCompleted(at: 1).toggleCompleted(at: 1)
-
-        #expect(cleared.exercises[0].prescription == base.exercises[0].prescription)
-    }
 }

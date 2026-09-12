@@ -101,24 +101,6 @@ struct RoutineMapperTests {
         #expect(routine.exercises[0].description == catalog["goblet_squat"]?.summary)
     }
 
-    @Test func theChipIsReadOffTheSets() {
-        var stored = exercise("Squat")
-        stored.sets = (1...3).map { ExerciseSet(setNumber: $0, targetReps: 10) }
-
-        let mapped = day([stored]).toRoutineUi().exercises[0]
-
-        #expect(mapped.prescription == Prescription.of(stored.sets, measure: stored.measure))
-    }
-
-    @Test func aOneSidedMovementIsCountedPerSide() throws {
-        let oneSided = try #require(catalog.all.first { $0.unilateral && $0.measure != .duration })
-
-        let mapped = day([exercise(oneSided.name, key: oneSided.key)]).toRoutineUi(catalog: catalog).exercises[0]
-
-        #expect(mapped.unilateral)
-        #expect(mapped.prescription == Prescription.of(mapped.sets, measure: mapped.measure, unilateral: true))
-    }
-
     @Test func aMovementAnInjuryAsksCareWithSaysWhichOnlyForThatClient() throws {
         let squat = try #require(catalog.all.first { InjuryGuard.caution(for: $0, injuries: [.knee]) != nil })
         let stored = day([exercise(squat.name, key: squat.key)])

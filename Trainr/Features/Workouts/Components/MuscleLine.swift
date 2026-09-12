@@ -1,9 +1,7 @@
 import SwiftUI
 
 // One string in two weights, so what a movement trains and what it assists
-// cannot wrap apart. A middot rather than a label on each side: the line is
-// read at a glance twelve times down a day, and "Primary:"/"Secondary:" twice
-// per card is more words than the names themselves.
+// cannot wrap apart.
 nonisolated enum MuscleLine {
 
     private static let separator = "  \u{00b7}  "
@@ -14,10 +12,13 @@ nonisolated enum MuscleLine {
         primaryFont: Font,
         primaryColor: Color
     ) -> AttributedString {
-        var lead = AttributedString(primary)
-        lead.font = primaryFont
-        lead.foregroundColor = primaryColor
+        var name = AttributedString(primary)
+        name.font = primaryFont
+        name.foregroundColor = primaryColor
+        let lead = AttributedString(L10n.musclePrimaryLabel + ": ") + name
         guard !secondary.isEmpty else { return lead }
-        return lead + AttributedString(separator + secondary.joined(separator: ", "))
+        return lead + AttributedString(
+            separator + L10n.muscleSecondaryLabel + ": " + secondary.joined(separator: ", ")
+        )
     }
 }

@@ -14,16 +14,10 @@ nonisolated struct ExerciseUi: Identifiable, Equatable, Sendable {
     var primaryMuscle = ""
     var secondaryMuscles: [String] = []
     var steps: [String] = []
-    // Counted per side, so the chip says so.
-    var unilateral = false
     var caution: Injury?
     var isCompleted = false
 
     var id: Int { position }
-
-    // Read off the sets rather than stored beside them, so a set added or
-    // taken away on the day re-reads.
-    var prescription: Prescription { Prescription.of(sets, measure: measure, unilateral: unilateral) }
 
     // A weight never lifted before is the app's guess from the profile, and
     // the card says so.
