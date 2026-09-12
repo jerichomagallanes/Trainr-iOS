@@ -192,10 +192,10 @@ private struct AIPreviewCard: View {
                     .foregroundStyle(Color.onSurfaceEmphasis)
                     .accessibilityHidden(true)
                 VStack(alignment: .leading, spacing: Spacing.extraSmall) {
-                    Text(L10n.aiRoutinePreviewLabel)
+                    Text(L10n.routinePreviewLabel)
                         .font(.fieldLabel)
                         .foregroundStyle(Color.onSurfaceEmphasis)
-                    Text(L10n.aiRoutineDescription(
+                    Text(L10n.routineDescription(
                         profile.workoutDaysPerWeek == 0
                             ? L10n.flexibleSchedule
                             : L10n.programLengthFormat(profile.workoutDaysPerWeek),

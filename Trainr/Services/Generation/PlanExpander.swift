@@ -1,8 +1,8 @@
 import Foundation
 
 // A skeleton plus whatever was chosen for it becomes a plan: the catalog says
-// what each movement is and how it is done, the engine says how much, and the
-// skeleton says how many sets and how long between them.
+// what each movement is, the engine says how much, and the skeleton says how
+// many sets and how long between them.
 nonisolated struct PlanExpander: Sendable {
 
     let catalog: any ExerciseCatalog
@@ -69,7 +69,6 @@ nonisolated struct PlanExpander: Sendable {
     ) -> GeneratedExercise {
         GeneratedExercise(
             exerciseKey: movement.key,
-            instructions: movement.summary,
             restSeconds: slot.restSeconds,
             sets: target.sets.map { set in
                 GeneratedSet(

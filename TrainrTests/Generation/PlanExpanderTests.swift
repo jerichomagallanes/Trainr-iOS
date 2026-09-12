@@ -46,14 +46,6 @@ struct PlanExpanderTests {
         ))
     }
 
-    // What a movement is and how it is done is the catalog's, never the week's.
-    @Test func theCopyComesFromTheCatalog() {
-        let squat = only(expand(skeleton(["goblet_squat"])))
-
-        #expect(squat?.instructions == catalog["goblet_squat"]?.summary)
-        #expect(squat?.prescription.isEmpty == true)
-    }
-
     @Test func aChoiceTheSlotOfferedIsHonoured() {
         #expect(only(expand(skeleton(["goblet_squat", "dumbbell_squat"]), choose: "dumbbell_squat"))?.exerciseKey
             == "dumbbell_squat")

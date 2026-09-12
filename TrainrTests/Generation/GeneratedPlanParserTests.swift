@@ -14,6 +14,22 @@ private func catalogExercise(
     )
 }
 
+private extension GeneratedPlan {
+    func mapDays(_ change: (inout GeneratedDay) -> Void) -> GeneratedPlan {
+        var copy = self
+        for index in copy.days.indices { change(&copy.days[index]) }
+        return copy
+    }
+
+    func mapExercise(_ key: String, _ change: (inout GeneratedExercise) -> Void) -> GeneratedPlan {
+        mapDays { day in
+            for index in day.exercises.indices where day.exercises[index].exerciseKey == key {
+                change(&day.exercises[index])
+            }
+        }
+    }
+}
+
 struct GeneratedPlanParserTests {
 
     private let catalog = InMemoryExerciseCatalog([
@@ -26,73 +42,55 @@ struct GeneratedPlanParserTests {
     private var parser: GeneratedPlanParser { GeneratedPlanParser(catalog: catalog) }
     private let userID = UUID()
     private let startDate = Date(timeIntervalSince1970: 1_753_056_000)
+    private let unbounded = PlanLimits(maxSetsPerSession: .max)
 
-    // Deliberately out of order and carrying an unknown key: ordering is ours, extras ignored.
-    private let goodJSON = """
-        {
-          "title": "Week 1",
-          "coachNote": "an extra key the contract does not define",
-          "days": [
-            {
-              "dayNumber": 3,
-              "title": "Cardio & Core",
-              "exercises": [
-                {
-                  "exerciseKey": "warm_up_jog",
-                  "prescription": "5 minutes",
-                  "instructions": "Light jogging in place to warm up.",
-                  "sets": [{ "seconds": 300 }]
-                },
-                {
-                  "exerciseKey": "bicycle_crunch",
-                  "prescription": "2 sets of 20 reps",
-                  "instructions": "Alternate elbow to knee.",
-                  "restSeconds": 30,
-                  "sets": [{ "reps": 20 }, { "reps": 20 }]
-                }
-              ]
-            },
-            {
-              "dayNumber": 1,
-              "title": "Full Body Strength",
-              "exercises": [
-                {
-                  "exerciseKey": "goblet_squat",
-                  "prescription": "3 sets of 12 reps",
-                  "instructions": "Squat holding a dumbbell at your chest.",
-                  "restSeconds": 60,
-                  "sets": [
-                    { "reps": 12, "weightKg": 20 },
-                    { "reps": 11, "weightKg": 20 },
-                    { "reps": 10, "weightKg": 22.5 }
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-        """
+    // Deliberately out of order: ordering is ours.
+    private let good = GeneratedPlan(
+        title: "Week 1",
+        days: [
+            GeneratedDay(
+                dayNumber: 3,
+                title: "Cardio & Core",
+                exercises: [
+                    GeneratedExercise(exerciseKey: "warm_up_jog", sets: [GeneratedSet(seconds: 300)]),
+                    GeneratedExercise(
+                        exerciseKey: "bicycle_crunch", restSeconds: 30,
+                        sets: [GeneratedSet(reps: 20), GeneratedSet(reps: 20)]
+                    )
+                ]
+            ),
+            GeneratedDay(
+                dayNumber: 1,
+                title: "Full Body Strength",
+                exercises: [
+                    GeneratedExercise(
+                        exerciseKey: "goblet_squat", restSeconds: 60,
+                        sets: [
+                            GeneratedSet(reps: 12, weightKg: 20),
+                            GeneratedSet(reps: 11, weightKg: 20),
+                            GeneratedSet(reps: 10, weightKg: 22.5)
+                        ]
+                    )
+                ]
+            )
+        ]
+    )
 
     private func parseGood() throws -> WeeklyPlan {
-        let result = parser.parse(goodJSON, userID: userID, weekNumber: 2, startDate: startDate)
+        let result = parser.parse(good, userID: userID, weekNumber: 2, startDate: startDate, limits: unbounded)
         guard case .parsed(let plan) = result else {
             throw ParserTestFailure.expectedParsed
         }
         return plan
     }
 
-    private func errors(of json: String) throws -> [String] {
-        let result = parser.parse(json, userID: UUID(), weekNumber: 1,
-                                  startDate: Date(timeIntervalSince1970: 0))
+    private func errors(of plan: GeneratedPlan) throws -> [String] {
+        let result = parser.parse(plan, userID: UUID(), weekNumber: 1,
+                                  startDate: Date(timeIntervalSince1970: 0), limits: unbounded)
         guard case .invalid(let errors) = result else {
             throw ParserTestFailure.expectedInvalid
         }
         return errors
-    }
-
-    private func goodJSON(replacing from: String, with to: String) -> String {
-        #expect(goodJSON.contains(from))
-        return goodJSON.replacingOccurrences(of: from, with: to)
     }
 
     private enum ParserTestFailure: Error {
@@ -132,7 +130,6 @@ struct GeneratedPlanParserTests {
         #expect(squat.name == "goblet squat")
         #expect(squat.measure == .weightAndReps)
         #expect(squat.durationMinutes == 4)
-        #expect(squat.prescription == "3 sets of 12 reps")
         #expect(squat.restTime == 60)
         #expect(squat.setCount == 3)
     }
@@ -186,7 +183,7 @@ struct GeneratedPlanParserTests {
             catalogExercise("bicycle_crunch", .abdominals, .reps, .core)
         ]))
         let result = loaded.parse(
-            goodJSON, userID: UUID(), weekNumber: 1, startDate: Date(timeIntervalSince1970: 0)
+            good, userID: UUID(), weekNumber: 1, startDate: Date(timeIntervalSince1970: 0), limits: unbounded
         )
 
         guard case .parsed(let plan) = result else { throw ParserTestFailure.expectedParsed }
@@ -196,9 +193,8 @@ struct GeneratedPlanParserTests {
 
     @Test func aStrayTargetTheMeasureDoesNotRenderIsStripped() throws {
         let result = parser.parse(
-            goodJSON(replacing: "{ \"reps\": 20 },",
-                     with: "{ \"reps\": 20, \"weightKg\": 8, \"seconds\": 40 },"),
-            userID: UUID(), weekNumber: 1, startDate: Date(timeIntervalSince1970: 0)
+            good.mapExercise("bicycle_crunch") { $0.sets[0] = GeneratedSet(reps: 20, weightKg: 8, seconds: 40) },
+            userID: UUID(), weekNumber: 1, startDate: Date(timeIntervalSince1970: 0), limits: unbounded
         )
 
         guard case .parsed(let plan) = result else { throw ParserTestFailure.expectedParsed }
@@ -211,33 +207,26 @@ struct GeneratedPlanParserTests {
         #expect(stripped.targetSeconds == nil)
     }
 
-    @Test func malformedJSONIsInvalidNotACrash() throws {
-        #expect(try errors(of: "here is your plan! { \"title\": ").count == 1)
-        #expect(try !errors(of: "{}").isEmpty)
-    }
-
     @Test func aBlankTitleAndNoDaysAreBothReported() throws {
-        let errors = try errors(of: #"{ "title": " ", "days": [] }"#)
+        let errors = try errors(of: GeneratedPlan(title: " ", days: []))
 
         #expect(errors == ["plan: title is blank", "plan: has no days"])
     }
 
     @Test func aRepeatedDayNumberIsRejected() throws {
-        let errors = try errors(of: goodJSON(replacing: "\"dayNumber\": 3,",
-                                             with: "\"dayNumber\": 1,"))
+        let errors = try errors(of: good.mapDays { if $0.dayNumber == 3 { $0.dayNumber = 1 } })
 
         #expect(errors == ["plan: day 1 appears more than once"])
     }
 
     @Test func aDayNumberOutsideTheWeekIsRejected() throws {
-        let errors = try errors(of: goodJSON(replacing: "\"dayNumber\": 3,",
-                                             with: "\"dayNumber\": 8,"))
+        let errors = try errors(of: good.mapDays { if $0.dayNumber == 3 { $0.dayNumber = 8 } })
 
         #expect(errors == ["day 8: dayNumber must be 1..7, Monday to Sunday"])
     }
 
     @Test func anExerciseKeyThatIsNotASlugIsRejected() throws {
-        let errors = try errors(of: goodJSON(replacing: "goblet_squat", with: "Goblet Squat"))
+        let errors = try errors(of: good.mapExercise("goblet_squat") { $0.exerciseKey = "Goblet Squat" })
 
         #expect(errors == [
             "day 1, Goblet Squat: exerciseKey 'Goblet Squat' is not a lower_snake_case slug"
@@ -245,30 +234,25 @@ struct GeneratedPlanParserTests {
     }
 
     @Test func theSameExerciseTwiceInOneDayIsRejected() throws {
-        let errors = try errors(of: goodJSON(replacing: "warm_up_jog", with: "bicycle_crunch"))
+        let errors = try errors(of: good.mapExercise("warm_up_jog") { $0.exerciseKey = "bicycle_crunch" })
 
         #expect(errors.contains("day 3: exerciseKey 'bicycle_crunch' appears more than once"))
     }
 
     @Test func aSetMissingTheTargetItsMeasureNeedsIsRejected() throws {
-        let repsErrors = try errors(
-            of: goodJSON(replacing: "{ \"reps\": 12, \"weightKg\": 20 },", with: "{},"))
-        let secondsErrors = try errors(
-            of: goodJSON(replacing: "{ \"seconds\": 300 }", with: "{ \"reps\": 300 }"))
+        let repsErrors = try errors(of: good.mapExercise("goblet_squat") { $0.sets[0] = GeneratedSet() })
+        let secondsErrors = try errors(of: good.mapExercise("warm_up_jog") { $0.sets[0] = GeneratedSet(reps: 300) })
 
         #expect(repsErrors == ["day 1, goblet_squat, set 1: needs reps between 1 and 100"])
         #expect(secondsErrors == ["day 3, warm_up_jog, set 1: needs seconds between 5 and 5400"])
     }
 
     @Test func numbersNoClientCouldPerformAreRejected() throws {
-        #expect(try errors(of: goodJSON(replacing: "\"restSeconds\": 30,",
-                                        with: "\"restSeconds\": -30,"))
+        #expect(try errors(of: good.mapExercise("bicycle_crunch") { $0.restSeconds = -30 })
             == ["day 3, bicycle_crunch: restSeconds must be 5..600"])
-        #expect(try errors(of: goodJSON(replacing: "\"weightKg\": 22.5",
-                                        with: "\"weightKg\": 0"))
+        #expect(try errors(of: good.mapExercise("goblet_squat") { $0.sets[2] = GeneratedSet(reps: 10, weightKg: 0) })
             == ["day 1, goblet_squat, set 3: weightKg must be between 0.5 and 500.0"])
-        #expect(try errors(of: goodJSON(replacing: "{ \"reps\": 12, \"weightKg\": 20 },",
-                                        with: "{ \"reps\": 400 },"))
+        #expect(try errors(of: good.mapExercise("goblet_squat") { $0.sets[0] = GeneratedSet(reps: 400) })
             == ["day 1, goblet_squat, set 1: needs reps between 1 and 100"])
     }
 
@@ -276,7 +260,7 @@ struct GeneratedPlanParserTests {
     // session pays for.
     @Test func aDayThatOverspendsTheSessionIsRejected() throws {
         let result = parser.parse(
-            goodJSON,
+            good,
             userID: userID,
             weekNumber: 2,
             startDate: startDate,
@@ -294,8 +278,7 @@ struct GeneratedPlanParserTests {
     }
 
     @Test func anExerciseWithNoSetsIsRejected() throws {
-        let errors = try errors(of: goodJSON(replacing: "\"sets\": [{ \"seconds\": 300 }]",
-                                             with: "\"sets\": []"))
+        let errors = try errors(of: good.mapExercise("warm_up_jog") { $0.sets = [] })
 
         #expect(errors == ["day 3, warm_up_jog: has no sets"])
     }
@@ -303,8 +286,8 @@ struct GeneratedPlanParserTests {
     // A rejected week names every problem it has, not only the first.
     @Test func everyProblemIsReportedNotJustTheFirst() throws {
         let errors = try errors(
-            of: goodJSON(replacing: "\"restSeconds\": 30,", with: "\"restSeconds\": -30,")
-                .replacingOccurrences(of: "\"weightKg\": 22.5", with: "\"weightKg\": 0")
+            of: good.mapExercise("bicycle_crunch") { $0.restSeconds = -30 }
+                .mapExercise("goblet_squat") { $0.sets[2] = GeneratedSet(reps: 10, weightKg: 0) }
         )
 
         #expect(errors.count == 2)

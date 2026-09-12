@@ -173,10 +173,8 @@ final class WorkoutExerciseRecord {
     var reps: String?
     var duration: String?
     var durationMinutes: Int
-    var prescription: String
     var restTime: Int?
     var equipment: [String]
-    var instructions: String
     var videoTutorialURL: String?
     var isCompleted: Bool
     var notes: String
@@ -195,10 +193,8 @@ final class WorkoutExerciseRecord {
         reps = exercise.reps
         duration = exercise.duration
         durationMinutes = exercise.durationMinutes
-        prescription = exercise.prescription
         restTime = exercise.restTime
         equipment = exercise.equipment
-        instructions = exercise.instructions
         videoTutorialURL = exercise.videoTutorialURL
         isCompleted = exercise.isCompleted
         notes = exercise.notes
@@ -215,10 +211,8 @@ final class WorkoutExerciseRecord {
             reps: reps,
             duration: duration,
             durationMinutes: durationMinutes,
-            prescription: prescription,
             restTime: restTime,
             equipment: equipment,
-            instructions: instructions,
             videoTutorialURL: videoTutorialURL,
             isCompleted: isCompleted,
             notes: notes

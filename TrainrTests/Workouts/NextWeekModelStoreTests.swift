@@ -13,7 +13,7 @@ struct NextWeekModelStoreTests {
     private struct SlowGenerator: PlanGenerator {
         func generate(_ request: PlanRequest) async -> PlanGenerationResult {
             try? await Task.sleep(for: .milliseconds(200))
-            return await TemplatePlanGenerator().generate(request)
+            return await WeekPlanGenerator().generate(request)
         }
     }
 
@@ -28,7 +28,7 @@ struct NextWeekModelStoreTests {
         userID = profile.id
     }
 
-    private func dependencies(_ generator: any PlanGenerator = TemplatePlanGenerator()) -> AppDependencies {
+    private func dependencies(_ generator: any PlanGenerator = WeekPlanGenerator()) -> AppDependencies {
         AppDependencies(store: store, planGenerator: generator, breadcrumbs: NoBreadcrumbs())
     }
 
@@ -40,7 +40,7 @@ struct NextWeekModelStoreTests {
                 WorkoutExercise(
                     exerciseKey: "goblet_squat", name: "Goblet Squat",
                     sets: [ExerciseSet(setNumber: 1, targetReps: 10, actualReps: 9)],
-                    durationMinutes: 10, prescription: "3 sets"
+                    durationMinutes: 10
                 )
             ]
         )
@@ -209,7 +209,7 @@ struct NextWeekModelStoreTests {
         var asked: [PlanRequest] = []
         func generate(_ request: PlanRequest) async -> PlanGenerationResult {
             asked.append(request)
-            return await TemplatePlanGenerator().generate(request)
+            return await WeekPlanGenerator().generate(request)
         }
     }
 

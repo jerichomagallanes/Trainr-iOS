@@ -217,7 +217,7 @@ enum UITestFixtures {
 
         func generate(_ request: PlanRequest) async -> PlanGenerationResult {
             try? await Task.sleep(for: .seconds(seconds))
-            return await TemplatePlanGenerator().generate(request)
+            return await WeekPlanGenerator().generate(request)
         }
     }
 

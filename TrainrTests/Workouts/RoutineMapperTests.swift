@@ -6,15 +6,12 @@ import Testing
 struct RoutineMapperTests {
 
     private func exercise(
-        _ name: String, key: String = "goblet_squat", minutes: Int = 10,
-        prescription: String = "3 sets of 12 reps", video: String? = nil,
+        _ name: String, key: String = "goblet_squat", minutes: Int = 10, video: String? = nil,
         weightKg: Double? = nil
     ) -> WorkoutExercise {
         var exercise = WorkoutExercise(name: name)
         exercise.exerciseKey = key
-        exercise.instructions = "Do it well."
         exercise.durationMinutes = minutes
-        exercise.prescription = prescription
         exercise.measure = weightKg == nil ? .reps : .weightAndReps
         exercise.videoTutorialURL = video
         exercise.sets = [ExerciseSet(setNumber: 1, targetReps: 12, targetWeightKg: weightKg)]
@@ -33,16 +30,10 @@ struct RoutineMapperTests {
         #expect(routine.title == "Full Body")
         #expect(routine.exercises.map(\.position) == [1, 2])
         #expect(routine.exercises[0].name == "Goblet Squats")
-        #expect(routine.exercises[0].description == "Do it well.")
+        #expect(routine.exercises[0].description.isEmpty)
         #expect(routine.exercises[0].minutes == 10)
+        #expect(routine.totalMinutes == 20)
         #expect(routine.exercises[0].sets.count == 1)
-    }
-
-    @Test("The allotted minutes and the prescription are independent")
-    func totalIsSeparateFromPrescription() {
-        let routine = day([exercise("Intervals", minutes: 10, prescription: "5 sets of 1 minute")]).toRoutineUi()
-        #expect(routine.exercises[0].minutes == 10)
-        #expect(routine.totalMinutes == 10)
     }
 
     @Test("A day with no exercises maps to an empty, unfinished routine")
@@ -104,20 +95,19 @@ struct RoutineMapperTests {
 
     private let catalog: any ExerciseCatalog = BundleExerciseCatalog()
 
-    @Test func theCatalogSaysHowAMovementIsDoneWhateverTheStoredWeekSays() {
+    @Test func theCatalogSaysHowAMovementIsDone() {
         let routine = day([exercise("Goblet Squat")]).toRoutineUi(catalog: catalog)
 
         #expect(routine.exercises[0].description == catalog["goblet_squat"]?.summary)
     }
 
-    @Test func theChipIsReadOffTheSetsNotTheStoredText() {
-        var stored = exercise("Squat", prescription: "stale stored text")
+    @Test func theChipIsReadOffTheSets() {
+        var stored = exercise("Squat")
         stored.sets = (1...3).map { ExerciseSet(setNumber: $0, targetReps: 10) }
 
         let mapped = day([stored]).toRoutineUi().exercises[0]
 
         #expect(mapped.prescription == Prescription.of(stored.sets, measure: stored.measure))
-        #expect(mapped.prescription.text != "stale stored text")
     }
 
     @Test func aOneSidedMovementIsCountedPerSide() throws {

@@ -11,12 +11,12 @@ nonisolated enum L10n {
     static var advancedLevel: String { String(localized: "advanced_level") }
     static var age: String { String(localized: "age") }
     static var ageLabel: String { String(localized: "age_label") }
-    static var aiGeneratedRoutines: String { String(localized: "ai_generated_routines") }
-    static var aiPowered: String { String(localized: "ai_powered") }
-    static func aiRoutineDescription(_ p1: String, _ p2: String) -> String {
-        String.localizedStringWithFormat(String(localized: "ai_routine_description"), p1, p2)
+    static var routinesBuiltAroundYou: String { String(localized: "routines_built_around_you") }
+    static var trainerAdjective: String { String(localized: "trainer_adjective") }
+    static func routineDescription(_ p1: String, _ p2: String) -> String {
+        String.localizedStringWithFormat(String(localized: "routine_description"), p1, p2)
     }
-    static var aiRoutinePreviewLabel: String { String(localized: "ai_routine_preview_label") }
+    static var routinePreviewLabel: String { String(localized: "routine_preview_label") }
     static var ankleIssuesInjury: String { String(localized: "ankle_issues_injury") }
     static var anyInjuriesOrAreas: String { String(localized: "any_injuries_or_areas") }
     static var appAboutMessage: String { String(localized: "app_about_message") }

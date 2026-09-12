@@ -39,7 +39,7 @@ struct TrainingStoreTests {
         }
     }
 
-    @Test func anExercisesMeasureAndPrescriptionSurvive() throws {
+    @Test func anExercisesMeasureAndSetsSurvive() throws {
         let (userID, _) = try seedSamplePlan()
 
         let exercises = try #require(try storedPlan(userID).workoutDays
@@ -48,7 +48,6 @@ struct TrainingStoreTests {
         let plank = try #require(exercises.first { $0.name == "Plank" })
         #expect(plank.measure == .duration)
         #expect(plank.durationMinutes == 6)
-        #expect(plank.prescription == "3 sets of 45 seconds")
         #expect(plank.sets.map(\.targetSeconds) == [45, 45, 45])
     }
 
@@ -158,8 +157,6 @@ struct TrainingStoreTests {
                                     actualWeightKg: 22.5, isCompleted: true)
                     ],
                     durationMinutes: 8,
-                    prescription: "1 set of 12 reps",
-                    instructions: "Squat again, heavier.",
                     isCompleted: true
                 )
             ],
@@ -197,8 +194,6 @@ struct TrainingStoreTests {
                     measure: .weightAndReps,
                     sets: [ExerciseSet(setNumber: 1, targetReps: 12)],
                     durationMinutes: 8,
-                    prescription: "1 set of 12 reps",
-                    instructions: "Squat.",
                     isCompleted: true
                 )
             ],

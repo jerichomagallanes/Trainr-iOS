@@ -77,7 +77,7 @@ final class AppDependencies {
         // swiftlint:disable:next force_try
         let store = TrainingStore(container: try! TrainingStore.container(inMemory: true))
         return AppDependencies(
-            store: store, planGenerator: TemplatePlanGenerator(), breadcrumbs: NoBreadcrumbs()
+            store: store, planGenerator: WeekPlanGenerator(), breadcrumbs: NoBreadcrumbs()
         )
     }
 
@@ -96,7 +96,6 @@ final class AppDependencies {
         if let failing = UITestFixtures.failingGeneratorIfRequested() { return failing }
         if let slow = UITestFixtures.slowGeneratorIfRequested() { return slow }
         #endif
-        let catalog = BundleExerciseCatalog()
-        return CarryForwardPlanGenerator(catalog: catalog, next: TemplatePlanGenerator(catalog: catalog))
+        return WeekPlanGenerator()
     }
 }
