@@ -50,32 +50,32 @@ nonisolated enum InjuryGuard {
     private static let floorLoaded: Set<Equipment> = [.barbell, .plate]
 
     private static let loadedSpinalFlexion: Set<String> = [
-        "weighted_sit_up", "weighted_crunch", "weighted_decline_crunch", "weighted_russian_twist",
+        "weighted_sit_up", "weighted_crunch", "weighted_decline_crunch", "weighted_russian_twist"
     ]
 
     private static let plyometric: Set<String> = [
         "box_jump", "lateral_box_jump", "burpee", "burpee_broad_jumps", "burpee_over_the_bar",
         "frog_jumps", "jump_squat", "jumping_lunge", "jumping_jack", "high_knee_skips",
-        "sprints", "jump_shrug",
+        "sprints", "jump_shrug"
     ]
 
     private static let deepKneeFlexion: Set<String> = [
-        "pistol_squat", "assisted_pistol_squats", "weighted_sissy_squat",
+        "pistol_squat", "assisted_pistol_squats", "weighted_sissy_squat"
     ]
 
     private static let dips: Set<String> = [
         "assisted_chest_dip", "assisted_triceps_dip", "bench_dip", "chest_dip",
         "floor_triceps_dip", "ring_dips", "seated_dip_machine", "triceps_dip",
-        "weighted_chest_dip", "weighted_triceps_dip",
+        "weighted_chest_dip", "weighted_triceps_dip"
     ]
 
     private static let uprightRows: Set<String> = [
-        "barbell_upright_row", "cable_upright_row", "dumbbell_upright_row",
+        "barbell_upright_row", "cable_upright_row", "dumbbell_upright_row"
     ]
 
     private static let wristLoaded: Set<String> = [
         "ab_wheel", "handstand_push_up", "handstand_hold", "front_squat",
-        "clap_push_ups", "one_arm_push_up",
+        "clap_push_ups", "one_arm_push_up"
     ]
 
     // Impact, not effort: walking on a treadmill or climbing stairs is fine on
@@ -83,7 +83,7 @@ nonisolated enum InjuryGuard {
     private static let runningImpact: Set<String> = ["running", "jump_rope", "sprints"]
 
     private static let shrugs: Set<String> = [
-        "barbell_shrug", "cable_shrug", "dumbbell_shrug", "machine_shrug", "smith_machine_shrug",
+        "barbell_shrug", "cable_shrug", "dumbbell_shrug", "machine_shrug", "smith_machine_shrug"
     ]
 
     // Every key named anywhere above, so a test can hold the list to the
@@ -99,6 +99,6 @@ nonisolated enum InjuryGuard {
         .wrist: [.horizontalPush, .verticalPush, .carry],
         .ankle: [.squat, .lunge, .conditioning],
         .hip: [.hinge, .squat, .lunge],
-        .neck: [.core, .verticalPush],
+        .neck: [.core, .verticalPush]
     ]
 }

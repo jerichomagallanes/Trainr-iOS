@@ -164,16 +164,17 @@ struct RoutineDetailView: View {
                                 HowToSection(
                                     steps: exercise.steps,
                                     isExpanded: state.expandedHowTo == exercise.position,
-                                    onToggle: { model.toggleHowTo(at: exercise.position) }
-                                ) {
-                                    if let video {
-                                        VideoTutorial(
-                                            video: video,
-                                            isExpanded: state.expandedVideo == exercise.position,
-                                            onToggle: { model.toggleVideo(at: exercise.position) }
-                                        )
+                                    onToggle: { model.toggleHowTo(at: exercise.position) },
+                                    video: {
+                                        if let video {
+                                            VideoTutorial(
+                                                video: video,
+                                                isExpanded: state.expandedVideo == exercise.position,
+                                                onToggle: { model.toggleVideo(at: exercise.position) }
+                                            )
+                                        }
                                     }
-                                }
+                                )
                             }
                         }
                     }

@@ -113,7 +113,6 @@ struct WeekPlanGeneratorTests {
         }
     }
 
-
     // Two people who answered the same way should not train the same week for
     // ever, and one person rebuilding their own week should get it back.
     @Test("Two clients who answered the same way do not get the same week")
@@ -226,9 +225,9 @@ struct WeekPlanGeneratorTests {
     @Test("Forty clients who answered the same way get forty different weeks")
     func fortyClientsGetFortyDifferentWeeks() async throws {
         var weeks: Set<[String]> = []
-        for n in 1...40 {
+        for index in 1...40 {
             var client = user(kit: [.dumbbell])
-            client.id = UUID(uuidString: String(format: "00000000-0000-0000-0000-%012d", n))!
+            client.id = UUID(uuidString: String(format: "00000000-0000-0000-0000-%012d", index))!
             weeks.insert(movements(try #require(await plan(client))).flatMap { $0 })
         }
 

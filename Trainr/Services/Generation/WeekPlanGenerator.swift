@@ -31,7 +31,8 @@ struct WeekPlanGenerator: PlanGenerator {
         let skeleton = builder.build(request)
         guard skeleton.isComplete else { return .failed }
         let previous = request.freshCast ? nil : request.previousWeek
-        let carried = previous.flatMap { carry($0, skeleton) }.flatMap { assemble(skeleton, selection: $0, request: request) }
+        let carried = previous.flatMap { carry($0, skeleton) }
+            .flatMap { assemble(skeleton, selection: $0, request: request) }
         return (carried ?? assemble(skeleton, selection: choose(skeleton, request), request: request))
             .map { PlanGenerationResult.generated($0) } ?? .failed
     }
@@ -158,16 +159,16 @@ struct WeekPlanGenerator: PlanGenerator {
     // FNV-1a's low bits are a parity of the input's low bits, so a modulo read
     // straight off them turned every slot in the week on one bit and forty
     // clients shared two weeks. Murmur's finalizer spreads the high bits down.
-    private static func mixed(_ h: Int32) -> UInt32 {
-        var u = UInt32(bitPattern: h)
-        u ^= u >> 16; u &*= 0x85ebca6b
-        u ^= u >> 13; u &*= 0xc2b2ae35
-        return u ^ (u >> 16)
+    private static func mixed(_ hashed: Int32) -> UInt32 {
+        var bits = UInt32(bitPattern: hashed)
+        bits ^= bits >> 16; bits &*= 0x85ebca6b
+        bits ^= bits >> 13; bits &*= 0xc2b2ae35
+        return bits ^ (bits >> 16)
     }
 
     private static func hash(_ text: String) -> Int32 {
-        var h = fnvOffset
-        for unit in text.utf16 { h = (h ^ Int32(unit)) &* fnvPrime }
-        return h
+        var hashed = fnvOffset
+        for unit in text.utf16 { hashed = (hashed ^ Int32(unit)) &* fnvPrime }
+        return hashed
     }
 }

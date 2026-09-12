@@ -97,14 +97,13 @@ nonisolated enum SeedLoad {
         }
     }
 
-    private static func row(
-        _ squat: Double, _ hinge: Double, _ lunge: Double, _ horizontalPush: Double,
-        _ verticalPush: Double, _ horizontalPull: Double, _ verticalPull: Double,
-        _ isolation: Double, _ core: Double
-    ) -> [MovementPattern: Double] {
-        [.squat: squat, .hinge: hinge, .lunge: lunge, .horizontalPush: horizontalPush,
-         .verticalPush: verticalPush, .horizontalPull: horizontalPull,
-         .verticalPull: verticalPull, .isolation: isolation, .core: core]
+    private static let rowOrder: [MovementPattern] = [
+        .squat, .hinge, .lunge, .horizontalPush, .verticalPush, .horizontalPull, .verticalPull, .isolation, .core
+    ]
+
+    private static func row(_ fractions: Double...) -> [MovementPattern: Double] {
+        precondition(fractions.count == rowOrder.count)
+        return Dictionary(uniqueKeysWithValues: zip(rowOrder, fractions))
     }
 
     private static let barbell = row(0.90, 1.10, 0.40, 0.75, 0.45, 0.60, 0.50, 0.30, 0.25)

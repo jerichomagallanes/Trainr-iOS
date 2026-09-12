@@ -23,7 +23,7 @@ nonisolated enum DeloadCheck {
         let triggers = [
             isStalling(newestFirst),
             isRarelyFinished(newestFirst),
-            isLongSinceALighterWeek(user, newestFirst),
+            isLongSinceALighterWeek(user, newestFirst)
         ]
         return triggers.filter { $0 }.count >= 2
     }

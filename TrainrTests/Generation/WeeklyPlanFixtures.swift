@@ -20,7 +20,9 @@ extension WeeklyPlan {
     }
 
     func climbed(from before: WeeklyPlan) -> [WorkoutExercise] {
-        let then = Dictionary(before.workoutDays.flatMap(\.exercises).map { ($0.exerciseKey, $0) }) { first, _ in first }
+        let then = Dictionary(before.workoutDays.flatMap(\.exercises).map { ($0.exerciseKey, $0) }) { first, _ in
+            first
+        }
         return workoutDays.flatMap(\.exercises).filter { exercise in
             guard let now = exercise.sets.first, let then = then[exercise.exerciseKey]?.sets.first else { return false }
             return (now.targetReps ?? 0) > (then.targetReps ?? 0)

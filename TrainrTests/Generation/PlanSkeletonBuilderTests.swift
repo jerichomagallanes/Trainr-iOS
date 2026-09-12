@@ -70,7 +70,8 @@ struct PlanSkeletonBuilderTests {
     @Test func everyDayHasThreeToEightMovementsInSessionOrderWithUniqueIds() {
         for user in everyAnswer() {
             for day in build(user).days {
-                let place = "\(user.fitnessGoal) \(user.workoutDaysPerWeek)d \(user.workoutDuration)m \(user.availableEquipment) \(day.id)"
+                let place = "\(user.fitnessGoal) \(user.workoutDaysPerWeek)d \(user.workoutDuration)m "
+                    + "\(user.availableEquipment) \(day.id)"
                 #expect((3...8).contains(day.slots.count), "\(place)")
                 #expect(day.slots.map(\.tier) == day.slots.map(\.tier).sorted(), "\(place)")
                 #expect(Set(day.slots.map(\.id)).count == day.slots.count, "\(place)")
@@ -130,7 +131,8 @@ struct PlanSkeletonBuilderTests {
     @Test func aFullGymWeekCoversASquatAPressAndAPull() {
         for days in [1, 3, 4, 6] {
             let week = build(user(days: days))
-            let patterns = week.days.flatMap(\.slots).compactMap { $0.candidates.first.flatMap { catalog[$0]?.pattern } }
+            let patterns = week.days.flatMap(\.slots)
+                .compactMap { $0.candidates.first.flatMap { catalog[$0]?.pattern } }
 
             #expect(week.uncoveredPatterns.isEmpty, "\(days) days")
             for requirement in PatternRequirement.allCases {

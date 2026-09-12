@@ -18,8 +18,12 @@ struct ProgressionEngineTests {
     private var bench: CatalogExercise { movement("barbell_bench_press", .barbell, .weightAndReps, .horizontalPush) }
     private var pushUp: CatalogExercise { movement("push_up", Equipment.none, .reps, .horizontalPush) }
     private var plank: CatalogExercise { movement("plank", Equipment.none, .duration, .core, primary: .abdominals) }
-    private var walking: CatalogExercise { movement("walking", Equipment.none, .duration, .conditioning, primary: .cardio) }
-    private var warmUp: CatalogExercise { movement("warm_up", Equipment.none, .duration, .mobility, primary: .fullBody) }
+    private var walking: CatalogExercise {
+        movement("walking", Equipment.none, .duration, .conditioning, primary: .cardio)
+    }
+    private var warmUp: CatalogExercise {
+        movement("warm_up", Equipment.none, .duration, .mobility, primary: .fullBody)
+    }
 
     // Muscle gain, intermediate: a compound's window is 6-10.
     private func lifter(
@@ -67,7 +71,7 @@ struct ProgressionEngineTests {
         ))
     }
 
-    private func day(_ n: Int) -> Date { Date(timeIntervalSince1970: Double(n) * 86_400) }
+    private func day(_ days: Int) -> Date { Date(timeIntervalSince1970: Double(days) * 86_400) }
 
     // Nobody has lifted anything yet, so the first number is a guess made on
     // the light side, at the bottom of the window, and the card says so.

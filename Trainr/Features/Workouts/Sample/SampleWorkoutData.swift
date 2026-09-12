@@ -211,8 +211,11 @@ nonisolated enum SampleWorkoutData {
         }
     }
 
-    // Real rows, copied from the shipped catalog, so a preview shows the same
-    // muscles and steps a client sees rather than placeholder prose.
+}
+
+// Real rows, copied from the shipped catalog, so a preview shows the same
+// muscles and steps a client sees rather than placeholder prose.
+extension SampleWorkoutData {
     static let catalog: any ExerciseCatalog = InMemoryExerciseCatalog([
             CatalogExercise(
                 key: "goblet_squat",

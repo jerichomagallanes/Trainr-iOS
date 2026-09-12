@@ -24,7 +24,9 @@ struct PlanExpanderTests {
         return user
     }
 
-    private func skeleton(_ keys: [String], tier: SlotTier = .primaryCompound, secondsPerSet: Int? = nil) -> PlanSkeleton {
+    private func skeleton(
+        _ keys: [String], tier: SlotTier = .primaryCompound, secondsPerSet: Int? = nil
+    ) -> PlanSkeleton {
         PlanSkeleton(
             title: "Test Week",
             days: [SkeletonDay(dayNumber: 1, focus: .fullBody, slots: [SkeletonSlot(
@@ -67,7 +69,9 @@ struct PlanExpanderTests {
 
     // The block the session was fitted around is the block prescribed.
     @Test func conditioningIsPrescribedAtWhatTheDayBudgeted() {
-        let walk = only(expand(skeleton(["walking"], tier: .conditioning, secondsPerSet: 1500), user: lifter(goal: .weightLoss)))
+        let walk = only(
+            expand(skeleton(["walking"], tier: .conditioning, secondsPerSet: 1500), user: lifter(goal: .weightLoss))
+        )
 
         #expect(Set(walk?.sets.map(\.seconds) ?? []) == [1500])
     }

@@ -44,7 +44,9 @@ struct DeloadCheckTests {
 
     // A beginner's first two months are adaptation, not accumulated fatigue.
     @Test func aBeginnerIsNeverDeloadedInTheirFirstEightWeeks() {
-        let struggling = (1...3).map { week($0, exercise("squat", done: 2, reps: 5), exercise("bench", done: 2, reps: 5)) }
+        let struggling = (1...3).map {
+            week($0, exercise("squat", done: 2, reps: 5), exercise("bench", done: 2, reps: 5))
+        }
 
         #expect(!DeloadCheck.isDue(lifter(experience: .beginner), weeks: struggling))
     }

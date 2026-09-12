@@ -19,7 +19,7 @@ struct ExerciseHistoryTests {
         )
     }
 
-    private func day(_ n: Double) -> Date { Date(timeIntervalSince1970: n * 86_400) }
+    private func day(_ days: Double) -> Date { Date(timeIntervalSince1970: days * 86_400) }
 
     @Test func theNewestSessionComesFirst() {
         let history = ExerciseHistory.from(

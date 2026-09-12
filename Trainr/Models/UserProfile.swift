@@ -90,7 +90,7 @@ extension Equipment {
         "resistanceBands": .resistanceBand, "machines": .machine,
         "cableMachine": .machine, "cardioMachines": .machine,
         "pullUpBar": .machine, "squatRack": .barbell,
-        "bench": .other, "jumpRope": .other, "others": .other, "mat": Equipment.none,
+        "bench": .other, "jumpRope": .other, "others": .other, "mat": Equipment.none
     ]
 
     // The spelling the shared catalog file uses, which is the Kotlin enum's.
@@ -142,4 +142,3 @@ nonisolated enum Injury: String, Codable, CaseIterable, Sendable {
     case hip
     case neck
 }
-

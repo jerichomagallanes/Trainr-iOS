@@ -34,13 +34,13 @@ struct ExerciseCatalogIntegrityTests {
     // What each category holds in the source's own equipment filter.
     static let catalogSize: [Equipment: Int] = [
         Equipment.none: 105, .barbell: 74, .dumbbell: 70, .kettlebell: 13,
-        .machine: 145, .plate: 8, .resistanceBand: 13, .suspensionBand: 7, .other: 16,
+        .machine: 145, .plate: 8, .resistanceBand: 13, .suspensionBand: 7, .other: 16
     ]
 
     // A dropped entry is silent: the reader skips what it cannot understand,
     // so the count is the only thing that catches a bad enum value.
     @Test func everyEntryInTheFileSurvivesReading() throws {
-        let written = String(decoding: source, as: UTF8.self)
+        let written = try #require(String(data: source, encoding: .utf8))
             .components(separatedBy: "\"key\"").count - 1
 
         #expect(catalog.all.count == written)
@@ -164,7 +164,7 @@ struct ExerciseCatalogIntegrityTests {
                 ?? Bundle.main.url(forResource: "exercise-source", withExtension: "txt")
         )
         let transcribed = Set(
-            String(decoding: try Data(contentsOf: url), as: UTF8.self)
+            try #require(String(data: Data(contentsOf: url), encoding: .utf8))
                 .split(separator: "\n")
                 .map(String.init)
                 .filter { !$0.isEmpty && !$0.hasPrefix("#") }

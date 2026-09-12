@@ -66,7 +66,7 @@ nonisolated final class PlanSkeletonBuilder: Sendable {
     // Five hard days never three in a row inside the week.
     private static let dayNumbers: [Int: [Int]] = [
         1: [1], 2: [1, 4], 3: [1, 3, 5], 4: [1, 2, 4, 5], 5: [1, 2, 4, 5, 7],
-        6: [1, 2, 3, 4, 5, 6], 7: Array(1...7),
+        6: [1, 2, 3, 4, 5, 6], 7: Array(1...7)
     ]
 
     private static let splits: [Int: [SessionFocus]] = [
@@ -74,7 +74,7 @@ nonisolated final class PlanSkeletonBuilder: Sendable {
         4: [.upper, .lower, .upper, .lower],
         5: [.push, .pull, .legs, .upper, .lower],
         6: [.push, .pull, .legs, .push, .pull, .legs],
-        7: [.push, .pull, .legs, .activeRecovery, .upper, .lower, .activeRecovery],
+        7: [.push, .pull, .legs, .activeRecovery, .upper, .lower, .activeRecovery]
     ]
 }
 
@@ -278,7 +278,9 @@ private nonisolated final class WeekBuilder {
         }
         while !fits(day) {
             let shrink = day.slots.filter { $0.sets > 1 }
-                .sorted { ($0.tier.isCompound ? 0 : 1, -$0.tier.rawValue) < ($1.tier.isCompound ? 0 : 1, -$1.tier.rawValue) }
+                .sorted {
+                    ($0.tier.isCompound ? 0 : 1, -$0.tier.rawValue) < ($1.tier.isCompound ? 0 : 1, -$1.tier.rawValue)
+                }
                 .first
             guard let shrink else { break }
             shrink.sets -= 1
@@ -377,7 +379,8 @@ private nonisolated final class WeekBuilder {
         }
         let order = MuscleRegion.allCases
         guard let region = regions.min(by: {
-            ((directSets[$0] ?? 0), order.firstIndex(of: $0) ?? 0) < ((directSets[$1] ?? 0), order.firstIndex(of: $1) ?? 0)
+            ((directSets[$0] ?? 0), order.firstIndex(of: $0) ?? 0)
+                < ((directSets[$1] ?? 0), order.firstIndex(of: $1) ?? 0)
         }) else { return scope }
         return scope.filter { $0.region == region }
     }
@@ -396,7 +399,7 @@ private nonisolated final class WeekBuilder {
             slot.required?.isMet(by: exercise.pattern) == true ? 0 : 1,
             exercise.staple ? 0 : 1,
             slot.tier.isCompound == used ? 0 : 1,
-            directSets[exercise.primary.region] ?? 0,
+            directSets[exercise.primary.region] ?? 0
         ]
     }
 
@@ -457,27 +460,27 @@ private nonisolated final class WeekBuilder {
         case .strength:
             Shape(count: 6, sets: [
                 .warmUp: (1, 1), .primaryCompound: (3, 5), .secondaryCompound: (2, 4), .accessory: (2, 3),
-                .isolation: (2, 2), .core: (1, 2), .conditioning: (1, 1),
+                .isolation: (2, 2), .core: (1, 2), .conditioning: (1, 1)
             ], drop: ["isolation_2", "conditioning", "mobility_1", "accessory", "core", "isolation_1"])
         case .muscleGain:
             Shape(count: 8, sets: [
                 .warmUp: (1, 1), .primaryCompound: (2, 4), .secondaryCompound: (2, 3), .accessory: (2, 3),
-                .isolation: (2, 3), .core: (1, 3), .conditioning: (1, 1), .mobility: (1, 1),
+                .isolation: (2, 3), .core: (1, 3), .conditioning: (1, 1), .mobility: (1, 1)
             ], drop: ["mobility_1", "conditioning", "isolation_2", "core", "accessory", "isolation_1"])
         case .generalFitness:
             Shape(count: 8, sets: [
                 .warmUp: (1, 1), .primaryCompound: (2, 3), .secondaryCompound: (2, 3), .accessory: (2, 3),
-                .isolation: (2, 3), .core: (1, 3), .conditioning: (1, 1), .mobility: (1, 1),
+                .isolation: (2, 3), .core: (1, 3), .conditioning: (1, 1), .mobility: (1, 1)
             ], drop: ["mobility_1", "isolation_2", "isolation_1", "core", "conditioning", "accessory"])
         case .weightLoss, .endurance:
             Shape(count: 7, sets: [
                 .warmUp: (1, 1), .primaryCompound: (2, 3), .secondaryCompound: (2, 3), .accessory: (2, 3),
-                .isolation: (2, 2), .core: (2, 3), .conditioning: (1, 1), .mobility: (1, 1),
+                .isolation: (2, 2), .core: (2, 3), .conditioning: (1, 1), .mobility: (1, 1)
             ], drop: ["isolation_2", "isolation_1", "accessory", "mobility_1", "secondary", "core"],
             conditioningFillsTheSession: true)
         case .flexibility:
             Shape(count: 6, sets: [
-                .warmUp: (1, 1), .core: (1, 2), .conditioning: (1, 1), .mobility: (3, 4),
+                .warmUp: (1, 1), .core: (1, 2), .conditioning: (1, 1), .mobility: (3, 4)
             ], drop: ["core", "conditioning", "mobility_4", "mobility_3"])
         }
     }

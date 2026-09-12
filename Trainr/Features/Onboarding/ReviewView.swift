@@ -66,7 +66,7 @@ struct ReviewView: View {
                 ProfileSection(
                     title: L10n.fitnessGoalsLabel,
                     items: [
-                        (L10n.mainGoalLabel, profile.fitnessGoal.displayName),
+                        (L10n.mainGoalLabel, profile.fitnessGoal.displayName)
                     ],
                     onEdit: { onEdit(.fitnessGoal(editing: true)) }
                 )
