@@ -2222,7 +2222,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Your first week, every set you log, the rest timer, the video on every exercise, all your past weeks and progress, and repeating a week as often as you like."
+            "value": "Your first week, every set you log, the rest timer, the video on every exercise, and all your past weeks and progress."
           }
         }
       }
@@ -2266,7 +2266,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Pro unlocks new weeks: build next week from what you lifted, rewrite a week that does not suit you, and start a fresh plan whenever your goal changes."
+            "value": "Pro unlocks every week after your first: build next week from what you lifted, repeat a week that went well, rewrite one that does not suit you, and start a fresh plan whenever your goal changes."
           }
         }
       }
