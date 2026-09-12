@@ -1,12 +1,16 @@
 import Foundation
 
 // A whole week from the catalog: the skeleton, a movement for every slot, and
-// the engine's numbers.
-struct TemplatePlanGenerator: PlanGenerator {
+// the engine's numbers. Next week is last week's movements, progressed from
+// what was lifted, for as long as every one of them still has a place; a
+// profile edit that rules one out, a split with no room for it, or a client
+// asking for new movements picks the week afresh.
+struct WeekPlanGenerator: PlanGenerator {
 
     private let catalog: any ExerciseCatalog
     private let builder: PlanSkeletonBuilder
-    private let assembler: PlanAssembler
+    private let expander: PlanExpander
+    private let parser: GeneratedPlanParser
 
     // Two candidates, not three: measured against the volume and frequency
     // the evidence asks for, going deeper spread a week's sets thinner
@@ -18,15 +22,59 @@ struct TemplatePlanGenerator: PlanGenerator {
     init(catalog: any ExerciseCatalog = BundleExerciseCatalog()) {
         self.catalog = catalog
         builder = PlanSkeletonBuilder(catalog: catalog)
-        assembler = PlanAssembler(catalog: catalog)
+        expander = PlanExpander(catalog: catalog)
+        parser = GeneratedPlanParser(catalog: catalog)
     }
 
     func generate(_ request: PlanRequest) async -> PlanGenerationResult {
         guard !catalog.all.isEmpty else { return .failed }
         let skeleton = builder.build(request)
         guard skeleton.isComplete else { return .failed }
-        return assembler.assemble(skeleton, selection: choose(skeleton, request), request: request)
+        let previous = request.freshCast ? nil : request.previousWeek
+        let carried = previous.flatMap { carry($0, skeleton) }.flatMap { assemble(skeleton, selection: $0, request: request) }
+        return (carried ?? assemble(skeleton, selection: choose(skeleton, request), request: request))
             .map { PlanGenerationResult.generated($0) } ?? .failed
+    }
+
+    private func assemble(_ skeleton: PlanSkeleton, selection: PlanSelection, request: PlanRequest) -> WeeklyPlan? {
+        let limits = PlanLimits(
+            maxSetsPerSession: skeleton.maxSetsPerSession,
+            allowedKeys: skeleton.allowedKeys,
+            requiredPatterns: skeleton.requiredPatterns,
+            sessionMinutes: request.user.workoutDuration,
+            sessionCeilingMinutes: skeleton.sessionCeilingMinutes
+        )
+        switch parser.parse(
+            expander.expand(skeleton, selection: selection, request: request),
+            userID: request.user.id, weekNumber: request.weekNumber,
+            startDate: request.startDate, limits: limits
+        ) {
+        case .parsed(let plan): return plan
+        case .invalid: return nil
+        }
+    }
+
+    // Each of last week's movements back in a slot that offers it, on the same
+    // day, under the same title. Nil when one is left over or a slot is left
+    // empty, because the week would then not be last week's.
+    private func carry(_ previous: WeeklyPlan, _ skeleton: PlanSkeleton) -> PlanSelection? {
+        guard previous.workoutDays.count == skeleton.days.count else { return nil }
+        var days: [String: DaySelection] = [:]
+        for day in skeleton.days {
+            guard let before = previous.workoutDays.first(where: { $0.dayNumber == day.dayNumber }) else { return nil }
+            var remaining = before.exercises.map(\.exerciseKey)
+            for slot in day.slots where slot.isDecided {
+                if let index = remaining.firstIndex(of: slot.candidates[0]) { remaining.remove(at: index) }
+            }
+            var slots: [String: String] = [:]
+            for slot in day.openSlots {
+                guard let index = remaining.firstIndex(where: slot.candidates.contains) else { return nil }
+                slots[slot.id] = remaining.remove(at: index)
+            }
+            guard remaining.isEmpty else { return nil }
+            days[day.id] = DaySelection(slots: slots, title: before.title)
+        }
+        return PlanSelection(days: days)
     }
 
     // Two clients who answered the same way should not train the same week for
@@ -81,7 +129,7 @@ struct TemplatePlanGenerator: PlanGenerator {
         // Hashed together rather than xored: xor leaves the choice riding on the
         // seed's lowest bits, so with two candidates every slot in the week
         // turned on one bit and there were only ever two weeks to go round.
-        let offset = Int(UInt32(bitPattern: Self.hash("\(client):\(slot.id):\(dayNumber)")) % UInt32(best.count))
+        let offset = Int(Self.mixed(Self.hash("\(client):\(slot.id):\(dayNumber)")) % UInt32(best.count))
         return Array(best.dropFirst(offset)) + Array(best.prefix(offset)) + Array(pool.dropFirst(Self.varietyDepth))
     }
 
@@ -107,6 +155,16 @@ struct TemplatePlanGenerator: PlanGenerator {
 
     // FNV-1a over the same code units the Android app hashes, so both apps
     // rotate identically. Swift's own string hashing is seeded per process.
+    // FNV-1a's low bits are a parity of the input's low bits, so a modulo read
+    // straight off them turned every slot in the week on one bit and forty
+    // clients shared two weeks. Murmur's finalizer spreads the high bits down.
+    private static func mixed(_ h: Int32) -> UInt32 {
+        var u = UInt32(bitPattern: h)
+        u ^= u >> 16; u &*= 0x85ebca6b
+        u ^= u >> 13; u &*= 0xc2b2ae35
+        return u ^ (u >> 16)
+    }
+
     private static func hash(_ text: String) -> Int32 {
         var h = fnvOffset
         for unit in text.utf16 { h = (h ^ Int32(unit)) &* fnvPrime }

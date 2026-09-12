@@ -13,8 +13,6 @@ nonisolated struct PlanLimits {
     // actually has to fit.
     var sessionMinutes = 0
     var sessionCeilingMinutes = 0
-
-    static let unbounded = PlanLimits(maxSetsPerSession: .max)
 }
 
 nonisolated enum PlanParseResult {
@@ -33,27 +31,11 @@ nonisolated struct GeneratedPlanParser {
     }
 
     func parse(
-        _ json: String,
-        userID: UUID,
-        weekNumber: Int,
-        startDate: Date,
-        limits: PlanLimits = .unbounded
-    ) -> PlanParseResult {
-        let generated: GeneratedPlan
-        do {
-            generated = try JSONDecoder().decode(GeneratedPlan.self, from: Data(json.utf8))
-        } catch {
-            return .invalid(["not a generated plan: \(error)"])
-        }
-        return parse(generated, userID: userID, weekNumber: weekNumber, startDate: startDate, limits: limits)
-    }
-
-    func parse(
         _ generated: GeneratedPlan,
         userID: UUID,
         weekNumber: Int,
         startDate: Date,
-        limits: PlanLimits = .unbounded
+        limits: PlanLimits
     ) -> PlanParseResult {
         var errors: [String] = []
         check(generated, limits: limits, into: &errors)
@@ -271,9 +253,7 @@ nonisolated struct GeneratedPlanParser {
             },
             setCount: generated.sets.count,
             durationMinutes: minutes(of: generated),
-            prescription: generated.prescription,
-            restTime: generated.restSeconds,
-            instructions: generated.instructions
+            restTime: generated.restSeconds
         )
     }
 

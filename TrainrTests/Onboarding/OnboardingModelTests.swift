@@ -10,7 +10,7 @@ struct OnboardingModelTests {
         func generate(_ request: PlanRequest) async -> PlanGenerationResult { .failed }
     }
 
-    private func dependencies(_ generator: any PlanGenerator = TemplatePlanGenerator()) throws -> AppDependencies {
+    private func dependencies(_ generator: any PlanGenerator = WeekPlanGenerator()) throws -> AppDependencies {
         AppDependencies(
             store: TrainingStore(container: try TrainingStore.container(inMemory: true)),
             planGenerator: generator,
@@ -127,7 +127,7 @@ struct OnboardingModelTests {
     func failedRegenerationLeavesPlan() async throws {
         let store = TrainingStore(container: try TrainingStore.container(inMemory: true))
         let first = OnboardingModel(dependencies: AppDependencies(
-            store: store, planGenerator: TemplatePlanGenerator(), breadcrumbs: NoBreadcrumbs()))
+            store: store, planGenerator: WeekPlanGenerator(), breadcrumbs: NoBreadcrumbs()))
         answerEverything(first)
         first.saveUserProfile()
         await settle(first)
@@ -223,7 +223,7 @@ struct OnboardingModelTests {
     private struct SlowGenerator: PlanGenerator {
         func generate(_ request: PlanRequest) async -> PlanGenerationResult {
             try? await Task.sleep(for: .milliseconds(400))
-            return await TemplatePlanGenerator().generate(request)
+            return await WeekPlanGenerator().generate(request)
         }
     }
 

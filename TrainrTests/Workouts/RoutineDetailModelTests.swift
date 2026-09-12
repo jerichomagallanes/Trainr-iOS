@@ -13,7 +13,7 @@ struct RoutineDetailModelTests {
     init() throws {
         let store = TrainingStore(container: try TrainingStore.container(inMemory: true))
         dependencies = AppDependencies(
-            store: store, planGenerator: TemplatePlanGenerator(), breadcrumbs: NoBreadcrumbs()
+            store: store, planGenerator: WeekPlanGenerator(), breadcrumbs: NoBreadcrumbs()
         )
         let profile = UserProfile(firstName: "Alex", age: 30)
         try store.saveUser(profile)
@@ -53,8 +53,7 @@ struct RoutineDetailModelTests {
             sets: (1...3).map {
                 ExerciseSet(setNumber: $0, targetReps: reps, targetSeconds: seconds)
             },
-            durationMinutes: 10,
-            prescription: "3 sets"
+            durationMinutes: 10
         )
     }
 
