@@ -32,12 +32,6 @@ struct ProPaywallView: View {
         .safeAreaInset(edge: .bottom, spacing: 0) { purchaseBar }
         .task {
             await entitlements.refresh()
-            // Opened before the first entitlement read landed: a subscriber must
-            // not be asked to pay again.
-            if entitlements.isPro {
-                onClose()
-                return
-            }
             selected = Self.preferred(from: packages)
         }
         .alert(notice ?? "", isPresented: .constant(notice != nil)) {
@@ -382,9 +376,8 @@ struct ProPaywallView: View {
     private func buy() async {
         guard let selected else { return }
         isWorking = true
-        let bought = await entitlements.purchase(selected)
+        _ = await entitlements.purchase(selected)
         isWorking = false
-        if bought { onClose() }
     }
 
     private func restore() async {
@@ -392,7 +385,6 @@ struct ProPaywallView: View {
         let restored = await entitlements.restore()
         isWorking = false
         notice = restored ? L10n.proRestored : L10n.proNothingToRestore
-        if restored { onClose() }
     }
 
     // The annual plan when there is one, because that is the one being recommended.

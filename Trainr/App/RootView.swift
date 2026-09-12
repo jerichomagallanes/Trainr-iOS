@@ -299,11 +299,17 @@ struct RootView: View {
                 onLastWeekDeleted: restartOnHome
             )
 
+        // Leaves as soon as Pro is there, whether it was just bought or the
+        // entitlement read landed after the gate had already opened this.
         case .paywall(let reason):
             ProPaywallView(reason: reason) { path.removeLast() }
+                .onChange(of: entitlements.isPro, initial: true) { _, isPro in
+                    if isPro { path.removeLast() }
+                }
 
         // One route, because which of the two belongs here is the entitlement's
-        // answer and it can change while the app is open.
+        // answer and it can change while the app is open: a purchase, or a read
+        // that lands late, swaps the screen rather than throwing the person out.
         case .pro:
             if entitlements.isPro {
                 ProStatusView { path.removeLast() }
