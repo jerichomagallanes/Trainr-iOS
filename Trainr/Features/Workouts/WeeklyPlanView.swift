@@ -231,7 +231,10 @@ struct WeeklyPlanView: View {
                 Text(L10n.trackWeeklyProgress + " →")
                     .font(.labelLarge)
             } icon: {
-                Image(systemName: "chart.line.uptrend.xyaxis")
+                Image(.moving)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 16, height: 16)
             }
             .foregroundStyle(Color.brandStrong)
             .frame(maxWidth: .infinity, alignment: .leading)

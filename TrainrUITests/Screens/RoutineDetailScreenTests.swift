@@ -130,6 +130,20 @@ final class RoutineDetailScreenTests: XCTestCase {
         XCTAssertTrue(app.buttons["Show video tutorial"].firstMatch.waitForExistence(timeout: 3))
     }
 
+    // A movement with a tutorial but no written steps offers the video alone:
+    // a How to perform toggle with nothing behind it opened onto an empty list.
+    @MainActor
+    func testAMovementWithOnlyAVideoOffersTheVideoAndNotTheSteps() {
+        app = .launched(.midWeek)
+        XCTAssertTrue(app.staticTexts["YOUR WEEKLY WORKOUT PLAN"].waitForExistence(timeout: 20))
+        app.button(containing: "Cardio & Core").tap()
+        XCTAssertTrue(app.staticTexts["CARDIO & CORE"].waitForExistence(timeout: 5))
+
+        // HIIT is the video-only movement; the three unfinished core movements have steps.
+        XCTAssertEqual(app.buttons.matching(identifier: "Show video tutorial").count, 1)
+        XCTAssertEqual(app.buttons.matching(identifier: "How to perform").count, 3)
+    }
+
     @MainActor
     func testAPartialSlideLeavesTheRoutineAlone() {
         openUnstartedDay()
@@ -203,6 +217,8 @@ final class RoutineDetailScreenTests: XCTestCase {
     @MainActor
     func testTheCardNamesTheMusclesAndCanTeachTheMovement() {
         openUnstartedDay()
+        XCTAssertTrue(app.text(containing: "Primary: ").exists)
+        XCTAssertTrue(app.text(containing: "Secondary: ").exists)
 
         let howTo = app.buttons["How to perform"].firstMatch
         app.scrollUntilHittable(howTo)
@@ -210,5 +226,18 @@ final class RoutineDetailScreenTests: XCTestCase {
 
         XCTAssertTrue(app.buttons["Hide how to perform"].waitForExistence(timeout: 3))
         XCTAssertTrue(app.staticTexts["1"].firstMatch.exists)
+    }
+
+    // Cardio & Core opens on two whole-session movements with a tutorial and
+    // no steps, then three with both.
+    @MainActor
+    func testAMovementWithNoStepsOffersItsVideoWithoutAnEmptyHowTo() {
+        app = .launched(.freshWeek)
+        XCTAssertTrue(app.staticTexts["YOUR WEEKLY WORKOUT PLAN"].waitForExistence(timeout: 20))
+        app.button(containing: "Cardio & Core").tap()
+        XCTAssertTrue(app.staticTexts["CARDIO & CORE"].waitForExistence(timeout: 5))
+
+        XCTAssertEqual(app.buttons.matching(NSPredicate(format: "label == %@", "Show video tutorial")).count, 2)
+        XCTAssertEqual(app.buttons.matching(NSPredicate(format: "label == %@", "How to perform")).count, 3)
     }
 }
