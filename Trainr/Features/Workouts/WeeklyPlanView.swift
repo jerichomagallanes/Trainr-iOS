@@ -279,6 +279,7 @@ struct WeeklyPlanView: View {
                     Label(mode.label, systemImage: mode.symbol).tag(mode)
                 }
             }
+            .pickerStyle(.menu)
             Button(L10n.aboutTheApp) { showAbout = true }
         } label: {
             Image(systemName: "person.crop.circle")
