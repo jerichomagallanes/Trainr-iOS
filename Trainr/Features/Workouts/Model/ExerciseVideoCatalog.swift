@@ -1,5 +1,6 @@
 // Hand-verified tutorials keyed by exerciseKey: the generator never writes
 // video URLs.
+// swiftlint:disable:next type_body_length
 nonisolated enum ExerciseVideoCatalog {
 
     static func url(for exerciseKey: String) -> String? {
