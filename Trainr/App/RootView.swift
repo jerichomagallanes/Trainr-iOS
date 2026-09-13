@@ -35,9 +35,6 @@ struct RootView: View {
         .environment(appearance)
         .environment(entitlements)
         .preferredColorScheme(appearance.mode.colorScheme)
-        // Reading the entitlement is a network round trip, so it runs beside
-        // startup rather than in front of it. Nothing on the first screen depends
-        // on it, and the paywall refreshes again when it opens.
         .sheet(item: $prompt, onDismiss: openAfterPrompt) { reason in
             ProPromptSheet(reason: reason) {
                 afterPrompt = .paywall(reason: reason)
@@ -46,9 +43,16 @@ struct RootView: View {
                 prompt = nil
             }
         }
-        .task { await entitlements.refresh() }
+        // Configured and read in one task, in that order: a read that starts
+        // before the SDK is configured returns nothing, and the gate then asks a
+        // paying customer for Pro until the paywall's own refresh lands. The
+        // read runs beside startup rather than in front of it, since nothing on
+        // the first screen depends on it.
         .task {
             entitlements.configure()
+            await entitlements.refresh()
+        }
+        .task {
             let model = OnboardingModel(dependencies: dependencies)
             onboarding = model
             #if DEBUG
