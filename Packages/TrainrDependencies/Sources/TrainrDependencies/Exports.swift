@@ -3,5 +3,7 @@
 // package directly.
 @_exported import FirebaseCore
 @_exported import FirebaseCrashlytics
+@_exported import GoogleMobileAds
 @_exported import RevenueCat
+@_exported import UserMessagingPlatform
 @_exported import YouTubePlayerKit

@@ -23,6 +23,17 @@
         }
       }
     },
+    "ads_privacy_options": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Privacy options"
+          }
+        }
+      }
+    },
     "advanced": {
       "extractionState": "manual",
       "localizations": {
@@ -2029,6 +2040,17 @@
         }
       }
     },
+    "pro_compare_ads": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ad-free"
+          }
+        }
+      }
+    },
     "pro_compare_every_week": {
       "extractionState": "manual",
       "localizations": {
@@ -2266,7 +2288,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Pro unlocks every week after your first: build next week from what you lifted, repeat a week that went well, rewrite one that does not suit you, and start a fresh plan whenever your goal changes."
+            "value": "Pro unlocks every week after your first: build next week from what you lifted, repeat a week that went well, rewrite one that does not suit you, start a fresh plan whenever your goal changes, and removes the ad from your plan."
           }
         }
       }
@@ -2300,6 +2322,28 @@
           "stringUnit": {
             "state": "translated",
             "value": "Does Pro renew automatically?"
+          }
+        }
+      }
+    },
+    "pro_feature_ads_body": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The banner on your plan goes, and stays gone"
+          }
+        }
+      }
+    },
+    "pro_feature_ads_title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No ads"
           }
         }
       }
@@ -2376,7 +2420,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Trainr is made by one person, with no accounts, ads or server of its own"
+            "value": "Trainr is made by one person, with no accounts or server of its own"
           }
         }
       }

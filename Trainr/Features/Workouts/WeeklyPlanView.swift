@@ -3,6 +3,8 @@ import SwiftUI
 struct WeeklyPlanView: View {
 
     @Environment(AppearancePreference.self) private var appearance
+    @Environment(Entitlements.self) private var entitlements
+    @Environment(Ads.self) private var ads
     // Owned here, so a screen rebuilt around it keeps the week it read.
     @State private var model: WeeklyPlanModel
     private let versionName: String
@@ -245,19 +247,27 @@ struct WeeklyPlanView: View {
 
     // Training is offered wherever the live week was opened from; building the
     // next one is home's business.
-    @ViewBuilder
     private var bottomAction: some View {
-        if let next = state.nextWorkout, !isBrowsedWeek {
-            pinned {
-                PrimaryButton(
-                    title: state.nextWorkoutIsToday
-                        ? L10n.startTodaysWorkout : L10n.startNextWorkout,
-                    action: { onStartWorkout(next.day) }
-                )
+        VStack(spacing: 0) {
+            if let next = state.nextWorkout, !isBrowsedWeek {
+                pinned {
+                    PrimaryButton(
+                        title: state.nextWorkoutIsToday
+                            ? L10n.startTodaysWorkout : L10n.startNextWorkout,
+                        action: { onStartWorkout(next.day) }
+                    )
+                }
+            } else if isHome && state.canStartNextWeek {
+                pinned {
+                    PrimaryButton(title: L10n.generateNextWeek, action: onStartNextWeek)
+                }
             }
-        } else if isHome && state.canStartNextWeek {
-            pinned {
-                PrimaryButton(title: L10n.generateNextWeek, action: onStartNextWeek)
+            // The one ad in the app, under the action rather than beside anything
+            // that scrolls, and gone the moment Pro is active.
+            if ads.canShowAds && !entitlements.isPro {
+                AdBanner(adUnitID: Ads.planBannerUnitID)
+                    .padding(.bottom, Spacing.small)
+                    .background(Color.surfaceRaised)
             }
         }
     }
@@ -280,6 +290,11 @@ struct WeeklyPlanView: View {
                 }
             }
             .pickerStyle(.menu)
+            // Only where consent law gives people something to change: Google
+            // reports whether this region does, and the item follows it.
+            if ads.privacyOptionsRequired {
+                Button(L10n.adsPrivacyOptions) { Task { await ads.presentPrivacyOptions() } }
+            }
             Button(L10n.aboutTheApp) { showAbout = true }
         } label: {
             Image(systemName: "person.crop.circle")

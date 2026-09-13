@@ -86,6 +86,7 @@ struct ProPaywallView: View {
             ForEach(reason?.others ?? PaywallReason.allCases, id: \.self) { other in
                 feature(other.symbol, other.heading, other.detail)
             }
+            feature("nosign", L10n.proFeatureAdsTitle, L10n.proFeatureAdsBody)
             feature("heart.fill", L10n.proFeatureSupportTitle, L10n.proFeatureSupportBody)
         }
     }
@@ -413,7 +414,8 @@ struct ProPaywallView: View {
             free: .text(L10n.proCompareOne), pro: .text(L10n.proCompareEveryWeek)),
         Row(label: L10n.proCompareRepeat, free: .no, pro: .yes),
         Row(label: L10n.proCompareRewrite, free: .no, pro: .yes),
-        Row(label: L10n.proCompareFresh, free: .no, pro: .yes)
+        Row(label: L10n.proCompareFresh, free: .no, pro: .yes),
+        Row(label: L10n.proCompareAds, free: .no, pro: .yes)
     ]
 
     private static let faq: [Question] = [

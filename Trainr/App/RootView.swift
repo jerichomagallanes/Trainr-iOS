@@ -11,6 +11,7 @@ struct RootView: View {
     @State private var dependencies = AppDependencies.shared
     @State private var appearance = AppearancePreference()
     @State private var entitlements = Entitlements(breadcrumbs: AppDependencies.shared.breadcrumbs)
+    @State private var ads = Ads(breadcrumbs: AppDependencies.shared.breadcrumbs)
     private let allowance: any FreeGenerationAllowance = StoredGenerationAllowance()
     @State private var onboarding: OnboardingModel?
     @State private var phase = Phase.splash
@@ -34,6 +35,7 @@ struct RootView: View {
         .environment(dependencies)
         .environment(appearance)
         .environment(entitlements)
+        .environment(ads)
         .preferredColorScheme(appearance.mode.colorScheme)
         .sheet(item: $prompt, onDismiss: openAfterPrompt) { reason in
             ProPromptSheet(reason: reason) {
@@ -52,6 +54,7 @@ struct RootView: View {
             entitlements.configure()
             await entitlements.refresh()
         }
+        .task { await ads.gatherConsent() }
         .task {
             let model = OnboardingModel(dependencies: dependencies)
             onboarding = model
