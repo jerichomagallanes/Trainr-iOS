@@ -15,7 +15,8 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/firebase/firebase-ios-sdk", exact: "12.18.0"),
         .package(url: "https://github.com/SvenTiigi/YouTubePlayerKit", exact: "2.0.5"),
-        .package(url: "https://github.com/RevenueCat/purchases-ios-spm", exact: "5.88.0")
+        .package(url: "https://github.com/RevenueCat/purchases-ios-spm", exact: "5.88.0"),
+        .package(url: "https://github.com/googleads/swift-package-manager-google-mobile-ads", exact: "13.9.0")
     ],
     targets: [
         .target(
@@ -27,7 +28,8 @@ let package = Package(
                 .product(name: "FirebaseCore", package: "firebase-ios-sdk"),
                 .product(name: "FirebaseCrashlytics", package: "firebase-ios-sdk"),
                 .product(name: "YouTubePlayerKit", package: "YouTubePlayerKit"),
-                .product(name: "RevenueCat", package: "purchases-ios-spm")
+                .product(name: "RevenueCat", package: "purchases-ios-spm"),
+                .product(name: "GoogleMobileAds", package: "swift-package-manager-google-mobile-ads")
             ]
         )
     ]

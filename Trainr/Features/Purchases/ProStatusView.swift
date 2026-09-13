@@ -46,17 +46,22 @@ struct ProStatusView: View {
     private var included: some View {
         VStack(alignment: .leading, spacing: Spacing.medium) {
             ForEach(PaywallReason.allCases, id: \.self) { feature in
-                HStack(alignment: .top, spacing: Spacing.small) {
-                    Image(systemName: feature.symbol)
-                        .font(.oneOff(18))
-                        .foregroundStyle(Color.brandStrong)
-                        .frame(width: 28, height: 28)
-                    Text(feature.heading)
-                        .font(.labelLarge)
-                        .foregroundStyle(Color.onSurface)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                }
+                row(feature.symbol, feature.heading)
             }
+            row("nosign", L10n.proFeatureAdsTitle)
+        }
+    }
+
+    private func row(_ symbol: String, _ heading: String) -> some View {
+        HStack(alignment: .top, spacing: Spacing.small) {
+            Image(systemName: symbol)
+                .font(.oneOff(18))
+                .foregroundStyle(Color.brandStrong)
+                .frame(width: 28, height: 28)
+            Text(heading)
+                .font(.labelLarge)
+                .foregroundStyle(Color.onSurface)
+                .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
 

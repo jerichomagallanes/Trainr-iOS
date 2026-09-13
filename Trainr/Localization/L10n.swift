@@ -6,6 +6,7 @@ import Foundation
 nonisolated enum L10n {
     static var aboutTheApp: String { String(localized: "about_the_app") }
     static var addSet: String { String(localized: "add_set") }
+    static var adsPrivacyOptions: String { String(localized: "ads_privacy_options") }
     static var advanced: String { String(localized: "advanced") }
     static var advancedDescription: String { String(localized: "advanced_description") }
     static var advancedLevel: String { String(localized: "advanced_level") }
@@ -202,6 +203,7 @@ nonisolated enum L10n {
     static var proBilledMonthly: String { String(localized: "pro_billed_monthly") }
     static var proBuyLifetime: String { String(localized: "pro_buy_lifetime") }
     static var proCancelAnytime: String { String(localized: "pro_cancel_anytime") }
+    static var proCompareAds: String { String(localized: "pro_compare_ads") }
     static var proCompareEveryWeek: String { String(localized: "pro_compare_every_week") }
     static var proCompareFree: String { String(localized: "pro_compare_free") }
     static var proCompareFresh: String { String(localized: "pro_compare_fresh") }
@@ -227,6 +229,8 @@ nonisolated enum L10n {
     static var proFaqIncludesQ: String { String(localized: "pro_faq_includes_q") }
     static var proFaqRenewA: String { String(localized: "pro_faq_renew_a") }
     static var proFaqRenewQ: String { String(localized: "pro_faq_renew_q") }
+    static var proFeatureAdsBody: String { String(localized: "pro_feature_ads_body") }
+    static var proFeatureAdsTitle: String { String(localized: "pro_feature_ads_title") }
     static var proFeatureFreshBody: String { String(localized: "pro_feature_fresh_body") }
     static var proFeatureFreshTitle: String { String(localized: "pro_feature_fresh_title") }
     static var proFeatureNextWeekBody: String { String(localized: "pro_feature_next_week_body") }
