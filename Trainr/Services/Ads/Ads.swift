@@ -27,7 +27,7 @@ final class Ads {
         #if DEBUG
         "ca-app-pub-3940256099942544/2435281174"
         #else
-        "ca-app-pub-3940256099942544/2435281174"
+        "ca-app-pub-3543227308769883/3592479771"
         #endif
     }
 

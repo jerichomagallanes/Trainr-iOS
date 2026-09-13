@@ -9,10 +9,9 @@
 	</dict>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
-	<!-- AdMob. The app id is public and belongs to the iOS app in apps.admob.com;
-	     Google's sample id stands in until the real one is pasted here. -->
+	<!-- AdMob. Public, and the iOS app's own in apps.admob.com. -->
 	<key>GADApplicationIdentifier</key>
-	<string>ca-app-pub-3940256099942544~1458002511</string>
+	<string>ca-app-pub-3543227308769883~6218643112</string>
 	<key>NSUserTrackingUsageDescription</key>
 	<string>Trainr shows one banner on the free plan. Allowing this lets the ad be relevant to you; declining keeps the banner but not the personalisation.</string>
 	<key>SKAdNetworkItems</key>
