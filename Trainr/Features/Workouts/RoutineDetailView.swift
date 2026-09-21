@@ -9,6 +9,7 @@ struct RoutineDetailView: View {
     private let onBack: () -> Void
     private let onDayCompleted: (Int) -> Void
     private let onWeekCompleted: (Int) -> Void
+    private let onSessionSaved: (SessionSavedEvent) -> Void
 
     init(
         dependencies: AppDependencies,
@@ -16,7 +17,8 @@ struct RoutineDetailView: View {
         weekNumber: Int?,
         onBack: @escaping () -> Void = {},
         onDayCompleted: @escaping (Int) -> Void = { _ in },
-        onWeekCompleted: @escaping (Int) -> Void = { _ in }
+        onWeekCompleted: @escaping (Int) -> Void = { _ in },
+        onSessionSaved: @escaping (SessionSavedEvent) -> Void = { _ in }
     ) {
         _model = State(
             initialValue: RoutineDetailModel(
@@ -26,6 +28,7 @@ struct RoutineDetailView: View {
         self.onBack = onBack
         self.onDayCompleted = onDayCompleted
         self.onWeekCompleted = onWeekCompleted
+        self.onSessionSaved = onSessionSaved
     }
 
     // Only the transition counts, so opening a finished routine is not
@@ -36,8 +39,33 @@ struct RoutineDetailView: View {
 
     private var state: RoutineDetailState { model.state }
     private var routine: RoutineUi { state.routine }
+    private var finishedEarly: Bool { state.outcome?.finishKind == .partial }
 
     var body: some View {
+        Group {
+            if state.isConfirmingFinishEarly {
+                FinishEarlyConfirmation(
+                    performed: routine.performedExerciseCount,
+                    planned: routine.plannedExerciseCount,
+                    saveFailed: state.saveFailed,
+                    onKeepTraining: model.keepTraining,
+                    onConfirm: state.saveFailed ? model.retryFinishEarly : model.finishEarly
+                )
+            } else {
+                routineScreen
+            }
+        }
+        .onChange(of: model.pendingSavedEvent) { _, event in
+            guard let event else { return }
+            model.consumeSavedEvent()
+            onSessionSaved(event)
+        }
+        // On the outer view on purpose: hung on the routine alone, swapping in
+        // the confirmation would read as leaving and kill a running timer.
+        .onDisappear { model.screenWentAway() }
+    }
+
+    private var routineScreen: some View {
         VStack(spacing: 0) {
             TopBar(onBack: onBack)
             if state.isLoaded {
@@ -52,7 +80,6 @@ struct RoutineDetailView: View {
             guard !model.state.isLoaded else { return }
             model.load()
         }
-        .onDisappear { model.screenWentAway() }
         .onChange(of: CompletionKey(state), initial: true) { _, _ in
             // Keyed on loading too: on iOS 26 the initial call lands before the
             // routine loads, so nothing would prime. Read live rather than from
@@ -62,7 +89,9 @@ struct RoutineDetailView: View {
             let isComplete = current.routine.isComplete
             let previous = wasComplete
             wasComplete = isComplete
-            guard previous == false, isComplete else { return }
+            // A session closed as finished early is not celebrated again by
+            // ticking a box it left open.
+            guard previous == false, isComplete, !finishedEarly else { return }
 
             if state.completesTheWeek {
                 onWeekCompleted(state.weekNumber)
@@ -86,6 +115,7 @@ struct RoutineDetailView: View {
                 StepProgressBar(currentStep: routine.completionPercentage, totalSteps: 100)
                     .padding(.top, Spacing.screen)
                 equipment
+                finishedEarlyBanner
                 exercises
                 footer
             }
@@ -136,6 +166,24 @@ struct RoutineDetailView: View {
 
     private var equipmentLine: AttributedString {
         EquipmentLine.text(state.equipment, labelFont: TextRole.labelMedium.font(at: labelSize))
+    }
+
+    @ViewBuilder
+    private var finishedEarlyBanner: some View {
+        if finishedEarly {
+            Text(
+                L10n.finishedEarlySummaryFormat(
+                    routine.performedExerciseCount, routine.plannedExerciseCount
+                )
+            )
+            .font(.body14)
+            .foregroundStyle(Color.onSurface)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal, Spacing.card)
+            .padding(.vertical, 12)
+            .background(Color.surfaceSunken, in: .rect(cornerRadius: CornerRadius.small))
+            .padding(.top, Spacing.section)
+        }
     }
 
     private var exercises: some View {
@@ -190,9 +238,13 @@ struct RoutineDetailView: View {
 
     @ViewBuilder
     private var footer: some View {
-        if !routine.isComplete {
+        if finishedEarly {
+            EmptyView()
+        } else if !routine.isComplete {
             SlideToConfirm(title: L10n.slideToCompleteRoutine) { model.completeRoutine() }
                 .padding(.top, Spacing.section + Spacing.tight)
+            QuietAction(title: L10n.finishEarly, action: model.askToFinishEarly)
+                .padding(.top, Spacing.tight)
         } else if routine.hasProgress {
             Button(L10n.startWorkoutOver) { showStartOver = true }
                 .font(.sectionTitle)
@@ -200,6 +252,79 @@ struct RoutineDetailView: View {
                 .frame(maxWidth: .infinity)
                 .padding(.top, Spacing.section + Spacing.tight)
         }
+    }
+}
+
+private struct FinishEarlyConfirmation: View {
+    let performed: Int
+    let planned: Int
+    let saveFailed: Bool
+    var onKeepTraining: () -> Void
+    var onConfirm: () -> Void
+
+    var body: some View {
+        ScreenScaffold(onBack: onKeepTraining) {
+            VStack(spacing: Spacing.tight) {
+                PrimaryButton(
+                    title: saveFailed ? L10n.tryAgain : L10n.saveWorkout, action: onConfirm
+                )
+                QuietAction(title: L10n.keepTraining, action: onKeepTraining)
+            }
+        } content: {
+            ScreenContent {
+                Text(L10n.finishEarlyTitle)
+                    .font(.screenTitle)
+                    .foregroundStyle(Color.onSurface)
+
+                card
+
+                Text(L10n.finishEarlyHint)
+                    .font(.body14)
+                    .foregroundStyle(Color.onSurfaceMuted)
+                    .padding(.top, Spacing.medium)
+
+                if saveFailed {
+                    FieldError(message: L10n.finishEarlyFailed)
+                }
+            }
+        }
+    }
+
+    private var card: some View {
+        VStack(alignment: .leading, spacing: Spacing.small) {
+            Text(L10n.finishEarlyCardTitle)
+                .font(.sectionTitle)
+                .foregroundStyle(Color.onSurface)
+            Text(L10n.exercisesCompletedOfFormat(performed, planned))
+                .font(.body14)
+                .foregroundStyle(Color.onSurface)
+            Text(L10n.finishEarlyCardMessage)
+                .font(.body14)
+                .foregroundStyle(Color.onSurfaceMuted)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(Spacing.card)
+        .overlay {
+            RoundedRectangle(cornerRadius: CornerRadius.medium)
+                .strokeBorder(Color.outlineControl, lineWidth: 1)
+        }
+        .padding(.top, Spacing.medium)
+    }
+}
+
+private struct QuietAction: View {
+    let title: String
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Text(title)
+                .font(.labelMedium)
+                .foregroundStyle(Color.onSurfaceMuted)
+                .frame(maxWidth: .infinity, minHeight: ComponentHeight.medium)
+                .contentShape(.rect)
+        }
+        .buttonStyle(.plain)
     }
 }
 

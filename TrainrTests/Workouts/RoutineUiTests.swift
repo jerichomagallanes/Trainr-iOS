@@ -110,6 +110,94 @@ struct RoutineUiTests {
         #expect(start.completingAll().isComplete)
     }
 
+    // MARK: - Where a number came from
+
+    private func origins(_ routine: RoutineUi) -> [ActualOrigin] {
+        routine.exercises[0].sets.map(\.actualOrigin)
+    }
+
+    private func firstSet(_ routine: RoutineUi) -> ExerciseSet {
+        routine.exercises[0].sets[0]
+    }
+
+    @Test("Typing a number marks the set as typed")
+    func typingIsRecordedAsTyped() {
+        let start = routine(sets: [set(1), set(2)])
+        var typed = firstSet(start)
+        typed.actualReps = 9
+
+        #expect(origins(start.updating(typed, at: 1)) == [.typed, .none])
+    }
+
+    @Test("The checkmark confirms the targets it filled in")
+    func tickingConfirmsTheTarget() {
+        let ticked = routine(sets: [set(1), set(2)]).toggleCompleted(at: 1)
+
+        #expect(origins(ticked) == [.confirmedTarget, .confirmedTarget])
+    }
+
+    @Test("A typed number keeps its origin through the checkmark")
+    func tickingLeavesATypedNumberTyped() {
+        let start = routine(sets: [set(1), set(2)])
+        var typed = firstSet(start)
+        typed.actualReps = 9
+
+        let ticked = start.updating(typed, at: 1).toggleCompleted(at: 1)
+
+        #expect(origins(ticked) == [.typed, .confirmedTarget])
+        #expect(firstSet(ticked).actualReps == 9)
+    }
+
+    @Test("Blanking every number leaves no origin")
+    func blankingClearsTheOrigin() {
+        let start = routine(sets: [set(1), set(2)])
+        var typed = firstSet(start)
+        typed.actualReps = 9
+
+        let blanked = start.updating(typed, at: 1).updating(firstSet(start), at: 1)
+
+        #expect(origins(blanked) == [.none, .none])
+    }
+
+    @Test("Un-ticking and ticking again keeps the numbers and where they came from")
+    func cyclingTheCheckmarkKeepsTheOrigin() {
+        let start = routine(sets: [set(1), set(2)])
+        var typed = firstSet(start)
+        typed.actualReps = 9
+
+        let cycled = start.updating(typed, at: 1)
+            .toggleCompleted(at: 1)
+            .toggleCompleted(at: 1)
+            .toggleCompleted(at: 1)
+
+        #expect(origins(cycled) == [.typed, .confirmedTarget])
+        #expect(firstSet(cycled).actualReps == 9)
+    }
+
+    @Test("Starting over clears every origin")
+    func clearingProgressClearsTheOrigins() {
+        let logged = routine(sets: [set(1), set(2)]).completingAll()
+
+        #expect(origins(logged.clearingProgress()) == [.none, .none])
+    }
+
+    @Test("The exercise counts ignore the ones left out of today's session")
+    func exerciseCountsFollowThePlannedSets() {
+        var omitted = set(1)
+        omitted.omittedBy = UUID()
+        let routine = RoutineUi(
+            title: "Full Body",
+            exercises: [
+                ExerciseUi(position: 1, name: "A", description: "", minutes: 5, sets: [set(1)]),
+                ExerciseUi(position: 2, name: "B", description: "", minutes: 5, sets: [omitted]),
+                ExerciseUi(position: 3, name: "C", description: "", minutes: 5, sets: [set(1)])
+            ]
+        ).toggleCompleted(at: 1)
+
+        #expect(routine.plannedExerciseCount == 2)
+        #expect(routine.performedExerciseCount == 1)
+    }
+
     @Test("A week ends when every other day is already done")
     func lastOutstandingDayEndsTheWeek() {
         let days = [

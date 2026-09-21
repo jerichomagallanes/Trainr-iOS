@@ -6,6 +6,7 @@ nonisolated struct WeeklyPlanDay: Identifiable, Equatable, Sendable {
     var date: Date
     var isToday = false
     var isPast = false
+    var finishKind: FinishKind?
 
     var id: UUID { day.id }
 
@@ -48,6 +49,7 @@ final class WeeklyPlanModel {
 
     private let dependencies: AppDependencies
     private let requestedWeekNumber: Int?
+    private var finishKinds: [UUID: FinishKind] = [:]
 
     init(dependencies: AppDependencies, weekNumber: Int? = nil) {
         self.dependencies = dependencies
@@ -65,13 +67,20 @@ final class WeeklyPlanModel {
             state = WeeklyPlanState(hasLoaded: true, hasPlan: false)
             return
         }
+        let outcomes = dependencies.attempt("outcomes", {
+            try dependencies.store.outcomes(dayIDs: stored.workoutDays.map(\.id))
+        }) ?? []
+        finishKinds = Dictionary(
+            outcomes.map { ($0.dayID, $0.finishKind) }, uniquingKeysWith: { first, _ in first }
+        )
         state = Self.state(
             for: stored,
             isCurrentWeek: stored.weekNumber == newest?.weekNumber,
             // Read off the newest week, not the one being looked at: an old week
             // is always finished, and that says nothing about whether the plan
             // is ready for another.
-            canAddWeek: newest?.isReadyForTheNextWeek() ?? false
+            canAddWeek: newest?.isReadyForTheNextWeek() ?? false,
+            finishKinds: finishKinds
         )
     }
 
@@ -85,7 +94,8 @@ final class WeeklyPlanModel {
         var moved = plan
         moved.workoutDays = reordered.sorted { $0.dayNumber < $1.dayNumber }
         state = Self.state(
-            for: moved, isCurrentWeek: state.isCurrentWeek, canAddWeek: state.canAddWeek
+            for: moved, isCurrentWeek: state.isCurrentWeek, canAddWeek: state.canAddWeek,
+            finishKinds: finishKinds
         )
 
         let before = Dictionary(uniqueKeysWithValues: plan.workoutDays.map { ($0.id, $0.dayNumber) })
@@ -123,6 +133,7 @@ final class WeeklyPlanModel {
         // A fact about the newest week however old the one being read is: a
         // week added while another is being trained would move home onto it.
         canAddWeek: Bool? = nil,
+        finishKinds: [UUID: FinishKind] = [:],
         now: Date = Date(),
         calendar: Calendar = .current
     ) -> WeeklyPlanState {
@@ -139,7 +150,8 @@ final class WeeklyPlanModel {
                     day: day,
                     date: date,
                     isToday: midnight == today,
-                    isPast: midnight < today
+                    isPast: midnight < today,
+                    finishKind: finishKinds[day.id]
                 )
             },
             weekStart: start,

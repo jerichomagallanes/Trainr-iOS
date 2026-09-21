@@ -167,4 +167,22 @@ struct WeeklyPlanModelStoreTests {
 
         #expect(!model.state.hasPlan)
     }
+
+    @Test("A day finished early carries its finish kind")
+    func aDayFinishedEarlyCarriesItsFinishKind() throws {
+        let plan = try save(week: 1, days: [day(1, .completed), day(3, .completed)])
+        let finishedEarly = try #require(plan.workoutDays.first)
+        try store.saveOutcome(
+            SessionOutcome(
+                dayID: finishedEarly.id, finishKind: .partial, finishedAt: Date(),
+                performedSetCount: 2, plannedSetCount: 6
+            )
+        )
+        let model = WeeklyPlanModel(dependencies: dependencies)
+
+        model.refresh()
+
+        #expect(model.state.days[0].finishKind == .partial)
+        #expect(model.state.days[1].finishKind == nil)
+    }
 }

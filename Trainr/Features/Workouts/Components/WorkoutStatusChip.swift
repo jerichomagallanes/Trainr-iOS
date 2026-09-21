@@ -3,17 +3,32 @@ import SwiftUI
 struct WorkoutStatusChip: View {
     let status: WorkoutStatus
     var isMissed = false
+    var finishedEarly = false
 
     var body: some View {
-        Text(isMissed ? L10n.missed : status.label)
+        Text(label)
             .font(.labelSmall)
             .foregroundStyle(Color.onStatus)
             .padding(.horizontal, Spacing.small)
             .padding(.vertical, Spacing.hairline)
-            .background(
-                isMissed ? Color.statusIdle : status.chipColor,
-                in: .rect(cornerRadius: CornerRadius.small)
-            )
+            .background(fill, in: .rect(cornerRadius: CornerRadius.small))
+    }
+
+    private var label: String {
+        switch (isMissed, finishedEarly) {
+        case (true, _): L10n.missed
+        case (false, true): L10n.finishedEarly
+        case (false, false): status.label
+        }
+    }
+
+    // Missed deliberately reads in the same grey as "not started".
+    private var fill: Color {
+        switch (isMissed, finishedEarly) {
+        case (true, _): .statusIdle
+        case (false, true): .statusDone
+        case (false, false): status.chipColor
+        }
     }
 }
 
@@ -36,6 +51,7 @@ struct WeekStatusChip: View {
         WorkoutStatusChip(status: .inProgress)
         WorkoutStatusChip(status: .completed)
         WorkoutStatusChip(status: .notStarted, isMissed: true)
+        WorkoutStatusChip(status: .completed, finishedEarly: true)
     }
     .padding(Spacing.medium)
 }
