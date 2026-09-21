@@ -1,0 +1,55 @@
+{
+  "schemaVersion": "1.0",
+  "proposalId": "fixture-proposal",
+  "requestId": "fixture-request",
+  "sessionId": "fixture-session",
+  "baseRevision": "fixture-revision-7",
+  "policyVersion": "fixture-only-not-reviewed",
+  "scope": "today_only",
+  "changes": [
+    {
+      "kind": "reduce_unperformed",
+      "before": {
+        "exerciseInstanceId": "fixture-exercise-instance",
+        "catalogKey": "fixture-catalog-key-not-production",
+        "sets": [
+          {
+            "setId": "fixture-unperformed-1",
+            "targetReps": 10,
+            "targetWeightKg": null,
+            "targetSeconds": null,
+            "restSeconds": null
+          },
+          {
+            "setId": "fixture-unperformed-2",
+            "targetReps": 10,
+            "targetWeightKg": null,
+            "targetSeconds": null,
+            "restSeconds": null
+          }
+        ]
+      },
+      "after": {
+        "exerciseInstanceId": "fixture-exercise-instance",
+        "catalogKey": "fixture-catalog-key-not-production",
+        "sets": [
+          {
+            "setId": "fixture-unperformed-1",
+            "targetReps": 10,
+            "targetWeightKg": null,
+            "targetSeconds": null,
+            "restSeconds": null
+          }
+        ]
+      }
+    }
+  ],
+  "preservedPerformedSetIds": [
+    "fixture-performed-set"
+  ],
+  "reasonCode": "time_constraint",
+  "tradeoffCode": "less_lower_priority_work",
+  "factReferences": [
+    "confirmed-time-budget"
+  ]
+}

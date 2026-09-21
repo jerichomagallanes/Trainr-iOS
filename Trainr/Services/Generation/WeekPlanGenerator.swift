@@ -63,7 +63,7 @@ struct WeekPlanGenerator: PlanGenerator {
         var days: [String: DaySelection] = [:]
         for day in skeleton.days {
             guard let before = previous.workoutDays.first(where: { $0.dayNumber == day.dayNumber }) else { return nil }
-            var remaining = before.exercises.map(\.exerciseKey)
+            var remaining = before.exercises.filter { $0.addedBy == nil }.map(\.exerciseKey)
             for slot in day.slots where slot.isDecided {
                 if let index = remaining.firstIndex(of: slot.candidates[0]) { remaining.remove(at: index) }
             }

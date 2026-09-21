@@ -43,6 +43,9 @@ nonisolated struct WorkoutExercise: Identifiable, Equatable, Sendable {
     var videoTutorialURL: String?
     var isCompleted = false
     var notes = ""
+    var addedBy: UUID?
+
+    var isOmittedToday: Bool { !sets.isEmpty && sets.allSatisfy { $0.omittedBy != nil } }
 }
 
 nonisolated struct ExerciseSet: Identifiable, Equatable, Sendable {
@@ -55,6 +58,8 @@ nonisolated struct ExerciseSet: Identifiable, Equatable, Sendable {
     var actualWeightKg: Double?
     var actualSeconds: Int?
     var isCompleted = false
+    var actualOrigin = ActualOrigin.none
+    var omittedBy: UUID?
 }
 
 // The raw values are what exercise-catalog.json and the stored records spell.
