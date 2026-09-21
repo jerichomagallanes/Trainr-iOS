@@ -8,17 +8,20 @@ final class AppDependencies {
     let planGenerator: any PlanGenerator
     let breadcrumbs: any Breadcrumbs
     let catalog: any ExerciseCatalog
+    let interpreter: any IntentInterpreter
 
     init(
         store: TrainingStore,
         planGenerator: any PlanGenerator,
         breadcrumbs: any Breadcrumbs,
-        catalog: any ExerciseCatalog = BundleExerciseCatalog()
+        catalog: any ExerciseCatalog = BundleExerciseCatalog(),
+        interpreter: any IntentInterpreter = UnavailableInterpreter()
     ) {
         self.store = store
         self.planGenerator = planGenerator
         self.breadcrumbs = breadcrumbs
         self.catalog = catalog
+        self.interpreter = interpreter
     }
 
     // Reported with the action's name and never its subject.

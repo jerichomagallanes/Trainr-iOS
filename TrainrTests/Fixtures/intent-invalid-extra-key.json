@@ -1,0 +1,27 @@
+{
+  "input": "I have 35 minutes for the whole workout today.",
+  "output": {
+    "schemaVersion": "1.0",
+    "intent": "less_time",
+    "timeBudget": {
+      "minutes": 35,
+      "scope": "whole_session"
+    },
+    "equipmentMention": null,
+    "concern": "none_stated",
+    "memoryCandidate": false,
+    "clarification": "none",
+    "evidence": [
+      {
+        "field": "time_budget",
+        "quote": "35 minutes for the whole workout",
+        "start": 7,
+        "end": 39
+      }
+    ],
+    "prescription": {
+      "weightKg": 100
+    }
+  },
+  "expected": "Reject unknown prescription key; never execute or repair into a plan."
+}
