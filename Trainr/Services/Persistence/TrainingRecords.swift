@@ -157,6 +157,9 @@ final class WorkoutDayRecord {
         completedAt = day.completedAt
     }
 
+    // A substitute is inserted at the position of the exercise it stands in for,
+    // and has to land below it, as Android's `ORDER BY sortOrder, id` does; the
+    // id alone is a random uuid, which would also move the revision between reads.
     var day: WorkoutDay {
         WorkoutDay(
             id: id,
@@ -166,7 +169,10 @@ final class WorkoutDayRecord {
             duration: duration,
             exerciseCount: exerciseCount,
             equipment: equipment,
-            exercises: exercises.sorted { $0.position < $1.position }.map(\.exercise),
+            exercises: exercises.sorted { lhs, rhs in
+                (lhs.position, lhs.addedBy == nil ? 0 : 1, lhs.id.uuidString)
+                    < (rhs.position, rhs.addedBy == nil ? 0 : 1, rhs.id.uuidString)
+            }.map(\.exercise),
             completedAt: completedAt
         )
     }
