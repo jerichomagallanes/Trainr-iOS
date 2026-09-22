@@ -3,6 +3,7 @@ import SwiftUI
 struct SessionSavedView: View {
     let performedExercises: Int
     let plannedExercises: Int
+    var offer: FeedbackOffer?
     var onBack: () -> Void = {}
     var onDone: () -> Void = {}
 
@@ -31,6 +32,8 @@ struct SessionSavedView: View {
                     .foregroundStyle(Color.onSurfaceMuted)
                     .multilineTextAlignment(.center)
                     .padding(.top, Spacing.card)
+
+                offer
 
                 Spacer()
             }

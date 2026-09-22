@@ -12,9 +12,13 @@ enum Route: Hashable {
     case weekPlan(weekNumber: Int)
     // Nil week means the week being trained, whatever its number.
     case routineDetail(dayNumber: Int, weekNumber: Int?)
-    case dayCompleted(dayNumber: Int)
-    case sessionSaved(dayNumber: Int, performed: Int, planned: Int)
-    case weekCompleted(weekNumber: Int)
+    // The week travels with the day: the follow-up has to find the session
+    // that was just saved, which need not be in the newest week.
+    case dayCompleted(dayNumber: Int, weekNumber: Int)
+    case sessionSaved(dayNumber: Int, weekNumber: Int, performed: Int, planned: Int)
+    // The week is what is celebrated; the day is carried so the follow-up can
+    // ask about the session that has just been saved.
+    case weekCompleted(weekNumber: Int, dayNumber: Int)
     case regeneratingWeek
     case generatingNextWeek
     // The draft lives in one model that RootView owns for as long as the flow
@@ -25,6 +29,12 @@ enum Route: Hashable {
     case adjustReview
     case adjustContext
     case adjustPain
+    // The one question and its follow-up write against one adjustment, so these
+    // carry the step and RootView owns the model that holds the id.
+    case adjustmentFeedback
+    case feedbackDetail
+    case feedbackOutcome
+    case feedbackPain
     case paywall(reason: PaywallReason)
     // Whether this shows the offer or the subscription depends on the
     // entitlement, which is not the screen's identity.
@@ -66,6 +76,10 @@ enum Route: Hashable {
         case .adjustReview: "adjust_review"
         case .adjustContext: "adjust_context"
         case .adjustPain: "adjust_pain"
+        case .adjustmentFeedback: "adjustment_feedback"
+        case .feedbackDetail: "feedback_detail"
+        case .feedbackOutcome: "feedback_outcome"
+        case .feedbackPain: "feedback_pain"
         case .paywall: "paywall"
         case .pro: "pro"
         }
@@ -77,5 +91,17 @@ enum Route: Hashable {
              .adjustReview, .adjustContext, .adjustPain: true
         default: false
         }
+    }
+
+    var isFeedback: Bool {
+        switch self {
+        case .adjustmentFeedback, .feedbackDetail, .feedbackOutcome, .feedbackPain: true
+        default: false
+        }
+    }
+
+    var isRoutineDetail: Bool {
+        if case .routineDetail = self { return true }
+        return false
     }
 }

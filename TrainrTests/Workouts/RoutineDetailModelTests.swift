@@ -347,7 +347,9 @@ struct RoutineDetailModelTests {
 
         #expect(
             model.pendingSavedEvent
-                == SessionSavedEvent(dayNumber: 1, performedExercises: 0, plannedExercises: 2)
+                == SessionSavedEvent(
+                    dayNumber: 1, weekNumber: 1, performedExercises: 0, plannedExercises: 2
+                )
         )
         model.consumeSavedEvent()
         #expect(model.pendingSavedEvent == nil)
@@ -476,6 +478,28 @@ struct RoutineDetailModelTests {
         model.toggleVideo(at: first.position)
 
         #expect(model.state.expandedVideo == nil)
+    }
+
+    @Test("A guidance request names the exercise, not its place in the day")
+    func guidanceIsFoundByKey() throws {
+        let model = loaded(day: firstDayNumber)
+        let second = try #require(model.state.routine.exercises.last)
+
+        model.showHowTo(key: "plank")
+
+        #expect(model.state.scrollToPosition == second.position)
+        #expect((model.state.expandedHowTo ?? model.state.expandedVideo) == second.position)
+    }
+
+    @Test("A guidance request for an exercise the day no longer shows does nothing")
+    func guidanceForAnAbsentExerciseDoesNothing() {
+        let model = loaded(day: firstDayNumber)
+
+        model.showHowTo(key: "barbell_bench_press")
+
+        #expect(model.state.expandedHowTo == nil)
+        #expect(model.state.expandedVideo == nil)
+        #expect(model.state.scrollToPosition == nil)
     }
 
     @Test("Leaving the screen stops the clock advancing")
