@@ -285,6 +285,107 @@ final class RoutineDetailScreenTests: XCTestCase {
         XCTAssertFalse(app.buttons["Start this workout over"].exists)
     }
 
+    // MARK: - Adjust today
+
+    @MainActor
+    func testTheAdjustSheetOffersEveryReasonAndAWayOut() {
+        openUnstartedDay()
+        let adjust = app.button(containing: "Adjust today")
+        app.scrollUntilHittable(adjust)
+        adjust.tap()
+
+        XCTAssertTrue(app.staticTexts["What would help today?"].waitForExistence(timeout: 3))
+        for reason in [
+            "I have less time", "Equipment is unavailable", "Show me how",
+            "Something hurts", "Something else"
+        ] {
+            XCTAssertTrue(app.button(containing: reason).exists, reason)
+        }
+
+        app.buttons["Keep today's plan"].tap()
+
+        XCTAssertFalse(app.staticTexts["What would help today?"].waitForExistence(timeout: 2))
+    }
+
+    // Pain asks nothing and offers nothing in exchange: no policy, no gate.
+    @MainActor
+    func testSomethingHurtsLeadsStraightToThePauseScreen() {
+        openUnstartedDay()
+        let adjust = app.button(containing: "Adjust today")
+        app.scrollUntilHittable(adjust)
+        adjust.tap()
+        XCTAssertTrue(app.staticTexts["What would help today?"].waitForExistence(timeout: 3))
+
+        app.button(containing: "Something hurts").tap()
+
+        XCTAssertTrue(app.staticTexts["Pause this exercise"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["SAVE AND FINISH EARLY"].exists)
+
+        app.buttons["Return to workout"].tap()
+
+        XCTAssertTrue(app.staticTexts["LOWER BODY POWER"].waitForExistence(timeout: 5))
+    }
+
+    // Backing out has to take the draft with it, or the flow never opens again.
+    @MainActor
+    func testAdjustTodayOpensAgainAfterBackingOutOfAStep() {
+        openUnstartedDay()
+        let adjust = app.button(containing: "Adjust today")
+        app.scrollUntilHittable(adjust)
+        adjust.tap()
+        XCTAssertTrue(app.staticTexts["What would help today?"].waitForExistence(timeout: 3))
+        app.button(containing: "I have less time").tap()
+        XCTAssertTrue(app.staticTexts["How much time do you have?"].waitForExistence(timeout: 5))
+
+        app.buttons["Back"].tap()
+        app.scrollUntilHittable(adjust)
+        adjust.tap()
+        XCTAssertTrue(app.staticTexts["What would help today?"].waitForExistence(timeout: 3))
+        app.button(containing: "I have less time").tap()
+
+        XCTAssertTrue(app.staticTexts["How much time do you have?"].waitForExistence(timeout: 5))
+    }
+
+    // The whole slice end to end, because what it is for is what the day says
+    // afterwards.
+    @MainActor
+    func testShorteningTodayAppliesTheChangeAndCanBeUndone() {
+        openUnstartedDay()
+        let adjust = app.button(containing: "Adjust today")
+        app.scrollUntilHittable(adjust)
+        adjust.tap()
+        XCTAssertTrue(app.staticTexts["What would help today?"].waitForExistence(timeout: 3))
+
+        app.button(containing: "I have less time").tap()
+        XCTAssertTrue(app.staticTexts["How much time do you have?"].waitForExistence(timeout: 5))
+
+        let presets = app.buttons.matching(NSPredicate(format: "label MATCHES %@", "^[0-9]+ min$"))
+        XCTAssertTrue(presets.firstMatch.waitForExistence(timeout: 3))
+        presets.element(boundBy: 0).tap()
+
+        app.buttons["SHOW RECOMMENDATION"].tap()
+
+        XCTAssertTrue(app.staticTexts["A shorter workout for today"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["Today only"].exists)
+        let changes = app.button(containing: "See exact changes")
+        app.scrollUntilHittable(changes)
+        changes.tap()
+        XCTAssertTrue(app.text(containing: "Other exercises and planned rests").waitForExistence(timeout: 3))
+
+        let apply = app.buttons["USE THIS WORKOUT"]
+        app.scrollUntilHittable(apply)
+        apply.tap()
+
+        XCTAssertTrue(app.staticTexts["LOWER BODY POWER"].waitForExistence(timeout: 5))
+        let banner = app.staticTexts["Adjusted for today"]
+        app.scrollUntilHittable(banner)
+        XCTAssertTrue(banner.exists)
+
+        app.buttons["Undo adjustment"].tap()
+
+        XCTAssertFalse(app.staticTexts["Adjusted for today"].waitForExistence(timeout: 3))
+    }
+
     // Cardio & Core opens on two whole-session movements with a tutorial and
     // no steps, then three with both.
     @MainActor

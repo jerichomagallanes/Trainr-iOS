@@ -30,6 +30,14 @@ struct PluralsTests {
         #expect(L10n.daysCompletedFormat(2, 3, 67) == "2/3 days completed (67%)")
     }
 
+    @Test("A set change counts on the number it ends at")
+    func setsFromToCountsOnItsSecondArgument() {
+        #expect(L10n.setsFromToFormat(3, 1) == "3 \u{2192} 1 set")
+        #expect(L10n.setsFromToFormat(3, 2) == "3 \u{2192} 2 sets")
+        #expect(L10n.undoKeptLogged(1) == "Kept 1 logged set of the alternative.")
+        #expect(L10n.undoKeptLogged(2) == "Kept 2 logged sets of the alternative.")
+    }
+
     @Test("The two-argument confirmations agree their verb with the first number")
     func confirmationsCountOnTheirFirstArgument() {
         #expect(L10n.regenerateWeekMessageTrained(1, 3).hasPrefix("1 of 3 workouts is logged"))

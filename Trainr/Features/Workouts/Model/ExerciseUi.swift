@@ -2,11 +2,15 @@ import Foundation
 
 nonisolated struct ExerciseUi: Identifiable, Equatable, Sendable {
     var position: Int
+    var exerciseID: UUID?
     var name: String
     var description: String
     var minutes: Int
     var measure = ExerciseMeasure.reps
     var sets: [ExerciseSet] = []
+    // Today's adjustment hides these rows but storage still holds them, so
+    // their numbers are taken and a new set may not reuse one.
+    var omittedSetNumbers: [Int] = []
     var previousSets: [ExerciseSet] = []
     var videoURL: String?
     // What the movement trains and how to perform it, both owned by the

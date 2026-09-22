@@ -10,25 +10,31 @@ struct RoutineDetailView: View {
     private let onDayCompleted: (Int) -> Void
     private let onWeekCompleted: (Int) -> Void
     private let onSessionSaved: (SessionSavedEvent) -> Void
+    private let onAdjust: (DirectReason, UUID?) -> Void
+    @Binding private var returningFromAdjustment: AdjustmentReturn?
 
     init(
         dependencies: AppDependencies,
         dayNumber: Int,
         weekNumber: Int?,
+        returningFromAdjustment: Binding<AdjustmentReturn?> = .constant(nil),
         onBack: @escaping () -> Void = {},
         onDayCompleted: @escaping (Int) -> Void = { _ in },
         onWeekCompleted: @escaping (Int) -> Void = { _ in },
-        onSessionSaved: @escaping (SessionSavedEvent) -> Void = { _ in }
+        onSessionSaved: @escaping (SessionSavedEvent) -> Void = { _ in },
+        onAdjust: @escaping (DirectReason, UUID?) -> Void = { _, _ in }
     ) {
         _model = State(
             initialValue: RoutineDetailModel(
                 dependencies: dependencies, dayNumber: dayNumber, weekNumber: weekNumber
             )
         )
+        _returningFromAdjustment = returningFromAdjustment
         self.onBack = onBack
         self.onDayCompleted = onDayCompleted
         self.onWeekCompleted = onWeekCompleted
         self.onSessionSaved = onSessionSaved
+        self.onAdjust = onAdjust
     }
 
     // Only the transition counts, so opening a finished routine is not
@@ -36,6 +42,9 @@ struct RoutineDetailView: View {
     // loaded state only primes.
     @State private var wasComplete: Bool?
     @State private var showStartOver = false
+    // Pushed once the sheet has finished dismissing, the earliest point a push
+    // survives.
+    @State private var pendingReason: DirectReason?
 
     private var state: RoutineDetailState { model.state }
     private var routine: RoutineUi { state.routine }
@@ -59,6 +68,14 @@ struct RoutineDetailView: View {
             guard let event else { return }
             model.consumeSavedEvent()
             onSessionSaved(event)
+        }
+        // Leaving the adjust flow brings back a different day, so the stored
+        // one is read again rather than trusted.
+        .onChange(of: returningFromAdjustment) { _, returned in
+            guard let returned else { return }
+            returningFromAdjustment = nil
+            model.load()
+            if returned == .finishEarly { model.askToFinishEarly() }
         }
         // On the outer view on purpose: hung on the routine alone, swapping in
         // the confirmation would read as leaving and kill a running timer.
@@ -99,6 +116,18 @@ struct RoutineDetailView: View {
                 onDayCompleted(state.dayNumber)
             }
         }
+        .sheet(isPresented: adjustSheet, onDismiss: openPendingAdjust) {
+            AdjustTodaySheet(
+                dayTitle: routine.title,
+                exercises: routine.exercises.map(\.name),
+                onChoose: { reason in
+                    pendingReason = reason
+                    model.dismissAdjustSheet()
+                },
+                onShowHowTo: { model.showHowTo(at: $0) },
+                onDismiss: model.dismissAdjustSheet
+            )
+        }
         .alert(L10n.startWorkoutOverTitle, isPresented: $showStartOver) {
             Button(L10n.startOver, role: .destructive) { model.clearProgress() }
             Button(L10n.cancel, role: .cancel) {}
@@ -107,20 +136,95 @@ struct RoutineDetailView: View {
         }
     }
 
+    private var adjustSheet: Binding<Bool> {
+        Binding(
+            get: { state.isShowingAdjustSheet },
+            set: { if !$0 { model.dismissAdjustSheet() } }
+        )
+    }
+
+    private func openPendingAdjust() {
+        guard let reason = pendingReason else { return }
+        pendingReason = nil
+        onAdjust(reason, nil)
+    }
+
     private var content: some View {
-        ScrollView {
+        ScrollViewReader { scroll in
+            ScrollView {
+                VStack(alignment: .leading, spacing: 0) {
+                    date
+                    titleRow
+                    StepProgressBar(currentStep: routine.completionPercentage, totalSteps: 100)
+                        .padding(.top, Spacing.screen)
+                    equipment
+                    finishedEarlyBanner
+                    adjustedBanner
+                    undoNote
+                    adjustRow
+                    exercises
+                    footer
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(Spacing.screen)
+            }
+            .onChange(of: state.scrollToPosition) { _, position in
+                guard let position else { return }
+                withAnimation { scroll.scrollTo(position, anchor: .top) }
+                model.scrolled()
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var adjustedBanner: some View {
+        if let banner = state.adjustedBanner {
             VStack(alignment: .leading, spacing: 0) {
-                date
-                titleRow
-                StepProgressBar(currentStep: routine.completionPercentage, totalSteps: 100)
-                    .padding(.top, Spacing.screen)
-                equipment
-                finishedEarlyBanner
-                exercises
-                footer
+                Text(L10n.adjustedForToday)
+                    .font(.sectionTitle)
+                    .foregroundStyle(Color.onSurface)
+                Text(banner.message)
+                    .font(.body14)
+                    .foregroundStyle(Color.onSurface)
+                    // Applying or undoing changes this line and nothing else
+                    // moves, so without this a screen reader never hears that
+                    // the day changed.
+                    .accessibilityAddTraits(.updatesFrequently)
+                if !state.hasFinished {
+                    Button(L10n.undoAdjustment, action: model.undoAdjustment)
+                        .font(.sectionTitle)
+                        .foregroundStyle(Color.brandStrong)
+                        .frame(minHeight: ComponentHeight.medium)
+                        .padding(.top, Spacing.small)
+                }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(Spacing.screen)
+            .padding(.horizontal, Spacing.card)
+            .padding(.vertical, 12)
+            .background(Color.surfaceSunken, in: .rect(cornerRadius: CornerRadius.small))
+            .padding(.top, Spacing.section)
+        }
+    }
+
+    @ViewBuilder
+    private var undoNote: some View {
+        if let kept = state.undoKeptSets {
+            Text(L10n.undoKeptLogged(kept))
+                .font(.body14)
+                .foregroundStyle(Color.onSurfaceMuted)
+                .padding(.top, Spacing.tight)
+        }
+    }
+
+    @ViewBuilder
+    private var adjustRow: some View {
+        if !state.hasFinished {
+            OptionRow(
+                title: L10n.adjustToday,
+                description: L10n.adjustTodayHint,
+                action: model.openAdjustSheet
+            )
+            .padding(.top, Spacing.section)
         }
     }
 
@@ -144,7 +248,7 @@ struct RoutineDetailView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
 
             Label {
-                Text(L10n.minutes(routine.totalMinutes))
+                Text(L10n.minutes(state.totalMinutes ?? routine.totalMinutes))
                     .font(.labelLarge)
                     .foregroundStyle(Color.onSurface)
             } icon: {
@@ -217,12 +321,22 @@ struct RoutineDetailView: View {
                             } else {
                                 tutorial(for: exercise)
                             }
+                            alternative(for: exercise)
                         }
                     }
                 )
+                .id(exercise.position)
             }
         }
         .padding(.top, Spacing.section)
+    }
+
+    @ViewBuilder
+    private func alternative(for exercise: ExerciseUi) -> some View {
+        if !state.hasFinished, let id = exercise.exerciseID,
+           exercise.sets.contains(where: { !$0.isCompleted }) {
+            QuietAction(title: L10n.needAnAlternative) { onAdjust(.equipment, id) }
+        }
     }
 
     @ViewBuilder
@@ -309,22 +423,6 @@ private struct FinishEarlyConfirmation: View {
                 .strokeBorder(Color.outlineControl, lineWidth: 1)
         }
         .padding(.top, Spacing.medium)
-    }
-}
-
-private struct QuietAction: View {
-    let title: String
-    let action: () -> Void
-
-    var body: some View {
-        Button(action: action) {
-            Text(title)
-                .font(.labelMedium)
-                .foregroundStyle(Color.onSurfaceMuted)
-                .frame(maxWidth: .infinity, minHeight: ComponentHeight.medium)
-                .contentShape(.rect)
-        }
-        .buttonStyle(.plain)
     }
 }
 

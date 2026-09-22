@@ -12,7 +12,7 @@ final class TrainingStore {
     }
 
     // Held, not just its context: a context does not keep its container alive.
-    private let container: ModelContainer
+    let container: ModelContainer
     private var context: ModelContext { container.mainContext }
 
     init(container: ModelContainer) {

@@ -9,6 +9,9 @@ final class AppDependencies {
     let breadcrumbs: any Breadcrumbs
     let catalog: any ExerciseCatalog
     let interpreter: any IntentInterpreter
+    // The only path allowed to change today's plan, and it shares the store's
+    // container so both read the one open database.
+    let adjustments: AdjustmentStore
 
     init(
         store: TrainingStore,
@@ -22,6 +25,7 @@ final class AppDependencies {
         self.breadcrumbs = breadcrumbs
         self.catalog = catalog
         self.interpreter = interpreter
+        self.adjustments = AdjustmentStore(container: store.container, catalog: catalog)
     }
 
     // Reported with the action's name and never its subject.

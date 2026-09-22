@@ -6,12 +6,67 @@ import Foundation
 nonisolated enum L10n {
     static var aboutTheApp: String { String(localized: "about_the_app") }
     static var addSet: String { String(localized: "add_set") }
+    static var adjustEquipmentAvailable: String { String(localized: "adjust_equipment_available") }
+    static var adjustEquipmentExercise: String { String(localized: "adjust_equipment_exercise") }
+    static var adjustEquipmentTitle: String { String(localized: "adjust_equipment_title") }
+    static var adjustReasonEquipment: String { String(localized: "adjust_reason_equipment") }
+    static var adjustReasonEquipmentHint: String { String(localized: "adjust_reason_equipment_hint") }
+    static var adjustReasonGuidance: String { String(localized: "adjust_reason_guidance") }
+    static var adjustReasonGuidanceHint: String { String(localized: "adjust_reason_guidance_hint") }
+    static var adjustReasonOther: String { String(localized: "adjust_reason_other") }
+    static var adjustReasonOtherHint: String { String(localized: "adjust_reason_other_hint") }
+    static var adjustReasonPain: String { String(localized: "adjust_reason_pain") }
+    static var adjustReasonPainHint: String { String(localized: "adjust_reason_pain_hint") }
+    static var adjustReasonTime: String { String(localized: "adjust_reason_time") }
+    static var adjustReasonTimeHint: String { String(localized: "adjust_reason_time_hint") }
+    static var adjustReviewAlternative: String { String(localized: "adjust_review_alternative") }
+    static func adjustReviewEquipmentTitleFormat(_ p1: String) -> String {
+        String.localizedStringWithFormat(String(localized: "adjust_review_equipment_title_format"), p1)
+    }
+    static func adjustReviewKeepFormat(_ p1: String) -> String {
+        String.localizedStringWithFormat(String(localized: "adjust_review_keep_format"), p1)
+    }
+    static func adjustReviewRemainingLineFormat(_ p1: Int) -> String {
+        String.localizedStringWithFormat(String(localized: "adjust_review_remaining_line_format"), p1)
+    }
+    static func adjustReviewReplaceBodyFormat(_ p1: String, _ p2: String) -> String {
+        String.localizedStringWithFormat(String(localized: "adjust_review_replace_body_format"), p1, p2)
+    }
+    static func adjustReviewTimeBodyFormat(_ p1: String) -> String {
+        String.localizedStringWithFormat(String(localized: "adjust_review_time_body_format"), p1)
+    }
+    static func adjustReviewTimeLineFormat(_ p1: Int) -> String {
+        String.localizedStringWithFormat(String(localized: "adjust_review_time_line_format"), p1)
+    }
+    static var adjustReviewTimeTitle: String { String(localized: "adjust_review_time_title") }
+    static func adjustSheetEyebrowFormat(_ p1: String) -> String {
+        String.localizedStringWithFormat(String(localized: "adjust_sheet_eyebrow_format"), p1)
+    }
+    static var adjustSheetSubtitle: String { String(localized: "adjust_sheet_subtitle") }
+    static var adjustSheetTitle: String { String(localized: "adjust_sheet_title") }
+    static var adjustTimeOther: String { String(localized: "adjust_time_other") }
+    static var adjustTimePromise: String { String(localized: "adjust_time_promise") }
+    static var adjustTimeRangeError: String { String(localized: "adjust_time_range_error") }
+    static var adjustTimeRemaining: String { String(localized: "adjust_time_remaining") }
+    static var adjustTimeTitle: String { String(localized: "adjust_time_title") }
+    static var adjustTimeWholeSession: String { String(localized: "adjust_time_whole_session") }
+    static var adjustToday: String { String(localized: "adjust_today") }
+    static var adjustTodayHint: String { String(localized: "adjust_today_hint") }
+    static var adjustedForToday: String { String(localized: "adjusted_for_today") }
+    static var adjustedReducedBanner: String { String(localized: "adjusted_reduced_banner") }
+    static func adjustedReplacedBannerFormat(_ p1: String, _ p2: String) -> String {
+        String.localizedStringWithFormat(String(localized: "adjusted_replaced_banner_format"), p1, p2)
+    }
+    static func adjustedTimeBannerFormat(_ p1: String) -> String {
+        String.localizedStringWithFormat(String(localized: "adjusted_time_banner_format"), p1)
+    }
     static var adsPrivacyOptions: String { String(localized: "ads_privacy_options") }
     static var advanced: String { String(localized: "advanced") }
     static var advancedDescription: String { String(localized: "advanced_description") }
     static var advancedLevel: String { String(localized: "advanced_level") }
     static var age: String { String(localized: "age") }
     static var ageLabel: String { String(localized: "age_label") }
+    static var alreadyFits: String { String(localized: "already_fits") }
     static var ankleIssuesInjury: String { String(localized: "ankle_issues_injury") }
     static var anyInjuriesOrAreas: String { String(localized: "any_injuries_or_areas") }
     static var appAboutMessage: String { String(localized: "app_about_message") }
@@ -26,6 +81,7 @@ nonisolated enum L10n {
     static var availableEquipment: String { String(localized: "available_equipment") }
     static var back: String { String(localized: "back") }
     static var backToProfile: String { String(localized: "back_to_profile") }
+    static var backToWorkout: String { String(localized: "back_to_workout") }
     static var backToWorkoutPlan: String { String(localized: "back_to_workout_plan") }
     static var beginner: String { String(localized: "beginner") }
     static var beginnerDescription: String { String(localized: "beginner_description") }
@@ -44,8 +100,22 @@ nonisolated enum L10n {
     static var cautionNeck: String { String(localized: "caution_neck") }
     static var cautionShoulder: String { String(localized: "caution_shoulder") }
     static var cautionWrist: String { String(localized: "caution_wrist") }
+    static var changesRestKeptChooseWeight: String { String(localized: "changes_rest_kept_choose_weight") }
+    static var changesRestUnchanged: String { String(localized: "changes_rest_unchanged") }
+    static var chooseWeightBody1: String { String(localized: "choose_weight_body_1") }
+    static var chooseWeightBody2: String { String(localized: "choose_weight_body_2") }
     static var close: String { String(localized: "close") }
     static var completed: String { String(localized: "completed") }
+    static var contextOptionEquipment: String { String(localized: "context_option_equipment") }
+    static var contextOptionEquipmentHint: String { String(localized: "context_option_equipment_hint") }
+    static var contextOptionTime: String { String(localized: "context_option_time") }
+    static var contextOptionTimeHint: String { String(localized: "context_option_time_hint") }
+    static var contextPlaceholder: String { String(localized: "context_placeholder") }
+    static var contextPrivate: String { String(localized: "context_private") }
+    static var contextPrompt: String { String(localized: "context_prompt") }
+    static var contextTitle: String { String(localized: "context_title") }
+    static var contextWhichFirst: String { String(localized: "context_which_first") }
+    static var continueWorkout: String { String(localized: "continue_workout") }
     static var createMyPlan: String { String(localized: "create_my_plan") }
     static func dayCompletedFormat(_ p1: Int) -> String {
         String.localizedStringWithFormat(String(localized: "day_completed_format"), p1)
@@ -137,6 +207,7 @@ nonisolated enum L10n {
     static var goalFocusGetStronger: String { String(localized: "goal_focus_get_stronger") }
     static var goalFocusImproveEndurance: String { String(localized: "goal_focus_improve_endurance") }
     static var goalFocusLoseWeight: String { String(localized: "goal_focus_lose_weight") }
+    static var guidePickExercise: String { String(localized: "guide_pick_exercise") }
     static var healthDisclaimer: String { String(localized: "health_disclaimer") }
     static var heightCm: String { String(localized: "height_cm") }
     static func heightCmFormat(_ p1: Int) -> String {
@@ -149,6 +220,7 @@ nonisolated enum L10n {
     static var hideHowToPerform: String { String(localized: "hide_how_to_perform") }
     static var hideVideoTutorial: String { String(localized: "hide_video_tutorial") }
     static var hipProblemsInjury: String { String(localized: "hip_problems_injury") }
+    static var howToChooseWeight: String { String(localized: "how_to_choose_weight") }
     static var imperial: String { String(localized: "imperial") }
     static var improveEndurance: String { String(localized: "improve_endurance") }
     static var improveEnduranceDescription: String { String(localized: "improve_endurance_description") }
@@ -157,6 +229,12 @@ nonisolated enum L10n {
     static var intermediate: String { String(localized: "intermediate") }
     static var intermediateDescription: String { String(localized: "intermediate_description") }
     static var intermediateLevel: String { String(localized: "intermediate_level") }
+    static func joinAndFormat(_ p1: String, _ p2: String) -> String {
+        String.localizedStringWithFormat(String(localized: "join_and_format"), p1, p2)
+    }
+    static var keepCurrentWorkout: String { String(localized: "keep_current_workout") }
+    static var keepOriginal: String { String(localized: "keep_original") }
+    static var keepTodaysPlan: String { String(localized: "keep_todays_plan") }
     static var keepTraining: String { String(localized: "keep_training") }
     static var kneeProblemsInjury: String { String(localized: "knee_problems_injury") }
     static var leavePlanConfirm: String { String(localized: "leave_plan_confirm") }
@@ -182,28 +260,51 @@ nonisolated enum L10n {
     static func minutes(_ p1: Int) -> String {
         String.localizedStringWithFormat(String(localized: "minutes"), p1)
     }
+    static func minutesShortFormat(_ p1: Int) -> String {
+        String.localizedStringWithFormat(String(localized: "minutes_short_format"), p1)
+    }
     static var missed: String { String(localized: "missed") }
+    static var missedSetsNotAdded: String { String(localized: "missed_sets_not_added") }
     static var moveEarlier: String { String(localized: "move_earlier") }
     static var moveLater: String { String(localized: "move_later") }
     static var musclePrimaryLabel: String { String(localized: "muscle_primary_label") }
     static var muscleSecondaryLabel: String { String(localized: "muscle_secondary_label") }
     static var nameLabel: String { String(localized: "name_label") }
     static var neckPainInjury: String { String(localized: "neck_pain_injury") }
+    static var needAnAlternative: String { String(localized: "need_an_alternative") }
     static var next: String { String(localized: "next") }
+    static var noAdjustmentBody: String { String(localized: "no_adjustment_body") }
+    static var noAdjustmentTitle: String { String(localized: "no_adjustment_title") }
+    static var noAlternativeBody: String { String(localized: "no_alternative_body") }
+    static var noAlternativeTitle: String { String(localized: "no_alternative_title") }
     static var noPlanMessage: String { String(localized: "no_plan_message") }
     static var noPlanTitle: String { String(localized: "no_plan_title") }
+    static func noShortVersionBodyFormat(_ p1: Int) -> String {
+        String.localizedStringWithFormat(String(localized: "no_short_version_body_format"), p1)
+    }
+    static var noShortVersionTitle: String { String(localized: "no_short_version_title") }
     static var noneInjury: String { String(localized: "none_injury") }
     static var noneLabel: String { String(localized: "none_label") }
     static var normalWeight: String { String(localized: "normal_weight") }
     static var notCompleted: String { String(localized: "not_completed") }
     static var notStarted: String { String(localized: "not_started") }
     static var obese: String { String(localized: "obese") }
+    static var omitToday: String { String(localized: "omit_today") }
     static func optionalLabel(_ p1: String) -> String {
         String.localizedStringWithFormat(String(localized: "optional_label"), p1)
+    }
+    static func originalWorkoutPlannedFormat(_ p1: Int) -> String {
+        String.localizedStringWithFormat(String(localized: "original_workout_planned_format"), p1)
     }
     static var other: String { String(localized: "other") }
     static var otherGender: String { String(localized: "other_gender") }
     static var overweight: String { String(localized: "overweight") }
+    static var painBody: String { String(localized: "pain_body") }
+    static var painCardBody1: String { String(localized: "pain_card_body_1") }
+    static var painCardBody2: String { String(localized: "pain_card_body_2") }
+    static var painCardTitle: String { String(localized: "pain_card_title") }
+    static var painSaveHint: String { String(localized: "pain_save_hint") }
+    static var painTitle: String { String(localized: "pain_title") }
     static var pauseTimer: String { String(localized: "pause_timer") }
     static var personalInformation: String { String(localized: "personal_information") }
     static var personalTrainer: String { String(localized: "personal_trainer") }
@@ -303,27 +404,53 @@ nonisolated enum L10n {
         String.localizedStringWithFormat(String(localized: "regenerate_week_message_trained"), p1, p2)
     }
     static var regenerateWeekTitle: String { String(localized: "regenerate_week_title") }
+    static var regionArms: String { String(localized: "region_arms") }
+    static var regionBack: String { String(localized: "region_back") }
+    static var regionCalves: String { String(localized: "region_calves") }
+    static var regionChest: String { String(localized: "region_chest") }
+    static var regionCore: String { String(localized: "region_core") }
+    static var regionHamstrings: String { String(localized: "region_hamstrings") }
+    static var regionHips: String { String(localized: "region_hips") }
+    static var regionOther: String { String(localized: "region_other") }
+    static var regionQuads: String { String(localized: "region_quads") }
+    static var regionShoulders: String { String(localized: "region_shoulders") }
     static var repeatThisWeek: String { String(localized: "repeat_this_week") }
     static var repsColumn: String { String(localized: "reps_column") }
     static var resetTimer: String { String(localized: "reset_timer") }
+    static var restoreRemainingPlan: String { String(localized: "restore_remaining_plan") }
     static var resumeTimer: String { String(localized: "resume_timer") }
+    static var retry: String { String(localized: "retry") }
+    static var returnToWorkout: String { String(localized: "return_to_workout") }
     static var reviewDescription: String { String(localized: "review_description") }
+    static var reviewNotApplied: String { String(localized: "review_not_applied") }
     static var reviewProfileDescription: String { String(localized: "review_profile_description") }
+    static var reviewRebuilt: String { String(localized: "review_rebuilt") }
     static func routineDescription(_ p1: String, _ p2: String) -> String {
         String.localizedStringWithFormat(String(localized: "routine_description"), p1, p2)
     }
     static var routinePreviewLabel: String { String(localized: "routine_preview_label") }
     static var routinesBuiltAroundYou: String { String(localized: "routines_built_around_you") }
     static var save: String { String(localized: "save") }
+    static var saveAndFinishEarly: String { String(localized: "save_and_finish_early") }
     static var saveProfile: String { String(localized: "save_profile") }
     static var saveWorkout: String { String(localized: "save_workout") }
     static var scheduleLabel: String { String(localized: "schedule_label") }
+    static var sectionCollapsed: String { String(localized: "section_collapsed") }
+    static var sectionExpanded: String { String(localized: "section_expanded") }
+    static var seeExactChanges: String { String(localized: "see_exact_changes") }
     static var selectDaysPlaceholder: String { String(localized: "select_days_placeholder") }
     static var sessionDuration: String { String(localized: "session_duration") }
     static var setColumn: String { String(localized: "set_column") }
     static var setUpYourWorkout: String { String(localized: "set_up_your_workout") }
+    static func setsFromToFormat(_ p1: Int, _ p2: Int) -> String {
+        String.localizedStringWithFormat(String(localized: "sets_from_to_format"), p1, p2)
+    }
+    static func setsTimesRepsFormat(_ p1: Int, _ p2: String) -> String {
+        String.localizedStringWithFormat(String(localized: "sets_times_reps_format"), p1, p2)
+    }
     static var shoulderInjuryInjury: String { String(localized: "shoulder_injury_injury") }
     static var showHowToPerform: String { String(localized: "show_how_to_perform") }
+    static var showRecommendation: String { String(localized: "show_recommendation") }
     static var showVideoTutorial: String { String(localized: "show_video_tutorial") }
     static var skipped: String { String(localized: "skipped") }
     static var slideToCompleteRoutine: String { String(localized: "slide_to_complete_routine") }
@@ -340,15 +467,32 @@ nonisolated enum L10n {
     static var tellUsAboutYourself: String { String(localized: "tell_us_about_yourself") }
     static var timeColumn: String { String(localized: "time_column") }
     static var timerPaused: String { String(localized: "timer_paused") }
+    static var todayOnly: String { String(localized: "today_only") }
     static var trackWeeklyProgress: String { String(localized: "track_weekly_progress") }
     static var trackYourProgress: String { String(localized: "track_your_progress") }
+    static var tradeoff: String { String(localized: "tradeoff") }
+    static var tradeoffDifferentResistance: String { String(localized: "tradeoff_different_resistance") }
+    static func tradeoffLessBarbellFormat(_ p1: String) -> String {
+        String.localizedStringWithFormat(String(localized: "tradeoff_less_barbell_format"), p1)
+    }
+    static func tradeoffLessWorkFormat(_ p1: String) -> String {
+        String.localizedStringWithFormat(String(localized: "tradeoff_less_work_format"), p1)
+    }
+    static var tradeoffReducedSession: String { String(localized: "tradeoff_reduced_session") }
+    static var tradeoffSeparateHistory: String { String(localized: "tradeoff_separate_history") }
     static var trainerAdjective: String { String(localized: "trainer_adjective") }
     static var trainr: String { String(localized: "trainr") }
     static var tryAgain: String { String(localized: "try_again") }
     static var underweight: String { String(localized: "underweight") }
+    static var undoAdjustment: String { String(localized: "undo_adjustment") }
+    static var undoAvailable: String { String(localized: "undo_available") }
+    static func undoKeptLogged(_ p1: Int) -> String {
+        String.localizedStringWithFormat(String(localized: "undo_kept_logged"), p1)
+    }
     static var unitCm: String { String(localized: "unit_cm") }
     static var upcoming: String { String(localized: "upcoming") }
     static var updateProfile: String { String(localized: "update_profile") }
+    static var useThisWorkout: String { String(localized: "use_this_workout") }
     static func valueRangeHint(_ p1: String, _ p2: String, _ p3: String) -> String {
         String.localizedStringWithFormat(String(localized: "value_range_hint"), p1, p2, p3)
     }
@@ -386,6 +530,13 @@ nonisolated enum L10n {
     static var weightsInLabel: String { String(localized: "weights_in_label") }
     static var weightsMarkedIn: String { String(localized: "weights_marked_in") }
     static var welcomeTo: String { String(localized: "welcome_to") }
+    static func whyEquipmentFormat(_ p1: String) -> String {
+        String.localizedStringWithFormat(String(localized: "why_equipment_format"), p1)
+    }
+    static var whyThisChange: String { String(localized: "why_this_change") }
+    static func whyTimeFormat(_ p1: String) -> String {
+        String.localizedStringWithFormat(String(localized: "why_time_format"), p1)
+    }
     static func workoutDaysOption(_ p1: Int) -> String {
         String.localizedStringWithFormat(String(localized: "workout_days_option"), p1)
     }
@@ -400,6 +551,7 @@ nonisolated enum L10n {
     static var yourFitnessGoals: String { String(localized: "your_fitness_goals") }
     static var yourFitnessProfile: String { String(localized: "your_fitness_profile") }
     static var yourMeasurements: String { String(localized: "your_measurements") }
+    static var yourPriority: String { String(localized: "your_priority") }
     static var yourWeeklyWorkoutPlan: String { String(localized: "your_weekly_workout_plan") }
 }
 // swiftlint:enable all
