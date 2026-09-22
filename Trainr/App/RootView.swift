@@ -48,9 +48,11 @@ struct RootView: View {
         .preferredColorScheme(appearance.mode.colorScheme)
         // Pushed only once the draft has been through an update of its own: a
         // destination built in the same one captures this view while the model
-        // is still nil, and keeps the empty screen it drew.
-        .onChange(of: adjustment != nil) { _, hasDraft in
-            if hasDraft { path.append(.adjustEntry) }
+        // is still nil, and keeps the empty screen it drew. Keyed on which
+        // draft rather than on there being one: the interactive back-swipe
+        // leaves the model behind, and the next entry still has to push.
+        .onChange(of: adjustment.map { ObjectIdentifier($0) }) { _, draft in
+            if draft != nil { path.append(.adjustEntry) }
         }
         // Keyed on which question rather than on there being one: the
         // interactive back-swipe leaves the model behind, and the next offer
@@ -122,7 +124,14 @@ struct RootView: View {
                 onRegenerateWeek: { ask(.rewrite) { path.append(.regeneratingWeek) } },
                 onCreatePlan: {
                     path.append(.review(fromPlan: true, profileOnly: false))
-                }
+                },
+                onAdjustToday: { day, minutes in
+                    adjustment = AdjustmentModel(
+                        dependencies: dependencies, dayNumber: day.dayNumber,
+                        reason: .lessTime, minutes: minutes
+                    )
+                },
+                onTrainingPreferences: { path.append(.trainingPreferences) }
             )
             .id(planGeneration)
         }
@@ -198,116 +207,32 @@ struct RootView: View {
     @ViewBuilder
     private func destination(for route: Route) -> some View {
         if let onboarding {
-            destination(for: route, onboarding: onboarding)
-        }
-    }
-
-    @ViewBuilder
-    private func destination(for route: Route, onboarding: OnboardingModel) -> some View {
-        switch route {
-        case .basicInfo(let editing):
-            BasicInfoView(
-                initial: onboarding.filled(for: .basicInfo, editing: editing),
-                isEditing: editing,
-                onNext: { firstName, age, gender, experience in
-                    onboarding.updateBasicInfo(
-                        firstName: firstName, age: age, gender: gender, experience: experience)
-                    step(editing: editing, next: .bodyMetrics(editing: false))
-                },
-                onBack: pop
-            )
-
-        case .bodyMetrics(let editing):
-            BodyMetricsView(
-                initial: onboarding.filled(for: .bodyMetrics, editing: editing),
-                isEditing: editing,
-                onNext: { height, weight, units in
-                    onboarding.updateBodyMetrics(height: height, weight: weight, units: units)
-                    step(editing: editing, next: .fitnessGoal(editing: false))
-                },
-                onBack: pop
-            )
-
-        case .fitnessGoal(let editing):
-            FitnessGoalView(
-                initial: onboarding.filled(for: .goals, editing: editing),
-                isEditing: editing,
-                onNext: { goal in
-                    onboarding.updateFitnessGoal(goal)
-                    step(editing: editing, next: .workoutSetup(editing: false))
-                },
-                onBack: pop
-            )
-
-        case .workoutSetup(let editing):
-            WorkoutSetupView(
-                stockedEquipment: onboarding.stockedEquipment,
-                initial: onboarding.filled(for: .setup, editing: editing),
-                isEditing: editing,
-                onNext: { equipment, liftingUnits, days, duration in
-                    onboarding.updateWorkoutSetup(
-                        equipment: equipment, liftingUnits: liftingUnits,
-                        daysPerWeek: days, duration: duration)
-                    step(editing: editing, next: .limitations(editing: false))
-                },
-                onBack: pop
-            )
-
-        case .limitations(let editing):
-            LimitationsView(
-                initial: onboarding.filled(for: .limitations, editing: editing),
-                isEditing: editing,
-                onNext: { injuries in
-                    onboarding.updateLimitations(injuries: injuries)
-                    step(editing: editing, next: .review(fromPlan: false, profileOnly: false))
-                },
-                onBack: pop
-            )
-
-        case .review(let fromPlan, let profileOnly):
-            ReviewView(
-                profile: onboarding.profile,
-                isRegenerating: fromPlan,
-                isProfileUpdate: profileOnly,
-                onConfirm: {
-                    if profileOnly {
-                        onboarding.updateProfileOnly { path = [] }
-                    } else {
-                        if fromPlan {
+            if route.isOnboarding {
+                OnboardingFlowView(
+                    step: route,
+                    model: onboarding,
+                    onStep: step(editing:next:),
+                    onEdit: { path.append($0) },
+                    onConfirm: { fromPlan, profileOnly in
+                        if profileOnly {
+                            onboarding.updateProfileOnly { path = [] }
+                        } else if fromPlan {
                             ask(.freshPlan) { path.append(.generating) }
                         } else {
                             path.append(.generating)
                         }
-                    }
-                },
-                onBack: pop,
-                onEdit: { editRoute in path.append(editRoute) }
-            )
-
-        case .generating:
-            GeneratingView(
-                isReady: onboarding.isCompleted,
-                onStart: { onboarding.saveUserProfile() },
-                onDone: {
+                    },
                     // Spent once the week has arrived, whichever tier built it,
                     // so a failed generation costs nothing.
-                    spendFreeGeneration()
-                    restartOnHome()
-                },
-                failure: onboarding.generationFailure,
-                failureCount: onboarding.failureCount,
-                onRetry: { onboarding.saveUserProfile() },
-                // Nothing was written yet, and cancelRun stops the abandoned
-                // run from writing one.
-                onGiveUp: {
-                    onboarding.cancelRun()
-                    pop()
-                },
-                giveUpLabel: L10n.backToProfile
-            )
-
-        default:
-            workoutDestination(for: route)
+                    onGenerated: {
+                        spendFreeGeneration()
+                        restartOnHome()
+                    },
+                    onBack: pop
+                )
+            } else {
+                workoutDestination(for: route)
+            }
         }
     }
 
@@ -358,7 +283,7 @@ struct RootView: View {
         case .dayCompleted(let dayNumber, let weekNumber):
             DayCompletedView(
                 dayNumber: dayNumber,
-                offer: offer(dayNumber: dayNumber, weekNumber: weekNumber),
+                offer: offer(dayNumber: dayNumber, weekNumber: weekNumber, style: .card),
                 onBack: pop,
                 onViewProgress: { path.append(.weeklyProgress) },
                 onBackToPlan: restartOnHome
@@ -478,13 +403,21 @@ private extension RootView {
                 onBack: pop
             )
 
+        case .debrief, .noteSaved, .trainingPreferences, .editPreference:
+            PreferencesFlowView(
+                step: route,
+                dependencies: dependencies,
+                onOpen: { path.append($0) },
+                onReplace: { if !path.isEmpty { path[path.count - 1] = $0 } },
+                onDone: restartOnHome,
+                onBack: pop
+            )
+
         default:
             adjustDestination(for: route)
         }
     }
 
-    // In an extension so the flow's plumbing reads on its own, next to the
-    // stack it pushes onto rather than inside the switch that opens it.
     @ViewBuilder
     func adjustDestination(for route: Route) -> some View {
         if let adjustment, route.isAdjustment {
@@ -521,9 +454,15 @@ private extension RootView {
         if path.last?.isAdjustment != true { adjustment = nil }
     }
 
+    // Opened from home there is no session screen behind the flow to tell, and
+    // the cards the change may have moved are home's own.
     func leaveAdjustment(_ returned: AdjustmentReturn) {
         while path.last?.isAdjustment == true { path.removeLast() }
         adjustment = nil
+        guard path.contains(where: \.isRoutineDetail) else {
+            restartOnHome()
+            return
+        }
         returningFromAdjustment = returned
     }
 
@@ -537,12 +476,16 @@ private extension RootView {
             dependencies: dependencies,
             dayNumber: dayNumber,
             weekNumber: weekNumber,
-            style: style
-        ) { adjustmentID in
-            feedback = AdjustmentFeedbackModel(
-                dependencies: dependencies, adjustmentID: adjustmentID
-            )
-        }
+            style: style,
+            onLeaveNote: {
+                path.append(.debrief(dayNumber: dayNumber, weekNumber: weekNumber))
+            },
+            onOffer: { adjustmentID in
+                feedback = AdjustmentFeedbackModel(
+                    dependencies: dependencies, adjustmentID: adjustmentID
+                )
+            }
+        )
     }
 
     @ViewBuilder
@@ -567,8 +510,22 @@ private extension RootView {
         // Discomfort goes to the free guidance and is never answered with a
         // substitute (C09).
         case .discomfort: path.append(.feedbackPain)
+        case .somethingElse: askForTheirOwnWords()
         default: path.append(.feedbackOutcome)
         }
+    }
+
+    // The answer is already recorded, so their own words take the place of the
+    // fixed outcome line rather than following it.
+    func askForTheirOwnWords() {
+        guard let session = feedback?.state.session else {
+            path.append(.feedbackOutcome)
+            return
+        }
+        closeFeedback()
+        path.append(
+            .debrief(dayNumber: session.dayNumber, weekNumber: session.weekNumber)
+        )
     }
 
     func popFeedback() {

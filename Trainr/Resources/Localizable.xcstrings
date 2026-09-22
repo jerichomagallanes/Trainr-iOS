@@ -203,9 +203,21 @@
       "extractionState": "manual",
       "localizations": {
         "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Your remaining time: %1$lld minutes"
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Your remaining time: %1$lld minute"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Your remaining time: %1$lld minutes"
+                }
+              }
+            }
           }
         }
       }
@@ -236,9 +248,21 @@
       "extractionState": "manual",
       "localizations": {
         "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Your time today: %1$lld minutes"
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Your time today: %1$lld minute"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Your time today: %1$lld minutes"
+                }
+              }
+            }
           }
         }
       }
@@ -375,6 +399,28 @@
         }
       }
     },
+    "adjusted": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Adjusted"
+          }
+        }
+      }
+    },
+    "adjusted_equipment_card_body": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "An alternative using the equipment available."
+          }
+        }
+      }
+    },
     "adjusted_for_today": {
       "extractionState": "manual",
       "localizations": {
@@ -415,6 +461,39 @@
           "stringUnit": {
             "state": "translated",
             "value": "Your priority work stays. Less %1$@ work today."
+          }
+        }
+      }
+    },
+    "adjusted_time_card_body": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A shorter session, with your priority work kept."
+          }
+        }
+      }
+    },
+    "adjustment_alternative_today": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Equipment alternative · Today only"
+          }
+        }
+      }
+    },
+    "adjustment_shorter_today": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Shorter session · Today only"
           }
         }
       }
@@ -925,6 +1004,17 @@
         }
       }
     },
+    "confirmed_by_you_format": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Confirmed by you · %1$@"
+          }
+        }
+      }
+    },
     "context_option_equipment": {
       "extractionState": "manual",
       "localizations": {
@@ -1124,6 +1214,39 @@
         }
       }
     },
+    "debrief_placeholder": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "For example: I had to leave early for work."
+          }
+        }
+      }
+    },
+    "debrief_title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Anything for next time?"
+          }
+        }
+      }
+    },
+    "delete_note": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete note"
+          }
+        }
+      }
+    },
     "delete_set": {
       "extractionState": "manual",
       "localizations": {
@@ -1275,6 +1398,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Edit"
+          }
+        }
+      }
+    },
+    "edit_applies_to_future": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Changes apply to future recommendations. Today's workout stays as it is."
           }
         }
       }
@@ -1483,7 +1617,29 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "%1$lld of %2$lld exercises completed"
+            "value": "%#@count@"
+          },
+          "substitutions": {
+            "count": {
+              "argNum": 2,
+              "formatSpecifier": "lld",
+              "variations": {
+                "plural": {
+                  "one": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%1$lld of %2$lld exercise completed"
+                    }
+                  },
+                  "other": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%1$lld of %2$lld exercises completed"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -1792,7 +1948,29 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "%1$lld of %2$lld exercises · Finished early"
+            "value": "%#@count@"
+          },
+          "substitutions": {
+            "count": {
+              "argNum": 2,
+              "formatSpecifier": "lld",
+              "variations": {
+                "plural": {
+                  "one": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%1$lld of %2$lld exercise · Finished early"
+                    }
+                  },
+                  "other": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%1$lld of %2$lld exercises · Finished early"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -1859,6 +2037,39 @@
           "stringUnit": {
             "state": "translated",
             "value": "Flexible"
+          }
+        }
+      }
+    },
+    "forget": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Forget"
+          }
+        }
+      }
+    },
+    "forget_does_not_remove_workouts": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Forgetting a preference stops future use. It does not remove past workouts."
+          }
+        }
+      }
+    },
+    "future_workouts_still_ask": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Future workouts will still ask before changing."
           }
         }
       }
@@ -2402,6 +2613,17 @@
         }
       }
     },
+    "leave_a_note": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Leave a note"
+          }
+        }
+      }
+    },
     "leave_plan_confirm": {
       "extractionState": "manual",
       "localizations": {
@@ -2645,6 +2867,29 @@
         }
       }
     },
+    "minutes_for_whole_session_format": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%1$lld minute for the whole session"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%1$lld minutes for the whole session"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "minutes_short_format": {
       "extractionState": "manual",
       "localizations": {
@@ -2766,6 +3011,28 @@
         }
       }
     },
+    "next_workout_unchanged": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your next workout has not changed."
+          }
+        }
+      }
+    },
+    "no_adjustment_applied": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No adjustment applied."
+          }
+        }
+      }
+    },
     "no_adjustment_body": {
       "extractionState": "manual",
       "localizations": {
@@ -2832,13 +3099,36 @@
         }
       }
     },
-    "no_short_version_body_format": {
+    "no_preferences_yet": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Even the shortest version of today's plan needs about %1$lld minutes. You can keep the original, or save what you've done and finish early."
+            "value": "No saved preferences yet. You can remember a time limit when adjusting a workout."
+          }
+        }
+      }
+    },
+    "no_short_version_body_format": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Even the shortest version of today's plan needs about %1$lld minute. You can keep the original, or save what you've done and finish early."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Even the shortest version of today's plan needs about %1$lld minutes. You can keep the original, or save what you've done and finish early."
+                }
+              }
+            }
           }
         }
       }
@@ -2920,6 +3210,28 @@
         }
       }
     },
+    "note_saved": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Note saved"
+          }
+        }
+      }
+    },
+    "notes_stay_on_device": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Optional notes stay on this device."
+          }
+        }
+      }
+    },
     "obese": {
       "extractionState": "manual",
       "localizations": {
@@ -2957,9 +3269,21 @@
       "extractionState": "manual",
       "localizations": {
         "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Original workout · %1$lld minutes planned"
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Original workout · %1$lld minute planned"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Original workout · %1$lld minutes planned"
+                }
+              }
+            }
           }
         }
       }
@@ -3169,6 +3493,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Workout plan options"
+          }
+        }
+      }
+    },
+    "preference_forgotten": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Time preference forgotten"
           }
         }
       }
@@ -4075,6 +4410,17 @@
         }
       }
     },
+    "ready_for_today": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ready for today"
+          }
+        }
+      }
+    },
     "regenerate_plan": {
       "extractionState": "manual",
       "localizations": {
@@ -4262,6 +4608,17 @@
         }
       }
     },
+    "remember_weekday_limit_format": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remember this %1$@ time limit"
+          }
+        }
+      }
+    },
     "repeat_this_week": {
       "extractionState": "manual",
       "localizations": {
@@ -4383,6 +4740,17 @@
         }
       }
     },
+    "review_shorter_version": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Review a shorter version"
+          }
+        }
+      }
+    },
     "routine_description": {
       "extractionState": "manual",
       "localizations": {
@@ -4445,6 +4813,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Save for later"
+          }
+        }
+      }
+    },
+    "save_note": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Save note"
           }
         }
       }
@@ -4647,6 +5026,17 @@
         }
       }
     },
+    "skip": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Skip"
+          }
+        }
+      }
+    },
     "skipped": {
       "extractionState": "manual",
       "localizations": {
@@ -4801,6 +5191,17 @@
         }
       }
     },
+    "things_you_asked_to_remember": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Things you have asked Trainr to remember."
+          }
+        }
+      }
+    },
     "time_column": {
       "extractionState": "manual",
       "localizations": {
@@ -4808,6 +5209,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Time"
+          }
+        }
+      }
+    },
+    "time_for_whole_workout": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Time for the whole workout"
           }
         }
       }
@@ -4830,6 +5242,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Today only"
+          }
+        }
+      }
+    },
+    "todays_adjustment": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Today's adjustment"
           }
         }
       }
@@ -4929,6 +5352,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "pocket"
+          }
+        }
+      }
+    },
+    "training_preferences": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Training preferences"
           }
         }
       }
@@ -5077,6 +5511,29 @@
         }
       }
     },
+    "usually_have_minutes_format": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "You usually have %1$lld minute. Review today's plan before changing it."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "You usually have %1$lld minutes. Review today's plan before changing it."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "value_range_hint": {
       "extractionState": "manual",
       "localizations": {
@@ -5106,6 +5563,28 @@
           "stringUnit": {
             "state": "translated",
             "value": "View exercise guidance"
+          }
+        }
+      }
+    },
+    "view_todays_workout": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "View today's workout"
+          }
+        }
+      }
+    },
+    "view_training_preferences": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "View training preferences"
           }
         }
       }
@@ -5172,6 +5651,28 @@
           "stringUnit": {
             "state": "translated",
             "value": "(%@)"
+          }
+        }
+      }
+    },
+    "weekday_preference_format": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ preference"
+          }
+        }
+      }
+    },
+    "weekday_time_limit_format": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ time limit"
           }
         }
       }
@@ -5497,6 +5998,17 @@
         }
       }
     },
+    "your_note": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your note"
+          }
+        }
+      }
+    },
     "your_priority": {
       "extractionState": "manual",
       "localizations": {
@@ -5504,6 +6016,28 @@
           "stringUnit": {
             "state": "translated",
             "value": "Your priority"
+          }
+        }
+      }
+    },
+    "your_session_note": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your session note"
+          }
+        }
+      }
+    },
+    "your_training_preferences": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your training preferences"
           }
         }
       }

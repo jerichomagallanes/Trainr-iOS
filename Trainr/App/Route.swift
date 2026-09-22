@@ -1,3 +1,5 @@
+import Foundation
+
 // The associated values are the screen's identity, never its content: content
 // is read from the store when the screen appears.
 enum Route: Hashable {
@@ -35,6 +37,12 @@ enum Route: Hashable {
     case feedbackDetail
     case feedbackOutcome
     case feedbackPain
+    // The week travels with the day for the same reason the completion screens
+    // carry it: a note belongs to the session it was written about.
+    case debrief(dayNumber: Int, weekNumber: Int)
+    case noteSaved(dayNumber: Int, weekNumber: Int)
+    case trainingPreferences
+    case editPreference(id: UUID)
     case paywall(reason: PaywallReason)
     // Whether this shows the offer or the subscription depends on the
     // entitlement, which is not the screen's identity.
@@ -80,8 +88,20 @@ enum Route: Hashable {
         case .feedbackDetail: "feedback_detail"
         case .feedbackOutcome: "feedback_outcome"
         case .feedbackPain: "feedback_pain"
+        case .debrief: "debrief"
+        case .noteSaved: "note_saved"
+        case .trainingPreferences: "training_preferences"
+        case .editPreference: "edit_preference"
         case .paywall: "paywall"
         case .pro: "pro"
+        }
+    }
+
+    var isOnboarding: Bool {
+        switch self {
+        case .basicInfo, .bodyMetrics, .fitnessGoal, .workoutSetup,
+             .limitations, .review, .generating: true
+        default: false
         }
     }
 

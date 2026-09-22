@@ -5,6 +5,7 @@ struct AdjustTimeView: View {
     var onSelectMinutes: (Int) -> Void = { _ in }
     var onTypeMinutes: (String) -> Void = { _ in }
     var onShowRecommendation: () -> Void = {}
+    var onToggleRemember: () -> Void = {}
     var onKeepPlan: () -> Void = {}
     var onBack: () -> Void = {}
 
@@ -49,6 +50,7 @@ struct AdjustTimeView: View {
                 FieldError(message: state.hasMinutesError ? L10n.adjustTimeRangeError : nil)
 
                 priority
+                remember
             }
         }
     }
@@ -68,6 +70,35 @@ struct AdjustTimeView: View {
             }
         }
         .padding(.top, Spacing.medium)
+    }
+
+    // Offered only where a weekday can be named and the answer is about the
+    // whole session, and unticked until the person ticks it.
+    @ViewBuilder
+    private var remember: some View {
+        if state.canRemember, let weekday = state.weekdayName {
+            Button(action: onToggleRemember) {
+                HStack(alignment: .top, spacing: Spacing.small) {
+                    Image(systemName: state.remember ? "checkmark.square.fill" : "square")
+                        .font(.oneOff(20))
+                        .foregroundStyle(state.remember ? Color.brandStrong : .outlineControl)
+                    VStack(alignment: .leading, spacing: 0) {
+                        Text(L10n.rememberWeekdayLimitFormat(weekday))
+                            .font(.body16)
+                            .foregroundStyle(Color.onSurface)
+                        Text(L10n.futureWorkoutsStillAsk)
+                            .font(.body12)
+                            .foregroundStyle(Color.onSurfaceMuted)
+                    }
+                    Spacer(minLength: 0)
+                }
+                .multilineTextAlignment(.leading)
+                .contentShape(.rect)
+            }
+            .buttonStyle(.plain)
+            .accessibilityAddTraits(state.remember ? .isSelected : [])
+            .padding(.top, Spacing.medium)
+        }
     }
 
     private var priority: some View {

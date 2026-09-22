@@ -51,13 +51,19 @@ struct AdjustmentModelTests {
     private func model(
         _ day: WorkoutDay = AdjustmentModelTests.fullDay(),
         reason: DirectReason = .lessTime,
-        exerciseID: UUID? = nil
+        exerciseID: UUID? = nil,
+        minutes: Int? = nil
     ) throws -> AdjustmentModel {
         try seed(day)
         return AdjustmentModel(
             dependencies: dependencies, dayNumber: day.dayNumber, weekNumber: 1,
-            reason: reason, exerciseID: exerciseID
+            reason: reason, exerciseID: exerciseID, minutes: minutes
         )
+    }
+
+    private func storedPreferences() throws -> [TrainingPreference] {
+        guard let user = try store.currentUser() else { return [] }
+        return try store.preferences(userID: user.id)
     }
 
     private func shortened(_ day: WorkoutDay = AdjustmentModelTests.fullDay()) throws -> (AdjustmentModel, String) {
@@ -192,6 +198,155 @@ struct AdjustmentModelTests {
         #expect(model.state.hasPerformedWork)
         #expect(model.state.scope == .remaining)
         #expect(model.state.applyError == .staleRebuilt)
+    }
+
+    // MARK: - Remembering a limit
+
+    @Test("An untouched session on a dated day can have its limit remembered")
+    func anUntouchedSessionCanBeRemembered() throws {
+        #expect(try model().state.canRemember)
+    }
+
+    // Remaining time is a different question, and its answer is no limit for
+    // the whole weekday.
+    @Test("A session under way offers nothing to remember")
+    func aSessionUnderWayOffersNothingToRemember() throws {
+        #expect(try !model(Self.partlyDoneDay()).state.canRemember)
+    }
+
+    // T21: the box is the only thing that makes a limit durable.
+    @Test("An unticked box writes nothing, even once the change is applied")
+    func rememberUntickedWritesNothing() throws {
+        let (model, _) = try shortened()
+
+        model.apply()
+
+        #expect(model.appliedProposalID != nil)
+        #expect(try storedPreferences().isEmpty)
+    }
+
+    // T22: ticking the box is a request, not the confirmation itself.
+    @Test("Ticking the box and then keeping the original writes nothing")
+    func rememberTickedButCancelledWritesNothing() throws {
+        let (model, _) = try shortened()
+
+        model.toggleRemember()
+
+        #expect(model.state.remember)
+        #expect(try storedPreferences().isEmpty)
+    }
+
+    @Test("Ticking the box and applying writes the weekday limit")
+    func rememberTickedAndAppliedWritesTheLimit() throws {
+        let (model, _) = try shortened()
+        model.toggleRemember()
+        let budget = try #require(model.state.selectedMinutes)
+
+        model.apply()
+
+        let day = try #require(model.state.day)
+        let adjustment = try #require(try store.activeAdjustment(dayID: day.id))
+        let stored = try #require(try storedPreferences().first)
+        #expect(stored.kind == .timeLimit)
+        #expect(stored.minutes == budget)
+        #expect(stored.sourceAdjustmentID == adjustment.id)
+        #expect(stored.confirmedAt == stored.updatedAt)
+    }
+
+    // The reviewed plan already fits, so continuing is the person accepting it.
+    @Test("Ticking the box and continuing an unchanged plan writes the limit")
+    func rememberTickedAndContinuedWritesTheLimit() throws {
+        let model = try model()
+        let budget = model.state.plannedMinutes + 5
+        model.selectMinutes(budget)
+        model.toggleRemember()
+
+        #expect(model.showRecommendation() == nil)
+        model.continueWorkout()
+
+        let stored = try #require(try storedPreferences().first)
+        #expect(stored.minutes == budget)
+        #expect(stored.sourceAdjustmentID == nil)
+    }
+
+    @Test("A limit already stored for that weekday is replaced in place")
+    func aStoredLimitForThatWeekdayIsReplacedInPlace() throws {
+        let model = try model()
+        let user = try #require(try store.currentUser())
+        let existing = TrainingPreference(
+            userID: user.id, kind: .timeLimit, minutes: 40,
+            weekday: TrainingPreference.weekday(of: Date()),
+            confirmedAt: Date(timeIntervalSince1970: 0),
+            updatedAt: Date(timeIntervalSince1970: 0)
+        )
+        try store.savePreference(existing)
+
+        model.selectMinutes(model.state.plannedMinutes + 5)
+        model.toggleRemember()
+        model.continueWorkout()
+
+        let stored = try storedPreferences()
+        #expect(stored.count == 1)
+        #expect(stored.first?.id == existing.id)
+        #expect(stored.first?.minutes == model.state.plannedMinutes + 5)
+    }
+
+    // T30: the day belongs to the person's own calendar, and the same instant
+    // is a different weekday in UTC either side of midnight.
+    @Test("The weekday is read off the day's local date")
+    func theWeekdayComesFromTheLocalDate() throws {
+        let model = try model()
+        model.selectMinutes(model.state.plannedMinutes + 5)
+        model.toggleRemember()
+
+        model.continueWorkout()
+
+        let today = Calendar(identifier: .gregorian).startOfDay(for: Date())
+        #expect(try storedPreferences().first?.weekday == TrainingPreference.weekday(of: today))
+    }
+
+    @Test("ISO numbering runs Monday 1 to Sunday 7, in the zone the day was lived in")
+    func isoNumberingFollowsTheZone() throws {
+        var tokyo = Calendar(identifier: .gregorian)
+        tokyo.timeZone = try #require(TimeZone(identifier: "Asia/Tokyo"))
+        var utc = Calendar(identifier: .gregorian)
+        utc.timeZone = try #require(TimeZone(identifier: "UTC"))
+        // Sunday 20 September 2026, 23:00 UTC, which is Monday in Tokyo.
+        let instant = try #require(
+            utc.date(from: DateComponents(year: 2026, month: 9, day: 20, hour: 23))
+        )
+
+        #expect(TrainingPreference.weekday(of: instant, in: utc) == 7)
+        #expect(TrainingPreference.weekday(of: instant, in: tokyo) == 1)
+    }
+
+    // MARK: - A limit carried in
+
+    // A whole-session limit is no answer to how much time is left.
+    @Test("A carried limit is dropped once the session is under way")
+    func aCarriedLimitIsDroppedOnceTheSessionIsUnderWay() throws {
+        let model = try model(Self.partlyDoneDay(), minutes: 20)
+
+        #expect(model.state.scope == .remaining)
+        #expect(model.state.selectedMinutes == nil)
+        #expect(!model.state.canShowRecommendation)
+    }
+
+    // Nothing may be recommended off an answer the screen never showed.
+    @Test("A carried limit that is no preset is shown in the field")
+    func aCarriedLimitThatIsNoPresetIsShownInTheField() throws {
+        let day = Self.fullDay()
+        let planned = SessionEstimate.minutes(
+            day, user: testUser(), scope: .wholeSession, catalog: testCatalog
+        )
+        let carried = planned - 5
+
+        let model = try model(day, minutes: carried)
+
+        #expect(!model.state.presets.contains(carried))
+        #expect(model.state.selectedMinutes == carried)
+        #expect(model.state.customMinutesText == String(carried))
+        #expect(model.state.canShowRecommendation)
     }
 
     @Test("The context route never calls an interpreter that is not installed")

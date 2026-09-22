@@ -28,6 +28,7 @@ nonisolated struct AdjustmentState: Equatable, Sendable {
     var enteredWithExercise = false
     var availableEquipment: Set<Equipment> = []
     var note = ""
+    var remember = false
     var decision: PolicyDecision?
     var review: ReviewUi?
     var isApplying = false
@@ -38,6 +39,10 @@ nonisolated struct AdjustmentState: Equatable, Sendable {
     var scope: TimeScope { hasPerformedWork ? .remaining : .wholeSession }
 
     var isPresetSelected: Bool { customMinutesText.isEmpty && selectedMinutes != nil }
+
+    // Nothing to name the limit after, and an answer about remaining time is
+    // not a limit for the whole weekday.
+    var canRemember: Bool { weekdayName != nil && scope == .wholeSession }
 
     var canShowRecommendation: Bool {
         switch reason {
@@ -66,22 +71,30 @@ final class AdjustmentModel {
     private let dependencies: AppDependencies
     private let requestedDayNumber: Int
     private let requestedWeekNumber: Int?
+    // A limit already confirmed for this weekday, carried from home so the flow
+    // opens on the answer instead of asking for it again.
+    private let requestedMinutes: Int?
     private var user: UserProfile?
+    private var dayWeekday: Int?
+    private var hasConfirmed = false
 
     init(
         dependencies: AppDependencies,
         dayNumber: Int,
         weekNumber: Int? = nil,
         reason: DirectReason,
-        exerciseID: UUID? = nil
+        exerciseID: UUID? = nil,
+        minutes: Int? = nil
     ) {
         self.requestedReason = reason
         self.dependencies = dependencies
         self.requestedDayNumber = dayNumber
         self.requestedWeekNumber = weekNumber.flatMap { $0 > 0 ? $0 : nil }
+        self.requestedMinutes = minutes.flatMap { TimePresets.isSupported($0) ? $0 : nil }
         state.reason = reason
         state.selectedExerciseID = exerciseID
         state.enteredWithExercise = exerciseID != nil
+        state.selectedMinutes = requestedMinutes
         load()
     }
 
@@ -116,6 +129,10 @@ final class AdjustmentModel {
 
     func typeNote(_ text: String) {
         state.note = text
+    }
+
+    func toggleRemember() {
+        state.remember.toggle()
     }
 
     func chooseFromContext(_ reason: DirectReason) async -> UnstuckRoute {
@@ -158,9 +175,10 @@ final class AdjustmentModel {
         switch dependencies.adjustments.apply(
             proposal, dayID: day.id, reason: state.reason.adjustmentReason, now: Date()
         ) {
-        case .applied, .alreadyApplied:
-            state.isApplying = false
-            appliedProposalID = proposal.proposalID
+        case let .applied(adjustment, _):
+            applied(proposal.proposalID, sourceAdjustmentID: adjustment.id)
+        case let .alreadyApplied(adjustment):
+            applied(proposal.proposalID, sourceAdjustmentID: adjustment.id)
         case .stale, .rejected:
             rebuild()
         case .failed:
@@ -172,6 +190,75 @@ final class AdjustmentModel {
 
     func consumeAppliedEvent() {
         appliedProposalID = nil
+    }
+
+    // The reviewed plan already fits, so continuing is the person accepting it:
+    // the same confirmation an apply is, and the other moment memory is written.
+    func continueWorkout() {
+        confirm(sourceAdjustmentID: nil)
+    }
+
+    private func applied(_ proposalID: String, sourceAdjustmentID: UUID) {
+        confirm(sourceAdjustmentID: sourceAdjustmentID)
+        state.isApplying = false
+        appliedProposalID = proposalID
+    }
+
+    // The only path that makes either record durable: cancelling, keeping the
+    // original, a failed apply and leaving the flow all end without it.
+    private func confirm(sourceAdjustmentID: UUID?) {
+        guard !hasConfirmed, let user else { return }
+        hasConfirmed = true
+        let now = Date()
+        rememberLimit(for: user, sourceAdjustmentID: sourceAdjustmentID, now: now)
+        keepNote(for: user, now: now)
+    }
+
+    private func rememberLimit(for user: UserProfile, sourceAdjustmentID: UUID?, now: Date) {
+        guard state.remember, state.canRemember,
+              let minutes = state.selectedMinutes, let weekday = dayWeekday
+        else { return }
+
+        let store = dependencies.store
+        let stored = dependencies.attempt("preferences", { try store.preferences(userID: user.id) })
+            ?? []
+        let existing = stored.first { $0.kind == .timeLimit && $0.weekday == weekday }
+        let preference = TrainingPreference(
+            id: existing?.id ?? UUID(),
+            userID: user.id,
+            kind: .timeLimit,
+            minutes: minutes,
+            weekday: weekday,
+            sourceAdjustmentID: sourceAdjustmentID,
+            confirmedAt: now,
+            updatedAt: now
+        )
+        if existing == nil {
+            dependencies.attempt("savePreference") { try store.savePreference(preference) }
+        } else {
+            dependencies.attempt("updatePreference") { try store.updatePreference(preference) }
+        }
+    }
+
+    private func keepNote(for user: UserProfile, now: Date) {
+        let text = state.note.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !text.isEmpty, let day = state.day else { return }
+
+        let store = dependencies.store
+        if var existing = dependencies.attempt("note", { try store.note(dayID: day.id) }) {
+            existing.text = text
+            existing.updatedAt = now
+            dependencies.attempt("updateNote") { try store.updateNote(existing) }
+        } else {
+            dependencies.attempt("saveNote") {
+                try store.saveNote(
+                    SessionNote(
+                        userID: user.id, dayID: day.id, text: text,
+                        createdAt: now, updatedAt: now
+                    )
+                )
+            }
+        }
     }
 
     // The plan moved under the preview, so the recommendation is built again
@@ -228,12 +315,24 @@ final class AdjustmentModel {
 
         read(day, profile)
         state.goal = profile.fitnessGoal
-        state.weekdayName = plan.startDate.map {
-            WorkoutDateFormatter.weekday(
-                WorkoutWeek.date(of: day.dayNumber, startingFrom: $0)
-            )
-        }
+        // The person's own calendar, never UTC: the same instant is a different
+        // weekday either side of midnight.
+        let date = plan.startDate.map { WorkoutWeek.date(of: day.dayNumber, startingFrom: $0) }
+        dayWeekday = date.map { TrainingPreference.weekday(of: $0) }
+        state.weekdayName = date.map { WorkoutDateFormatter.weekday($0) }
+        readRequestedMinutes()
         state.isLoaded = true
+    }
+
+    // A limit carried in from elsewhere answers the whole-session question only,
+    // and has to be visible on the screen it lands on.
+    private func readRequestedMinutes() {
+        guard let requestedMinutes else { return }
+        if state.scope == .remaining {
+            state.selectedMinutes = nil
+        } else if !state.presets.contains(requestedMinutes) {
+            state.customMinutesText = String(requestedMinutes)
+        }
     }
 
     private func storedDay() -> WorkoutDay? {
