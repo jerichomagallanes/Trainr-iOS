@@ -2161,6 +2161,17 @@
         }
       }
     },
+    "pro_compare_adjust": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Adjust today’s workout"
+          }
+        }
+      }
+    },
     "pro_compare_ads": {
       "extractionState": "manual",
       "localizations": {
@@ -2447,6 +2458,28 @@
         }
       }
     },
+    "pro_feature_adjust_body": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Less time, missing equipment, or a plan that needs to bend. Pro reviews a smaller change, shows the tradeoff, and applies it only when you say so."
+          }
+        }
+      }
+    },
+    "pro_feature_adjust_title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Adjust today"
+          }
+        }
+      }
+    },
     "pro_feature_ads_body": {
       "extractionState": "manual",
       "localizations": {
@@ -2568,6 +2601,17 @@
         }
       }
     },
+    "pro_free_limit_adjust": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Free limit: your first adjustment"
+          }
+        }
+      }
+    },
     "pro_full_access": {
       "extractionState": "manual",
       "localizations": {
@@ -2663,6 +2707,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Privacy Policy"
+          }
+        }
+      }
+    },
+    "pro_prompt_adjust": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your first adjustment was included. Pro keeps adapting your workouts when life gets in the way."
           }
         }
       }

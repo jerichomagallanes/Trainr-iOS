@@ -13,6 +13,7 @@ struct RootView: View {
     @State private var entitlements = Entitlements(breadcrumbs: AppDependencies.shared.breadcrumbs)
     @State private var ads = Ads(breadcrumbs: AppDependencies.shared.breadcrumbs)
     private let allowance: any FreeGenerationAllowance = StoredGenerationAllowance()
+    private let adjustments: any AdjustmentAllowance = StoredAdjustmentAllowance()
     @State private var onboarding: OnboardingModel?
     @State private var phase = Phase.splash
     @State private var path: [Route] = []
@@ -129,6 +130,27 @@ struct RootView: View {
         } else {
             prompt = reason
         }
+    }
+
+    // The free week is never consulted here: an adjustment is included on its
+    // own terms, and the two allowances must not spend each other.
+    private func askForAdjustment(_ cycleID: String?, then action: () -> Void) {
+        switch AdjustmentGate.decide(
+            cycleID: cycleID,
+            included: adjustments.includedCycleID(),
+            isPro: entitlements.isPro,
+            canSell: entitlements.canSell
+        ) {
+        case .allowed: action()
+        case .ask: prompt = .adjust
+        }
+    }
+
+    // Spent only on a change that was actually applied.
+    private func spendAdjustmentCycle(_ cycleID: String) {
+        guard AdjustmentGate.spends(isPro: entitlements.isPro, canSell: entitlements.canSell)
+        else { return }
+        adjustments.consume(cycleID: cycleID)
     }
 
     private func restartOnHome() {
