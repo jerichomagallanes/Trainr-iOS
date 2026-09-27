@@ -10,7 +10,6 @@ name: Release smoke
 # flakes should not block a correct change.
 on:
   pull_request:
-    branches: [main]
     paths-ignore:
       - '**/*.md'
       - 'docs/**'
