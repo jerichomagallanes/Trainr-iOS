@@ -146,7 +146,8 @@ struct RootView: View {
 
     // Spent only on a week that arrived.
     private func spendFreeGeneration() {
-        guard !entitlements.isPro else { return }
+        guard GenerationGate.spends(isPro: entitlements.isPro, canSell: entitlements.canSell)
+        else { return }
         allowance.markUsed()
     }
 
@@ -154,10 +155,13 @@ struct RootView: View {
     // asks for Pro, and it asks where the tap happened rather than by replacing
     // the screen.
     private func ask(_ reason: PaywallReason, then action: () -> Void) {
-        if entitlements.isPro || !allowance.hasBeenUsed() {
-            action()
-        } else {
-            prompt = reason
+        switch GenerationGate.decide(
+            used: allowance.hasBeenUsed(),
+            isPro: entitlements.isPro,
+            canSell: entitlements.canSell
+        ) {
+        case .allowed: action()
+        case .ask: prompt = reason
         }
     }
 
