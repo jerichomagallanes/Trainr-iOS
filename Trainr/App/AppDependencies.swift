@@ -53,18 +53,19 @@ final class AppDependencies {
     static let shared = live()
 
     static func live() -> AppDependencies {
+        let breadcrumbs = CrashlyticsBreadcrumbs()
         let container: ModelContainer
         do {
-            container = try TrainingStore.container(inMemory: startsFresh)
+            container = try TrainingStore.container(inMemory: startsFresh, breadcrumbs: breadcrumbs)
         } catch {
             // In-memory keeps the session alive long enough to write the
             // crash report that explains the broken database.
-            CrashlyticsBreadcrumbs().record("store: persistent container failed, using memory")
+            breadcrumbs.record("store: persistent container failed, using memory")
             do {
                 container = try TrainingStore.container(inMemory: true)
             } catch {
                 // Naming the reason here is what puts it in the crash report.
-                CrashlyticsBreadcrumbs().record("store: memory container failed too: \(error)")
+                breadcrumbs.record("store: memory container failed too: \(error)")
                 fatalError("Trainr cannot open a data store: \(error)")
             }
         }
@@ -72,7 +73,6 @@ final class AppDependencies {
         #if DEBUG
         UITestFixtures.seedIfRequested(into: store)
         #endif
-        let breadcrumbs = CrashlyticsBreadcrumbs()
         return AppDependencies(
             store: store,
             planGenerator: makePlanGenerator(),
