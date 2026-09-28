@@ -48,8 +48,6 @@ nonisolated enum Clarification: String, StrictCodedEnum, CaseIterable {
 nonisolated struct Evidence: Codable, Equatable, Sendable {
     var field: EvidenceField
     var quote: String
-    var start: Int
-    var end: Int
 }
 
 nonisolated enum EvidenceField: String, StrictCodedEnum, CaseIterable {
@@ -126,7 +124,7 @@ nonisolated extension TimeBudgetMention {
 nonisolated extension Evidence {
 
     enum CodingKeys: String, CodingKey, CaseIterable {
-        case field, quote, start, end
+        case field, quote
     }
 
     init(from decoder: any Decoder) throws {
@@ -134,8 +132,6 @@ nonisolated extension Evidence {
         let fields = try decoder.container(keyedBy: CodingKeys.self)
         field = try fields.decode(EvidenceField.self, forKey: .field)
         quote = try fields.decode(String.self, forKey: .quote)
-        start = try fields.decode(Int.self, forKey: .start)
-        end = try fields.decode(Int.self, forKey: .end)
     }
 }
 

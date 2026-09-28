@@ -1,7 +1,7 @@
 {
   "input": "I have 35 minutes for the whole workout today.",
   "output": {
-    "schemaVersion": "1.0",
+    "schemaVersion": "1.1",
     "intent": "less_time",
     "timeBudget": {
       "minutes": 35,
@@ -14,9 +14,7 @@
     "evidence": [
       {
         "field": "time_budget",
-        "quote": "35 minutes for the whole workout",
-        "start": 7,
-        "end": 39
+        "quote": "35 minutes for the whole workout"
       }
     ]
   }
