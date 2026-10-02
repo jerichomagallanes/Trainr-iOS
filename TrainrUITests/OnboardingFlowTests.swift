@@ -93,12 +93,13 @@ final class OnboardingFlowTests: XCTestCase {
     }
 
     // Longer than a screen push is given elsewhere: this one waits on the
-    // generation and the first read of a plan that was written a moment ago,
-    // and 15 seconds was enough locally but not on a loaded runner.
+    // generation and the first read of a plan that was written a moment ago.
+    // 15 seconds was enough locally but not on a loaded runner, and 30 was
+    // not enough on the nightly runner once (2 October).
     @MainActor
     private func arriveOnThePlan() {
         let heading = app.staticTexts["YOUR WEEKLY WORKOUT PLAN"]
-        XCTAssertTrue(heading.waitForExistence(timeout: 30))
+        XCTAssertTrue(heading.waitForExistence(timeout: 60))
 
         XCTAssertTrue(app.staticTexts.matching(
             NSPredicate(format: "label BEGINSWITH %@", "Week 1:")
@@ -131,26 +132,29 @@ final class OnboardingFlowTests: XCTestCase {
 
         let slider = app.buttons["SLIDE TO FINISH THIS WORKOUT"]
         XCTAssertTrue(slider.waitForExistence(timeout: 5))
-        var attempts = 0
-        while !slider.isHittable && attempts < 20 {
-            // Along the left margin, clear of the set rows: a swipe starting on a text field is the field's.
-            app.coordinate(withNormalizedOffset: CGVector(dx: 0.03, dy: 0.8))
+        let completed = app.staticTexts["DAY 1 COMPLETED"]
+        // Slid until it takes rather than once. The nightly runner failed here
+        // on 26, 27 and 30 September and 2 October: the long first-run routine
+        // is still settling after the scroll that brought the slider in, and a
+        // drag that starts on a moving thumb ends short of the confirm fraction.
+        // The thumb starts at the near end and must cross most of the track; a
+        // tap is ignored by design. The hold at the end lets the last
+        // translation land before the touch lifts.
+        var slides = 0
+        while !completed.exists && slides < 3 {
+            app.scrollUntilHittable(slider, attempts: 20)
+            XCTAssertTrue(slider.isHittable, "The slider never came into view")
+            slider.coordinate(withNormalizedOffset: CGVector(dx: 0.06, dy: 0.5))
                 .press(
-                    forDuration: 0.05,
-                    thenDragTo: app.coordinate(withNormalizedOffset: CGVector(dx: 0.03, dy: 0.2))
+                    forDuration: 0.1,
+                    thenDragTo: slider.coordinate(withNormalizedOffset: CGVector(dx: 0.98, dy: 0.5)),
+                    withVelocity: .slow,
+                    thenHoldForDuration: 0.3
                 )
-            attempts += 1
+            _ = completed.waitForExistence(timeout: 10)
+            slides += 1
         }
-        XCTAssertTrue(slider.isHittable, "The slider never came into view")
-        Thread.sleep(forTimeInterval: 0.5)
-        // The thumb starts at the near end and must cross most of the track; a tap is ignored by design.
-        slider.coordinate(withNormalizedOffset: CGVector(dx: 0.06, dy: 0.5))
-            .press(
-                forDuration: 0.1,
-                thenDragTo: slider.coordinate(withNormalizedOffset: CGVector(dx: 0.98, dy: 0.5))
-            )
-
-        XCTAssertTrue(app.staticTexts["DAY 1 COMPLETED"].waitForExistence(timeout: 10))
+        XCTAssertTrue(completed.exists, "The slide never finished the workout")
         XCTAssertTrue(app.buttons["VIEW WEEKLY PROGRESS"].exists)
 
         app.buttons["BACK TO MY WORKOUT PLAN"].tap()
