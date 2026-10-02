@@ -303,7 +303,9 @@ struct ProPaywallView: View {
     private var renewalNote: String? {
         guard selected?.packageType != .lifetime else { return nil }
         guard let product = selected?.storeProduct,
+              entitlements.eligibleTrials.contains(product.productIdentifier),
               let offer = product.introductoryDiscount,
+              offer.paymentMode == .freeTrial,
               let period = Self.trialPeriod(offer.subscriptionPeriod)
         else { return L10n.proCancelAnytime }
         return L10n.proTrialThen(period, product.localizedPriceString)
@@ -379,13 +381,14 @@ struct ProPaywallView: View {
         isWorking = true
         _ = await entitlements.purchase(selected)
         isWorking = false
+        notice = entitlements.purchaseNotice
     }
 
     private func restore() async {
         isWorking = true
         let restored = await entitlements.restore()
         isWorking = false
-        notice = restored ? L10n.proRestored : L10n.proNothingToRestore
+        notice = entitlements.purchaseNotice ?? (restored ? L10n.proRestored : L10n.proNothingToRestore)
     }
 
     // The annual plan when there is one, because that is the one being recommended.
