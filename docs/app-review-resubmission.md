@@ -12,9 +12,10 @@ Apple rejected build 87 on October 1. This change addresses the app-side issues:
   Purchases distinguish cancellation, pending approval and failures. Free-trial copy
   requires both a free-trial offer and confirmed account eligibility from RevenueCat.
 - The app-owned privacy manifest no longer declares fitness data sent to Gemini.
-  Planning is local. SDK manifests remain bundled and must be considered alongside
-  the app manifest and the App Store privacy declarations; `NSPrivacyTracking=false`
-  here does not declare that the embedded advertising SDK never tracks.
+  Planning is local. Tracking is declared for AdMob's documented ad-request domain,
+  `googleads.g.doubleclick.net`. SDK manifests remain bundled and must be considered
+  alongside the app manifest and App Store privacy declarations. A denied ATT choice
+  may block requests to that domain; workout features remain available without ads.
 
 Companion changes in the Android/shared website repository update the string source,
 privacy policy, promotional text and original closing screenshot artwork. Publish
@@ -55,4 +56,30 @@ that policy before resubmitting. Product IDs and entitlement remain unchanged.
 - https://www.cdc.gov/bmi/about/index.html
 - https://developers.google.com/admob/ios/privacy
 - https://developers.google.com/admob/ios/privacy/idfa
+- https://developers.google.com/admob/ios/privacy/data-disclosure
+- https://support.google.com/admob/answer/7671795
+- https://developer.apple.com/documentation/technotes/tn3182-adding-privacy-tracking-keys-to-your-privacy-manifest
+- https://www.revenuecat.com/docs/platform-resources/apple-platform-resources/apple-app-privacy
 - https://developer.apple.com/app-store/review/guidelines/
+
+## Privacy disclosure audit
+
+The Release archive bundles Google Mobile Ads 13.9, UMP, Firebase Crashlytics and
+RevenueCat manifests. Their declared collection is the baseline for App Store
+Connect, even though Trainr's workout profile itself stays on the device:
+
+| Data | Linked to identity | Tracking | Purposes |
+| --- | --- | --- | --- |
+| Device ID | Yes | Yes | Third-party advertising, developer advertising, analytics |
+| Coarse location | Yes | No | Third-party advertising, developer advertising, analytics |
+| Product interaction | Yes | No | Third-party advertising, developer advertising, analytics |
+| Advertising data | Yes | No in SDK manifest | Third-party advertising, developer advertising, analytics |
+| Performance data | No | No | Third-party advertising, developer advertising, analytics |
+| Crash data | No | No | Analytics, app functionality |
+| Other diagnostic data | No | No | Third-party advertising, developer advertising, analytics, app functionality |
+| Purchase history | No (anonymous RevenueCat IDs) | No | Analytics, app functionality |
+
+The existing App Store label also discloses advertising data for tracking. Keep
+that conservative disclosure unless the configured advertising behavior is audited
+more narrowly. No fitness measurements are passed to these SDKs by Trainr. Reaudit
+domains and data when adding mediation, attribution integrations or SDK versions.
