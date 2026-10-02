@@ -1,12 +1,21 @@
 import Foundation
 import Observation
 
+// Read off the sets that remain. Nil while the stored day is unadjusted, when
+// the generator's own columns are still the truth.
+nonisolated struct DerivedDay: Equatable, Sendable {
+    var minutes: Int
+    var exerciseCount: Int
+    var equipment: [String]
+}
+
 nonisolated struct WeeklyPlanDay: Identifiable, Equatable, Sendable {
     var day: WorkoutDay
     var date: Date
     var isToday = false
     var isPast = false
     var finishKind: FinishKind?
+    var derived: DerivedDay?
 
     var id: UUID { day.id }
 
@@ -50,6 +59,7 @@ final class WeeklyPlanModel {
     private let dependencies: AppDependencies
     private let requestedWeekNumber: Int?
     private var finishKinds: [UUID: FinishKind] = [:]
+    private var user: UserProfile?
 
     init(dependencies: AppDependencies, weekNumber: Int? = nil) {
         self.dependencies = dependencies
@@ -82,6 +92,7 @@ final class WeeklyPlanModel {
             canAddWeek: newest?.isReadyForTheNextWeek() ?? false,
             finishKinds: finishKinds
         )
+        .deriving(user: user, catalog: dependencies.catalog)
     }
 
     // The slots never move: dragging swaps sessions between fixed weekdays.
@@ -97,6 +108,7 @@ final class WeeklyPlanModel {
             for: moved, isCurrentWeek: state.isCurrentWeek, canAddWeek: state.canAddWeek,
             finishKinds: finishKinds
         )
+        .deriving(user: user, catalog: dependencies.catalog)
 
         let before = Dictionary(uniqueKeysWithValues: plan.workoutDays.map { ($0.id, $0.dayNumber) })
         for day in reordered where before[day.id] != day.dayNumber {
@@ -105,7 +117,8 @@ final class WeeklyPlanModel {
     }
 
     private func currentUserPlans() throws -> [WeeklyPlan] {
-        guard let user = try dependencies.store.currentUser() else { return [] }
+        user = try dependencies.store.currentUser()
+        guard let user else { return [] }
         return try dependencies.store.plans(for: user.id)
     }
 
@@ -164,5 +177,27 @@ final class WeeklyPlanModel {
             canStartNextWeek: !isSample && readyForTheNext,
             canAddWeek: canAddWeek ?? (!isSample && readyForTheNext)
         )
+    }
+}
+
+nonisolated extension WeeklyPlanState {
+
+    // duration, exerciseCount and equipment are generator outputs that applying
+    // an adjustment deliberately leaves alone, so undo can restore the day
+    // exactly. An adjusted day is therefore read from the sets that remain.
+    func deriving(user: UserProfile?, catalog: any ExerciseCatalog) -> WeeklyPlanState {
+        var derived = self
+        derived.days = days.map { planDay in
+            guard planDay.day.isAdjustedToday else { return planDay }
+            var adjusted = planDay
+            adjusted.derived = DerivedDay(
+                minutes: user.map { planDay.day.remainingMinutes($0, catalog) }
+                    ?? planDay.day.duration,
+                exerciseCount: planDay.day.derivedExerciseCount,
+                equipment: planDay.day.derivedEquipment(catalog)
+            )
+            return adjusted
+        }
+        return derived
     }
 }

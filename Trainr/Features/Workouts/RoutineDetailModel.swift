@@ -21,6 +21,23 @@ nonisolated struct RoutineDetailState: Equatable, Sendable {
     var outcome: SessionOutcome?
     var isConfirmingFinishEarly = false
     var saveFailed = false
+    var activeAdjustment: AppliedAdjustment?
+    var adjustedBanner: AdjustedBannerUi?
+    var isShowingAdjustSheet = false
+    var scrollToPosition: Int?
+    var undoKeptSets: Int?
+    // Nil while the stored day is unadjusted: the header then reads the planned
+    // per-exercise minutes as it always has.
+    var totalMinutes: Int?
+
+    var hasFinished: Bool { outcome != nil }
+}
+
+// What the adjust flow left behind when it closed. Either way the stored day is
+// read again: it may be a different day now.
+nonisolated enum AdjustmentReturn: Equatable, Sendable {
+    case reload
+    case finishEarly
 }
 
 nonisolated struct SessionSavedEvent: Equatable, Sendable {
@@ -55,14 +72,16 @@ final class RoutineDetailModel {
         state.dayNumber = dayNumber
     }
 
+    // Re-reads the stored day without losing what the screen is doing: the
+    // timer, the open tutorial and the scroll request all survive.
     func load() {
         let store = dependencies.store
-        guard let user = dependencies.attempt("currentUser", { try store.currentUser() }) else {
+        guard let profile = dependencies.attempt("currentUser", { try store.currentUser() }) else {
             state.isLoaded = true
             return
         }
-        let units = user.weightUnits
-        let plans = dependencies.attempt("plans", { try store.plans(for: user.id) }) ?? []
+        state.unitSystem = profile.weightUnits
+        let plans = dependencies.attempt("plans", { try store.plans(for: profile.id) }) ?? []
         let plan = requestedWeekNumber
             .flatMap { number in plans.first { $0.weekNumber == number } }
             ?? (requestedWeekNumber == nil ? plans.max { $0.weekNumber < $1.weekNumber } : nil)
@@ -71,7 +90,6 @@ final class RoutineDetailModel {
               let index = plan.workoutDays.firstIndex(where: { $0.dayNumber == requestedDayNumber })
         else {
             state.isLoaded = true
-            state.unitSystem = units
             return
         }
 
@@ -82,28 +100,89 @@ final class RoutineDetailModel {
         let before = day.completedAt ?? .distantFuture
         let previousByKey = dependencies.attempt("previousSets", {
             try store.previousSets(
-                userID: user.id,
+                userID: profile.id,
                 exerciseKeys: day.exercises.map(\.exerciseKey),
                 excludingDayID: day.id,
                 before: before
             )
         }) ?? [:]
+        let adjustment = dependencies.attempt("activeAdjustment", {
+            try store.activeAdjustment(dayID: day.id)
+        })
 
-        state = RoutineDetailState(
-            routine: day.toRoutineUi(
-                previousByKey: previousByKey, catalog: dependencies.catalog, injuries: user.injuries
-            ),
-            equipment: day.equipment,
-            date: plan.startDate.map { WorkoutWeek.date(of: day.dayNumber, startingFrom: $0) }
-                ?? SampleWorkoutData.date(of: day.dayNumber),
-            // "Day 2", not day 3: the design counts workout days, not weekdays.
-            dayNumber: index + 1,
-            weekNumber: plan.weekNumber,
-            completesTheWeek: Self.completesTheWeek(plan.workoutDays, dayNumber: index + 1),
-            unitSystem: units,
-            isLoaded: true,
-            outcome: dependencies.attempt("outcome", { try store.outcome(dayID: day.id) })
+        state.routine = day.toRoutineUi(
+            previousByKey: previousByKey, catalog: dependencies.catalog, injuries: profile.injuries
         )
+        state.equipment = day.derivedEquipment(dependencies.catalog)
+        state.totalMinutes = day.isAdjustedToday
+            ? day.remainingMinutes(profile, dependencies.catalog)
+            : nil
+        state.date = plan.startDate.map { WorkoutWeek.date(of: day.dayNumber, startingFrom: $0) }
+            ?? SampleWorkoutData.date(of: day.dayNumber)
+        // "Day 2", not day 3: the design counts workout days, not weekdays.
+        state.dayNumber = index + 1
+        state.weekNumber = plan.weekNumber
+        state.completesTheWeek = Self.completesTheWeek(plan.workoutDays, dayNumber: index + 1)
+        state.outcome = dependencies.attempt("outcome", { try store.outcome(dayID: day.id) })
+        state.activeAdjustment = adjustment
+        state.adjustedBanner = adjustment.map { banner(for: $0.proposal) }
+        // The note belongs to one undo, not to whatever the day shows next.
+        state.undoKeptSets = nil
+        state.isLoaded = true
+    }
+
+    // MARK: - Adjusting
+
+    func openAdjustSheet() {
+        state.isShowingAdjustSheet = true
+    }
+
+    func dismissAdjustSheet() {
+        state.isShowingAdjustSheet = false
+    }
+
+    // "Show me how" is the existing tutorial on the card, not a new screen.
+    func showHowTo(at position: Int) {
+        guard let exercise = state.routine.exercises.first(where: { $0.position == position })
+        else { return }
+        state.isShowingAdjustSheet = false
+        if exercise.steps.isEmpty {
+            state.expandedVideo = position
+        } else {
+            state.expandedHowTo = position
+        }
+        state.scrollToPosition = position
+    }
+
+    func scrolled() {
+        state.scrollToPosition = nil
+    }
+
+    func undoAdjustment() {
+        guard let adjustment = state.activeAdjustment else { return }
+        let result = dependencies.adjustments.undo(adjustmentID: adjustment.id, now: Date())
+        let kept: Int = if case let .restored(_, count) = result { count } else { 0 }
+        load()
+        state.undoKeptSets = kept > 0 ? kept : nil
+    }
+
+    private func banner(for proposal: AdjustmentProposal) -> AdjustedBannerUi {
+        let catalog = dependencies.catalog
+        if let replaced = proposal.changes.first(where: { $0.kind == .replaceUnperformed }) {
+            return AdjustedBannerUi(
+                kind: .replaced,
+                fromName: catalog[replaced.before.catalogKey]?.name ?? "",
+                toName: replaced.after.flatMap { catalog[$0.catalogKey]?.name } ?? ""
+            )
+        }
+        var regions: [MuscleRegion] = []
+        for region in proposal.changes.compactMap({ catalog[$0.before.catalogKey]?.primary.region })
+        where !regions.contains(region) {
+            regions.append(region)
+        }
+        guard !proposal.changes.contains(where: { $0.kind == .omitUnperformed }), !regions.isEmpty
+        else { return AdjustedBannerUi(kind: .reducedSession) }
+        return AdjustedBannerUi(kind: .lessWorkForRegions, regions: regions)
     }
 
     // MARK: - Editing
@@ -351,16 +430,27 @@ final class RoutineDetailModel {
         persistExercise(at: position, completed: now)
     }
 
-    private func storedExercise(at position: Int) -> WorkoutExercise? {
-        guard let exercises = storedDay?.exercises, exercises.indices.contains(position - 1)
+    // A card's position counts the exercises still in today's session; the
+    // stored day also holds the ones an adjustment omitted, so the two lists
+    // index differently and only the visible one may be counted from.
+    private func storedIndex(at position: Int) -> Int? {
+        guard let day = storedDay, day.visibleExercises.indices.contains(position - 1)
         else { return nil }
-        return exercises[position - 1]
+        let target = day.visibleExercises[position - 1]
+        return day.exercises.firstIndex { $0.id == target.id }
+    }
+
+    private func storedExercise(at position: Int) -> WorkoutExercise? {
+        guard let day = storedDay, let index = storedIndex(at: position) else { return nil }
+        return day.exercises[index]
     }
 
     private func persistExercise(at position: Int, completed: Bool) {
-        guard var day = storedDay, var exercise = storedExercise(at: position) else { return }
+        guard var day = storedDay, let index = storedIndex(at: position),
+              var exercise = storedExercise(at: position)
+        else { return }
         exercise.isCompleted = completed
-        day.exercises[position - 1] = exercise
+        day.exercises[index] = exercise
         storedDay = day
 
         dependencies.attempt("updateExercise", { try dependencies.store.updateExercise(exercise) })
@@ -369,16 +459,19 @@ final class RoutineDetailModel {
         persistDayStatus()
     }
 
+    // Completing leaves what an adjustment omitted alone; clearing does not, so
+    // undoing the adjustment hands the exercise back unticked.
     private func persistEveryExercise(completed: Bool) {
         guard var day = storedDay else { return }
         day.exercises = day.exercises.map { exercise in
+            guard !(completed && exercise.isOmittedToday) else { return exercise }
             var marked = exercise
             marked.isCompleted = completed
             return marked
         }
         storedDay = day
 
-        for exercise in day.exercises {
+        for exercise in completed ? day.visibleExercises : day.exercises {
             dependencies.attempt("updateExercise", { try dependencies.store.updateExercise(exercise) })
         }
         persistFilledSets(at: state.routine.exercises.map(\.position))
@@ -390,8 +483,8 @@ final class RoutineDetailModel {
     private func persistFilledSets(at positions: [Int]) {
         guard var day = storedDay else { return }
         for position in positions {
-            guard day.exercises.indices.contains(position - 1) else { continue }
-            let stored = day.exercises[position - 1]
+            guard let index = storedIndex(at: position) else { continue }
+            let stored = day.exercises[index]
             let logged = state.routine.exercises
                 .first { $0.position == position }?.sets ?? []
             let before = Dictionary(uniqueKeysWithValues: stored.sets.map { ($0.id, $0) })
@@ -399,7 +492,10 @@ final class RoutineDetailModel {
             for set in logged where before[set.id] != set {
                 dependencies.attempt("updateSet", { try dependencies.store.updateSet(set) })
             }
-            day.exercises[position - 1].sets = logged
+            // The omitted rows are not on screen and must survive: undo puts
+            // them back.
+            day.exercises[index].sets = (stored.sets.filter { $0.omittedBy != nil } + logged)
+                .sorted { $0.setNumber < $1.setNumber }
         }
         storedDay = day
     }
@@ -408,10 +504,10 @@ final class RoutineDetailModel {
         // A day finished early is closed for good: correcting a number on it
         // must not reopen it as in progress.
         guard state.outcome?.finishKind != .partial, var day = storedDay else { return }
-        let completedCount = day.exercises.count(where: \.isCompleted)
-        let status: WorkoutStatus = switch completedCount {
+        let visible = day.visibleExercises
+        let status: WorkoutStatus = switch visible.count(where: \.isCompleted) {
         case 0: .notStarted
-        case day.exercises.count: .completed
+        case visible.count: .completed
         default: .inProgress
         }
 

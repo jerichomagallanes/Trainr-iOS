@@ -44,6 +44,7 @@ def args_of(fmt):
 # that do are listed here, read off those calls.
 PLURAL_ARG = {
     'days_completed_format': 2,
+    'sets_from_to_format': 2,
     'regenerate_week_message_trained': 1,
     'delete_week_message_trained': 1,
 }

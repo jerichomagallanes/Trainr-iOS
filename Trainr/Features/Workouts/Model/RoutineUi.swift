@@ -43,9 +43,10 @@ nonisolated struct RoutineUi: Equatable, Sendable {
         mapping(position) { exercise in
             var updated = exercise
             let last = exercise.sets.last
+            let taken = exercise.sets.map(\.setNumber) + exercise.omittedSetNumbers
             updated.sets.append(
                 ExerciseSet(
-                    setNumber: exercise.sets.count + 1,
+                    setNumber: (taken.max() ?? 0) + 1,
                     targetReps: last?.targetReps,
                     targetWeightKg: last?.targetWeightKg,
                     targetSeconds: last?.targetSeconds

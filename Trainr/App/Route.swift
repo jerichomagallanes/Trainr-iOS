@@ -17,10 +17,29 @@ enum Route: Hashable {
     case weekCompleted(weekNumber: Int)
     case regeneratingWeek
     case generatingNextWeek
+    // The draft lives in one model that RootView owns for as long as the flow
+    // does, so these carry the step and nothing else.
+    case adjustEntry
+    case adjustTime
+    case adjustEquipment
+    case adjustReview
+    case adjustContext
+    case adjustPain
     case paywall(reason: PaywallReason)
     // Whether this shows the offer or the subscription depends on the
     // entitlement, which is not the screen's identity.
     case pro
+
+    // The interpreter's answer as a step in this stack. Guide and chooser are
+    // answered on the screen that asked rather than by pushing another.
+    init?(_ route: UnstuckRoute) {
+        switch route {
+        case .time: self = .adjustTime
+        case .equipment: self = .adjustEquipment
+        case .pain: self = .adjustPain
+        case .guide, .chooser: return nil
+        }
+    }
 
     // The pattern only, never the filled-in arguments, so no recorded value can
     // travel into a crash report.
@@ -41,8 +60,22 @@ enum Route: Hashable {
         case .weekCompleted: "week_completed"
         case .regeneratingWeek: "regenerating_week"
         case .generatingNextWeek: "generating_next_week"
+        case .adjustEntry: "adjust_entry"
+        case .adjustTime: "adjust_time"
+        case .adjustEquipment: "adjust_equipment"
+        case .adjustReview: "adjust_review"
+        case .adjustContext: "adjust_context"
+        case .adjustPain: "adjust_pain"
         case .paywall: "paywall"
         case .pro: "pro"
+        }
+    }
+
+    var isAdjustment: Bool {
+        switch self {
+        case .adjustEntry, .adjustTime, .adjustEquipment,
+             .adjustReview, .adjustContext, .adjustPain: true
+        default: false
         }
     }
 }

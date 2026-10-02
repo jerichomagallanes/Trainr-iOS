@@ -3,7 +3,8 @@ import Foundation
 nonisolated extension WorkoutDay {
 
     // What a movement is and how it is done come from the catalog; a stored
-    // week only says which movement and how much.
+    // week only says which movement and how much. Omitted sets and the
+    // exercises left with none are today's adjustment, not today's routine.
     func toRoutineUi(
         previousByKey: [String: [ExerciseSet]] = [:],
         catalog: (any ExerciseCatalog)? = nil,
@@ -11,15 +12,18 @@ nonisolated extension WorkoutDay {
     ) -> RoutineUi {
         RoutineUi(
             title: title,
-            exercises: exercises.enumerated().map { index, exercise in
+            exercises: visibleExercises.enumerated().map { index, exercise in
                 let movement = catalog?[exercise.exerciseKey]
                 return ExerciseUi(
                     position: index + 1,
+                    exerciseID: exercise.id,
                     name: exercise.name,
                     description: movement?.summary ?? "",
                     minutes: exercise.durationMinutes,
                     measure: exercise.measure,
-                    sets: exercise.sets,
+                    sets: exercise.sets.filter { $0.omittedBy == nil },
+                    omittedSetNumbers: exercise.sets.filter { $0.omittedBy != nil }
+                        .map(\.setNumber),
                     previousSets: previousByKey[exercise.exerciseKey] ?? [],
                     videoURL: exercise.videoTutorialURL
                         ?? ExerciseVideoCatalog.url(for: exercise.exerciseKey),

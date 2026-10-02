@@ -23,6 +23,402 @@
         }
       }
     },
+    "adjust_equipment_available": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "What can you use instead?"
+          }
+        }
+      }
+    },
+    "adjust_equipment_exercise": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Which exercise?"
+          }
+        }
+      }
+    },
+    "adjust_equipment_title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Which exercise and what's available?"
+          }
+        }
+      }
+    },
+    "adjust_reason_equipment": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Equipment is unavailable"
+          }
+        }
+      }
+    },
+    "adjust_reason_equipment_hint": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Find a suitable alternative."
+          }
+        }
+      }
+    },
+    "adjust_reason_guidance": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show me how"
+          }
+        }
+      }
+    },
+    "adjust_reason_guidance_hint": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Understand an exercise before changing it."
+          }
+        }
+      }
+    },
+    "adjust_reason_other": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Something else"
+          }
+        }
+      }
+    },
+    "adjust_reason_other_hint": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tell Trainr in your own words."
+          }
+        }
+      }
+    },
+    "adjust_reason_pain": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Something hurts"
+          }
+        }
+      }
+    },
+    "adjust_reason_pain_hint": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pause and decide what to do next."
+          }
+        }
+      }
+    },
+    "adjust_reason_time": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "I have less time"
+          }
+        }
+      }
+    },
+    "adjust_reason_time_hint": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keep the most relevant work."
+          }
+        }
+      }
+    },
+    "adjust_review_alternative": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A suitable alternative"
+          }
+        }
+      }
+    },
+    "adjust_review_equipment_title_format": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Use the %1$@ today"
+          }
+        }
+      }
+    },
+    "adjust_review_keep_format": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keep your %1$@ work"
+          }
+        }
+      }
+    },
+    "adjust_review_remaining_line_format": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your remaining time: %1$lld minutes"
+          }
+        }
+      }
+    },
+    "adjust_review_replace_body_format": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ → %2$@"
+          }
+        }
+      }
+    },
+    "adjust_review_time_body_format": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keep %1$@. Shorten the remaining work."
+          }
+        }
+      }
+    },
+    "adjust_review_time_line_format": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your time today: %1$lld minutes"
+          }
+        }
+      }
+    },
+    "adjust_review_time_title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A shorter workout for today"
+          }
+        }
+      }
+    },
+    "adjust_sheet_eyebrow_format": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Today's %1$@ workout"
+          }
+        }
+      }
+    },
+    "adjust_sheet_subtitle": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose one to get started."
+          }
+        }
+      }
+    },
+    "adjust_sheet_title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "What would help today?"
+          }
+        }
+      }
+    },
+    "adjust_time_other": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Other"
+          }
+        }
+      }
+    },
+    "adjust_time_promise": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "We'll show what stays and what changes before you decide."
+          }
+        }
+      }
+    },
+    "adjust_time_range_error": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enter between 5 and 180 minutes"
+          }
+        }
+      }
+    },
+    "adjust_time_remaining": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "For the rest of this session, including rest."
+          }
+        }
+      }
+    },
+    "adjust_time_title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "How much time do you have?"
+          }
+        }
+      }
+    },
+    "adjust_time_whole_session": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "For the whole session, including warm-up and rest."
+          }
+        }
+      }
+    },
+    "adjust_today": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Adjust today"
+          }
+        }
+      }
+    },
+    "adjust_today_hint": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Less time, different equipment, or help with an exercise."
+          }
+        }
+      }
+    },
+    "adjusted_for_today": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Adjusted for today"
+          }
+        }
+      }
+    },
+    "adjusted_reduced_banner": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A reduced session today."
+          }
+        }
+      }
+    },
+    "adjusted_replaced_banner_format": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ replaced with %2$@."
+          }
+        }
+      }
+    },
+    "adjusted_time_banner_format": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your priority work stays. Less %1$@ work today."
+          }
+        }
+      }
+    },
     "ads_privacy_options": {
       "extractionState": "manual",
       "localizations": {
@@ -85,6 +481,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Age"
+          }
+        }
+      }
+    },
+    "already_fits": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your planned session already fits the time you selected. There's no need to change it."
           }
         }
       }
@@ -217,6 +624,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Back to profile"
+          }
+        }
+      }
+    },
+    "back_to_workout": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Back to workout"
           }
         }
       }
@@ -507,6 +925,50 @@
         }
       }
     },
+    "changes_rest_kept_choose_weight": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keep the planned rest. Select the starting weight separately."
+          }
+        }
+      }
+    },
+    "changes_rest_unchanged": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Other exercises and planned rests stay the same."
+          }
+        }
+      }
+    },
+    "choose_weight_body_1": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Use a light practice set to find a weight you can control through the movement. Don't transfer the previous exercise's weight."
+          }
+        }
+      }
+    },
+    "choose_weight_body_2": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Log this exercise separately so future targets use its own history."
+          }
+        }
+      }
+    },
     "close": {
       "extractionState": "manual",
       "localizations": {
@@ -525,6 +987,116 @@
           "stringUnit": {
             "state": "translated",
             "value": "Completed"
+          }
+        }
+      }
+    },
+    "context_option_equipment": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The equipment available"
+          }
+        }
+      }
+    },
+    "context_option_equipment_hint": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Review an alternative."
+          }
+        }
+      }
+    },
+    "context_option_time": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The time I have"
+          }
+        }
+      }
+    },
+    "context_option_time_hint": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Review a shorter version."
+          }
+        }
+      }
+    },
+    "context_placeholder": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add any context you want Trainr to consider."
+          }
+        }
+      }
+    },
+    "context_private": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Private on this device."
+          }
+        }
+      }
+    },
+    "context_prompt": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "What would make today work better?"
+          }
+        }
+      }
+    },
+    "context_title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tell us what you need"
+          }
+        }
+      }
+    },
+    "context_which_first": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Which part should we look at first?"
+          }
+        }
+      }
+    },
+    "continue_workout": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Continue workout"
           }
         }
       }
@@ -1412,6 +1984,17 @@
         }
       }
     },
+    "guide_pick_exercise": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Which exercise?"
+          }
+        }
+      }
+    },
     "health_disclaimer": {
       "extractionState": "manual",
       "localizations": {
@@ -1522,6 +2105,17 @@
         }
       }
     },
+    "how_to_choose_weight": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "How to choose the weight"
+          }
+        }
+      }
+    },
     "imperial": {
       "extractionState": "manual",
       "localizations": {
@@ -1606,6 +2200,50 @@
           "stringUnit": {
             "state": "translated",
             "value": "Intermediate"
+          }
+        }
+      }
+    },
+    "join_and_format": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ and %2$@"
+          }
+        }
+      }
+    },
+    "keep_current_workout": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keep your current workout"
+          }
+        }
+      }
+    },
+    "keep_original": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keep original"
+          }
+        }
+      }
+    },
+    "keep_todays_plan": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keep today's plan"
           }
         }
       }
@@ -1875,6 +2513,17 @@
         }
       }
     },
+    "minutes_short_format": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld min"
+          }
+        }
+      }
+    },
     "missed": {
       "extractionState": "manual",
       "localizations": {
@@ -1882,6 +2531,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Missed"
+          }
+        }
+      }
+    },
+    "missed_sets_not_added": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Missed sets won't be automatically added to your next workout."
           }
         }
       }
@@ -1952,6 +2612,17 @@
         }
       }
     },
+    "need_an_alternative": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Need an alternative?"
+          }
+        }
+      }
+    },
     "next": {
       "extractionState": "manual",
       "localizations": {
@@ -1959,6 +2630,50 @@
           "stringUnit": {
             "state": "translated",
             "value": "NEXT"
+          }
+        }
+      }
+    },
+    "no_adjustment_body": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trainr couldn't work out a change for what you asked. Keep the original, or save what you've done and finish early."
+          }
+        }
+      }
+    },
+    "no_adjustment_title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Today's plan can't be adjusted"
+          }
+        }
+      }
+    },
+    "no_alternative_body": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trainr's catalog has no matching exercise for the equipment you selected. Keep the original, or finish early and save what you've done."
+          }
+        }
+      }
+    },
+    "no_alternative_title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No supported alternative"
           }
         }
       }
@@ -1981,6 +2696,28 @@
           "stringUnit": {
             "state": "translated",
             "value": "No workout plan"
+          }
+        }
+      }
+    },
+    "no_short_version_body_format": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Even the shortest version of today's plan needs about %1$lld minutes. You can keep the original, or save what you've done and finish early."
+          }
+        }
+      }
+    },
+    "no_short_version_title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Today's plan can't fit that time"
           }
         }
       }
@@ -2051,6 +2788,17 @@
         }
       }
     },
+    "omit_today": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Omit today"
+          }
+        }
+      }
+    },
     "optional_label": {
       "extractionState": "manual",
       "localizations": {
@@ -2058,6 +2806,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "%1$@ (optional)"
+          }
+        }
+      }
+    },
+    "original_workout_planned_format": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Original workout · %1$lld minutes planned"
           }
         }
       }
@@ -2091,6 +2850,72 @@
           "stringUnit": {
             "state": "translated",
             "value": "Overweight"
+          }
+        }
+      }
+    },
+    "pain_body": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Don't push through pain to finish the plan."
+          }
+        }
+      }
+    },
+    "pain_card_body_1": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trainr cannot assess the cause of pain or choose a safe replacement from a message."
+          }
+        }
+      }
+    },
+    "pain_card_body_2": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "If pain is new, worsening or persistent, seek guidance from a qualified healthcare professional."
+          }
+        }
+      }
+    },
+    "pain_card_title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Get the right help"
+          }
+        }
+      }
+    },
+    "pain_save_hint": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You can save what you've done without completing the remaining sets."
+          }
+        }
+      }
+    },
+    "pain_title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pause this exercise"
           }
         }
       }
@@ -3140,6 +3965,116 @@
         }
       }
     },
+    "region_arms": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "arm"
+          }
+        }
+      }
+    },
+    "region_back": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "back"
+          }
+        }
+      }
+    },
+    "region_calves": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "calf"
+          }
+        }
+      }
+    },
+    "region_chest": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "chest"
+          }
+        }
+      }
+    },
+    "region_core": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "core"
+          }
+        }
+      }
+    },
+    "region_hamstrings": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "hamstring"
+          }
+        }
+      }
+    },
+    "region_hips": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "hip"
+          }
+        }
+      }
+    },
+    "region_other": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "other"
+          }
+        }
+      }
+    },
+    "region_quads": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "quad"
+          }
+        }
+      }
+    },
+    "region_shoulders": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "shoulders"
+          }
+        }
+      }
+    },
     "repeat_this_week": {
       "extractionState": "manual",
       "localizations": {
@@ -3173,6 +4108,17 @@
         }
       }
     },
+    "restore_remaining_plan": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "· Restore remaining plan"
+          }
+        }
+      }
+    },
     "resume_timer": {
       "extractionState": "manual",
       "localizations": {
@@ -3180,6 +4126,28 @@
           "stringUnit": {
             "state": "translated",
             "value": "Resume"
+          }
+        }
+      }
+    },
+    "retry": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Retry"
+          }
+        }
+      }
+    },
+    "return_to_workout": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Return to workout"
           }
         }
       }
@@ -3195,6 +4163,17 @@
         }
       }
     },
+    "review_not_applied": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not applied. Try again."
+          }
+        }
+      }
+    },
     "review_profile_description": {
       "extractionState": "manual",
       "localizations": {
@@ -3202,6 +4181,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Your next generated week will use these details."
+          }
+        }
+      }
+    },
+    "review_rebuilt": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your workout changed. This is the updated recommendation."
           }
         }
       }
@@ -3250,6 +4240,17 @@
         }
       }
     },
+    "save_and_finish_early": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Save and finish early"
+          }
+        }
+      }
+    },
     "save_profile": {
       "extractionState": "manual",
       "localizations": {
@@ -3279,6 +4280,39 @@
           "stringUnit": {
             "state": "translated",
             "value": "Schedule"
+          }
+        }
+      }
+    },
+    "section_collapsed": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Collapsed"
+          }
+        }
+      }
+    },
+    "section_expanded": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Expanded"
+          }
+        }
+      }
+    },
+    "see_exact_changes": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "See exact changes"
           }
         }
       }
@@ -3327,6 +4361,50 @@
         }
       }
     },
+    "sets_from_to_format": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%#@count@"
+          },
+          "substitutions": {
+            "count": {
+              "argNum": 2,
+              "formatSpecifier": "lld",
+              "variations": {
+                "plural": {
+                  "one": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%1$lld → %2$lld set"
+                    }
+                  },
+                  "other": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%1$lld → %2$lld sets"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "sets_times_reps_format": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld × %2$@"
+          }
+        }
+      }
+    },
     "shoulder_injury_injury": {
       "extractionState": "manual",
       "localizations": {
@@ -3345,6 +4423,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "How to perform"
+          }
+        }
+      }
+    },
+    "show_recommendation": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show recommendation"
           }
         }
       }
@@ -3525,6 +4614,17 @@
         }
       }
     },
+    "today_only": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Today only"
+          }
+        }
+      }
+    },
     "track_weekly_progress": {
       "extractionState": "manual",
       "localizations": {
@@ -3543,6 +4643,72 @@
           "stringUnit": {
             "state": "translated",
             "value": "Track your progress"
+          }
+        }
+      }
+    },
+    "tradeoff": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tradeoff"
+          }
+        }
+      }
+    },
+    "tradeoff_different_resistance": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The resistance feels different. Choose the load separately."
+          }
+        }
+      }
+    },
+    "tradeoff_less_barbell_format": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Less practice with the barbell today. %1$@ loads are tracked separately."
+          }
+        }
+      }
+    },
+    "tradeoff_less_work_format": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Less direct %1$@ work today."
+          }
+        }
+      }
+    },
+    "tradeoff_reduced_session": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Less exercise variety and less total work today. This is a reduced session."
+          }
+        }
+      }
+    },
+    "tradeoff_separate_history": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This exercise keeps its own load history."
           }
         }
       }
@@ -3591,6 +4757,51 @@
         }
       }
     },
+    "undo_adjustment": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Undo adjustment"
+          }
+        }
+      }
+    },
+    "undo_available": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "· Undo available"
+          }
+        }
+      }
+    },
+    "undo_kept_logged": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Kept %1$lld logged set of the alternative."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Kept %1$lld logged sets of the alternative."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "unit_cm": {
       "extractionState": "manual",
       "localizations": {
@@ -3620,6 +4831,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Update profile"
+          }
+        }
+      }
+    },
+    "use_this_workout": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Use this workout"
           }
         }
       }
@@ -3855,6 +5077,39 @@
         }
       }
     },
+    "why_equipment_format": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ trains the same muscles with the equipment available to you. It is a different movement with its own load history."
+          }
+        }
+      }
+    },
+    "why_this_change": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Why this change?"
+          }
+        }
+      }
+    },
+    "why_time_format": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This keeps %1$@ within today's time limit. A shorter session does not promise the same training effect."
+          }
+        }
+      }
+    },
     "workout_days_option": {
       "extractionState": "manual",
       "localizations": {
@@ -3985,6 +5240,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "YOUR MEASUREMENTS"
+          }
+        }
+      }
+    },
+    "your_priority": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your priority"
           }
         }
       }

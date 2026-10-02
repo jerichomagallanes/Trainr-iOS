@@ -19,6 +19,10 @@ struct RootView: View {
     @State private var phase = Phase.splash
     @State private var path: [Route] = []
     @State private var nextWeek: NextWeekModel?
+    // Created when the adjust flow is entered and cleared when it is left, so
+    // the draft lives exactly as long as the flow does.
+    @State private var adjustment: AdjustmentModel?
+    @State private var returningFromAdjustment: AdjustmentReturn?
     // Bumped to give home a new identity, and with it a model that re-reads.
     @State private var planGeneration = 0
     @State private var prompt: PaywallReason?
@@ -39,6 +43,12 @@ struct RootView: View {
         .environment(entitlements)
         .environment(ads)
         .preferredColorScheme(appearance.mode.colorScheme)
+        // Pushed only once the draft has been through an update of its own: a
+        // destination built in the same one captures this view while the model
+        // is still nil, and keeps the empty screen it drew.
+        .onChange(of: adjustment != nil) { _, hasDraft in
+            if hasDraft { path.append(.adjustEntry) }
+        }
         .sheet(item: $prompt, onDismiss: openAfterPrompt) { reason in
             ProPromptSheet(reason: reason) {
                 afterPrompt = .paywall(reason: reason)
@@ -304,6 +314,7 @@ struct RootView: View {
                 dependencies: dependencies,
                 dayNumber: dayNumber,
                 weekNumber: weekNumber,
+                returningFromAdjustment: $returningFromAdjustment,
                 onBack: pop,
                 onDayCompleted: { path.append(.dayCompleted(dayNumber: $0)) },
                 onWeekCompleted: { path.append(.weekCompleted(weekNumber: $0)) },
@@ -314,6 +325,12 @@ struct RootView: View {
                             performed: $0.performedExercises,
                             planned: $0.plannedExercises
                         )
+                    )
+                },
+                onAdjust: { reason, exerciseID in
+                    adjustment = AdjustmentModel(
+                        dependencies: dependencies, dayNumber: dayNumber,
+                        weekNumber: weekNumber, reason: reason, exerciseID: exerciseID
                     )
                 }
             )
@@ -400,7 +417,7 @@ struct RootView: View {
             )
 
         default:
-            EmptyView()
+            adjustDestination(for: route)
         }
     }
 
@@ -436,6 +453,53 @@ struct RootView: View {
 
     private func pop() {
         if !path.isEmpty { path.removeLast() }
+    }
+}
+
+// In an extension so the flow's plumbing reads on its own, next to the stack it
+// pushes onto rather than inside the switch that opens it.
+private extension RootView {
+
+    @ViewBuilder
+    func adjustDestination(for route: Route) -> some View {
+        if let adjustment, route.isAdjustment {
+            AdjustFlowView(
+                step: route,
+                model: adjustment,
+                onShowRecommendation: showRecommendation,
+                onRouted: { if let next = Route($0) { path.append(next) } },
+                onApplied: { spendAdjustmentCycle($0); leaveAdjustment(.reload) },
+                onLeave: leaveAdjustment,
+                onBack: popAdjustment
+            )
+        }
+    }
+
+    // The recommendation is computed first and only then sold: nothing proposed
+    // means there is nothing to sell, and someone whose plan already fits must
+    // read that rather than a price.
+    func showRecommendation() {
+        guard let adjustment else { return }
+        let proposalID = adjustment.showRecommendation()
+        guard adjustment.state.review != nil else { return }
+        guard let proposalID else {
+            path.append(.adjustReview)
+            return
+        }
+        askForAdjustment(proposalID) { path.append(.adjustReview) }
+    }
+
+    // The draft goes when the last step does: the push watches for one appearing,
+    // and a stale one never appears again.
+    func popAdjustment() {
+        pop()
+        if path.last?.isAdjustment != true { adjustment = nil }
+    }
+
+    func leaveAdjustment(_ returned: AdjustmentReturn) {
+        while path.last?.isAdjustment == true { path.removeLast() }
+        adjustment = nil
+        returningFromAdjustment = returned
     }
 }
 

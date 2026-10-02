@@ -142,6 +142,7 @@ struct WeeklyPlanView: View {
                     day: planDay.day,
                     isMissed: planDay.isMissed,
                     finishedEarly: planDay.finishKind == .partial,
+                    derived: planDay.derived,
                     onTap: { onDayTap(planDay.day) }
                 )
                 .listRowSeparator(.hidden)
