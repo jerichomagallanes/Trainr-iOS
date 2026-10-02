@@ -40,6 +40,11 @@ nonisolated struct WeeklyPlanState: Equatable, Sendable {
     var isCurrentWeek = false
     var canStartNextWeek = false
     var canAddWeek = false
+    var todayAdjustment: TodayAdjustmentKind?
+    var todayPreference: TrainingPreference?
+    // The way into the preferences screen is offered only once there is
+    // something to find there.
+    var hasMemory = false
 
     // A day already passed is never offered as "today's workout". Nil once
     // every session is done, so a finished week leads to the next one instead.
@@ -93,6 +98,30 @@ final class WeeklyPlanModel {
             finishKinds: finishKinds
         )
         .deriving(user: user, catalog: dependencies.catalog)
+        readMemory()
+    }
+
+    // Only ever about today, and only while today is still to be trained: a
+    // card about a session that is over has nothing to offer.
+    private func readMemory() {
+        guard let user, state.isCurrentWeek else { return }
+        let store = dependencies.store
+        let preferences = dependencies
+            .attempt("preferences", { try store.preferences(userID: user.id) }) ?? []
+        let notes = dependencies.attempt("notes", { try store.notes(userID: user.id) }) ?? []
+        state.hasMemory = !preferences.isEmpty || !notes.isEmpty
+
+        guard let today = state.days.first(where: {
+            $0.isToday && !$0.isFrozen && $0.finishKind == nil
+        }) else { return }
+
+        state.todayAdjustment = dependencies.attempt(
+            "activeAdjustment", { try store.activeAdjustment(dayID: today.day.id) }
+        )?.reason.todayKind
+        guard state.todayAdjustment == nil else { return }
+
+        let weekday = TrainingPreference.weekday(of: today.date)
+        state.todayPreference = preferences.first { $0.kind == .timeLimit && $0.weekday == weekday }
     }
 
     // The slots never move: dragging swaps sessions between fixed weekdays.
@@ -114,6 +143,9 @@ final class WeeklyPlanModel {
         for day in reordered where before[day.id] != day.dayNumber {
             dependencies.attempt("updateDay", { try dependencies.store.updateDay(day) })
         }
+        // The cards describe the session sitting in today's slot, which the
+        // drag may have changed.
+        readMemory()
     }
 
     private func currentUserPlans() throws -> [WeeklyPlan] {

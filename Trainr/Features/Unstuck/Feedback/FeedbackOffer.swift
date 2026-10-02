@@ -1,7 +1,8 @@
 import SwiftUI
 
-// Draws nothing until the stored day turns out to have an adjustment nobody has
-// been asked about, so a saved session is never held up by the question.
+// A note is worth leaving whatever happened, so the card stands on its own and
+// the adjustment question joins it only when one is still unanswered. The link
+// style draws nothing until there is a question to ask.
 struct FeedbackOffer: View {
 
     enum Style {
@@ -11,6 +12,7 @@ struct FeedbackOffer: View {
 
     @State private var model: FeedbackPromptModel
     private let style: Style
+    private let onLeaveNote: () -> Void
     private let onOffer: (UUID) -> Void
 
     init(
@@ -18,6 +20,7 @@ struct FeedbackOffer: View {
         dayNumber: Int,
         weekNumber: Int?,
         style: Style = .link,
+        onLeaveNote: @escaping () -> Void = {},
         onOffer: @escaping (UUID) -> Void = { _ in }
     ) {
         _model = State(
@@ -26,16 +29,17 @@ struct FeedbackOffer: View {
             )
         )
         self.style = style
+        self.onLeaveNote = onLeaveNote
         self.onOffer = onOffer
     }
 
     var body: some View {
         Group {
-            if let adjustmentID = model.pendingAdjustmentID {
-                switch style {
-                case .link: action(adjustmentID)
-                case .card: card(adjustmentID)
-                }
+            switch style {
+            case .link:
+                if let adjustmentID = model.pendingAdjustmentID { action(adjustmentID) }
+            case .card:
+                card(model.pendingAdjustmentID)
             }
         }
         .task { model.load() }
@@ -46,7 +50,7 @@ struct FeedbackOffer: View {
             .padding(.top, Spacing.card)
     }
 
-    private func card(_ adjustmentID: UUID) -> some View {
+    private func card(_ adjustmentID: UUID?) -> some View {
         VStack(alignment: .leading, spacing: Spacing.extraSmall) {
             Text(L10n.anythingToChangeTitle)
                 .font(.sectionTitle)
@@ -54,7 +58,10 @@ struct FeedbackOffer: View {
             Text(L10n.anythingToChangeBody)
                 .font(.body14)
                 .foregroundStyle(Color.onSurfaceMuted)
-            TextAction(title: L10n.tellUsHowItWent) { onOffer(adjustmentID) }
+            if let adjustmentID {
+                TextAction(title: L10n.tellUsHowItWent) { onOffer(adjustmentID) }
+            }
+            TextAction(title: L10n.leaveANote, action: onLeaveNote)
         }
         .multilineTextAlignment(.leading)
         .frame(maxWidth: .infinity, alignment: .leading)

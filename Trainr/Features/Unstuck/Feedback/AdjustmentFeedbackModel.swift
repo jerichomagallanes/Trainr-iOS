@@ -66,6 +66,12 @@ nonisolated struct FeedbackOption: Equatable, Sendable, Identifiable {
     }
 }
 
+// The session an adjustment was made on, which need not be in the newest week.
+nonisolated struct FeedbackSession: Equatable, Sendable {
+    var dayNumber: Int
+    var weekNumber: Int
+}
+
 nonisolated struct AdjustmentFeedbackState: Equatable, Sendable {
     var isLoaded = false
     var isReplacement = false
@@ -74,6 +80,7 @@ nonisolated struct AdjustmentFeedbackState: Equatable, Sendable {
     var trend = TrendLabel.trainingPerformance
     var answer: FeedbackAnswer?
     var guidanceKey: String?
+    var session: FeedbackSession?
 
     var offersGuidance: Bool { answer == .exerciseConfusing && guidanceKey != nil }
 
@@ -196,7 +203,7 @@ final class AdjustmentFeedbackModel {
         let stored = dependencies.attempt("feedback") {
             try store.feedback(adjustmentID: adjustmentID)
         }
-        let goal = dependencies.attempt("currentUser") { try store.currentUser() }?.fitnessGoal
+        let profile = dependencies.attempt("currentUser") { try store.currentUser() }
         let replaced = adjustment?.proposal.replacement
         feedbackID = stored?.id
 
@@ -205,10 +212,24 @@ final class AdjustmentFeedbackModel {
             isReplacement: replaced != nil,
             substituteName: name(of: replaced?.after?.catalogKey),
             originalName: name(of: replaced?.before.catalogKey),
-            trend: goal == .strength ? .strength : .trainingPerformance,
+            trend: profile?.fitnessGoal == .strength ? .strength : .trainingPerformance,
             answer: stored?.answer,
-            guidanceKey: adjustment?.proposal.guidanceKey
+            guidanceKey: adjustment?.proposal.guidanceKey,
+            session: session(of: adjustment?.dayID, userID: profile?.id)
         )
+    }
+
+    // The ordinal the finished screens count, so a note written from here lands
+    // on the same day they would have opened the debrief for.
+    private func session(of dayID: UUID?, userID: UUID?) -> FeedbackSession? {
+        guard let dayID, let userID else { return nil }
+        let plans = dependencies.attempt("plans") { try dependencies.store.plans(for: userID) } ?? []
+        for plan in plans {
+            if let index = plan.workoutDays.firstIndex(where: { $0.id == dayID }) {
+                return FeedbackSession(dayNumber: index + 1, weekNumber: plan.weekNumber)
+            }
+        }
+        return nil
     }
 
     private func name(of key: String?) -> String {

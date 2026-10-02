@@ -5,6 +5,7 @@ struct AdjustReviewView: View {
     var applyError: ApplyErrorUi?
     var onApply: () -> Void = {}
     var onKeepOriginal: () -> Void = {}
+    var onContinue: () -> Void = {}
     var onFinishEarly: () -> Void = {}
     var onBack: () -> Void = {}
 
@@ -43,7 +44,7 @@ struct AdjustReviewView: View {
             )
             QuietAction(title: L10n.keepOriginal, action: onKeepOriginal)
         case .noChange:
-            PrimaryButton(title: L10n.continueWorkout, action: onKeepOriginal)
+            PrimaryButton(title: L10n.continueWorkout, action: onContinue)
         case .infeasible:
             PrimaryButton(title: L10n.keepOriginal, action: onKeepOriginal)
             PrimaryButton(title: L10n.finishEarly, isPrimary: false, action: onFinishEarly)

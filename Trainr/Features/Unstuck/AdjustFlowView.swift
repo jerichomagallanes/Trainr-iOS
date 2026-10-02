@@ -41,6 +41,7 @@ struct AdjustFlowView: View {
             onSelectMinutes: model.selectMinutes,
             onTypeMinutes: model.typeMinutes,
             onShowRecommendation: onShowRecommendation,
+            onToggleRemember: model.toggleRemember,
             onKeepPlan: { onLeave(.reload) },
             onBack: onBack
         )
@@ -86,6 +87,10 @@ struct AdjustFlowView: View {
                 applyError: model.state.applyError,
                 onApply: model.apply,
                 onKeepOriginal: { onLeave(.reload) },
+                onContinue: {
+                    model.continueWorkout()
+                    onLeave(.reload)
+                },
                 onFinishEarly: { onLeave(.finishEarly) },
                 onBack: onBack
             )
