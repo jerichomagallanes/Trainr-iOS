@@ -2,6 +2,11 @@ import Foundation
 
 // The fields speak the client's chosen units; the profile is stored in centimetres and kilograms.
 nonisolated enum BodyMetricsConverter {
+    // CDC adult categories apply only from age 20. Unknown ages are not adults.
+    static func showsAdultBMI(age: Int?) -> Bool {
+        guard let age else { return false }
+        return age >= 20
+    }
 
     static func parseMetrics(
         height: String, weight: String, useMetric: Bool
@@ -50,7 +55,7 @@ nonisolated enum BodyMetricsConverter {
 
     static func calculateBMI(height: String, weight: String, useMetric: Bool) -> Double? {
         let (heightCm, weightKg) = parseMetrics(height: height, weight: weight, useMetric: useMetric)
-        guard heightCm > 0, weightKg > 0 else { return nil }
+        guard heightCm.isFinite, weightKg.isFinite, heightCm > 0, weightKg > 0 else { return nil }
         let heightMetres = heightCm / 100
         return weightKg / (heightMetres * heightMetres)
     }
