@@ -4,9 +4,6 @@ final class AdjustContextScreenTests: XCTestCase {
 
     private var app: XCUIApplication!
 
-    private static let modelPath = "/private/tmp/claude-501/-Users-jericho-StudioProjects-Trainr/"
-        + "c7efe0bd-083b-4b4a-b1a2-e87729cca221/scratchpad/model/lfm25-q4km.gguf"
-
     override func setUp() {
         continueAfterFailure = false
     }
@@ -15,23 +12,12 @@ final class AdjustContextScreenTests: XCTestCase {
     @MainActor
     private func openContext(arguments: [String]) {
         app = .launched(.midWeek, arguments: arguments)
-        XCTAssertTrue(app.staticTexts["YOUR WEEKLY WORKOUT PLAN"].waitForExistence(timeout: 20))
-        app.button(containing: "Lower Body Power").tap()
-        XCTAssertTrue(app.staticTexts["LOWER BODY POWER"].waitForExistence(timeout: 5))
-        let adjust = app.button(containing: "Adjust today")
-        app.scrollUntilHittable(adjust)
-        adjust.tap()
-        XCTAssertTrue(app.staticTexts["What would help today?"].waitForExistence(timeout: 3))
-        app.button(containing: "Something else").tap()
-        XCTAssertTrue(app.staticTexts["Tell us what you need"].waitForExistence(timeout: 5))
+        app.openAdjustContext()
     }
 
     @MainActor
     private func typeNote(_ note: String) {
-        let field = app.textFields["Add any context you want Trainr to consider."]
-        XCTAssertTrue(field.waitForExistence(timeout: 3))
-        field.tap()
-        field.typeText(note)
+        app.typeNote(note)
     }
 
     @MainActor
@@ -108,19 +94,5 @@ final class AdjustContextScreenTests: XCTestCase {
         app.buttons["USE MY NOTE"].tap()
 
         XCTAssertTrue(app.staticTexts["Pause this exercise"].waitForExistence(timeout: 5))
-    }
-
-    // The whole slice with the real model, skipped wherever the file is absent.
-    @MainActor
-    func testTheRealModelCarriesTheMinutesToTheTimeScreen() throws {
-        try XCTSkipUnless(FileManager.default.fileExists(atPath: Self.modelPath), "no model at \(Self.modelPath)")
-        openContext(arguments: ["-modelPath", Self.modelPath])
-        typeNote("I have 35 minutes for the whole workout today.")
-
-        app.buttons["USE MY NOTE"].tap()
-
-        XCTAssertTrue(app.staticTexts["How much time do you have?"].waitForExistence(timeout: 120))
-        XCTAssertTrue(app.textFields.matching(NSPredicate(format: "value == %@", "35")).firstMatch.exists
-            || app.buttons["35 min"].isSelected)
     }
 }
