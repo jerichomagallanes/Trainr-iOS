@@ -10,6 +10,7 @@ struct AdjustFlowView: View {
     var onApplied: (String) -> Void = { _ in }
     var onLeave: (AdjustmentReturn) -> Void = { _ in }
     var onBack: () -> Void = {}
+    @State private var routing: Task<Void, Never>?
 
     var body: some View {
         switch step {
@@ -61,12 +62,26 @@ struct AdjustFlowView: View {
     private var context: some View {
         AdjustContextView(
             note: model.state.note,
+            interpreter: model.interpreter,
+            isInterpreting: model.state.isInterpreting,
+            hint: model.state.contextHint,
             onTypeNote: model.typeNote,
-            onChoose: { reason in
-                Task { onRouted(await model.chooseFromContext(reason)) }
-            },
+            onChoose: routeFromContext,
+            onUseNote: { routeFromContext(.other) },
+            onInstallModel: model.installModel,
+            onCancelInstall: model.cancelModelInstall,
             onBack: { onLeave(.reload) }
         )
+        .onDisappear { routing?.cancel() }
+    }
+
+    // Leaving mid-read cancels the read, so a late answer never pushes a step
+    // onto whatever replaced the flow.
+    private func routeFromContext(_ reason: DirectReason) {
+        routing = Task {
+            guard let route = await model.chooseFromContext(reason), !Task.isCancelled else { return }
+            onRouted(route)
+        }
     }
 
     private var pain: some View {

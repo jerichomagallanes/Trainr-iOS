@@ -11,9 +11,13 @@ nonisolated enum DirectReason: Sendable {
 nonisolated enum IntentRouting {
 
     // A model answering none_stated is not a safety clearance, so a direct pain
-    // choice is answered before anything the extraction says.
-    static func routeFor(directReason: DirectReason?, validation: IntentValidation?) -> UnstuckRoute {
+    // choice and a pain word in the note are answered before anything the
+    // extraction says.
+    static func routeFor(
+        directReason: DirectReason?, noteFlagsPain: Bool, validation: IntentValidation?
+    ) -> UnstuckRoute {
         if directReason == .pain { return .pain }
+        if noteFlagsPain { return .pain }
 
         var extraction: IntentExtraction?
         if case let .valid(valid, facts) = validation {

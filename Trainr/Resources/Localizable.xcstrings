@@ -1103,6 +1103,39 @@
         }
       }
     },
+    "context_hint_chooser": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't tell what you need from the note. Pick one below."
+          }
+        }
+      }
+    },
+    "context_hint_failed": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't read the note. Pick one below."
+          }
+        }
+      }
+    },
+    "context_hint_guide": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trainr can't coach form yet. Pick what to change below."
+          }
+        }
+      }
+    },
     "context_option_equipment": {
       "extractionState": "manual",
       "localizations": {
@@ -1180,6 +1213,17 @@
         }
       }
     },
+    "context_reading_note": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reading your note…"
+          }
+        }
+      }
+    },
     "context_title": {
       "extractionState": "manual",
       "localizations": {
@@ -1187,6 +1231,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Tell us what you need"
+          }
+        }
+      }
+    },
+    "context_use_note": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Use my note"
           }
         }
       }
@@ -3614,6 +3669,83 @@
           "stringUnit": {
             "state": "translated",
             "value": "Previous"
+          }
+        }
+      }
+    },
+    "private_coaching_downloading_format": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Downloading private coaching… %1$lld%%"
+          }
+        }
+      }
+    },
+    "private_coaching_failed_message": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The download didn't finish."
+          }
+        }
+      }
+    },
+    "private_coaching_licence": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Model licence"
+          }
+        }
+      }
+    },
+    "private_coaching_setup_message": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Downloads a 731 MB model once. Your notes are read on this device and never sent anywhere."
+          }
+        }
+      }
+    },
+    "private_coaching_setup_title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Set up private coaching"
+          }
+        }
+      }
+    },
+    "private_coaching_storage_message": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not enough space for private coaching. Free up about 1.5 GB and try again."
+          }
+        }
+      }
+    },
+    "private_coaching_verifying": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Checking the download…"
           }
         }
       }

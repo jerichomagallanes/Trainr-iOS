@@ -11,6 +11,35 @@ nonisolated enum ApplyErrorUi: Equatable, Sendable {
     case notApplied
 }
 
+nonisolated enum ContextHint: Equatable, Sendable {
+    case chooser
+    case guide
+    case failed
+}
+
+nonisolated enum InterpreterUi: Equatable, Sendable {
+    case unsupported
+    case notInstalled
+    case downloading(percent: Int)
+    case verifying
+    case insufficientStorage
+    case failed
+    case ready
+
+    init(_ state: ModelState) {
+        switch state {
+        case .unsupported: self = .unsupported
+        case .notInstalled: self = .notInstalled
+        case let .downloading(done, total):
+            self = .downloading(percent: total > 0 ? Int((done * 100 / total).clamped(to: 0...100)) : 0)
+        case .verifying: self = .verifying
+        case .ready: self = .ready
+        case .insufficientStorage: self = .insufficientStorage
+        case .failed: self = .failed
+        }
+    }
+}
+
 nonisolated struct AdjustmentState: Equatable, Sendable {
     var isLoaded = false
     var day: WorkoutDay?
@@ -28,6 +57,8 @@ nonisolated struct AdjustmentState: Equatable, Sendable {
     var enteredWithExercise = false
     var availableEquipment: Set<Equipment> = []
     var note = ""
+    var isInterpreting = false
+    var contextHint: ContextHint?
     var remember = false
     var decision: PolicyDecision?
     var review: ReviewUi?
@@ -135,9 +166,37 @@ final class AdjustmentModel {
         state.remember.toggle()
     }
 
-    func chooseFromContext(_ reason: DirectReason) async -> UnstuckRoute {
+    var interpreter: InterpreterUi { InterpreterUi(dependencies.modelInstaller.state) }
+
+    func installModel() {
+        dependencies.modelInstaller.install()
+    }
+
+    func cancelModelInstall() {
+        dependencies.modelInstaller.cancel()
+    }
+
+    // A pain word skips the model, so nothing it says can move that route.
+    func chooseFromContext(_ reason: DirectReason) async -> UnstuckRoute? {
+        guard !state.isInterpreting else { return nil }
         state.reason = reason
-        return IntentRouting.routeFor(directReason: reason, validation: await interpretNote())
+        state.contextHint = nil
+        let note = state.note
+        let noteFlagsPain = SafetyRouting.flagsPain(note)
+        let result = noteFlagsPain ? nil : await interpretNote(note)
+        var validation: IntentValidation?
+        if case let .interpreted(interpreted)? = result { validation = interpreted }
+        let route = IntentRouting.routeFor(
+            directReason: reason, noteFlagsPain: noteFlagsPain, validation: validation
+        )
+        if route == .time { prefillMinutes(validation) }
+        state.reason = route.directReason ?? reason
+        state.contextHint = switch route {
+        case .chooser: result?.isFailure == true ? .failed : .chooser
+        case .guide: .guide
+        case .time, .equipment, .pain: nil
+        }
+        return route
     }
 
     // MARK: - Recommendation
@@ -270,13 +329,22 @@ final class AdjustmentModel {
         state.applyError = .staleRebuilt
     }
 
-    private func interpretNote() async -> IntentValidation? {
-        guard dependencies.interpreter.availability == .ready, !state.note.isBlank else { return nil }
-        let result = await dependencies.interpreter.interpret(
-            state.note, locale: .current, directReason: .other
-        )
-        guard case let .interpreted(validation) = result else { return nil }
-        return validation
+    private func interpretNote(_ note: String) async -> InterpreterResult? {
+        guard dependencies.interpreter.availability == .ready, !note.isBlank else { return nil }
+        state.isInterpreting = true
+        defer { state.isInterpreting = false }
+        return await dependencies.interpreter.interpret(note, locale: .current, directReason: .other)
+    }
+
+    // The note's number is carried as said, unless it answers the other scope's question.
+    private func prefillMinutes(_ validation: IntentValidation?) {
+        guard case let .valid(_, facts)? = validation,
+              let minutes = facts.minutes, TimePresets.isSupported(minutes),
+              facts.scope?.contradicts(state.scope) != true
+        else { return }
+        state.selectedMinutes = minutes
+        state.customMinutesText = state.presets.contains(minutes) ? "" : String(minutes)
+        state.hasMinutesError = false
     }
 
     private func constraint() -> AdjustmentConstraint? {
@@ -365,5 +433,39 @@ final class AdjustmentModel {
 nonisolated extension DirectReason {
     var adjustmentReason: AdjustmentReason {
         self == .equipment ? .equipmentUnavailable : .lessTime
+    }
+}
+
+private nonisolated extension UnstuckRoute {
+    var directReason: DirectReason? {
+        switch self {
+        case .time: .lessTime
+        case .equipment: .equipment
+        case .guide: .guidance
+        case .pain: .pain
+        case .chooser: nil
+        }
+    }
+}
+
+private nonisolated extension InterpreterResult {
+    var isFailure: Bool {
+        if case .failed = self { true } else { false }
+    }
+}
+
+private nonisolated extension MentionScope {
+    func contradicts(_ scope: TimeScope) -> Bool {
+        switch self {
+        case .wholeSession: scope == .remaining
+        case .remaining: scope == .wholeSession
+        case .unknown: false
+        }
+    }
+}
+
+private nonisolated extension Int64 {
+    func clamped(to range: ClosedRange<Int64>) -> Int64 {
+        Swift.min(Swift.max(self, range.lowerBound), range.upperBound)
     }
 }
