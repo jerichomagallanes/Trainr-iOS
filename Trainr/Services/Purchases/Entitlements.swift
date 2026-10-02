@@ -12,6 +12,8 @@ final class Entitlements {
     // A lifetime purchase has no expiry, and nothing to manage or cancel.
     private(set) var isLifetime = false
     private(set) var offering: Offering?
+    private(set) var eligibleTrials: Set<String> = []
+    private(set) var purchaseNotice: String?
 
     // False when the purchases layer never came up: nothing can be bought in
     // that state, so the gates let paid paths through rather than sell nothing.
@@ -61,13 +63,20 @@ final class Entitlements {
     }
 
     func purchase(_ package: Package) async -> Bool {
-        guard Purchases.isConfigured else { return false }
+        purchaseNotice = nil
+        guard Purchases.isConfigured else {
+            purchaseNotice = L10n.proPurchaseFailed
+            return false
+        }
         do {
             let result = try await Purchases.shared.purchase(package: package)
             guard !result.userCancelled else { return false }
-            return read(result.customerInfo)
+            let active = read(result.customerInfo)
+            if !active { purchaseNotice = L10n.proPurchaseNotActive }
+            return active
         } catch {
             breadcrumbs.report(error, doing: "purchase")
+            purchaseNotice = Self.message(forPurchaseError: error)
             return false
         }
     }
@@ -75,12 +84,17 @@ final class Entitlements {
     // Offered as its own action because a buyer on a new phone has no other way
     // back to what they paid for, and both stores require it.
     func restore() async -> Bool {
-        guard Purchases.isConfigured else { return false }
+        purchaseNotice = nil
+        guard Purchases.isConfigured else {
+            purchaseNotice = L10n.proRestoreFailed
+            return false
+        }
         do {
             let info = try await Purchases.shared.restorePurchases()
             return read(info)
         } catch {
             breadcrumbs.report(error, doing: "restorePurchases")
+            purchaseNotice = L10n.proRestoreFailed
             return false
         }
     }
@@ -106,8 +120,25 @@ final class Entitlements {
     private func readOffering() async {
         do {
             offering = try await Purchases.shared.offerings().current
+            eligibleTrials = []
+            let packages = offering?.availablePackages ?? []
+            let eligibility = await Purchases.shared.checkTrialOrIntroDiscountEligibility(packages: packages)
+            eligibleTrials = Set(packages.filter {
+                $0.storeProduct.introductoryDiscount?.paymentMode == .freeTrial
+                    && eligibility[$0]?.status == .eligible
+            }.map { $0.storeProduct.productIdentifier })
         } catch {
             breadcrumbs.report(error, doing: "offerings")
+        }
+    }
+
+    static func message(forPurchaseError error: Error) -> String? {
+        let failure = error as NSError
+        guard failure.domain == ErrorCode.errorDomain else { return L10n.proPurchaseFailed }
+        return switch failure.code {
+        case ErrorCode.purchaseCancelledError.rawValue: nil
+        case ErrorCode.paymentPendingError.rawValue: L10n.proPurchasePending
+        default: L10n.proPurchaseFailed
         }
     }
 

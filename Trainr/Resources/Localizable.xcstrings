@@ -705,6 +705,50 @@
         }
       }
     },
+    "bmi_about_sources": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "About BMI & sources"
+          }
+        }
+      }
+    },
+    "bmi_cdc_about": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "CDC: About BMI"
+          }
+        }
+      }
+    },
+    "bmi_cdc_categories": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "CDC: Adult BMI categories"
+          }
+        }
+      }
+    },
+    "bmi_explanation": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "BMI is weight in kilograms divided by height in metres squared. Imperial measurements are converted first. Trainr shows adult categories only from age 20."
+          }
+        }
+      }
+    },
     "bmi_label": {
       "extractionState": "manual",
       "localizations": {
@@ -712,6 +756,50 @@
           "stringUnit": {
             "state": "translated",
             "value": "BMI:"
+          }
+        }
+      }
+    },
+    "bmi_limitations": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "BMI does not distinguish muscle from fat and cannot assess your health on its own. It is not a body-fat measurement or a diagnosis. Discuss questions about your measurements or health with a qualified healthcare professional."
+          }
+        }
+      }
+    },
+    "bmi_ranges": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Adult ranges (kg/m²): underweight below 18.5; healthy weight 18.5 to below 25; overweight 25 to below 30; obesity 30 and above. The category uses the unrounded result; the displayed number is rounded to one decimal place."
+          }
+        }
+      }
+    },
+    "bmi_screening_note": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "For adults 20 and older. A screening measure, not a diagnosis."
+          }
+        }
+      }
+    },
+    "bmi_source_date": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sources reviewed 2 October 2026. Links open the CDC website in English."
           }
         }
       }
@@ -3866,6 +3954,39 @@
         }
       }
     },
+    "pro_purchase_failed": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The purchase could not be completed. Check your connection and try again. If you were charged, use Restore purchases."
+          }
+        }
+      }
+    },
+    "pro_purchase_not_active": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your purchase has not activated Pro yet. Please wait a moment, then use Restore purchases. Do not purchase again."
+          }
+        }
+      }
+    },
+    "pro_purchase_pending": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your purchase is awaiting approval. Pro will unlock once the App Store confirms payment."
+          }
+        }
+      }
+    },
     "pro_questions": {
       "extractionState": "manual",
       "localizations": {
@@ -3906,6 +4027,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Restore purchase"
+          }
+        }
+      }
+    },
+    "pro_restore_failed": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Purchases could not be restored. Check your connection and try again with the Apple Account used to purchase."
           }
         }
       }

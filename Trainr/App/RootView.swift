@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct RootView: View {
+    @Environment(\.scenePhase) private var scenePhase
 
     private enum Phase {
         case splash
@@ -76,6 +77,9 @@ struct RootView: View {
             await entitlements.refresh()
         }
         .task { await ads.gatherConsent() }
+        .onChange(of: scenePhase) { _, phase in
+            if phase == .active { Task { await ads.gatherConsent() } }
+        }
         .task {
             let model = OnboardingModel(dependencies: dependencies)
             onboarding = model
@@ -220,6 +224,7 @@ struct RootView: View {
         case .bodyMetrics(let editing):
             BodyMetricsView(
                 initial: onboarding.filled(for: .bodyMetrics, editing: editing),
+                age: onboarding.profile.age,
                 isEditing: editing,
                 onNext: { height, weight, units in
                     onboarding.updateBodyMetrics(height: height, weight: weight, units: units)
