@@ -19,13 +19,34 @@ final class TrainingStore {
         self.container = container
     }
 
-    static func container(inMemory: Bool = false) throws -> ModelContainer {
+    static func container(
+        inMemory: Bool = false, url: URL? = nil, breadcrumbs: any Breadcrumbs = NoBreadcrumbs()
+    ) throws -> ModelContainer {
         let schema = Schema(versionedSchema: TrainrSchemaV2.self)
-        return try ModelContainer(
-            for: schema,
-            migrationPlan: TrainrMigrationPlan.self,
-            configurations: ModelConfiguration(schema: schema, isStoredInMemoryOnly: inMemory)
+        let configuration = url.map { ModelConfiguration(schema: schema, url: $0) }
+            ?? ModelConfiguration(schema: schema, isStoredInMemoryOnly: inMemory)
+        let container = try ModelContainer(
+            for: schema, migrationPlan: TrainrMigrationPlan.self, configurations: configuration
         )
+        if !configuration.isStoredInMemoryOnly {
+            excludeFromBackup(configuration.url, breadcrumbs: breadcrumbs)
+        }
+        return container
+    }
+
+    // The policy promises the data stays on the device; a backup would take it off.
+    private static func excludeFromBackup(_ storeURL: URL, breadcrumbs: any Breadcrumbs) {
+        for suffix in ["", "-wal", "-shm"] {
+            var file = URL(fileURLWithPath: storeURL.path + suffix)
+            guard FileManager.default.fileExists(atPath: file.path) else { continue }
+            do {
+                var values = URLResourceValues()
+                values.isExcludedFromBackup = true
+                try file.setResourceValues(values)
+            } catch {
+                breadcrumbs.report(error, doing: "excludeFromBackup")
+            }
+        }
     }
 
     // MARK: - Profile
