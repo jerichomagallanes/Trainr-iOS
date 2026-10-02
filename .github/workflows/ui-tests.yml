@@ -49,7 +49,7 @@ jobs:
           - shard: onboarding
             classes: OnboardingScreenTests OnboardingFlowTests SplashAndOrientationTests TrainrUITests
           - shard: routine
-            classes: RoutineDetailScreenTests ExerciseSetTableScreenTests CompletionScreenTests
+            classes: RoutineDetailScreenTests AdjustContextScreenTests UnstuckJourneyTests ExerciseSetTableScreenTests CompletionScreenTests
           - shard: plan
             classes: WeeklyPlanScreenTests WeeklyProgressScreenTests GeneratingScreenTests PlanAfterEmptyingTests PaywallGateTests
     steps:

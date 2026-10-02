@@ -66,6 +66,11 @@ struct RoutineDetailModelTests {
     private var firstDayNumber: Int { 1 }
     private var lastDayNumber: Int { 3 }
 
+    private func storedDay(_ dayNumber: Int) throws -> WorkoutDay {
+        let plan = try #require(try dependencies.store.plan(for: userID, weekNumber: 1))
+        return try #require(plan.workoutDays.first { $0.dayNumber == dayNumber })
+    }
+
     // MARK: - Loading
 
     @Test("Nothing is drawn until the stored day has been read")
@@ -256,6 +261,128 @@ struct RoutineDetailModelTests {
         #expect(stored.actualWeightKg == 20)
     }
 
+    // MARK: - Finishing early
+
+    @Test("Finishing early completes the day and writes no set that was not logged")
+    func finishingEarlySavesOnlyWhatWasLogged() throws {
+        let model = loaded(day: firstDayNumber)
+        let first = try #require(model.state.routine.exercises.first)
+        var logged = try #require(first.sets.first)
+        logged.actualReps = 9
+        logged.isCompleted = true
+        model.update(logged, at: first.position)
+        let before = try storedDay(firstDayNumber).exercises.map(\.sets)
+
+        model.finishEarly()
+
+        let after = try storedDay(firstDayNumber)
+        #expect(after.status == .completed)
+        #expect(after.completedAt != nil)
+        #expect(after.exercises.map(\.sets) == before)
+        #expect(after.exercises.allSatisfy { !$0.isCompleted })
+        #expect(model.state.outcome?.finishKind == .partial)
+        #expect(model.state.outcome?.performedSetCount == 1)
+        #expect(model.state.outcome?.plannedSetCount == 6)
+        #expect(!model.state.isConfirmingFinishEarly)
+    }
+
+    @Test("A save that fails says so and leaves the day where it was")
+    func aFailedSaveIsReported() throws {
+        let model = loaded(day: firstDayNumber)
+        model.askToFinishEarly()
+        try dependencies.store.deletePlan(
+            id: try #require(try dependencies.store.plan(for: userID, weekNumber: 1)).id
+        )
+
+        model.finishEarly()
+
+        #expect(model.state.saveFailed)
+        #expect(model.state.outcome == nil)
+        #expect(model.state.isConfirmingFinishEarly)
+        #expect(model.pendingSavedEvent == nil)
+    }
+
+    @Test("Sliding to finish records the session as fully done")
+    func completingRecordsAFullOutcome() throws {
+        let model = loaded(day: firstDayNumber)
+
+        model.completeRoutine()
+
+        let outcome = try #require(model.state.outcome)
+        #expect(outcome.finishKind == .full)
+        #expect(outcome.performedSetCount == 6)
+        #expect(outcome.plannedSetCount == 6)
+        let stored = try dependencies.store.outcome(dayID: try storedDay(firstDayNumber).id)
+        #expect(stored?.finishKind == .full)
+    }
+
+    @Test("A day finished early stays finished when a number is corrected")
+    func editingAfterFinishingEarlyDoesNotReopenTheDay() throws {
+        let model = loaded(day: firstDayNumber)
+        model.finishEarly()
+        let first = try #require(model.state.routine.exercises.first)
+        var corrected = try #require(first.sets.first)
+        corrected.actualReps = 9
+
+        model.update(corrected, at: first.position)
+        model.toggleExercise(at: first.position)
+
+        let after = try storedDay(firstDayNumber)
+        #expect(after.status == .completed)
+        #expect(after.exercises.first?.sets.first?.actualReps == 9)
+    }
+
+    @Test("A day that was finished early reads back as finished early")
+    func aStoredOutcomeIsLoaded() throws {
+        loaded(day: firstDayNumber).finishEarly()
+
+        #expect(loaded(day: firstDayNumber).state.outcome?.finishKind == .partial)
+    }
+
+    @Test("The saved event is raised once and never rebuilt from what is stored")
+    func theSavedEventFiresOnce() throws {
+        let model = loaded(day: firstDayNumber)
+
+        model.finishEarly()
+
+        #expect(
+            model.pendingSavedEvent
+                == SessionSavedEvent(
+                    dayNumber: 1, weekNumber: 1, performedExercises: 0, plannedExercises: 2
+                )
+        )
+        model.consumeSavedEvent()
+        #expect(model.pendingSavedEvent == nil)
+        #expect(loaded(day: firstDayNumber).pendingSavedEvent == nil)
+    }
+
+    @Test("A second tap does not save the session twice")
+    func aSecondTapIsIgnored() throws {
+        let model = loaded(day: firstDayNumber)
+        model.finishEarly()
+        let saved = try #require(model.state.outcome)
+        model.consumeSavedEvent()
+
+        model.finishEarly()
+
+        #expect(model.state.outcome == saved)
+        #expect(model.pendingSavedEvent == nil)
+    }
+
+    @Test("A number typed into a set is stored as typed")
+    func aTypedNumberKeepsItsProvenance() throws {
+        let model = loaded(day: firstDayNumber)
+        let first = try #require(model.state.routine.exercises.first)
+        var typed = try #require(first.sets.first)
+        typed.actualReps = 9
+
+        model.update(typed, at: first.position)
+
+        let stored = try #require(loaded(day: firstDayNumber).state.routine.exercises[0].sets.first)
+        #expect(stored.actualReps == 9)
+        #expect(stored.actualOrigin == .typed)
+    }
+
     // MARK: - Timer
 
     @Test("Starting a timer runs it against the exercise it was started for")
@@ -351,6 +478,28 @@ struct RoutineDetailModelTests {
         model.toggleVideo(at: first.position)
 
         #expect(model.state.expandedVideo == nil)
+    }
+
+    @Test("A guidance request names the exercise, not its place in the day")
+    func guidanceIsFoundByKey() throws {
+        let model = loaded(day: firstDayNumber)
+        let second = try #require(model.state.routine.exercises.last)
+
+        model.showHowTo(key: "plank")
+
+        #expect(model.state.scrollToPosition == second.position)
+        #expect((model.state.expandedHowTo ?? model.state.expandedVideo) == second.position)
+    }
+
+    @Test("A guidance request for an exercise the day no longer shows does nothing")
+    func guidanceForAnAbsentExerciseDoesNothing() {
+        let model = loaded(day: firstDayNumber)
+
+        model.showHowTo(key: "barbell_bench_press")
+
+        #expect(model.state.expandedHowTo == nil)
+        #expect(model.state.expandedVideo == nil)
+        #expect(model.state.scrollToPosition == nil)
     }
 
     @Test("Leaving the screen stops the clock advancing")

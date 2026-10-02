@@ -25,6 +25,12 @@ final class UserRecord {
     @Relationship(deleteRule: .cascade, inverse: \WeeklyPlanRecord.user)
     var plans: [WeeklyPlanRecord] = []
 
+    @Relationship(deleteRule: .cascade, inverse: \TrainingPreferenceRecord.user)
+    var preferences: [TrainingPreferenceRecord] = []
+
+    @Relationship(deleteRule: .cascade, inverse: \SessionNoteRecord.user)
+    var notes: [SessionNoteRecord] = []
+
     init(_ profile: UserProfile) {
         id = profile.id
         firstName = profile.firstName
@@ -134,6 +140,12 @@ final class WorkoutDayRecord {
     @Relationship(deleteRule: .cascade, inverse: \WorkoutExerciseRecord.day)
     var exercises: [WorkoutExerciseRecord] = []
 
+    @Relationship(deleteRule: .cascade, inverse: \SessionOutcomeRecord.day)
+    var outcome: SessionOutcomeRecord?
+
+    @Relationship(deleteRule: .cascade, inverse: \AppliedAdjustmentRecord.day)
+    var adjustments: [AppliedAdjustmentRecord] = []
+
     init(_ day: WorkoutDay) {
         id = day.id
         dayNumber = day.dayNumber
@@ -145,6 +157,9 @@ final class WorkoutDayRecord {
         completedAt = day.completedAt
     }
 
+    // A substitute is inserted at the position of the exercise it stands in for,
+    // and has to land below it, as Android's `ORDER BY sortOrder, id` does; the
+    // id alone is a random uuid, which would also move the revision between reads.
     var day: WorkoutDay {
         WorkoutDay(
             id: id,
@@ -154,7 +169,10 @@ final class WorkoutDayRecord {
             duration: duration,
             exerciseCount: exerciseCount,
             equipment: equipment,
-            exercises: exercises.sorted { $0.position < $1.position }.map(\.exercise),
+            exercises: exercises.sorted { lhs, rhs in
+                (lhs.position, lhs.addedBy == nil ? 0 : 1, lhs.id.uuidString)
+                    < (rhs.position, rhs.addedBy == nil ? 0 : 1, rhs.id.uuidString)
+            }.map(\.exercise),
             completedAt: completedAt
         )
     }
@@ -178,6 +196,7 @@ final class WorkoutExerciseRecord {
     var videoTutorialURL: String?
     var isCompleted: Bool
     var notes: String
+    var addedBy: UUID?
     var day: WorkoutDayRecord?
 
     @Relationship(deleteRule: .cascade, inverse: \ExerciseSetRecord.exercise)
@@ -198,6 +217,7 @@ final class WorkoutExerciseRecord {
         videoTutorialURL = exercise.videoTutorialURL
         isCompleted = exercise.isCompleted
         notes = exercise.notes
+        addedBy = exercise.addedBy
     }
 
     var exercise: WorkoutExercise {
@@ -215,7 +235,8 @@ final class WorkoutExerciseRecord {
             equipment: equipment,
             videoTutorialURL: videoTutorialURL,
             isCompleted: isCompleted,
-            notes: notes
+            notes: notes,
+            addedBy: addedBy
         )
     }
 }
@@ -231,6 +252,8 @@ final class ExerciseSetRecord {
     var actualWeightKg: Double?
     var actualSeconds: Int?
     var isCompleted: Bool
+    var actualOrigin: String = ActualOrigin.none.rawValue
+    var omittedBy: UUID?
     var exercise: WorkoutExerciseRecord?
 
     init(_ set: ExerciseSet) {
@@ -243,6 +266,16 @@ final class ExerciseSetRecord {
         actualWeightKg = set.actualWeightKg
         actualSeconds = set.actualSeconds
         isCompleted = set.isCompleted
+        actualOrigin = set.actualOrigin.rawValue
+        omittedBy = set.omittedBy
+    }
+
+    // A store written before origins existed has actuals under "NONE"; the
+    // migration cannot rewrite them, so the read says what they really are.
+    private var origin: ActualOrigin {
+        let stored = ActualOrigin(rawValue: actualOrigin) ?? .legacyUnknown
+        let hasActuals = actualReps != nil || actualWeightKg != nil || actualSeconds != nil
+        return stored == .none && hasActuals ? .legacyUnknown : stored
     }
 
     var set: ExerciseSet {
@@ -255,7 +288,9 @@ final class ExerciseSetRecord {
             actualReps: actualReps,
             actualWeightKg: actualWeightKg,
             actualSeconds: actualSeconds,
-            isCompleted: isCompleted
+            isCompleted: isCompleted,
+            actualOrigin: origin,
+            omittedBy: omittedBy
         )
     }
 
@@ -268,5 +303,7 @@ final class ExerciseSetRecord {
         actualWeightKg = set.actualWeightKg
         actualSeconds = set.actualSeconds
         isCompleted = set.isCompleted
+        actualOrigin = set.actualOrigin.rawValue
+        omittedBy = set.omittedBy
     }
 }

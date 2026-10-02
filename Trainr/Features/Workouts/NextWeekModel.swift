@@ -184,7 +184,9 @@ final class NextWeekModel {
             fresh.id = UUID()
             fresh.status = .notStarted
             fresh.completedAt = nil
-            fresh.exercises = day.exercises.map { exercise in
+            // A substitute and an omission were today's answer to today, and
+            // next week is not today.
+            fresh.exercises = day.exercises.filter { $0.addedBy == nil }.map { exercise in
                 var blank = exercise
                 blank.id = UUID()
                 blank.isCompleted = false
@@ -195,6 +197,8 @@ final class NextWeekModel {
                     cleared.actualWeightKg = nil
                     cleared.actualSeconds = nil
                     cleared.isCompleted = false
+                    cleared.actualOrigin = .none
+                    cleared.omittedBy = nil
                     return cleared
                 }
                 return blank

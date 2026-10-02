@@ -8,6 +8,10 @@ struct WorkoutDayCard: View {
     let weekday: String
     let day: WorkoutDay
     var isMissed = false
+    var finishedEarly = false
+    // Nil while the stored day is unadjusted, when its own columns still say
+    // what the session is.
+    var derived: DerivedDay?
     let onTap: () -> Void
 
     private var headerIsDark: Bool { day.status != .notStarted }
@@ -42,7 +46,9 @@ struct WorkoutDayCard: View {
             .foregroundStyle(headerIsDark ? Color.onSurfaceEmphasis : Color.onSurface)
             .frame(maxWidth: .infinity, alignment: .leading)
 
-            WorkoutStatusChip(status: day.status, isMissed: isMissed)
+            WorkoutStatusChip(
+                status: day.status, isMissed: isMissed, finishedEarly: finishedEarly
+            )
         }
         .padding(Spacing.card)
         .background(headerIsDark ? Color.surfaceEmphasis : Color.surfaceCard)
@@ -57,7 +63,7 @@ struct WorkoutDayCard: View {
         HStack(spacing: Spacing.small) {
             VStack(alignment: .leading, spacing: Spacing.small) {
                 Label {
-                    Text(L10n.minutes(day.duration))
+                    Text(L10n.minutes(derived?.minutes ?? day.duration))
                         .font(.body14)
                         .foregroundStyle(Color.onSurfaceStrong)
                 } icon: {
@@ -66,14 +72,14 @@ struct WorkoutDayCard: View {
                 }
                 .font(.body14)
 
-                Text(L10n.exercisesCount(day.exerciseCount))
+                Text(L10n.exercisesCount(derived?.exerciseCount ?? day.exerciseCount))
                     .font(.labelLarge)
                     .foregroundStyle(Color.onSurface)
                     .padding(.horizontal, Spacing.small)
                     .padding(.vertical, Spacing.hairline)
                     .background(Color.surfaceSunken, in: .rect(cornerRadius: CornerRadius.small))
 
-                if !day.equipment.isEmpty {
+                if !equipment.isEmpty {
                     Text(equipmentLine)
                         .font(.body14)
                         .foregroundStyle(Color.onSurface)
@@ -87,8 +93,10 @@ struct WorkoutDayCard: View {
         .background(Color.surfaceCard)
     }
 
+    private var equipment: [String] { derived?.equipment ?? day.equipment }
+
     private var equipmentLine: AttributedString {
-        EquipmentLine.text(day.equipment, labelFont: TextRole.labelMedium.font(at: labelSize))
+        EquipmentLine.text(equipment, labelFont: TextRole.labelMedium.font(at: labelSize))
     }
 }
 

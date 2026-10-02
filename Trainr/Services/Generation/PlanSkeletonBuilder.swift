@@ -21,7 +21,9 @@ nonisolated final class PlanSkeletonBuilder: Sendable {
             .filter { !InjuryGuard.excludes($0, for: user.injuries) }
             .sorted { $0.key < $1.key }
         let required = ExerciseShortlist.requiredPatterns(pool, goal: user.fitnessGoal)
-        let lastWeek = Set(request.previousWeek?.workoutDays.flatMap { $0.exercises.map(\.exerciseKey) } ?? [])
+        let lastWeek = Set(request.previousWeek?.workoutDays.flatMap {
+            $0.exercises.filter { $0.addedBy == nil }.map(\.exerciseKey)
+        } ?? [])
 
         let week = WeekBuilder(catalog: catalog, user: user, pool: pool, lastWeek: lastWeek)
         let days = Self.split(user).enumerated().map { index, entry in
@@ -129,21 +131,12 @@ private nonisolated final class DayDraft {
     }
 }
 
-private nonisolated struct Shape {
-    let count: Int
-    let sets: [SlotTier: (Int, Int)]
-    let drop: [String]
-    // Weight loss and endurance take the rest of the session as conditioning;
-    // every other goal takes a short fixed block.
-    var conditioningFillsTheSession = false
-}
-
 private nonisolated final class WeekBuilder {
     private let catalog: any ExerciseCatalog
     private let user: UserProfile
     private let pool: [CatalogExercise]
     private let lastWeek: Set<String>
-    private let shape: Shape
+    private let shape: SessionShape
     private let maxSets: Int
     private let ceiling: Int
     private let conditioningDays: Set<Int>
@@ -155,7 +148,7 @@ private nonisolated final class WeekBuilder {
         self.user = user
         self.pool = pool
         self.lastWeek = lastWeek
-        shape = Self.shape(for: user.fitnessGoal)
+        shape = SessionShape.forGoal(user.fitnessGoal)
         maxSets = SessionBudget.maxSetsPerSession(user)
         ceiling = SessionBudget.sessionCeilingMinutes(user)
         conditioningDays = Self.conditioningDayIndexes(user.fitnessGoal, min(max(user.workoutDaysPerWeek, 1), 7))
@@ -209,7 +202,7 @@ private nonisolated final class WeekBuilder {
     }
 
     func fit(_ day: DayDraft, uncovered: inout Set<PatternRequirement>) -> SkeletonDay {
-        let drop = day.focus == .activeRecovery ? ["mobility_2", "core"] : shape.drop
+        let drop = day.focus == .activeRecovery ? ["mobility_2", "core"] : shape.dropOrder
         trimToCount(day, drop)
         fillCandidates(day, uncovered: &uncovered)
         fitMinimums(day, drop)
@@ -224,7 +217,7 @@ private nonisolated final class WeekBuilder {
     }
 
     private func trimToCount(_ day: DayDraft, _ drop: [String]) {
-        for id in drop where day.slots.count > shape.count {
+        for id in drop where day.slots.count > shape.slotCount {
             day.slots.removeAll { $0.id == id && $0.isDroppable }
         }
     }
@@ -450,39 +443,6 @@ private nonisolated final class WeekBuilder {
         }
         let count = min(wanted, days)
         return Set((0..<count).map { $0 * days / count })
-    }
-
-    // A strength day sheds breadth to keep depth, a weight-loss day sheds the
-    // lifting tail to keep its conditioning, and a flexibility day has no
-    // compound slots at all.
-    private static func shape(for goal: FitnessGoal) -> Shape {
-        switch goal {
-        case .strength:
-            Shape(count: 6, sets: [
-                .warmUp: (1, 1), .primaryCompound: (3, 5), .secondaryCompound: (2, 4), .accessory: (2, 3),
-                .isolation: (2, 2), .core: (1, 2), .conditioning: (1, 1)
-            ], drop: ["isolation_2", "conditioning", "mobility_1", "accessory", "core", "isolation_1"])
-        case .muscleGain:
-            Shape(count: 8, sets: [
-                .warmUp: (1, 1), .primaryCompound: (2, 4), .secondaryCompound: (2, 3), .accessory: (2, 3),
-                .isolation: (2, 3), .core: (1, 3), .conditioning: (1, 1), .mobility: (1, 1)
-            ], drop: ["mobility_1", "conditioning", "isolation_2", "core", "accessory", "isolation_1"])
-        case .generalFitness:
-            Shape(count: 8, sets: [
-                .warmUp: (1, 1), .primaryCompound: (2, 3), .secondaryCompound: (2, 3), .accessory: (2, 3),
-                .isolation: (2, 3), .core: (1, 3), .conditioning: (1, 1), .mobility: (1, 1)
-            ], drop: ["mobility_1", "isolation_2", "isolation_1", "core", "conditioning", "accessory"])
-        case .weightLoss, .endurance:
-            Shape(count: 7, sets: [
-                .warmUp: (1, 1), .primaryCompound: (2, 3), .secondaryCompound: (2, 3), .accessory: (2, 3),
-                .isolation: (2, 2), .core: (2, 3), .conditioning: (1, 1), .mobility: (1, 1)
-            ], drop: ["isolation_2", "isolation_1", "accessory", "mobility_1", "secondary", "core"],
-            conditioningFillsTheSession: true)
-        case .flexibility:
-            Shape(count: 6, sets: [
-                .warmUp: (1, 1), .core: (1, 2), .conditioning: (1, 1), .mobility: (3, 4)
-            ], drop: ["core", "conditioning", "mobility_4", "mobility_3"])
-        }
     }
 
     private static func wishList(for focus: SessionFocus) -> [SlotTier] {
