@@ -7,20 +7,22 @@ struct RoutineDetailView: View {
     @State private var model: RoutineDetailModel
     @ScaledMetric(relativeTo: .subheadline) private var labelSize = TextRole.labelMedium.size
     private let onBack: () -> Void
-    private let onDayCompleted: (Int) -> Void
-    private let onWeekCompleted: (Int) -> Void
+    private let onDayCompleted: (Int, Int) -> Void
+    private let onWeekCompleted: (Int, Int) -> Void
     private let onSessionSaved: (SessionSavedEvent) -> Void
     private let onAdjust: (DirectReason, UUID?) -> Void
     @Binding private var returningFromAdjustment: AdjustmentReturn?
+    @Binding private var howToRequest: String?
 
     init(
         dependencies: AppDependencies,
         dayNumber: Int,
         weekNumber: Int?,
         returningFromAdjustment: Binding<AdjustmentReturn?> = .constant(nil),
+        howToRequest: Binding<String?> = .constant(nil),
         onBack: @escaping () -> Void = {},
-        onDayCompleted: @escaping (Int) -> Void = { _ in },
-        onWeekCompleted: @escaping (Int) -> Void = { _ in },
+        onDayCompleted: @escaping (Int, Int) -> Void = { _, _ in },
+        onWeekCompleted: @escaping (Int, Int) -> Void = { _, _ in },
         onSessionSaved: @escaping (SessionSavedEvent) -> Void = { _ in },
         onAdjust: @escaping (DirectReason, UUID?) -> Void = { _, _ in }
     ) {
@@ -30,6 +32,7 @@ struct RoutineDetailView: View {
             )
         )
         _returningFromAdjustment = returningFromAdjustment
+        _howToRequest = howToRequest
         self.onBack = onBack
         self.onDayCompleted = onDayCompleted
         self.onWeekCompleted = onWeekCompleted
@@ -77,6 +80,11 @@ struct RoutineDetailView: View {
             model.load()
             if returned == .finishEarly { model.askToFinishEarly() }
         }
+        .onChange(of: howToRequest) { _, requested in
+            guard let requested else { return }
+            howToRequest = nil
+            model.showHowTo(key: requested)
+        }
         // On the outer view on purpose: hung on the routine alone, swapping in
         // the confirmation would read as leaving and kill a running timer.
         .onDisappear { model.screenWentAway() }
@@ -111,9 +119,9 @@ struct RoutineDetailView: View {
             guard previous == false, isComplete, !finishedEarly else { return }
 
             if state.completesTheWeek {
-                onWeekCompleted(state.weekNumber)
+                onWeekCompleted(state.weekNumber, state.dayNumber)
             } else {
-                onDayCompleted(state.dayNumber)
+                onDayCompleted(state.dayNumber, state.weekNumber)
             }
         }
         .sheet(isPresented: adjustSheet, onDismiss: openPendingAdjust) {

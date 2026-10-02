@@ -23,6 +23,10 @@ struct RootView: View {
     // the draft lives exactly as long as the flow does.
     @State private var adjustment: AdjustmentModel?
     @State private var returningFromAdjustment: AdjustmentReturn?
+    // Created when the follow-up is accepted and cleared when it is left, so
+    // the one answer it writes belongs to one adjustment.
+    @State private var feedback: AdjustmentFeedbackModel?
+    @State private var howToRequest: String?
     // Bumped to give home a new identity, and with it a model that re-reads.
     @State private var planGeneration = 0
     @State private var prompt: PaywallReason?
@@ -48,6 +52,12 @@ struct RootView: View {
         // is still nil, and keeps the empty screen it drew.
         .onChange(of: adjustment != nil) { _, hasDraft in
             if hasDraft { path.append(.adjustEntry) }
+        }
+        // Keyed on which question rather than on there being one: the
+        // interactive back-swipe leaves the model behind, and the next offer
+        // still has to push.
+        .onChange(of: feedback.map { ObjectIdentifier($0) }) { _, question in
+            if question != nil { path.append(.adjustmentFeedback) }
         }
         .sheet(item: $prompt, onDismiss: openAfterPrompt) { reason in
             ProPromptSheet(reason: reason) {
@@ -185,7 +195,7 @@ struct RootView: View {
         return 2
     }
 
-    fileprivate static var version: String {
+    static var version: String {
         Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? ""
     }
 
@@ -315,13 +325,19 @@ struct RootView: View {
                 dayNumber: dayNumber,
                 weekNumber: weekNumber,
                 returningFromAdjustment: $returningFromAdjustment,
+                howToRequest: $howToRequest,
                 onBack: pop,
-                onDayCompleted: { path.append(.dayCompleted(dayNumber: $0)) },
-                onWeekCompleted: { path.append(.weekCompleted(weekNumber: $0)) },
+                onDayCompleted: { day, week in
+                    path.append(.dayCompleted(dayNumber: day, weekNumber: week))
+                },
+                onWeekCompleted: { week, day in
+                    path.append(.weekCompleted(weekNumber: week, dayNumber: day))
+                },
                 onSessionSaved: {
                     path.append(
                         .sessionSaved(
                             dayNumber: $0.dayNumber,
+                            weekNumber: $0.weekNumber,
                             performed: $0.performedExercises,
                             planned: $0.plannedExercises
                         )
@@ -335,29 +351,35 @@ struct RootView: View {
                 }
             )
 
-        case .sessionSaved(_, let performed, let planned):
+        case .sessionSaved(let dayNumber, let weekNumber, let performed, let planned):
             SessionSavedView(
                 performedExercises: performed,
                 plannedExercises: planned,
+                offer: offer(dayNumber: dayNumber, weekNumber: weekNumber, style: .card),
                 onBack: pop,
                 onDone: restartOnHome
             )
 
-        case .dayCompleted(let dayNumber):
+        case .dayCompleted(let dayNumber, let weekNumber):
             DayCompletedView(
                 dayNumber: dayNumber,
+                offer: offer(dayNumber: dayNumber, weekNumber: weekNumber),
                 onBack: pop,
                 onViewProgress: { path.append(.weeklyProgress) },
                 onBackToPlan: restartOnHome
             )
 
-        case .weekCompleted(let weekNumber):
+        case .weekCompleted(let weekNumber, let dayNumber):
             WeekCompletedView(
                 weekNumber: weekNumber,
+                offer: offer(dayNumber: dayNumber, weekNumber: weekNumber),
                 onBack: pop,
                 onViewProgress: { path.append(.weeklyProgress) },
                 onGenerateNextWeek: { ask(.nextWeek) { path.append(.generatingNextWeek) } }
             )
+
+        case .adjustmentFeedback, .feedbackDetail, .feedbackOutcome, .feedbackPain:
+            feedbackDestination(for: route)
 
         case .weeklyProgress:
             WeeklyProgressView(
@@ -367,6 +389,51 @@ struct RootView: View {
                 onLastWeekDeleted: restartOnHome
             )
 
+        default:
+            planDestination(for: route)
+        }
+    }
+
+    @ViewBuilder
+    private func generating(start: @escaping () -> Void) -> some View {
+        if let nextWeek {
+            GeneratingView(
+                isReady: nextWeek.isReady,
+                onStart: start,
+                onDone: {
+                    spendFreeGeneration()
+                    restartOnHome()
+                },
+                failure: nextWeek.failure,
+                failureCount: nextWeek.failureCount,
+                onRetry: start,
+                onGiveUp: {
+                    nextWeek.cancelRun()
+                    pop()
+                },
+                giveUpLabel: L10n.cancel
+            )
+        }
+    }
+
+    private func step(editing: Bool, next: Route) {
+        if editing {
+            pop()
+        } else {
+            path.append(next)
+        }
+    }
+
+    private func pop() {
+        if !path.isEmpty { path.removeLast() }
+    }
+}
+
+private extension RootView {
+
+    @ViewBuilder
+    func planDestination(for route: Route) -> some View {
+        switch route {
         // Leaves as soon as Pro is there, whether it was just bought or the
         // entitlement read landed after the gate had already opened this.
         case .paywall(let reason):
@@ -421,45 +488,8 @@ struct RootView: View {
         }
     }
 
-    @ViewBuilder
-    private func generating(start: @escaping () -> Void) -> some View {
-        if let nextWeek {
-            GeneratingView(
-                isReady: nextWeek.isReady,
-                onStart: start,
-                onDone: {
-                    spendFreeGeneration()
-                    restartOnHome()
-                },
-                failure: nextWeek.failure,
-                failureCount: nextWeek.failureCount,
-                onRetry: start,
-                onGiveUp: {
-                    nextWeek.cancelRun()
-                    pop()
-                },
-                giveUpLabel: L10n.cancel
-            )
-        }
-    }
-
-    private func step(editing: Bool, next: Route) {
-        if editing {
-            pop()
-        } else {
-            path.append(next)
-        }
-    }
-
-    private func pop() {
-        if !path.isEmpty { path.removeLast() }
-    }
-}
-
-// In an extension so the flow's plumbing reads on its own, next to the stack it
-// pushes onto rather than inside the switch that opens it.
-private extension RootView {
-
+    // In an extension so the flow's plumbing reads on its own, next to the
+    // stack it pushes onto rather than inside the switch that opens it.
     @ViewBuilder
     func adjustDestination(for route: Route) -> some View {
         if let adjustment, route.isAdjustment {
@@ -501,23 +531,75 @@ private extension RootView {
         adjustment = nil
         returningFromAdjustment = returned
     }
-}
 
-private struct SplashView: View {
-    var body: some View {
-        VStack(spacing: Spacing.medium) {
-            Image("Wordmark")
-                .resizable()
-                .scaledToFit()
-                .frame(width: 180)
-                .accessibilityLabel(L10n.appName)
-            Text(L10n.versionFormat(Self.version))
-                .font(.body14)
-                .foregroundStyle(Color.onSurface)
+    // Nothing here reads the gate or the allowance: one question after a
+    // session that used an adjustment is free, and the answer changes no
+    // future workout.
+    func offer(
+        dayNumber: Int, weekNumber: Int, style: FeedbackOffer.Style = .link
+    ) -> FeedbackOffer {
+        FeedbackOffer(
+            dependencies: dependencies,
+            dayNumber: dayNumber,
+            weekNumber: weekNumber,
+            style: style
+        ) { adjustmentID in
+            feedback = AdjustmentFeedbackModel(
+                dependencies: dependencies, adjustmentID: adjustmentID
+            )
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color.surfacePage)
     }
 
-    private static var version: String { RootView.version }
+    @ViewBuilder
+    func feedbackDestination(for route: Route) -> some View {
+        if let feedback {
+            FeedbackFlowView(
+                step: route,
+                model: feedback,
+                onDetail: { path.append(.feedbackDetail) },
+                onSaved: routeAfterAnswer,
+                onSaveForLater: closeFeedback,
+                onOpenGuidance: openGuidance,
+                onLeave: leaveFeedback,
+                onBack: popFeedback
+            )
+        }
+    }
+
+    func routeAfterAnswer(_ answer: FeedbackAnswer?) {
+        switch answer {
+        case nil: leaveFeedback()
+        // Discomfort goes to the free guidance and is never answered with a
+        // substitute (C09).
+        case .discomfort: path.append(.feedbackPain)
+        default: path.append(.feedbackOutcome)
+        }
+    }
+
+    func popFeedback() {
+        pop()
+        if path.last?.isFeedback != true { feedback = nil }
+    }
+
+    func closeFeedback() {
+        while path.last?.isFeedback == true { path.removeLast() }
+        feedback = nil
+    }
+
+    func leaveFeedback() {
+        restartOnHome()
+        feedback = nil
+    }
+
+    // Back to the day itself with the exercise named, which is where the how-to
+    // already lives; there is no separate guidance screen to push.
+    func openGuidance(_ exerciseKey: String) {
+        guard let index = path.lastIndex(where: \.isRoutineDetail) else {
+            leaveFeedback()
+            return
+        }
+        howToRequest = exerciseKey
+        path.removeSubrange((index + 1)...)
+        feedback = nil
+    }
 }

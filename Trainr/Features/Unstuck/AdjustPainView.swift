@@ -3,15 +3,22 @@ import SwiftUI
 // Nothing here reads the gate, the interpreter or the policy: pain is a free
 // route with no substitute and no clearance to continue (C09).
 struct AdjustPainView: View {
+    // After the session is saved there is nothing left to finish early, so the
+    // screen offers one way on and drops the saving copy.
+    var canFinishEarly = true
     var onSaveAndFinishEarly: () -> Void = {}
     var onReturn: () -> Void = {}
     var onBack: () -> Void = {}
 
     var body: some View {
         ScreenScaffold(onBack: onBack) {
-            VStack(spacing: Spacing.tight) {
-                PrimaryButton(title: L10n.saveAndFinishEarly, action: onSaveAndFinishEarly)
-                QuietAction(title: L10n.returnToWorkout, action: onReturn)
+            if canFinishEarly {
+                VStack(spacing: Spacing.tight) {
+                    PrimaryButton(title: L10n.saveAndFinishEarly, action: onSaveAndFinishEarly)
+                    QuietAction(title: L10n.returnToWorkout, action: onReturn)
+                }
+            } else {
+                PrimaryButton(title: L10n.backToWorkoutPlan, action: onReturn)
             }
         } content: {
             ScreenContent {
@@ -25,10 +32,12 @@ struct AdjustPainView: View {
 
                 card
 
-                Text(L10n.painSaveHint)
-                    .font(.body14)
-                    .foregroundStyle(Color.onSurfaceMuted)
-                    .padding(.top, Spacing.medium)
+                if canFinishEarly {
+                    Text(L10n.painSaveHint)
+                        .font(.body14)
+                        .foregroundStyle(Color.onSurfaceMuted)
+                        .padding(.top, Spacing.medium)
+                }
             }
         }
     }
@@ -62,4 +71,8 @@ struct AdjustPainView: View {
 #Preview("Dark") {
     AdjustPainView()
         .preferredColorScheme(.dark)
+}
+
+#Preview("After saving") {
+    AdjustPainView(canFinishEarly: false)
 }

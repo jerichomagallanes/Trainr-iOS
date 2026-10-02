@@ -336,6 +336,10 @@ extension TrainingStore {
         try adjustmentRecord(proposalID: proposalID)?.adjustment()
     }
 
+    func adjustment(id: UUID) throws -> AppliedAdjustment? {
+        try adjustmentRecord(id: id)?.adjustment()
+    }
+
     func activeAdjustment(dayID: UUID) throws -> AppliedAdjustment? {
         try dayRecord(id: dayID)?.adjustments
             .filter { $0.undoneAt == nil }

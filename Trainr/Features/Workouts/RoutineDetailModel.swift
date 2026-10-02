@@ -42,6 +42,7 @@ nonisolated enum AdjustmentReturn: Equatable, Sendable {
 
 nonisolated struct SessionSavedEvent: Equatable, Sendable {
     var dayNumber: Int
+    var weekNumber: Int
     var performedExercises: Int
     var plannedExercises: Int
 }
@@ -152,6 +153,14 @@ final class RoutineDetailModel {
             state.expandedHowTo = position
         }
         state.scrollToPosition = position
+    }
+
+    // The key, not the position: a replaced exercise is a new row whose place
+    // in the day only the stored plan knows.
+    func showHowTo(key: String) {
+        guard let index = storedDay?.visibleExercises.firstIndex(where: { $0.exerciseKey == key })
+        else { return }
+        showHowTo(at: index + 1)
     }
 
     func scrolled() {
@@ -311,6 +320,7 @@ final class RoutineDetailModel {
         state.saveFailed = false
         pendingSavedEvent = SessionSavedEvent(
             dayNumber: state.dayNumber,
+            weekNumber: state.weekNumber,
             performedExercises: state.routine.performedExerciseCount,
             plannedExercises: state.routine.plannedExerciseCount
         )
