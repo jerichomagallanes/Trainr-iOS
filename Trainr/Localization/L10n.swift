@@ -226,6 +226,7 @@ nonisolated enum L10n {
     static var proBilledMonthly: String { String(localized: "pro_billed_monthly") }
     static var proBuyLifetime: String { String(localized: "pro_buy_lifetime") }
     static var proCancelAnytime: String { String(localized: "pro_cancel_anytime") }
+    static var proCompareAdjust: String { String(localized: "pro_compare_adjust") }
     static var proCompareAds: String { String(localized: "pro_compare_ads") }
     static var proCompareEveryWeek: String { String(localized: "pro_compare_every_week") }
     static var proCompareFree: String { String(localized: "pro_compare_free") }
@@ -252,6 +253,8 @@ nonisolated enum L10n {
     static var proFaqIncludesQ: String { String(localized: "pro_faq_includes_q") }
     static var proFaqRenewA: String { String(localized: "pro_faq_renew_a") }
     static var proFaqRenewQ: String { String(localized: "pro_faq_renew_q") }
+    static var proFeatureAdjustBody: String { String(localized: "pro_feature_adjust_body") }
+    static var proFeatureAdjustTitle: String { String(localized: "pro_feature_adjust_title") }
     static var proFeatureAdsBody: String { String(localized: "pro_feature_ads_body") }
     static var proFeatureAdsTitle: String { String(localized: "pro_feature_ads_title") }
     static var proFeatureFreshBody: String { String(localized: "pro_feature_fresh_body") }
@@ -263,6 +266,7 @@ nonisolated enum L10n {
     static var proFeatureSupportBody: String { String(localized: "pro_feature_support_body") }
     static var proFeatureSupportTitle: String { String(localized: "pro_feature_support_title") }
     static var proFreeLimit: String { String(localized: "pro_free_limit") }
+    static var proFreeLimitAdjust: String { String(localized: "pro_free_limit_adjust") }
     static var proFullAccess: String { String(localized: "pro_full_access") }
     static var proLifetime: String { String(localized: "pro_lifetime") }
     static var proManage: String { String(localized: "pro_manage") }
@@ -272,6 +276,7 @@ nonisolated enum L10n {
     static var proNothingToRestore: String { String(localized: "pro_nothing_to_restore") }
     static var proPayOnce: String { String(localized: "pro_pay_once") }
     static var proPrivacy: String { String(localized: "pro_privacy") }
+    static var proPromptAdjust: String { String(localized: "pro_prompt_adjust") }
     static var proPromptFresh: String { String(localized: "pro_prompt_fresh") }
     static var proPromptNextWeek: String { String(localized: "pro_prompt_next_week") }
     static var proPromptRewrite: String { String(localized: "pro_prompt_rewrite") }

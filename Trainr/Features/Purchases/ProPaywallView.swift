@@ -70,7 +70,7 @@ struct ProPaywallView: View {
                     Text(reason.detail)
                         .font(.body16)
                         .foregroundStyle(Color.onSurfaceMuted)
-                    Text(L10n.proFreeLimit)
+                    Text(reason.freeLimit)
                         .font(.body12)
                         .foregroundStyle(Color.onSurfaceMuted)
                 }
@@ -418,6 +418,7 @@ struct ProPaywallView: View {
         Row(label: L10n.proCompareRepeat, free: .no, pro: .yes),
         Row(label: L10n.proCompareRewrite, free: .no, pro: .yes),
         Row(label: L10n.proCompareFresh, free: .no, pro: .yes),
+        Row(label: L10n.proCompareAdjust, free: .text(L10n.proCompareOne), pro: .yes),
         Row(label: L10n.proCompareAds, free: .no, pro: .yes)
     ]
 
