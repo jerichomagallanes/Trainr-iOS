@@ -243,11 +243,21 @@ final class AdjustmentStore {
     // so reapply refills the rest: reusing the row as it stands would report a
     // restored adjustment over a day with no remaining work.
     private func topUp(_ added: WorkoutExerciseRecord, to after: ExerciseSnapshot) -> UUID {
-        let present = Set(added.sets.map(\.setNumber))
-        for (index, set) in after.sets.enumerated() where !present.contains(index + 1) {
-            let record = ExerciseSetRecord(planned(set, number: index + 1))
-            context.insert(record)
-            record.exercise = added
+        let live = Set(added.sets.filter { $0.isCompleted || $0.omittedBy == nil }.map(\.setNumber))
+        let omitted = Dictionary(
+            grouping: added.sets.filter { !$0.isCompleted && $0.omittedBy != nil }, by: \.setNumber
+        )
+        for (index, set) in after.sets.enumerated() where !live.contains(index + 1) {
+            if let row = omitted[index + 1]?.min(by: { $0.id.uuidString < $1.id.uuidString }) {
+                row.targetReps = set.targetReps
+                row.targetWeightKg = set.targetWeightKg
+                row.targetSeconds = set.targetSeconds
+                row.omittedBy = nil
+            } else {
+                let record = ExerciseSetRecord(planned(set, number: index + 1))
+                context.insert(record)
+                record.exercise = added
+            }
         }
         added.setCount = after.sets.count
         return added.id
