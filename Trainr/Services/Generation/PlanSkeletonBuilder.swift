@@ -21,7 +21,9 @@ nonisolated final class PlanSkeletonBuilder: Sendable {
             .filter { !InjuryGuard.excludes($0, for: user.injuries) }
             .sorted { $0.key < $1.key }
         let required = ExerciseShortlist.requiredPatterns(pool, goal: user.fitnessGoal)
-        let lastWeek = Set(request.previousWeek?.workoutDays.flatMap { $0.exercises.map(\.exerciseKey) } ?? [])
+        let lastWeek = Set(request.previousWeek?.workoutDays.flatMap {
+            $0.exercises.filter { $0.addedBy == nil }.map(\.exerciseKey)
+        } ?? [])
 
         let week = WeekBuilder(catalog: catalog, user: user, pool: pool, lastWeek: lastWeek)
         let days = Self.split(user).enumerated().map { index, entry in
