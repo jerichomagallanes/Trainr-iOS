@@ -25,6 +25,8 @@ enum UITestFixtures {
             break
         case "midWeek":
             try? store.savePlan(week(1, for: user, startingDaysAgo: 2, shape: .midWeek))
+        case "longDay":
+            try? store.savePlan(lengthened(week(1, for: user, startingDaysAgo: 2, shape: .midWeek)))
         case "finishedWeek":
             try? store.savePlan(week(1, for: user, startingDaysAgo: 2, shape: .finished))
         case "twoWeeks":
@@ -190,6 +192,28 @@ enum UITestFixtures {
                 return fresh
             }
             return shaped
+        }
+        return plan
+    }
+
+    // Day 3's unperformed work folded into the unstarted day, so 35 minutes is a real cut.
+    private static func lengthened(_ plan: WeeklyPlan) -> WeeklyPlan {
+        var plan = plan
+        let spare = plan.workoutDays
+            .filter { $0.status == .inProgress }
+            .flatMap(\.exercises)
+            .filter { $0.sets.allSatisfy { !$0.isCompleted } }
+        plan.workoutDays = plan.workoutDays.map { day in
+            guard day.status == .notStarted else { return day }
+            var longer = day
+            longer.exercises += spare.map { exercise in
+                var fresh = exercise
+                fresh.id = UUID()
+                fresh.sets = exercise.sets.map { blank($0) }
+                return fresh
+            }
+            longer.exerciseCount = longer.exercises.count
+            return longer
         }
         return plan
     }
