@@ -13,9 +13,9 @@ nonisolated enum RejectionReason: Sendable {
     case equipmentMentionTooLong
     case tooMuchEvidence
     case evidenceQuoteLength
-    case evidenceSpanInvalid
     case evidenceQuoteMismatch
     case factWithoutEvidence
+    case minutesNotInQuote
 }
 
 nonisolated struct ActionableFacts: Equatable, Sendable {
@@ -30,11 +30,16 @@ nonisolated struct ActionableFacts: Equatable, Sendable {
 // makes a fact quotable, never applicable: the policy still decides.
 nonisolated enum IntentValidator {
 
-    private static let supportedSchemaVersion = "1.0"
+    private static let supportedSchemaVersion = "1.1"
     private static let minutesParserBound = 1...1440
     private static let equipmentMentionLimit = 160
     private static let evidenceLimit = 8
     private static let quoteLength = 1...500
+    private static let numberWords = [
+        "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten",
+        "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen",
+        "twenty", "thirty", "forty", "fifty", "sixty", "ninety", "half", "hour", "hours"
+    ]
 
     static func validate(_ rawJSON: String, input: String) -> IntentValidation {
         guard !RepeatedKeys.present(in: rawJSON) else { return .rejected([.malformedJSON]) }
@@ -59,38 +64,60 @@ nonisolated enum IntentValidator {
             note(.equipmentMentionTooLong)
         }
         if extraction.evidence.count > evidenceLimit { note(.tooMuchEvidence) }
-        spanFailures(extraction.evidence, quoting: input).forEach(note)
+        quoteFailures(extraction.evidence, quoting: input).forEach(note)
         if factsLackEvidence(extraction) { note(.factWithoutEvidence) }
+        if minutesNotQuoted(extraction) { note(.minutesNotInQuote) }
 
         guard reasons.isEmpty else { return .rejected(reasons) }
         return .valid(extraction, actionableFacts(extraction))
     }
 
-    private static func spanFailures(_ evidence: [Evidence], quoting input: String) -> [RejectionReason] {
-        let scalars = input.precomposedStringWithCanonicalMapping.unicodeScalars
+    private static func quoteFailures(_ evidence: [Evidence], quoting input: String) -> [RejectionReason] {
+        let normalized = input.precomposedStringWithCanonicalMapping
         var failures: [RejectionReason] = []
         func note(_ reason: RejectionReason) {
             if !failures.contains(reason) { failures.append(reason) }
         }
 
         for entry in evidence {
-            if !quoteLength.contains(entry.quote.unicodeScalars.count) { note(.evidenceQuoteLength) }
-            guard entry.start >= 0, entry.end > entry.start, entry.end <= scalars.count else {
-                note(.evidenceSpanInvalid)
+            let quoted = entry.quote.precomposedStringWithCanonicalMapping
+            guard quoteLength.contains(quoted.unicodeScalars.count) else {
+                note(.evidenceQuoteLength)
                 continue
             }
-            let quoted = entry.quote.precomposedStringWithCanonicalMapping
-            if quoted != slice(scalars, from: entry.start, to: entry.end) { note(.evidenceQuoteMismatch) }
+            if normalized.range(of: quoted, options: .literal) == nil { note(.evidenceQuoteMismatch) }
         }
         return failures
     }
 
-    // Offsets are code points. Characters are grapheme clusters and utf16 is
-    // narrower still, so either would shift a span in a note holding an emoji.
-    private static func slice(_ scalars: String.UnicodeScalarView, from start: Int, to end: Int) -> String {
-        let lower = scalars.index(scalars.startIndex, offsetBy: start)
-        let upper = scalars.index(lower, offsetBy: end - start)
-        return String(String.UnicodeScalarView(scalars[lower..<upper]))
+    private static func minutesNotQuoted(_ extraction: IntentExtraction) -> Bool {
+        guard let minutes = extraction.timeBudget?.minutes else { return false }
+        let quotes = extraction.evidence.filter { $0.field == .timeBudget }.map(\.quote)
+        guard !quotes.isEmpty else { return false }
+        let digits = String(minutes)
+        return !quotes.contains { quote in
+            runs(in: quote).contains { $0 == digits || numberWords.contains($0) }
+        }
+    }
+
+    // Whole runs only, so "30 minutes" never licenses 3 and "often" never licenses ten.
+    private static func runs(in quote: String) -> [String] {
+        var runs: [String] = []
+        var current = ""
+        var digits = false
+        for char in quote.lowercased() {
+            let usable = char.isLetter || char.isNumber
+            if !usable || (!current.isEmpty && char.isNumber != digits) {
+                if !current.isEmpty { runs.append(current) }
+                current = ""
+            }
+            if usable {
+                digits = char.isNumber
+                current.append(char)
+            }
+        }
+        if !current.isEmpty { runs.append(current) }
+        return runs
     }
 
     private static func factsLackEvidence(_ extraction: IntentExtraction) -> Bool {

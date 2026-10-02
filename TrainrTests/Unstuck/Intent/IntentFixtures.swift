@@ -34,7 +34,7 @@ func extracted(
     evidence: [Evidence] = []
 ) -> IntentExtraction {
     IntentExtraction(
-        schemaVersion: "1.0",
+        schemaVersion: "1.1",
         intent: intent,
         timeBudget: timeBudget,
         equipmentMention: equipmentMention,

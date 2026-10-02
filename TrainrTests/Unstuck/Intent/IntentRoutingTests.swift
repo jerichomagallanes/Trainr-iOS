@@ -15,7 +15,7 @@ struct IntentRoutingTests {
             extracted(
                 intent: .lessTime,
                 timeBudget: TimeBudgetMention(minutes: 35, scope: .wholeSession),
-                evidence: [Evidence(field: .timeBudget, quote: "35 minutes", start: 7, end: 17)]
+                evidence: [Evidence(field: .timeBudget, quote: "35 minutes")]
             ),
             Self.timeNote
         )
@@ -29,8 +29,8 @@ struct IntentRoutingTests {
                 timeBudget: TimeBudgetMention(minutes: 20, scope: .wholeSession),
                 concern: .painOrUnclearDiscomfort,
                 evidence: [
-                    Evidence(field: .timeBudget, quote: "20 minutes", start: 7, end: 17),
-                    Evidence(field: .concern, quote: "my knee hurts", start: 22, end: 35)
+                    Evidence(field: .timeBudget, quote: "20 minutes"),
+                    Evidence(field: .concern, quote: "my knee hurts")
                 ]
             ),
             Self.painNote

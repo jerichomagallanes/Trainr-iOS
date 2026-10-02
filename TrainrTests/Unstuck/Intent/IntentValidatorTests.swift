@@ -9,18 +9,37 @@ struct IntentValidatorTests {
     private let emojiNote = "🏋️ I have 30 minutes for the entire workout."
     private let decomposedNote = "The cafe\u{0301} rack is taken."
 
-    @Test("An emoji before the quote does not shift the offsets")
-    func anEmojiBeforeTheQuoteDoesNotShiftTheOffsets() throws {
-        let byCodePoint = extracted(
+    @Test("A quote found once in the note is accepted")
+    func aQuoteFoundOnceIsAccepted() throws {
+        let once = extracted(
+            intent: .lessTime,
+            timeBudget: TimeBudgetMention(minutes: 35, scope: .wholeSession),
+            evidence: [Evidence(field: .timeBudget, quote: "35 minutes")]
+        )
+
+        #expect(try validated(once, plainNote).minutes == 35)
+    }
+
+    @Test("A quote found twice in the note is accepted")
+    func aQuoteFoundTwiceIsAccepted() throws {
+        let twice = extracted(
+            intent: .lessTime,
+            timeBudget: TimeBudgetMention(minutes: 35, scope: .wholeSession),
+            evidence: [Evidence(field: .timeBudget, quote: "35 minutes")]
+        )
+
+        #expect(try validated(twice, "35 minutes, I said, 35 minutes total.").minutes == 35)
+    }
+
+    @Test("An emoji before the quote does not matter")
+    func anEmojiBeforeTheQuoteDoesNotMatter() throws {
+        let afterEmoji = extracted(
             intent: .lessTime,
             timeBudget: TimeBudgetMention(minutes: 30, scope: .wholeSession),
-            evidence: [Evidence(field: .timeBudget, quote: "30 minutes", start: 10, end: 20)]
+            evidence: [Evidence(field: .timeBudget, quote: "30 minutes")]
         )
-        var byUTF16 = byCodePoint
-        byUTF16.evidence = [Evidence(field: .timeBudget, quote: "30 minutes", start: 11, end: 21)]
 
-        #expect(try validated(byCodePoint, emojiNote).minutes == 30)
-        #expect(try rejection(byUTF16, emojiNote) == [.evidenceQuoteMismatch])
+        #expect(try validated(afterEmoji, emojiNote).minutes == 30)
     }
 
     @Test("A combining mark is normalised before the quote is compared")
@@ -28,28 +47,40 @@ struct IntentValidatorTests {
         let precomposed = extracted(
             intent: .equipmentUnavailable,
             equipmentMention: "café rack",
-            evidence: [Evidence(field: .equipmentMention, quote: "café rack", start: 4, end: 13)]
+            evidence: [Evidence(field: .equipmentMention, quote: "café rack")]
         )
 
         #expect(try validated(precomposed, decomposedNote).equipmentMention == "café rack")
     }
 
-    @Test("A span past the end of the note is invalid")
-    func aSpanPastTheEndIsInvalid() throws {
-        let past = extracted(
-            evidence: [Evidence(field: .intent, quote: "35 minutes", start: 7, end: 40)]
-        )
+    @Test("A quote that is not in the note is rejected")
+    func aQuoteNotInTheNoteIsRejected() throws {
+        let invented = extracted(evidence: [Evidence(field: .intent, quote: "40 minutes")])
 
-        #expect(try rejection(past, plainNote) == [.evidenceSpanInvalid])
+        #expect(try rejection(invented, plainNote) == [.evidenceQuoteMismatch])
     }
 
-    @Test("An empty span is invalid")
-    func anEmptySpanIsInvalid() throws {
-        let empty = extracted(
-            evidence: [Evidence(field: .intent, quote: "35 minutes", start: 7, end: 7)]
-        )
+    @Test("An empty quote is too short")
+    func anEmptyQuoteIsTooShort() throws {
+        let empty = extracted(evidence: [Evidence(field: .intent, quote: "")])
 
-        #expect(try rejection(empty, plainNote) == [.evidenceSpanInvalid])
+        #expect(try rejection(empty, plainNote) == [.evidenceQuoteLength])
+    }
+
+    @Test("A quote of 501 scalars is too long")
+    func aQuoteOf501ScalarsIsTooLong() throws {
+        let long = String(repeating: "a", count: 501)
+        let whole = extracted(evidence: [Evidence(field: .intent, quote: long)])
+
+        #expect(try rejection(whole, long) == [.evidenceQuoteLength])
+    }
+
+    @Test("A document that still carries offsets is rejected")
+    func aDocumentThatStillCarriesOffsetsIsRejected() throws {
+        let span: [String: Any] = ["field": "intent", "quote": "35 minutes", "start": 7, "end": 17]
+        let offsets = IntentValidator.validate(try extracted().asJSON(adding: "evidence", [span]), input: plainNote)
+
+        #expect(offsets.reasons == [.unknownKeyOrEnum])
     }
 
     @Test("A time budget without evidence for it is not actionable")
@@ -57,10 +88,65 @@ struct IntentValidatorTests {
         let unevidenced = extracted(
             intent: .lessTime,
             timeBudget: TimeBudgetMention(minutes: 35, scope: .wholeSession),
-            evidence: [Evidence(field: .intent, quote: "35 minutes", start: 7, end: 17)]
+            evidence: [Evidence(field: .intent, quote: "35 minutes")]
         )
 
         #expect(try rejection(unevidenced, plainNote) == [.factWithoutEvidence])
+    }
+
+    @Test("Minutes the quote never states are rejected")
+    func minutesTheQuoteNeverStatesAreRejected() throws {
+        let copied = extracted(
+            intent: .lessTime,
+            timeBudget: TimeBudgetMention(minutes: 30, scope: .wholeSession),
+            evidence: [Evidence(field: .timeBudget, quote: "less time today")]
+        )
+
+        #expect(try rejection(copied, "I have less time today.") == [.minutesNotInQuote])
+    }
+
+    @Test("A digit inside a bigger number does not license the minutes")
+    func aDigitInsideABiggerNumberDoesNotLicenseTheMinutes() throws {
+        let sliced = extracted(
+            intent: .lessTime,
+            timeBudget: TimeBudgetMention(minutes: 3, scope: .wholeSession),
+            evidence: [Evidence(field: .timeBudget, quote: "30 minutes")]
+        )
+
+        #expect(try rejection(sliced, "I have 30 minutes.") == [.minutesNotInQuote])
+    }
+
+    @Test("A number word inside another word does not license the minutes")
+    func aNumberWordInsideAnotherWordDoesNotLicenseTheMinutes() throws {
+        let embedded = extracted(
+            intent: .lessTime,
+            timeBudget: TimeBudgetMention(minutes: 10, scope: .wholeSession),
+            evidence: [Evidence(field: .timeBudget, quote: "often have less time")]
+        )
+
+        #expect(try rejection(embedded, "I often have less time.") == [.minutesNotInQuote])
+    }
+
+    @Test("Minutes glued to their unit are accepted")
+    func minutesGluedToTheirUnitAreAccepted() throws {
+        let glued = extracted(
+            intent: .lessTime,
+            timeBudget: TimeBudgetMention(minutes: 35, scope: .wholeSession),
+            evidence: [Evidence(field: .timeBudget, quote: "35min for the whole workout")]
+        )
+
+        #expect(try validated(glued, "I have 35min for the whole workout.").minutes == 35)
+    }
+
+    @Test("Minutes written as a number word are accepted in any case")
+    func minutesWrittenAsANumberWordAreAccepted() throws {
+        let worded = extracted(
+            intent: .lessTime,
+            timeBudget: TimeBudgetMention(minutes: 30, scope: .remaining),
+            evidence: [Evidence(field: .timeBudget, quote: "HALF an hour left")]
+        )
+
+        #expect(try validated(worded, "I have HALF an hour left.").minutes == 30)
     }
 
     @Test("An unknown scope leaves the minutes unactionable")
@@ -69,7 +155,7 @@ struct IntentValidatorTests {
             intent: .lessTime,
             timeBudget: TimeBudgetMention(minutes: 35, scope: .unknown),
             clarification: .durationScope,
-            evidence: [Evidence(field: .timeBudget, quote: "35 minutes", start: 7, end: 17)]
+            evidence: [Evidence(field: .timeBudget, quote: "35 minutes")]
         )
 
         let facts = try validated(unscoped, plainNote)
@@ -83,17 +169,17 @@ struct IntentValidatorTests {
         let tooLong = extracted(
             intent: .lessTime,
             timeBudget: TimeBudgetMention(minutes: 1441, scope: .wholeSession),
-            evidence: [Evidence(field: .timeBudget, quote: "35 minutes", start: 7, end: 17)]
+            evidence: [Evidence(field: .timeBudget, quote: "1441 minutes")]
         )
 
-        #expect(try rejection(tooLong, plainNote) == [.minutesOutOfRange])
+        #expect(try rejection(tooLong, "I have 1441 minutes.") == [.minutesOutOfRange])
     }
 
     @Test("Nine evidence entries are too many")
     func nineEvidenceEntriesAreTooMany() throws {
         let crowded = extracted(
             evidence: Array(
-                repeating: Evidence(field: .intent, quote: "35 minutes", start: 7, end: 17), count: 9
+                repeating: Evidence(field: .intent, quote: "35 minutes"), count: 9
             )
         )
 
@@ -140,7 +226,7 @@ struct IntentValidatorTests {
         let nested = extracted(
             intent: .lessTime,
             timeBudget: TimeBudgetMention(minutes: 35, scope: .wholeSession),
-            evidence: [Evidence(field: .timeBudget, quote: "35 minutes", start: 7, end: 17)]
+            evidence: [Evidence(field: .timeBudget, quote: "35 minutes")]
         )
         let smuggled = IntentValidator.validate(
             try nested.asJSON(adding: "timeBudget", ["minutes": 35, "scope": "whole_session", "weightKg": 100]),
@@ -152,7 +238,7 @@ struct IntentValidatorTests {
 
     @Test("A required key left out is malformed")
     func aMissingKeyIsMalformed() {
-        let partial = #"{"schemaVersion":"1.0","intent":"less_time"}"#
+        let partial = #"{"schemaVersion":"1.1","intent":"less_time"}"#
 
         #expect(IntentValidator.validate(partial, input: plainNote).reasons == [.malformedJSON])
     }
