@@ -106,7 +106,7 @@ final class OnboardingScreenTests: XCTestCase {
         XCTAssertTrue(app.staticTexts["About BMI & sources"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.links["CDC: Adult BMI categories"].exists)
         XCTAssertTrue(app.links["CDC: About BMI"].exists)
-        let screenshot = XCTAttachment(screenshot: app.screenshot())
+        let screenshot = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
         screenshot.name = "BMI citations"
         screenshot.lifetime = .keepAlways
         add(screenshot)

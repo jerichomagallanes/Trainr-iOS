@@ -21,6 +21,28 @@ Companion changes in the Android/shared website repository update the string sou
 privacy policy, promotional text and original closing screenshot artwork. Publish
 that policy before resubmitting. Product IDs and entitlement remain unchanged.
 
+## Verified build and tests
+
+Build 1.0 (88) was archived, exported and uploaded with stable Xcode 26.6
+(17F113), using the iOS 26.5 SDK. It was installed on the paired physical iPhone
+without deleting app data. Upload succeeded; Apple reported missing debug symbols
+for the prebuilt Google Mobile Ads and UMP frameworks. These warnings did not block
+upload, but crashes inside those vendor frameworks may have incomplete symbols.
+
+- 356 unit tests passed locally. Required build, unit and lint CI checks passed.
+- The adult BMI sources and age-19 exclusion UI tests passed on iPhone and
+  iPad Air 11-inch (M3), including iPhone compatibility mode on the iPad.
+- The source sheet was inspected in light mode and dark mode with XXXL text.
+- The optional CI onboarding runner had no matching simulator. An existing
+  week-deletion UI test also failed in CI; the exact test passed when rerun locally.
+  A CI retry was requested. Do not describe all optional CI checks as green yet.
+- Physical-device ATT recording, sandbox purchases, live RevenueCat offering
+  verification and final App Store submission remain separate checks.
+
+| Light | Dark, larger text |
+| --- | --- |
+| ![BMI sources in light mode](review-evidence/bmi-sources-light.png) | ![BMI sources in dark mode with larger text](review-evidence/bmi-sources-dark-large.png) |
+
 ## Review walkthrough
 
 1. Fresh install on a physical iPhone/iPad with tracking requests allowed and no
