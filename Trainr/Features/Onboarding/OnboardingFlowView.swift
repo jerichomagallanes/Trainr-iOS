@@ -44,6 +44,7 @@ struct OnboardingFlowView: View {
     private func bodyMetrics(_ editing: Bool) -> some View {
         BodyMetricsView(
             initial: model.filled(for: .bodyMetrics, editing: editing),
+            age: model.profile.age,
             isEditing: editing,
             onNext: { height, weight, units in
                 model.updateBodyMetrics(height: height, weight: weight, units: units)
