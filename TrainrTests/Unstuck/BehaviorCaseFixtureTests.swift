@@ -24,25 +24,22 @@ struct BehaviorCaseFixtureTests {
         }
     }
 
-    // The two the policy answers are its own reasons; the rest are routes this
-    // app deliberately does not automate — pain above all (C11).
-    private static let unautomated: Set<String> = [
-        "exercise_guidance", "pain_concern", "other_or_unclear"
-    ]
-
     private static var automated: Set<String> {
         Set(AdjustmentReason.allCases.map { $0.rawValue.lowercased() })
     }
 
-    @Test("Every case names a route this app knows")
-    func everyCaseNamesAKnownRoute() {
+    // The rest are the intents this app deliberately does not automate — pain
+    // above all (C11).
+    private static var unautomated: Set<String> {
+        Set(IntentKind.allCases.map(\.rawValue)).subtracting(automated)
+    }
+
+    @Test("Every case names an intent this app knows")
+    func everyCaseNamesAKnownIntent() {
         #expect(!routes.isEmpty)
 
         for (id, route) in routes {
-            #expect(
-                Self.automated.contains(route) || Self.unautomated.contains(route),
-                "case \(id) expects \(route)"
-            )
+            #expect(IntentKind(rawValue: route) != nil, "case \(id) expects \(route)")
         }
     }
 
@@ -51,8 +48,17 @@ struct BehaviorCaseFixtureTests {
         #expect(Set(routes.map(\.route)).isSuperset(of: Self.automated))
     }
 
-    @Test("A route is either automated or deliberately not, never both")
-    func theTwoListsDoNotOverlap() {
-        #expect(Self.automated.isDisjoint(with: Self.unautomated))
+    @Test("Every reason the policy answers is one of the intents")
+    func everyAutomatedReasonIsAnIntent() {
+        #expect(Set(IntentKind.allCases.map(\.rawValue)).isSuperset(of: Self.automated))
+    }
+
+    @Test("Pain is never a reason the policy answers")
+    func painIsNeverAutomated() {
+        #expect(Self.unautomated.isSuperset(of: [
+            IntentKind.exerciseGuidance.rawValue,
+            IntentKind.painConcern.rawValue,
+            IntentKind.otherOrUnclear.rawValue
+        ]))
     }
 }
