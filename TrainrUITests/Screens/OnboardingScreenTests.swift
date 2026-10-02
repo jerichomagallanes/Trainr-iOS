@@ -104,8 +104,12 @@ final class OnboardingScreenTests: XCTestCase {
         XCTAssertTrue(sources.isHittable)
         sources.tap()
         XCTAssertTrue(app.staticTexts["About BMI & sources"].waitForExistence(timeout: 5))
-        XCTAssertTrue(app.links["CDC: Adult BMI categories"].exists)
-        XCTAssertTrue(app.links["CDC: About BMI"].exists)
+        // SwiftUI exposes a Link as a link on iOS 27 and as a button on iOS 26,
+        // which is what the nightly runner boots. The label is what the person
+        // reads either way, so that is what is asserted.
+        let anything = app.descendants(matching: .any)
+        XCTAssertTrue(anything["CDC: Adult BMI categories"].exists)
+        XCTAssertTrue(anything["CDC: About BMI"].exists)
         let screenshot = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
         screenshot.name = "BMI citations"
         screenshot.lifetime = .keepAlways
