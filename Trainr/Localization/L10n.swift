@@ -74,6 +74,7 @@ nonisolated enum L10n {
     static func deleteWeekTitle(_ p1: Int) -> String {
         String.localizedStringWithFormat(String(localized: "delete_week_title"), p1)
     }
+    static var done: String { String(localized: "done") }
     static var dropdownContentDescription: String { String(localized: "dropdown_content_description") }
     static var durationLabel: String { String(localized: "duration_label") }
     static func durationMinutesFormat(_ p1: Int) -> String {
@@ -98,12 +99,25 @@ nonisolated enum L10n {
     static var errorEnterWeight: String { String(localized: "error_enter_weight") }
     static var estimatedWeightNote: String { String(localized: "estimated_weight_note") }
     static var exerciseInProgress: String { String(localized: "exercise_in_progress") }
+    static func exercisesCompletedOfFormat(_ p1: Int, _ p2: Int) -> String {
+        String.localizedStringWithFormat(String(localized: "exercises_completed_of_format"), p1, p2)
+    }
     static func exercisesCount(_ p1: Int) -> String {
         String.localizedStringWithFormat(String(localized: "exercises_count"), p1)
     }
     static var experienceLabel: String { String(localized: "experience_label") }
     static var female: String { String(localized: "female") }
     static var femaleGender: String { String(localized: "female_gender") }
+    static var finishEarly: String { String(localized: "finish_early") }
+    static var finishEarlyCardMessage: String { String(localized: "finish_early_card_message") }
+    static var finishEarlyCardTitle: String { String(localized: "finish_early_card_title") }
+    static var finishEarlyFailed: String { String(localized: "finish_early_failed") }
+    static var finishEarlyHint: String { String(localized: "finish_early_hint") }
+    static var finishEarlyTitle: String { String(localized: "finish_early_title") }
+    static var finishedEarly: String { String(localized: "finished_early") }
+    static func finishedEarlySummaryFormat(_ p1: Int, _ p2: Int) -> String {
+        String.localizedStringWithFormat(String(localized: "finished_early_summary_format"), p1, p2)
+    }
     static var fitnessExperience: String { String(localized: "fitness_experience") }
     static var fitnessGoalsLabel: String { String(localized: "fitness_goals_label") }
     static var flexibilityMobility: String { String(localized: "flexibility_mobility") }
@@ -151,6 +165,7 @@ nonisolated enum L10n {
     static var intermediate: String { String(localized: "intermediate") }
     static var intermediateDescription: String { String(localized: "intermediate_description") }
     static var intermediateLevel: String { String(localized: "intermediate_level") }
+    static var keepTraining: String { String(localized: "keep_training") }
     static var kneeProblemsInjury: String { String(localized: "knee_problems_injury") }
     static var leavePlanConfirm: String { String(localized: "leave_plan_confirm") }
     static var leavePlanMessage: String { String(localized: "leave_plan_message") }
@@ -308,6 +323,7 @@ nonisolated enum L10n {
     static var routinesBuiltAroundYou: String { String(localized: "routines_built_around_you") }
     static var save: String { String(localized: "save") }
     static var saveProfile: String { String(localized: "save_profile") }
+    static var saveWorkout: String { String(localized: "save_workout") }
     static var scheduleLabel: String { String(localized: "schedule_label") }
     static var selectDaysPlaceholder: String { String(localized: "select_days_placeholder") }
     static var sessionDuration: String { String(localized: "session_duration") }
@@ -381,6 +397,7 @@ nonisolated enum L10n {
         String.localizedStringWithFormat(String(localized: "workout_days_option"), p1)
     }
     static var workoutDaysPerWeek: String { String(localized: "workout_days_per_week") }
+    static var workoutSaved: String { String(localized: "workout_saved") }
     static var workoutSetupLabel: String { String(localized: "workout_setup_label") }
     static var wristPainInjury: String { String(localized: "wrist_pain_injury") }
     static func yearsOldFormat(_ p1: Int) -> String {

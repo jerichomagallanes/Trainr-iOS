@@ -141,6 +141,7 @@ struct WeeklyPlanView: View {
                     weekday: WorkoutDateFormatter.weekday(planDay.date),
                     day: planDay.day,
                     isMissed: planDay.isMissed,
+                    finishedEarly: planDay.finishKind == .partial,
                     onTap: { onDayTap(planDay.day) }
                 )
                 .listRowSeparator(.hidden)

@@ -13,6 +13,7 @@ enum Route: Hashable {
     // Nil week means the week being trained, whatever its number.
     case routineDetail(dayNumber: Int, weekNumber: Int?)
     case dayCompleted(dayNumber: Int)
+    case sessionSaved(dayNumber: Int, performed: Int, planned: Int)
     case weekCompleted(weekNumber: Int)
     case regeneratingWeek
     case generatingNextWeek
@@ -36,6 +37,7 @@ enum Route: Hashable {
         case .weekPlan: "week_plan"
         case .routineDetail: "routine_detail"
         case .dayCompleted: "day_completed"
+        case .sessionSaved: "session_saved"
         case .weekCompleted: "week_completed"
         case .regeneratingWeek: "regenerating_week"
         case .generatingNextWeek: "generating_next_week"

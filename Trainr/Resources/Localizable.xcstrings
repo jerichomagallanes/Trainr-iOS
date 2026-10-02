@@ -695,6 +695,17 @@
         }
       }
     },
+    "done": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Done"
+          }
+        }
+      }
+    },
     "dropdown_content_description": {
       "extractionState": "manual",
       "localizations": {
@@ -949,6 +960,17 @@
         }
       }
     },
+    "exercises_completed_of_format": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld of %2$lld exercises completed"
+          }
+        }
+      }
+    },
     "exercises_count": {
       "extractionState": "manual",
       "localizations": {
@@ -1001,6 +1023,94 @@
           "stringUnit": {
             "state": "translated",
             "value": "Female"
+          }
+        }
+      }
+    },
+    "finish_early": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Finish early"
+          }
+        }
+      }
+    },
+    "finish_early_card_message": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unchecked sets stay unperformed. Your logged work is kept."
+          }
+        }
+      }
+    },
+    "finish_early_card_title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Save only what you performed"
+          }
+        }
+      }
+    },
+    "finish_early_failed": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your workout was not saved. Try again."
+          }
+        }
+      }
+    },
+    "finish_early_hint": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No need to make up the remaining sets right now."
+          }
+        }
+      }
+    },
+    "finish_early_title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Finish early?"
+          }
+        }
+      }
+    },
+    "finished_early": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Finished early"
+          }
+        }
+      }
+    },
+    "finished_early_summary_format": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld of %2$lld exercises · Finished early"
           }
         }
       }
@@ -1496,6 +1606,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Intermediate"
+          }
+        }
+      }
+    },
+    "keep_training": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keep training"
           }
         }
       }
@@ -3085,6 +3206,17 @@
         }
       }
     },
+    "save_workout": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Save workout"
+          }
+        }
+      }
+    },
     "schedule_label": {
       "extractionState": "manual",
       "localizations": {
@@ -3698,6 +3830,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "How many days per week can you work out?"
+          }
+        }
+      }
+    },
+    "workout_saved": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Workout saved"
           }
         }
       }

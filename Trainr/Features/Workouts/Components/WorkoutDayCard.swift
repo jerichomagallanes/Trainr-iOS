@@ -8,6 +8,7 @@ struct WorkoutDayCard: View {
     let weekday: String
     let day: WorkoutDay
     var isMissed = false
+    var finishedEarly = false
     let onTap: () -> Void
 
     private var headerIsDark: Bool { day.status != .notStarted }
@@ -42,7 +43,9 @@ struct WorkoutDayCard: View {
             .foregroundStyle(headerIsDark ? Color.onSurfaceEmphasis : Color.onSurface)
             .frame(maxWidth: .infinity, alignment: .leading)
 
-            WorkoutStatusChip(status: day.status, isMissed: isMissed)
+            WorkoutStatusChip(
+                status: day.status, isMissed: isMissed, finishedEarly: finishedEarly
+            )
         }
         .padding(Spacing.card)
         .background(headerIsDark ? Color.surfaceEmphasis : Color.surfaceCard)

@@ -284,7 +284,24 @@ struct RootView: View {
                 weekNumber: weekNumber,
                 onBack: pop,
                 onDayCompleted: { path.append(.dayCompleted(dayNumber: $0)) },
-                onWeekCompleted: { path.append(.weekCompleted(weekNumber: $0)) }
+                onWeekCompleted: { path.append(.weekCompleted(weekNumber: $0)) },
+                onSessionSaved: {
+                    path.append(
+                        .sessionSaved(
+                            dayNumber: $0.dayNumber,
+                            performed: $0.performedExercises,
+                            planned: $0.plannedExercises
+                        )
+                    )
+                }
+            )
+
+        case .sessionSaved(_, let performed, let planned):
+            SessionSavedView(
+                performedExercises: performed,
+                plannedExercises: planned,
+                onBack: pop,
+                onDone: restartOnHome
             )
 
         case .dayCompleted(let dayNumber):

@@ -18,12 +18,24 @@ nonisolated struct RoutineDetailState: Equatable, Sendable {
     // Nothing is drawn before the stored routine is read, and the completion
     // guard needs it too: loading must not count as finishing the day.
     var isLoaded = false
+    var outcome: SessionOutcome?
+    var isConfirmingFinishEarly = false
+    var saveFailed = false
+}
+
+nonisolated struct SessionSavedEvent: Equatable, Sendable {
+    var dayNumber: Int
+    var performedExercises: Int
+    var plannedExercises: Int
 }
 
 @Observable
 final class RoutineDetailModel {
 
     private(set) var state = RoutineDetailState()
+    // Raised by a save and cleared by the view that acts on it, never rebuilt
+    // from what is stored: a screen restored later must not navigate again.
+    private(set) var pendingSavedEvent: SessionSavedEvent?
 
     private let dependencies: AppDependencies
     private let requestedDayNumber: Int
@@ -89,7 +101,8 @@ final class RoutineDetailModel {
             weekNumber: plan.weekNumber,
             completesTheWeek: Self.completesTheWeek(plan.workoutDays, dayNumber: index + 1),
             unitSystem: units,
-            isLoaded: true
+            isLoaded: true,
+            outcome: dependencies.attempt("outcome", { try store.outcome(dayID: day.id) })
         )
     }
 
@@ -111,8 +124,13 @@ final class RoutineDetailModel {
         state.routine = state.routine.updating(set, at: position)
         reconcileCompletion(at: position, was: was)
 
-        guard storedExercise(at: position) != nil else { return }
-        dependencies.attempt("updateSet", { try dependencies.store.updateSet(set) })
+        // The state holds the origin-stamped copy; the row handed in knows only
+        // the numbers.
+        guard storedExercise(at: position) != nil,
+              let stamped = state.routine.exercises.first(where: { $0.position == position })?
+                  .sets.first(where: { $0.setNumber == set.setNumber })
+        else { return }
+        dependencies.attempt("updateSet", { try dependencies.store.updateSet(stamped) })
     }
 
     func addSet(at position: Int) {
@@ -148,6 +166,87 @@ final class RoutineDetailModel {
         state.routine = state.routine.completingAll()
         state.timer = nil
         persistEveryExercise(completed: true)
+
+        guard let day = storedDay else { return }
+        let planned = plannedSetCount()
+        // Stamped now rather than from the day: completedAt is kept from the
+        // first time the day closed, which can be well before this finish.
+        let outcome = SessionOutcome(
+            dayID: day.id, finishKind: .full, finishedAt: Date(),
+            performedSetCount: planned, plannedSetCount: planned
+        )
+        if saved(outcome) { state.outcome = outcome }
+    }
+
+    // MARK: - Finishing early
+
+    func askToFinishEarly() {
+        state.isConfirmingFinishEarly = true
+        state.saveFailed = false
+    }
+
+    func keepTraining() {
+        state.isConfirmingFinishEarly = false
+        state.saveFailed = false
+    }
+
+    func retryFinishEarly() { finishEarly() }
+
+    // Saves what was logged and nothing more: no set is filled and no exercise
+    // is ticked, so the record reads back as the work actually done.
+    func finishEarly() {
+        // One save and one navigation, however often the button is tapped.
+        guard state.outcome?.finishKind != .partial else { return }
+        cancelTick()
+        state.timer = nil
+        guard let day = storedDay else { return }
+
+        let now = Date()
+        var finished = day
+        finished.status = .completed
+        finished.completedAt = day.completedAt ?? now
+
+        let sets = state.routine.exercises.flatMap(\.sets)
+        let outcome = SessionOutcome(
+            dayID: day.id,
+            finishKind: .partial,
+            finishedAt: now,
+            performedSetCount: sets.count(where: \.isCompleted),
+            plannedSetCount: sets.count(where: { $0.omittedBy == nil })
+        )
+
+        let wroteDay = dependencies.attempt("updateDay", {
+            try dependencies.store.updateDay(finished)
+        }) != nil
+        guard wroteDay, saved(outcome) else {
+            // Two writes, no transaction: the day goes back, or the plan shows
+            // a completed chip for a session that was never saved.
+            dependencies.attempt("updateDay", { try dependencies.store.updateDay(day) })
+            state.saveFailed = true
+            return
+        }
+
+        storedDay = finished
+        state.outcome = outcome
+        state.isConfirmingFinishEarly = false
+        state.saveFailed = false
+        pendingSavedEvent = SessionSavedEvent(
+            dayNumber: state.dayNumber,
+            performedExercises: state.routine.performedExerciseCount,
+            plannedExercises: state.routine.plannedExerciseCount
+        )
+    }
+
+    func consumeSavedEvent() {
+        pendingSavedEvent = nil
+    }
+
+    private func saved(_ outcome: SessionOutcome) -> Bool {
+        dependencies.attempt("saveOutcome", { try dependencies.store.saveOutcome(outcome) }) != nil
+    }
+
+    private func plannedSetCount() -> Int {
+        state.routine.exercises.flatMap(\.sets).count(where: { $0.omittedBy == nil })
     }
 
     // The day's status follows from its exercises, so persistDayStatus moves it
@@ -306,7 +405,9 @@ final class RoutineDetailModel {
     }
 
     private func persistDayStatus() {
-        guard var day = storedDay else { return }
+        // A day finished early is closed for good: correcting a number on it
+        // must not reopen it as in progress.
+        guard state.outcome?.finishKind != .partial, var day = storedDay else { return }
         let completedCount = day.exercises.count(where: \.isCompleted)
         let status: WorkoutStatus = switch completedCount {
         case 0: .notStarted

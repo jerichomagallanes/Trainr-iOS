@@ -228,6 +228,63 @@ final class RoutineDetailScreenTests: XCTestCase {
         XCTAssertTrue(app.staticTexts["1"].firstMatch.exists)
     }
 
+    @MainActor
+    func testFinishEarlyIsOfferedOnlyWhileThereIsSomethingLeftToDo() {
+        openUnstartedDay()
+        let finishEarly = app.buttons["Finish early"]
+        app.scrollUntilHittable(finishEarly)
+        XCTAssertTrue(finishEarly.exists)
+
+        openFinishedDay()
+        app.scrollUntilHittable(app.buttons["Start this workout over"])
+        XCTAssertFalse(app.buttons["Finish early"].exists)
+    }
+
+    @MainActor
+    func testFinishingEarlyAsksFirstAndKeepTrainingReturns() {
+        openUnstartedDay()
+        let finishEarly = app.buttons["Finish early"]
+        app.scrollUntilHittable(finishEarly)
+        finishEarly.tap()
+
+        XCTAssertTrue(app.staticTexts["Finish early?"].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.staticTexts["0 of 4 exercises completed"].exists)
+        XCTAssertTrue(app.staticTexts["Unchecked sets stay unperformed. Your logged work is kept."].exists)
+
+        app.buttons["Keep training"].tap()
+
+        XCTAssertTrue(app.staticTexts["LOWER BODY POWER"].waitForExistence(timeout: 3))
+        XCTAssertFalse(app.staticTexts["Finish early?"].exists)
+    }
+
+    // The whole partial finish, because what it is for is what the plan and the
+    // reopened day say afterwards.
+    @MainActor
+    func testSavingEarlyKeepsTheDayAsFinishedEarly() {
+        openUnstartedDay()
+        let finishEarly = app.buttons["Finish early"]
+        app.scrollUntilHittable(finishEarly)
+        finishEarly.tap()
+        XCTAssertTrue(app.staticTexts["Finish early?"].waitForExistence(timeout: 3))
+
+        app.buttons["SAVE WORKOUT"].tap()
+
+        XCTAssertTrue(app.staticTexts["Workout saved"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.text(containing: "0 of 4 exercises").exists)
+        app.buttons["DONE"].tap()
+
+        XCTAssertTrue(app.staticTexts["YOUR WEEKLY WORKOUT PLAN"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.button(containing: "Finished early").exists)
+
+        app.button(containing: "Lower Body Power").tap()
+
+        XCTAssertTrue(app.staticTexts["LOWER BODY POWER"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.text(containing: "Finished early").exists)
+        XCTAssertFalse(app.buttons["SLIDE TO FINISH THIS WORKOUT"].exists)
+        XCTAssertFalse(app.buttons["Finish early"].exists)
+        XCTAssertFalse(app.buttons["Start this workout over"].exists)
+    }
+
     // Cardio & Core opens on two whole-session movements with a tutorial and
     // no steps, then three with both.
     @MainActor
