@@ -4,6 +4,20 @@ import Testing
 
 @Suite("Body metrics conversion")
 struct BodyMetricsConverterTests {
+    @Test("Adult categories never label teenagers or an unknown age")
+    func adultAgeBoundary() {
+        for age in [nil, 13, 19] as [Int?] {
+            #expect(!BodyMetricsConverter.showsAdultBMI(age: age))
+        }
+        #expect(BodyMetricsConverter.showsAdultBMI(age: 20))
+        #expect(BodyMetricsConverter.showsAdultBMI(age: 70))
+    }
+
+    @Test("Non-finite measurements do not produce a health result")
+    func nonFiniteBMI() {
+        #expect(BodyMetricsConverter.calculateBMI(height: "inf", weight: "70", useMetric: true) == nil)
+        #expect(BodyMetricsConverter.calculateBMI(height: "175", weight: "nan", useMetric: true) == nil)
+    }
 
     private func close(_ a: Double, _ b: Double, within tolerance: Double = 0.01) -> Bool {
         abs(a - b) <= tolerance

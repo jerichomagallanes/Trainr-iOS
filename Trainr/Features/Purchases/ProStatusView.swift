@@ -89,7 +89,7 @@ struct ProStatusView: View {
         isWorking = true
         let restored = await entitlements.restore()
         isWorking = false
-        notice = restored ? L10n.proRestored : L10n.proNothingToRestore
+        notice = entitlements.purchaseNotice ?? (restored ? L10n.proRestored : L10n.proNothingToRestore)
         if restored { onClose() }
     }
 }
