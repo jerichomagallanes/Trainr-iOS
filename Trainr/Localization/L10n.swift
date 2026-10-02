@@ -30,7 +30,15 @@ nonisolated enum L10n {
     static var beginner: String { String(localized: "beginner") }
     static var beginnerDescription: String { String(localized: "beginner_description") }
     static var beginnerLevel: String { String(localized: "beginner_level") }
+    static var bmiAboutSources: String { String(localized: "bmi_about_sources") }
+    static var bmiCdcAbout: String { String(localized: "bmi_cdc_about") }
+    static var bmiCdcCategories: String { String(localized: "bmi_cdc_categories") }
+    static var bmiExplanation: String { String(localized: "bmi_explanation") }
     static var bmiLabel: String { String(localized: "bmi_label") }
+    static var bmiLimitations: String { String(localized: "bmi_limitations") }
+    static var bmiRanges: String { String(localized: "bmi_ranges") }
+    static var bmiScreeningNote: String { String(localized: "bmi_screening_note") }
+    static var bmiSourceDate: String { String(localized: "bmi_source_date") }
     static var bodyweightOnly: String { String(localized: "bodyweight_only") }
     static var bodyweightOnlyLabel: String { String(localized: "bodyweight_only_label") }
     static var buildMuscle: String { String(localized: "build_muscle") }
@@ -272,10 +280,14 @@ nonisolated enum L10n {
     static var proPromptFresh: String { String(localized: "pro_prompt_fresh") }
     static var proPromptNextWeek: String { String(localized: "pro_prompt_next_week") }
     static var proPromptRewrite: String { String(localized: "pro_prompt_rewrite") }
+    static var proPurchaseFailed: String { String(localized: "pro_purchase_failed") }
+    static var proPurchaseNotActive: String { String(localized: "pro_purchase_not_active") }
+    static var proPurchasePending: String { String(localized: "pro_purchase_pending") }
     static var proQuestions: String { String(localized: "pro_questions") }
     static var proRenewalApple: String { String(localized: "pro_renewal_apple") }
     static var proRenewalGoogle: String { String(localized: "pro_renewal_google") }
     static var proRestore: String { String(localized: "pro_restore") }
+    static var proRestoreFailed: String { String(localized: "pro_restore_failed") }
     static var proRestored: String { String(localized: "pro_restored") }
     static func proSavePercent(_ p1: Int) -> String {
         String.localizedStringWithFormat(String(localized: "pro_save_percent"), p1)
