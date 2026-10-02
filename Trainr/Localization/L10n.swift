@@ -116,6 +116,9 @@ nonisolated enum L10n {
     static func confirmedByYouFormat(_ p1: String) -> String {
         String.localizedStringWithFormat(String(localized: "confirmed_by_you_format"), p1)
     }
+    static var contextHintChooser: String { String(localized: "context_hint_chooser") }
+    static var contextHintFailed: String { String(localized: "context_hint_failed") }
+    static var contextHintGuide: String { String(localized: "context_hint_guide") }
     static var contextOptionEquipment: String { String(localized: "context_option_equipment") }
     static var contextOptionEquipmentHint: String { String(localized: "context_option_equipment_hint") }
     static var contextOptionTime: String { String(localized: "context_option_time") }
@@ -123,7 +126,9 @@ nonisolated enum L10n {
     static var contextPlaceholder: String { String(localized: "context_placeholder") }
     static var contextPrivate: String { String(localized: "context_private") }
     static var contextPrompt: String { String(localized: "context_prompt") }
+    static var contextReadingNote: String { String(localized: "context_reading_note") }
     static var contextTitle: String { String(localized: "context_title") }
+    static var contextUseNote: String { String(localized: "context_use_note") }
     static var contextWhichFirst: String { String(localized: "context_which_first") }
     static var continueWorkout: String { String(localized: "continue_workout") }
     static var createMyPlan: String { String(localized: "create_my_plan") }
@@ -365,6 +370,15 @@ nonisolated enum L10n {
     static var preferenceForgotten: String { String(localized: "preference_forgotten") }
     static var preferredFirstName: String { String(localized: "preferred_first_name") }
     static var previousColumn: String { String(localized: "previous_column") }
+    static func privateCoachingDownloadingFormat(_ p1: Int) -> String {
+        String.localizedStringWithFormat(String(localized: "private_coaching_downloading_format"), p1)
+    }
+    static var privateCoachingFailedMessage: String { String(localized: "private_coaching_failed_message") }
+    static var privateCoachingLicence: String { String(localized: "private_coaching_licence") }
+    static var privateCoachingSetupMessage: String { String(localized: "private_coaching_setup_message") }
+    static var privateCoachingSetupTitle: String { String(localized: "private_coaching_setup_title") }
+    static var privateCoachingStorageMessage: String { String(localized: "private_coaching_storage_message") }
+    static var privateCoachingVerifying: String { String(localized: "private_coaching_verifying") }
     static var proActive: String { String(localized: "pro_active") }
     static var proActiveLifetime: String { String(localized: "pro_active_lifetime") }
     static var proAndMore: String { String(localized: "pro_and_more") }

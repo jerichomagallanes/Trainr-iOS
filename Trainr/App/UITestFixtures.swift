@@ -230,6 +230,50 @@ enum UITestFixtures {
         }
     }
 
+    private static let modelPathArgument = "-modelPath"
+    private static let modelStateArgument = "-modelState"
+
+    // A model already on the host, or an installer frozen in one state, so the
+    // context screen can be walked without a 731 MB download.
+    static func fakeModelInstallerIfRequested() -> (any LocalModelInstaller)? {
+        let arguments = ProcessInfo.processInfo.arguments
+        if let index = arguments.firstIndex(of: modelPathArgument), arguments.indices.contains(index + 1) {
+            return FakeModelInstaller(state: .ready, readyFile: URL(filePath: arguments[index + 1]))
+        }
+        guard let index = arguments.firstIndex(of: modelStateArgument),
+              arguments.indices.contains(index + 1),
+              let state = fakeModelState(arguments[index + 1])
+        else { return nil }
+        let missing = URL(filePath: NSTemporaryDirectory()).appending(path: "missing.gguf")
+        return FakeModelInstaller(state: state, readyFile: state == .ready ? missing : nil)
+    }
+
+    private static func fakeModelState(_ name: String) -> ModelState? {
+        switch name {
+        case "notInstalled": return .notInstalled
+        case "downloading": return .downloading(done: 420, total: 1000)
+        case "verifying": return .verifying
+        case "ready": return .ready
+        case "failed": return .failed(.download)
+        case "insufficientStorage": return .insufficientStorage
+        default: return nil
+        }
+    }
+
+    private final class FakeModelInstaller: LocalModelInstaller {
+        let state: ModelState
+        nonisolated let readyFile: URL?
+
+        init(state: ModelState, readyFile: URL?) {
+            self.state = state
+            self.readyFile = readyFile
+        }
+
+        func install() {}
+
+        func cancel() {}
+    }
+
     private static func logged(_ set: ExerciseSet) -> ExerciseSet {
         var done = set
         done.id = UUID()

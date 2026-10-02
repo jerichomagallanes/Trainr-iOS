@@ -5,5 +5,6 @@
 @_exported import FirebaseCrashlytics
 @_exported import GoogleMobileAds
 @_exported import RevenueCat
+@_exported import llama
 @_exported import UserMessagingPlatform
 @_exported import YouTubePlayerKit

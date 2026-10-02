@@ -4,6 +4,7 @@ struct OptionRow: View {
     let title: String
     var description: String?
     var isSelected = false
+    var isEnabled = true
     let action: () -> Void
 
     var body: some View {
@@ -12,7 +13,7 @@ struct OptionRow: View {
                 VStack(alignment: .leading, spacing: 0) {
                     Text(title)
                         .font(.sectionTitle)
-                        .foregroundStyle(Color.onSurface)
+                        .foregroundStyle(isEnabled ? Color.onSurface : .onSurfaceMuted)
                     if let description {
                         Text(description)
                             .font(.body12)
@@ -32,6 +33,7 @@ struct OptionRow: View {
             .contentShape(.rect)
         }
         .buttonStyle(.plain)
+        .disabled(!isEnabled)
         // strokeBorder draws inward, so the thicker selected edge costs no
         // layout and the label never shifts under the finger that chose it.
         .overlay {

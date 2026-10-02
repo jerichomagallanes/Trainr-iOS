@@ -37,22 +37,38 @@ struct IntentRoutingTests {
         )
         try #require(discomfort.facts?.painConcern == true)
 
-        #expect(IntentRouting.routeFor(directReason: nil, validation: discomfort) == .pain)
-        #expect(IntentRouting.routeFor(directReason: .lessTime, validation: discomfort) == .pain)
+        #expect(IntentRouting.routeFor(directReason: nil, noteFlagsPain: false, validation: discomfort) == .pain)
+        #expect(IntentRouting.routeFor(directReason: .lessTime, noteFlagsPain: false, validation: discomfort) == .pain)
     }
 
     @Test("A direct pain choice is not cleared by the model")
     func aDirectPainChoiceIsNotClearedByTheModel() throws {
         #expect(try #require(timeOnly.facts).painConcern == false)
 
-        #expect(IntentRouting.routeFor(directReason: .pain, validation: timeOnly) == .pain)
+        #expect(IntentRouting.routeFor(directReason: .pain, noteFlagsPain: false, validation: timeOnly) == .pain)
+    }
+
+    @Test("A pain word in the note routes to pain before any reason or extraction")
+    func aPainWordInTheNoteRoutesToPainBeforeAnyReasonOrExtraction() {
+        #expect(IntentRouting.routeFor(directReason: nil, noteFlagsPain: true, validation: nil) == .pain)
+        #expect(
+            IntentRouting.routeFor(directReason: .lessTime, noteFlagsPain: true, validation: timeOnly) == .pain
+        )
+        #expect(
+            IntentRouting.routeFor(directReason: .equipment, noteFlagsPain: true, validation: nil) == .pain
+        )
+        #expect(
+            IntentRouting.routeFor(directReason: .other, noteFlagsPain: true, validation: timeOnly) == .pain
+        )
     }
 
     @Test("A direct reason outranks the model's intent")
     func aDirectReasonOutranksTheModelsIntent() {
-        #expect(IntentRouting.routeFor(directReason: .equipment, validation: timeOnly) == .equipment)
-        #expect(IntentRouting.routeFor(directReason: .guidance, validation: timeOnly) == .guide)
-        #expect(IntentRouting.routeFor(directReason: nil, validation: timeOnly) == .time)
+        #expect(
+            IntentRouting.routeFor(directReason: .equipment, noteFlagsPain: false, validation: timeOnly) == .equipment
+        )
+        #expect(IntentRouting.routeFor(directReason: .guidance, noteFlagsPain: false, validation: timeOnly) == .guide)
+        #expect(IntentRouting.routeFor(directReason: nil, noteFlagsPain: false, validation: timeOnly) == .time)
     }
 
     @Test("A clarification the chooser answers beats a named intent")
@@ -62,7 +78,7 @@ struct IntentRoutingTests {
             Self.timeNote
         )
 
-        #expect(IntentRouting.routeFor(directReason: .other, validation: unsure) == .chooser)
+        #expect(IntentRouting.routeFor(directReason: .other, noteFlagsPain: false, validation: unsure) == .chooser)
     }
 
     @Test("A rejected interpretation falls back to the chooser")
@@ -70,8 +86,8 @@ struct IntentRoutingTests {
         let rejected = IntentValidator.validate(#"{"schemaVersion":"#, input: Self.timeNote)
 
         #expect(try #require(rejected.reasons).isEmpty == false)
-        #expect(IntentRouting.routeFor(directReason: nil, validation: rejected) == .chooser)
-        #expect(IntentRouting.routeFor(directReason: .other, validation: nil) == .chooser)
-        #expect(IntentRouting.routeFor(directReason: nil, validation: nil) == .chooser)
+        #expect(IntentRouting.routeFor(directReason: nil, noteFlagsPain: false, validation: rejected) == .chooser)
+        #expect(IntentRouting.routeFor(directReason: .other, noteFlagsPain: false, validation: nil) == .chooser)
+        #expect(IntentRouting.routeFor(directReason: nil, noteFlagsPain: false, validation: nil) == .chooser)
     }
 }
