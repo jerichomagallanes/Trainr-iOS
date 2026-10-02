@@ -2,6 +2,7 @@ import SwiftUI
 
 struct BodyMetricsView: View {
     var isEditing = false
+    let age: Int?
     let onNext: (Double, Double, UnitSystem) -> Void
     let onBack: () -> Void
 
@@ -19,11 +20,13 @@ struct BodyMetricsView: View {
 
     init(
         initial: UserProfile? = nil,
+        age: Int? = nil,
         isEditing: Bool = false,
         onNext: @escaping (Double, Double, UnitSystem) -> Void,
         onBack: @escaping () -> Void
     ) {
         self.isEditing = isEditing
+        self.age = age ?? initial?.age
         self.onNext = onNext
         self.onBack = onBack
 
@@ -109,7 +112,7 @@ struct BodyMetricsView: View {
                 Spacer().frame(height: Spacing.extraLarge)
 
                 // Only for accepted measurements: a refused 300 cm and 2 kg still yields a labelled BMI.
-                if isFormValid,
+                if BodyMetricsConverter.showsAdultBMI(age: age), isFormValid,
                    let bmi = BodyMetricsConverter.calculateBMI(
                     height: height, weight: weight, useMetric: useMetric) {
                     BMICard(bmi: bmi)
@@ -240,6 +243,7 @@ private struct UnitTab: View {
 
 private struct BMICard: View {
     let bmi: Double
+    @State private var showingSources = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.extraSmall) {
@@ -249,10 +253,18 @@ private struct BMICard: View {
             Text(category)
                 .font(.fieldLabel)
                 .foregroundStyle(Color.brandStrong)
+            Text(L10n.bmiScreeningNote)
+                .font(.body12)
+                .foregroundStyle(Color.onSurfaceMuted)
+            Button(L10n.bmiAboutSources) { showingSources = true }
+                .font(.body14)
+                .padding(.vertical, Spacing.small)
+                .accessibilityIdentifier("bmiSources")
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(Spacing.medium)
         .background(Color.surfaceSunken, in: RoundedRectangle(cornerRadius: CornerRadius.medium))
+        .sheet(isPresented: $showingSources) { BMISourcesView() }
     }
 
     private var category: String {
