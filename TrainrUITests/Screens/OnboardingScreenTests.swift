@@ -90,6 +90,45 @@ final class OnboardingScreenTests: XCTestCase {
     // MARK: - Measurements
 
     @MainActor
+    func testBMISourcesAreOneTapFromTheAdultResult() {
+        app = .launched(startingAt: "bodyMetrics")
+        XCTAssertTrue(app.textFields["170"].waitForExistence(timeout: 20))
+        app.textFields["170"].tap()
+        app.textFields["170"].typeText("175")
+        app.textFields["70"].tap()
+        app.textFields["70"].typeText("72")
+        let sources = app.buttons["bmiSources"]
+        // iPhone compatibility mode on iPad leaves margins outside the app.
+        // Scroll the content itself rather than the full-screen left edge.
+        for _ in 0..<5 where !sources.isHittable { app.scrollViews.firstMatch.swipeUp() }
+        XCTAssertTrue(sources.isHittable)
+        sources.tap()
+        XCTAssertTrue(app.staticTexts["About BMI & sources"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.links["CDC: Adult BMI categories"].exists)
+        XCTAssertTrue(app.links["CDC: About BMI"].exists)
+        let screenshot = XCTAttachment(screenshot: app.screenshot())
+        screenshot.name = "BMI citations"
+        screenshot.lifetime = .keepAlways
+        add(screenshot)
+        app.buttons["Close"].tap()
+        XCTAssertTrue(app.buttons["NEXT"].exists)
+    }
+
+    @MainActor
+    func testTeenMeasurementsDoNotShowAdultBMI() {
+        app = .launchedFresh()
+        app.startOnboarding()
+        app.fillBasicInfo(age: "19")
+        app.textFields["170"].tap()
+        app.textFields["170"].typeText("175")
+        app.textFields["70"].tap()
+        app.textFields["70"].typeText("72")
+        XCTAssertTrue(app.buttons["NEXT"].isEnabled)
+        XCTAssertFalse(app.buttons["bmiSources"].exists)
+        XCTAssertFalse(app.text(containing: "BMI:").exists)
+    }
+
+    @MainActor
     func testMeasurementsNeedBothNumbersAndShowTheBMIOnceTheyHaveThem() {
         app = .launched(startingAt: "bodyMetrics")
         XCTAssertTrue(app.staticTexts["YOUR MEASUREMENTS"].waitForExistence(timeout: 20))
