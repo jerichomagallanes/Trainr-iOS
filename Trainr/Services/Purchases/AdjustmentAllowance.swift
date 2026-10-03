@@ -7,6 +7,7 @@ import Foundation
 protocol AdjustmentAllowance {
     func includedCycleID() -> String?
     func consume(cycleID: String)
+    func restore(cycleID: String)
 }
 
 final class StoredAdjustmentAllowance: AdjustmentAllowance {
@@ -36,6 +37,20 @@ final class StoredAdjustmentAllowance: AdjustmentAllowance {
         defaults.set(cycleID, forKey: Self.cycleKey)
         // Kept so support can say when the cycle went, never read to decide.
         defaults.set(Date.now, forKey: Self.consumedAtKey)
+    }
+
+    // Only the cycle that spent it can give it back: undoing anything else, or
+    // undoing as a subscriber who spent nothing, changes nothing.
+    func restore(cycleID: String) {
+        #if DEBUG
+        if Self.isEphemeral {
+            if Self.volatile == cycleID { Self.volatile = nil }
+            return
+        }
+        #endif
+        guard defaults.string(forKey: Self.cycleKey) == cycleID else { return }
+        defaults.removeObject(forKey: Self.cycleKey)
+        defaults.removeObject(forKey: Self.consumedAtKey)
     }
 
     private static let cycleKey = "adjustment_included_cycle"

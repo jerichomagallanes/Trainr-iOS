@@ -331,6 +331,12 @@ extension TrainingStore {
         try dayRecord(id: dayID)?.outcome?.outcome
     }
 
+    func deleteOutcome(dayID: UUID) throws {
+        guard let record = try dayRecord(id: dayID)?.outcome else { return }
+        context.delete(record)
+        try context.save()
+    }
+
     func outcomes(dayIDs: [UUID]) throws -> [SessionOutcome] {
         let wanted = Set(dayIDs)
         guard !wanted.isEmpty else { return [] }

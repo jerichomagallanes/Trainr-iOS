@@ -190,6 +190,10 @@ struct RootView: View {
         adjustments.consume(cycleID: cycleID)
     }
 
+    private func restoreAdjustmentCycle(_ cycleID: String) {
+        adjustments.restore(cycleID: cycleID)
+    }
+
     private func restartOnHome() {
         planGeneration += 1
         phase = .home
@@ -276,7 +280,8 @@ struct RootView: View {
                         dependencies: dependencies, dayNumber: dayNumber,
                         weekNumber: weekNumber, reason: reason, exerciseID: exerciseID
                     )
-                }
+                },
+                onUndone: restoreAdjustmentCycle
             )
 
         case .sessionSaved(let dayNumber, let weekNumber, let performed, let planned):

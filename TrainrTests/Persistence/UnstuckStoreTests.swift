@@ -159,6 +159,41 @@ struct UnstuckStoreTests {
         #expect(try store.outcomes(dayIDs: []).isEmpty)
     }
 
+    @Test("Deleting an outcome removes only that day's row")
+    func deletingAnOutcomeLeavesTheOtherDays() throws {
+        let profile = UserProfile(firstName: "Jericho", age: 30)
+        try store.saveUser(profile)
+        var plan = WeeklyPlan(userID: profile.id, weekNumber: 1, title: "Strength")
+        plan.workoutDays = [
+            WorkoutDay(dayNumber: 1, title: "Full Body", duration: 45, exerciseCount: 0),
+            WorkoutDay(dayNumber: 3, title: "Lower Body", duration: 45, exerciseCount: 0)
+        ]
+        try store.savePlan(plan)
+        let days = try #require(try store.plan(for: profile.id, weekNumber: 1)).workoutDays
+        let finished = Date(timeIntervalSince1970: 1_700_000_000)
+        for day in days {
+            try store.saveOutcome(SessionOutcome(
+                dayID: day.id, finishKind: .partial, finishedAt: finished,
+                performedSetCount: 0, plannedSetCount: 4
+            ))
+        }
+
+        try store.deleteOutcome(dayID: days[0].id)
+
+        #expect(try store.outcome(dayID: days[0].id) == nil)
+        #expect(try store.outcome(dayID: days[1].id)?.finishKind == .partial)
+        #expect(try store.outcomes(dayIDs: days.map(\.id)).count == 1)
+
+        try store.deleteOutcome(dayID: days[0].id)
+        try store.deleteOutcome(dayID: UUID())
+        try store.saveOutcome(SessionOutcome(
+            dayID: days[0].id, finishKind: .full, finishedAt: finished,
+            performedSetCount: 4, plannedSetCount: 4
+        ))
+        #expect(try store.outcome(dayID: days[0].id)?.finishKind == .full)
+        #expect(try store.outcomes(dayIDs: days.map(\.id)).count == 2)
+    }
+
     @Test("An adjustment round-trips with its proposal and its undo state")
     func anAdjustmentRoundTrips() throws {
         let day = try seed().day

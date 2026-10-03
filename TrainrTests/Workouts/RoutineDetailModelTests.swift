@@ -6,69 +6,18 @@ import Testing
 @Suite("Routine detail")
 struct RoutineDetailModelTests {
 
-    private let dependencies: AppDependencies
-    private let userID: UUID
+    private let fixture: RoutineDetailFixture
+    private var dependencies: AppDependencies { fixture.dependencies }
+    private var userID: UUID { fixture.userID }
+    private var firstDayNumber: Int { fixture.firstDayNumber }
+    private var lastDayNumber: Int { fixture.lastDayNumber }
 
-    // Built by hand rather than the sample week, whose first day is already finished.
+    private func loaded(day dayNumber: Int) -> RoutineDetailModel { fixture.loaded(day: dayNumber) }
+
+    private func storedDay(_ dayNumber: Int) throws -> WorkoutDay { try fixture.storedDay(dayNumber) }
+
     init() throws {
-        let store = TrainingStore(container: try TrainingStore.container(inMemory: true))
-        dependencies = AppDependencies(
-            store: store, planGenerator: WeekPlanGenerator(), breadcrumbs: NoBreadcrumbs()
-        )
-        let profile = UserProfile(firstName: "Alex", age: 30)
-        try store.saveUser(profile)
-        userID = profile.id
-        try store.savePlan(
-            WeeklyPlan(
-                userID: profile.id,
-                weekNumber: 1,
-                title: "Week 1",
-                startDate: Calendar(identifier: .gregorian).startOfDay(for: Date()),
-                workoutDays: [Self.day(1, "Full Body"), Self.day(3, "Lower Body")]
-            )
-        )
-    }
-
-    private static func day(_ number: Int, _ title: String) -> WorkoutDay {
-        WorkoutDay(
-            dayNumber: number,
-            title: title,
-            duration: 30,
-            exerciseCount: 2,
-            equipment: ["Dumbbells"],
-            exercises: [
-                exercise("goblet_squat", "Goblet Squat", reps: 10),
-                exercise("plank", "Plank", seconds: 60)
-            ]
-        )
-    }
-
-    private static func exercise(
-        _ key: String, _ name: String, reps: Int? = nil, seconds: Int? = nil
-    ) -> WorkoutExercise {
-        WorkoutExercise(
-            exerciseKey: key,
-            name: name,
-            measure: seconds == nil ? .reps : .duration,
-            sets: (1...3).map {
-                ExerciseSet(setNumber: $0, targetReps: reps, targetSeconds: seconds)
-            },
-            durationMinutes: 10
-        )
-    }
-
-    private func loaded(day dayNumber: Int) -> RoutineDetailModel {
-        let model = RoutineDetailModel(dependencies: dependencies, dayNumber: dayNumber)
-        model.load()
-        return model
-    }
-
-    private var firstDayNumber: Int { 1 }
-    private var lastDayNumber: Int { 3 }
-
-    private func storedDay(_ dayNumber: Int) throws -> WorkoutDay {
-        let plan = try #require(try dependencies.store.plan(for: userID, weekNumber: 1))
-        return try #require(plan.workoutDays.first { $0.dayNumber == dayNumber })
+        fixture = try RoutineDetailFixture()
     }
 
     // MARK: - Loading
@@ -259,114 +208,6 @@ struct RoutineDetailModelTests {
         let stored = try #require(loaded(day: dayNumber).state.routine.exercises[0].sets.first)
         #expect(stored.actualReps == 12)
         #expect(stored.actualWeightKg == 20)
-    }
-
-    // MARK: - Finishing early
-
-    @Test("Finishing early completes the day and writes no set that was not logged")
-    func finishingEarlySavesOnlyWhatWasLogged() throws {
-        let model = loaded(day: firstDayNumber)
-        let first = try #require(model.state.routine.exercises.first)
-        var logged = try #require(first.sets.first)
-        logged.actualReps = 9
-        logged.isCompleted = true
-        model.update(logged, at: first.position)
-        let before = try storedDay(firstDayNumber).exercises.map(\.sets)
-
-        model.finishEarly()
-
-        let after = try storedDay(firstDayNumber)
-        #expect(after.status == .completed)
-        #expect(after.completedAt != nil)
-        #expect(after.exercises.map(\.sets) == before)
-        #expect(after.exercises.allSatisfy { !$0.isCompleted })
-        #expect(model.state.outcome?.finishKind == .partial)
-        #expect(model.state.outcome?.performedSetCount == 1)
-        #expect(model.state.outcome?.plannedSetCount == 6)
-        #expect(!model.state.isConfirmingFinishEarly)
-    }
-
-    @Test("A save that fails says so and leaves the day where it was")
-    func aFailedSaveIsReported() throws {
-        let model = loaded(day: firstDayNumber)
-        model.askToFinishEarly()
-        try dependencies.store.deletePlan(
-            id: try #require(try dependencies.store.plan(for: userID, weekNumber: 1)).id
-        )
-
-        model.finishEarly()
-
-        #expect(model.state.saveFailed)
-        #expect(model.state.outcome == nil)
-        #expect(model.state.isConfirmingFinishEarly)
-        #expect(model.pendingSavedEvent == nil)
-    }
-
-    @Test("Sliding to finish records the session as fully done")
-    func completingRecordsAFullOutcome() throws {
-        let model = loaded(day: firstDayNumber)
-
-        model.completeRoutine()
-
-        let outcome = try #require(model.state.outcome)
-        #expect(outcome.finishKind == .full)
-        #expect(outcome.performedSetCount == 6)
-        #expect(outcome.plannedSetCount == 6)
-        let stored = try dependencies.store.outcome(dayID: try storedDay(firstDayNumber).id)
-        #expect(stored?.finishKind == .full)
-    }
-
-    @Test("A day finished early stays finished when a number is corrected")
-    func editingAfterFinishingEarlyDoesNotReopenTheDay() throws {
-        let model = loaded(day: firstDayNumber)
-        model.finishEarly()
-        let first = try #require(model.state.routine.exercises.first)
-        var corrected = try #require(first.sets.first)
-        corrected.actualReps = 9
-
-        model.update(corrected, at: first.position)
-        model.toggleExercise(at: first.position)
-
-        let after = try storedDay(firstDayNumber)
-        #expect(after.status == .completed)
-        #expect(after.exercises.first?.sets.first?.actualReps == 9)
-    }
-
-    @Test("A day that was finished early reads back as finished early")
-    func aStoredOutcomeIsLoaded() throws {
-        loaded(day: firstDayNumber).finishEarly()
-
-        #expect(loaded(day: firstDayNumber).state.outcome?.finishKind == .partial)
-    }
-
-    @Test("The saved event is raised once and never rebuilt from what is stored")
-    func theSavedEventFiresOnce() throws {
-        let model = loaded(day: firstDayNumber)
-
-        model.finishEarly()
-
-        #expect(
-            model.pendingSavedEvent
-                == SessionSavedEvent(
-                    dayNumber: 1, weekNumber: 1, performedExercises: 0, plannedExercises: 2
-                )
-        )
-        model.consumeSavedEvent()
-        #expect(model.pendingSavedEvent == nil)
-        #expect(loaded(day: firstDayNumber).pendingSavedEvent == nil)
-    }
-
-    @Test("A second tap does not save the session twice")
-    func aSecondTapIsIgnored() throws {
-        let model = loaded(day: firstDayNumber)
-        model.finishEarly()
-        let saved = try #require(model.state.outcome)
-        model.consumeSavedEvent()
-
-        model.finishEarly()
-
-        #expect(model.state.outcome == saved)
-        #expect(model.pendingSavedEvent == nil)
     }
 
     @Test("A number typed into a set is stored as typed")

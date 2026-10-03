@@ -21,6 +21,10 @@ nonisolated struct RoutineUi: Equatable, Sendable {
         exercises.count(where: { !$0.isOmitted && $0.isPerformed })
     }
 
+    var hasUnperformedWork: Bool {
+        exercises.contains { !$0.isOmitted && !$0.isPerformed }
+    }
+
     func toggleCompleted(at position: Int) -> RoutineUi {
         mapping(position) { $0.isCompleted ? $0.notLogged() : $0.loggedAsPrescribed() }
     }
