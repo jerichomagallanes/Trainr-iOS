@@ -1,14 +1,14 @@
 import Foundation
 
 // Derived from the session the client answered for, not the prototype's
-// 25/35/45, which were drawn for a 45 minute day.
+// 25/35/45, which were drawn for a 45 minute day. The estimate itself is not
+// offered: it can only be answered with "already fits".
 nonisolated enum TimePresets {
 
     static func forPlanned(_ plannedMinutes: Int) -> [Int] {
-        let offered = (0..<options).reversed()
+        (1...options).reversed()
             .map { plannedMinutes - $0 * stepMinutes }
             .filter { $0 >= floorMinutes }
-        return offered.isEmpty ? [plannedMinutes] : offered
     }
 
     // The schema's 1...1440 is a parser bound. This is the reviewed range, and

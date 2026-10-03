@@ -177,6 +177,17 @@
         }
       }
     },
+    "adjust_review_bodyweight_title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A bodyweight alternative today"
+          }
+        }
+      }
+    },
     "adjust_review_equipment_title_format": {
       "extractionState": "manual",
       "localizations": {
@@ -229,6 +240,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "%1$@ → %2$@"
+          }
+        }
+      }
+    },
+    "adjust_review_shortened_title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Less work today"
           }
         }
       }
@@ -4982,6 +5004,17 @@
         }
       }
     },
+    "review_all_shortened_message": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Every remaining exercise is shortened."
+          }
+        }
+      }
+    },
     "review_description": {
       "extractionState": "manual",
       "localizations": {
@@ -5622,6 +5655,17 @@
         }
       }
     },
+    "tradeoff_different_movement": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A different movement for the same muscles. The reps may feel different."
+          }
+        }
+      }
+    },
     "tradeoff_different_resistance": {
       "extractionState": "manual",
       "localizations": {
@@ -6163,6 +6207,17 @@
         }
       }
     },
+    "why_bodyweight_fallback_format": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ needs no equipment. Nothing in Trainr's catalog trains the same muscles with the kit you ticked, so this is the bodyweight alternative. It is a different movement."
+          }
+        }
+      }
+    },
     "why_equipment_format": {
       "extractionState": "manual",
       "localizations": {
@@ -6170,6 +6225,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "%1$@ trains the same muscles with the equipment available to you. It is a different movement with its own load history."
+          }
+        }
+      }
+    },
+    "why_equipment_unloaded_format": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ trains the same muscles with the equipment available to you. It is a different movement."
           }
         }
       }

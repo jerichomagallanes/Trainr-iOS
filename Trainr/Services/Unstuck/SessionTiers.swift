@@ -48,5 +48,5 @@ nonisolated enum SessionTiers {
         return nil
     }
 
-    private static let warmUpKey = "warm_up"
+    static let warmUpKey = "warm_up"
 }

@@ -33,6 +33,7 @@ nonisolated extension TradeoffUi {
             L10n.tradeoffLessWorkFormat(UnstuckText.joinAnd(regions.map(\.displayName)))
         case .reducedSession: L10n.tradeoffReducedSession
         case .differentResistance: L10n.tradeoffDifferentResistance
+        case .differentMovement: L10n.tradeoffDifferentMovement
         case .lessBarbellPractice: L10n.tradeoffLessBarbellFormat(exerciseName ?? "")
         case .separateLoadHistory: L10n.tradeoffSeparateHistory
         }

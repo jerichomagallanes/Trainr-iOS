@@ -103,6 +103,79 @@ struct UnstuckPolicyEquipmentTests {
         #expect(chosen.isAvailable(with: [.dumbbell]))
     }
 
+    @Test("A substitute uses the kit that was ticked")
+    func aSubstituteUsesTheKitThatWasTicked() throws {
+        let day = testDay([
+            planned("warm_up", sets: 1),
+            planned("barbell_overhead_press", sets: 3)
+        ])
+
+        let decision = decide(day, exerciseID: day.exercises[1].id, available: [.resistanceBand])
+
+        let summary = try #require(decision.summary)
+        let chosenKey = try #require(decision.proposal?.changes.first?.after?.catalogKey)
+        let chosen = try #require(testCatalog[chosenKey])
+        #expect(chosen.equipment == .resistanceBand)
+        #expect(!summary.bodyweightFallback)
+        #expect(summary.tradeoffs.map(\.code) == [.lessBarbellPractice])
+    }
+
+    // The ticked kit settles it: a kit that holds nothing able to carry the
+    // prescription is refused rather than reached past.
+    @Test("A ticked kit that cannot carry the prescription is refused, not reached past")
+    func aTickedKitThatCannotCarryThePrescriptionIsRefused() {
+        let day = testDay([
+            planned("warm_up", sets: 1),
+            planned("treadmill", sets: 1)
+        ])
+
+        let decision = decide(day, exerciseID: day.exercises[1].id, available: [.dumbbell])
+
+        #expect(decision == .noFeasibleChange(.noEligibleSubstitute, minimumMinutes: nil))
+    }
+
+    @Test("Bodyweight is the fallback when nothing ticked matches, and is named as one")
+    func bodyweightIsTheFallbackWhenNothingTickedMatches() throws {
+        let catalog = InMemoryExerciseCatalog([
+            Self.quadMovement("goblet_squat", .dumbbell, .weightAndReps),
+            Self.quadMovement("sissy_squat", Equipment.none, .reps)
+        ])
+        let day = testDay([planned("goblet_squat", sets: 3, weightKg: 20)])
+        let decideWith = { (available: Set<Equipment>) in
+            UnstuckPolicy(catalog: catalog).decide(
+                AdjustmentSnapshot(day: day, user: testUser()),
+                constraint: .equipmentUnavailable(exerciseID: day.exercises[0].id, available: available),
+                requestID: "request-1"
+            )
+        }
+
+        let fallback = decideWith([.kettlebell])
+        let ticked = decideWith([Equipment.none])
+
+        let fallbackSummary = try #require(fallback.summary)
+        let tickedSummary = try #require(ticked.summary)
+        #expect(fallback.proposal?.changes.first?.after?.catalogKey == "sissy_squat")
+        #expect(fallbackSummary.bodyweightFallback)
+        #expect(ticked.proposal?.changes.first?.after?.catalogKey == "sissy_squat")
+        #expect(!tickedSummary.bodyweightFallback)
+    }
+
+    @Test("Two unloaded movements carry no load copy")
+    func twoUnloadedMovementsCarryNoLoadCopy() throws {
+        let day = testDay([
+            planned("warm_up", sets: 1),
+            planned("bicycle_crunch", sets: 3, reps: 12)
+        ])
+
+        let decision = decide(day, exerciseID: day.exercises[1].id, available: [Equipment.none])
+
+        let proposal = try #require(decision.proposal)
+        let summary = try #require(decision.summary)
+        #expect(proposal.changes.first?.after?.catalogKey == "crunch")
+        #expect(proposal.tradeoffCode == "different_movement")
+        #expect(summary.tradeoffs.map(\.code) == [.differentMovement])
+    }
+
     @Test("No candidate is reported, never invented")
     func noCandidateIsReportedNotInvented() {
         let day = testDay([
