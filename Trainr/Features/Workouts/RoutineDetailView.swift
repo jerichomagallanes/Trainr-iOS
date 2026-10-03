@@ -11,6 +11,7 @@ struct RoutineDetailView: View {
     private let onWeekCompleted: (Int, Int) -> Void
     private let onSessionSaved: (SessionSavedEvent) -> Void
     private let onAdjust: (DirectReason, UUID?) -> Void
+    private let onUndone: (String) -> Void
     @Binding private var returningFromAdjustment: AdjustmentReturn?
     @Binding private var howToRequest: String?
 
@@ -24,7 +25,8 @@ struct RoutineDetailView: View {
         onDayCompleted: @escaping (Int, Int) -> Void = { _, _ in },
         onWeekCompleted: @escaping (Int, Int) -> Void = { _, _ in },
         onSessionSaved: @escaping (SessionSavedEvent) -> Void = { _ in },
-        onAdjust: @escaping (DirectReason, UUID?) -> Void = { _, _ in }
+        onAdjust: @escaping (DirectReason, UUID?) -> Void = { _, _ in },
+        onUndone: @escaping (String) -> Void = { _ in }
     ) {
         _model = State(
             initialValue: RoutineDetailModel(
@@ -38,6 +40,7 @@ struct RoutineDetailView: View {
         self.onWeekCompleted = onWeekCompleted
         self.onSessionSaved = onSessionSaved
         self.onAdjust = onAdjust
+        self.onUndone = onUndone
     }
 
     // Only the transition counts, so opening a finished routine is not
@@ -198,12 +201,14 @@ struct RoutineDetailView: View {
                     // moves, so without this a screen reader never hears that
                     // the day changed.
                     .accessibilityAddTraits(.updatesFrequently)
-                if !state.hasFinished {
-                    Button(L10n.undoAdjustment, action: model.undoAdjustment)
-                        .font(.sectionTitle)
-                        .foregroundStyle(Color.brandStrong)
-                        .frame(minHeight: ComponentHeight.medium)
-                        .padding(.top, Spacing.small)
+                if state.outcome?.finishKind != .full {
+                    Button(L10n.undoAdjustment) {
+                        if let cycleID = model.undoAdjustment() { onUndone(cycleID) }
+                    }
+                    .font(.sectionTitle)
+                    .foregroundStyle(Color.brandStrong)
+                    .frame(minHeight: ComponentHeight.medium)
+                    .padding(.top, Spacing.small)
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -226,7 +231,7 @@ struct RoutineDetailView: View {
 
     @ViewBuilder
     private var adjustRow: some View {
-        if !state.hasFinished {
+        if state.hasRemainingWork {
             OptionRow(
                 title: L10n.adjustToday,
                 description: L10n.adjustTodayHint,
@@ -341,7 +346,7 @@ struct RoutineDetailView: View {
 
     @ViewBuilder
     private func alternative(for exercise: ExerciseUi) -> some View {
-        if !state.hasFinished, let id = exercise.exerciseID,
+        if state.hasRemainingWork, let id = exercise.exerciseID,
            exercise.sets.contains(where: { !$0.isCompleted }) {
             QuietAction(title: L10n.needAnAlternative) { onAdjust(.equipment, id) }
         }
@@ -358,22 +363,30 @@ struct RoutineDetailView: View {
         }
     }
 
+    // A day finished early is not closed: it can still be finished, and started
+    // over, but not finished early again while that outcome stands.
     @ViewBuilder
     private var footer: some View {
-        if finishedEarly {
-            EmptyView()
-        } else if !routine.isComplete {
+        if !routine.isComplete {
             SlideToConfirm(title: L10n.slideToCompleteRoutine) { model.completeRoutine() }
                 .padding(.top, Spacing.section + Spacing.tight)
-            QuietAction(title: L10n.finishEarly, action: model.askToFinishEarly)
-                .padding(.top, Spacing.tight)
+            if !finishedEarly {
+                QuietAction(title: L10n.finishEarly, action: model.askToFinishEarly)
+                    .padding(.top, Spacing.tight)
+            } else if routine.hasProgress {
+                startOver
+            }
         } else if routine.hasProgress {
-            Button(L10n.startWorkoutOver) { showStartOver = true }
-                .font(.sectionTitle)
-                .foregroundStyle(Color.onSurface)
-                .frame(maxWidth: .infinity)
-                .padding(.top, Spacing.section + Spacing.tight)
+            startOver
         }
+    }
+
+    private var startOver: some View {
+        Button(L10n.startWorkoutOver) { showStartOver = true }
+            .font(.sectionTitle)
+            .foregroundStyle(Color.onSurface)
+            .frame(maxWidth: .infinity)
+            .padding(.top, Spacing.section + Spacing.tight)
     }
 }
 

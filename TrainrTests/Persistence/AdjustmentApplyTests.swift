@@ -340,6 +340,42 @@ struct AdjustmentApplyTests {
         #expect(logged.sets[0].isCompleted)
     }
 
+    @Test("Applying to a day finished early opens it again")
+    func applyingReopensADayFinishedEarly() throws {
+        let seeded = try seedDay()
+        var closed = seeded
+        closed.status = .completed
+        closed.completedAt = now
+        try store.updateDay(closed)
+        try store.saveOutcome(SessionOutcome(
+            dayID: seeded.id, finishKind: .partial, finishedAt: now,
+            performedSetCount: 0, plannedSetCount: 12
+        ))
+        let day = try reread()
+
+        let result = adjustments.apply(try shorten(day), dayID: day.id, reason: .lessTime, now: later)
+
+        #expect(result.applied != nil)
+        let after = try reread()
+        #expect(after.status == .notStarted)
+        #expect(after.completedAt == nil)
+        #expect(try store.outcome(dayID: day.id) == nil)
+    }
+
+    @Test("Applying to a day finished in full leaves its outcome")
+    func applyingLeavesAFullOutcome() throws {
+        let seeded = try seedDay()
+        try store.saveOutcome(SessionOutcome(
+            dayID: seeded.id, finishKind: .full, finishedAt: now,
+            performedSetCount: 12, plannedSetCount: 12
+        ))
+        let day = try reread()
+
+        adjustments.apply(try shorten(day), dayID: day.id, reason: .lessTime, now: later)
+
+        #expect(try store.outcome(dayID: day.id)?.finishKind == .full)
+    }
+
     // MARK: - Seeding
 
     private func seedDay() throws -> WorkoutDay {

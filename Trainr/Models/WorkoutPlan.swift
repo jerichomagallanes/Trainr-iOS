@@ -73,4 +73,12 @@ nonisolated enum WorkoutStatus: String, Codable, CaseIterable, Sendable {
     case notStarted
     case inProgress
     case completed
+
+    static func derived(performed: Int, of planned: Int) -> WorkoutStatus {
+        switch performed {
+        case 0: .notStarted
+        case planned: .completed
+        default: .inProgress
+        }
+    }
 }

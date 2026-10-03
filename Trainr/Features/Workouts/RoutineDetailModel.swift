@@ -30,7 +30,9 @@ nonisolated struct RoutineDetailState: Equatable, Sendable {
     // per-exercise minutes as it always has.
     var totalMinutes: Int?
 
-    var hasFinished: Bool { outcome != nil }
+    // Adjusting is offered by the work left, not by whether an outcome was
+    // recorded: a day finished early still has sets to change.
+    var hasRemainingWork: Bool { outcome?.finishKind != .full && routine.hasUnperformedWork }
 }
 
 // What the adjust flow left behind when it closed. Either way the stored day is
@@ -167,12 +169,16 @@ final class RoutineDetailModel {
         state.scrollToPosition = nil
     }
 
-    func undoAdjustment() {
-        guard let adjustment = state.activeAdjustment else { return }
+    // Returns the undone cycle so the caller can hand its allowance back.
+    @discardableResult
+    func undoAdjustment() -> String? {
+        guard let adjustment = state.activeAdjustment else { return nil }
         let result = dependencies.adjustments.undo(adjustmentID: adjustment.id, now: Date())
-        let kept: Int = if case let .restored(_, count) = result { count } else { 0 }
         load()
+        guard case let .restored(_, kept) = result else { return nil }
+        reopen()
         state.undoKeptSets = kept > 0 ? kept : nil
+        return adjustment.proposal.proposalID
     }
 
     private func banner(for proposal: AdjustmentProposal) -> AdjustedBannerUi {
@@ -197,6 +203,7 @@ final class RoutineDetailModel {
     // MARK: - Editing
 
     func toggleExercise(at position: Int) {
+        reopen()
         let routine = state.routine.toggleCompleted(at: position)
         let nowCompleted = routine.exercises.contains { $0.position == position && $0.isCompleted }
         let clearsTimer = nowCompleted && state.timer?.position == position
@@ -209,6 +216,7 @@ final class RoutineDetailModel {
 
     func update(_ set: ExerciseSet, at position: Int) {
         let was = completion(at: position)
+        if set.isCompleted != isTicked(setNumber: set.setNumber, at: position) { reopen() }
         state.routine = state.routine.updating(set, at: position)
         reconcileCompletion(at: position, was: was)
 
@@ -222,6 +230,7 @@ final class RoutineDetailModel {
     }
 
     func addSet(at position: Int) {
+        reopen()
         let was = completion(at: position)
         state.routine = state.routine.addingSet(at: position)
         reconcileCompletion(at: position, was: was)
@@ -237,6 +246,7 @@ final class RoutineDetailModel {
               let set = sets.first(where: { $0.setNumber == setNumber })
         else { return }
 
+        reopen()
         let was = completion(at: position)
         state.routine = state.routine.removingSet(numbered: setNumber, at: position)
         reconcileCompletion(at: position, was: was)
@@ -254,6 +264,7 @@ final class RoutineDetailModel {
         state.routine = state.routine.completingAll()
         state.timer = nil
         persistEveryExercise(completed: true)
+        reopen()
 
         guard let day = storedDay else { return }
         let planned = plannedSetCount()
@@ -283,8 +294,8 @@ final class RoutineDetailModel {
     // Saves what was logged and nothing more: no set is filled and no exercise
     // is ticked, so the record reads back as the work actually done.
     func finishEarly() {
-        // One save and one navigation, however often the button is tapped.
-        guard state.outcome?.finishKind != .partial else { return }
+        // A burst of taps saves once: the event stands until the view has left.
+        guard pendingSavedEvent == nil else { return }
         cancelTick()
         state.timer = nil
         guard let day = storedDay else { return }
@@ -341,6 +352,7 @@ final class RoutineDetailModel {
     // The day's status follows from its exercises, so persistDayStatus moves it
     // back out of completed without being told to.
     func clearProgress() {
+        reopen()
         cancelTick()
         state.routine = state.routine.clearingProgress()
         state.timer = nil
@@ -409,6 +421,7 @@ final class RoutineDetailModel {
             state.timer = timer
             return true
         }
+        reopen()
         state.routine = state.routine.markCompleted(at: timer.position)
         state.timer = nil
         persistExercise(at: timer.position, completed: true)
@@ -431,6 +444,23 @@ final class RoutineDetailModel {
 
     private func completion(at position: Int) -> Bool? {
         state.routine.exercises.first { $0.position == position }?.isCompleted
+    }
+
+    private func isTicked(setNumber: Int, at position: Int) -> Bool? {
+        state.routine.exercises.first { $0.position == position }?
+            .sets.first { $0.setNumber == setNumber }?.isCompleted
+    }
+
+    // New work on a day finished early opens it again: the partial outcome goes,
+    // and the status follows the sets until the day is finished once more. A
+    // corrected number is not new work, so it leaves the day closed.
+    private func reopen() {
+        guard state.outcome?.finishKind == .partial, let day = storedDay,
+              dependencies.attempt("deleteOutcome", { try dependencies.store.deleteOutcome(dayID: day.id) }) != nil
+        else { return }
+        state.outcome = nil
+        storedDay?.completedAt = nil
+        persistDayStatus()
     }
 
     // The screen shows the change the moment it happens, so the record follows
@@ -511,15 +541,9 @@ final class RoutineDetailModel {
     }
 
     private func persistDayStatus() {
-        // A day finished early is closed for good: correcting a number on it
-        // must not reopen it as in progress.
         guard state.outcome?.finishKind != .partial, var day = storedDay else { return }
         let visible = day.visibleExercises
-        let status: WorkoutStatus = switch visible.count(where: \.isCompleted) {
-        case 0: .notStarted
-        case visible.count: .completed
-        default: .inProgress
-        }
+        let status = WorkoutStatus.derived(performed: visible.count(where: \.isCompleted), of: visible.count)
 
         day.status = status
         day.completedAt = status == .completed ? (day.completedAt ?? Date()) : nil

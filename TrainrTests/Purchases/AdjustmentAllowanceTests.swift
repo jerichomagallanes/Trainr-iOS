@@ -52,6 +52,33 @@ struct AdjustmentAllowanceTests {
         }
     }
 
+    @Test("Undoing the included cycle gives it back, so the next one is free again")
+    func undoingGivesTheCycleBack() throws {
+        try withAllowance { allowance in
+            allowance.consume(cycleID: "proposal-1")
+            #expect(decision(allowance, for: "proposal-2") == .ask)
+
+            allowance.restore(cycleID: "proposal-1")
+
+            #expect(allowance.includedCycleID() == nil)
+            #expect(decision(allowance, for: "proposal-2") == .allowed)
+        }
+    }
+
+    @Test("Undoing any other cycle leaves the included one spent")
+    func undoingAnotherCycleChangesNothing() throws {
+        try withAllowance { allowance in
+            allowance.restore(cycleID: "proposal-1")
+            #expect(allowance.includedCycleID() == nil)
+            allowance.consume(cycleID: "proposal-1")
+
+            allowance.restore(cycleID: "proposal-2")
+
+            #expect(allowance.includedCycleID() == "proposal-1")
+            #expect(decision(allowance, for: "proposal-2") == .ask)
+        }
+    }
+
     private func decision(
         _ allowance: StoredAdjustmentAllowance, for cycleID: String?
     ) -> AdjustmentGate.Decision {
