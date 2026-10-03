@@ -13,6 +13,7 @@ struct AdjustContextView: View {
     var onBack: () -> Void = {}
 
     @Environment(\.openURL) private var openURL
+    @FocusState private var isNoteFocused: Bool
 
     private var text: Binding<String> {
         Binding(get: { note }, set: onTypeNote)
@@ -24,9 +25,11 @@ struct AdjustContextView: View {
                 if interpreter == .ready {
                     PrimaryButton(
                         title: isInterpreting ? L10n.contextReadingNote : L10n.contextUseNote,
-                        isEnabled: !note.isBlank && !isInterpreting,
-                        action: onUseNote
-                    )
+                        isEnabled: !note.isBlank && !isInterpreting
+                    ) {
+                        isNoteFocused = false
+                        onUseNote()
+                    }
                 }
                 QuietAction(title: L10n.backToWorkout, action: onBack)
             }
@@ -40,6 +43,7 @@ struct AdjustContextView: View {
                     .foregroundStyle(Color.onSurface)
                     .padding(.top, Spacing.medium)
                 AppTextArea(placeholder: L10n.contextPlaceholder, text: text)
+                    .focused($isNoteFocused)
                     .padding(.top, Spacing.small)
                 Text(L10n.contextPrivate)
                     .font(.body12)

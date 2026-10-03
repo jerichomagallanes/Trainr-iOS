@@ -75,6 +75,15 @@ nonisolated struct AdjustmentState: Equatable, Sendable {
     // not a limit for the whole weekday.
     var canRemember: Bool { weekdayName != nil && scope == .wholeSession }
 
+    var shortestMinutes: Int? {
+        switch decision {
+        case let .proposed(_, summary)?: summary.shortestMinutes
+        case let .noFeasibleChange(reason, minimumMinutes)?:
+            reason == .tooShortForRequiredWork ? minimumMinutes : nil
+        case .noChange?, nil: nil
+        }
+    }
+
     var canShowRecommendation: Bool {
         switch reason {
         case .lessTime:
@@ -369,13 +378,12 @@ final class AdjustmentModel {
             return
         }
         user = profile
-        let plans = dependencies.attempt("plans", { try store.plans(for: profile.id) }) ?? []
-        let plan = requestedWeekNumber
-            .flatMap { number in plans.first { $0.weekNumber == number } }
-            ?? (requestedWeekNumber == nil ? plans.max { $0.weekNumber < $1.weekNumber } : nil)
-
-        guard let plan,
-              let day = plan.workoutDays.first(where: { $0.dayNumber == requestedDayNumber })
+        let week = dependencies.attempt("weekOutline", {
+            try store.weekOutline(userID: profile.id, weekNumber: requestedWeekNumber)
+        })
+        let outline = week?.days.first { $0.dayNumber == requestedDayNumber }
+        guard let week, let outline,
+              let day = dependencies.attempt("day", { try store.day(id: outline.id) })
         else {
             state.isLoaded = true
             return
@@ -385,7 +393,7 @@ final class AdjustmentModel {
         state.goal = profile.fitnessGoal
         // The person's own calendar, never UTC: the same instant is a different
         // weekday either side of midnight.
-        let date = plan.startDate.map { WorkoutWeek.date(of: day.dayNumber, startingFrom: $0) }
+        let date = week.startDate.map { WorkoutWeek.date(of: day.dayNumber, startingFrom: $0) }
         dayWeekday = date.map { TrainingPreference.weekday(of: $0) }
         state.weekdayName = date.map { WorkoutDateFormatter.weekday($0) }
         readRequestedMinutes()
@@ -404,9 +412,8 @@ final class AdjustmentModel {
     }
 
     private func storedDay() -> WorkoutDay? {
-        guard let user, let current = state.day else { return nil }
-        let plans = dependencies.attempt("plans", { try dependencies.store.plans(for: user.id) }) ?? []
-        return plans.flatMap(\.workoutDays).first { $0.id == current.id }
+        guard let current = state.day else { return nil }
+        return dependencies.attempt("day", { try dependencies.store.day(id: current.id) })
     }
 
     // Everything the request is built from moves with the day: a session that

@@ -206,7 +206,7 @@ nonisolated struct UnstuckPolicy: Sendable {
     ) -> CatalogExercise? {
         let taken = Set(day.exercises.filter { $0.id != target.id }.map(\.exerciseKey))
         let eligible = catalog.all.filter {
-            $0.key != entry.key && !taken.contains($0.key) && $0.isAvailable(with: available)
+            $0.key != entry.key && !taken.contains($0.key) && $0.isUsable(with: available)
                 && !InjuryGuard.excludes($0, for: user.injuries)
                 && ($0.primary == entry.primary || ($0.pattern == entry.pattern && $0.role == .compound))
         }
@@ -380,6 +380,13 @@ private nonisolated extension WorkoutDay {
         var shorter = self
         shorter.exercises = exercises.map { $0.shrunk(to: kept[$0.id, default: 0]) }
         return shorter
+    }
+}
+
+// A bodyweight movement that takes a load still needs something to hold.
+private nonisolated extension CatalogExercise {
+    func isUsable(with available: Set<Equipment>) -> Bool {
+        equipment == Equipment.none ? !isLoadable : available.contains(equipment)
     }
 }
 

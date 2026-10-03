@@ -215,21 +215,16 @@ final class AdjustmentFeedbackModel {
             trend: profile?.fitnessGoal == .strength ? .strength : .trainingPerformance,
             answer: stored?.answer,
             guidanceKey: adjustment?.proposal.guidanceKey,
-            session: session(of: adjustment?.dayID, userID: profile?.id)
+            session: adjustment.flatMap { session(of: $0.dayID) }
         )
     }
 
     // The ordinal the finished screens count, so a note written from here lands
     // on the same day they would have opened the debrief for.
-    private func session(of dayID: UUID?, userID: UUID?) -> FeedbackSession? {
-        guard let dayID, let userID else { return nil }
-        let plans = dependencies.attempt("plans") { try dependencies.store.plans(for: userID) } ?? []
-        for plan in plans {
-            if let index = plan.workoutDays.firstIndex(where: { $0.id == dayID }) {
-                return FeedbackSession(dayNumber: index + 1, weekNumber: plan.weekNumber)
-            }
-        }
-        return nil
+    private func session(of dayID: UUID) -> FeedbackSession? {
+        let week = dependencies.attempt("weekOutline") { try dependencies.store.weekOutline(dayID: dayID) }
+        guard let week, let index = week.days.firstIndex(where: { $0.id == dayID }) else { return nil }
+        return FeedbackSession(dayNumber: index + 1, weekNumber: week.weekNumber)
     }
 
     private func name(of key: String?) -> String {

@@ -119,6 +119,28 @@ final class TrainingStore {
             .first { $0.weekNumber == weekNumber }?.plan
     }
 
+    func weekOutline(userID: UUID, weekNumber: Int?) throws -> WeekOutline? {
+        let predicate: Predicate<WeeklyPlanRecord>
+        if let number = weekNumber {
+            predicate = #Predicate { $0.user?.id == userID && $0.weekNumber == number }
+        } else {
+            predicate = #Predicate { $0.user?.id == userID }
+        }
+        var descriptor = FetchDescriptor(
+            predicate: predicate, sortBy: [SortDescriptor(\WeeklyPlanRecord.weekNumber, order: .reverse)]
+        )
+        descriptor.fetchLimit = 1
+        return try context.fetch(descriptor).first?.outline
+    }
+
+    func weekOutline(dayID: UUID) throws -> WeekOutline? {
+        try dayRecord(id: dayID)?.plan?.outline
+    }
+
+    func day(id: UUID) throws -> WorkoutDay? {
+        try dayRecord(id: id)?.day
+    }
+
     func updatePlan(_ plan: WeeklyPlan) throws {
         guard let record = try planRecord(id: plan.id) else { return }
         record.weekNumber = plan.weekNumber

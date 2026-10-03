@@ -71,14 +71,10 @@ private struct ProposedContent: View {
             .foregroundStyle(Color.onSurface)
 
         if let minutes = review.budgetMinutes {
-            Text(
-                review.scope == .remaining
-                    ? L10n.adjustReviewRemainingLineFormat(minutes)
-                    : L10n.adjustReviewTimeLineFormat(minutes)
-            )
-            .font(.body14)
-            .foregroundStyle(Color.onSurface)
-            .padding(.top, Spacing.small)
+            Text(timeLine(minutes))
+                .font(.body14)
+                .foregroundStyle(Color.onSurface)
+                .padding(.top, Spacing.small)
         }
 
         ScopeRow(
@@ -112,6 +108,13 @@ private struct ProposedContent: View {
                 .foregroundStyle(Color.onSurface)
                 .padding(.top, Spacing.small)
         }
+    }
+
+    private func timeLine(_ minutes: Int) -> String {
+        if let shortest = review.shortestMinutes { return L10n.reviewShortestVersionFormat(shortest) }
+        return review.scope == .remaining
+            ? L10n.adjustReviewRemainingLineFormat(minutes)
+            : L10n.adjustReviewTimeLineFormat(minutes)
     }
 
     private var title: String {

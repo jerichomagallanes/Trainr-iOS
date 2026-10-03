@@ -15,7 +15,7 @@ struct PreferencesFlowView: View {
     var body: some View {
         switch step {
         case let .debrief(dayNumber, weekNumber): debrief(dayNumber, weekNumber)
-        case let .noteSaved(dayNumber, weekNumber): noteSaved(dayNumber, weekNumber)
+        case let .noteSaved(dayID): noteSaved(dayID)
         case .trainingPreferences: preferences
         case .editPreference(let id): edit(id)
         default: EmptyView()
@@ -27,17 +27,16 @@ struct PreferencesFlowView: View {
             dependencies: dependencies,
             dayNumber: dayNumber,
             weekNumber: weekNumber,
-            onSaved: { onReplace(.noteSaved(dayNumber: dayNumber, weekNumber: weekNumber)) },
+            onSaved: { onReplace(.noteSaved(dayID: $0)) },
             onSkip: onBack,
             onBack: onBack
         )
     }
 
-    private func noteSaved(_ dayNumber: Int, _ weekNumber: Int) -> some View {
+    private func noteSaved(_ dayID: UUID) -> some View {
         NoteSavedView(
             dependencies: dependencies,
-            dayNumber: dayNumber,
-            weekNumber: weekNumber,
+            dayID: dayID,
             onViewPreferences: { onOpen(.trainingPreferences) },
             onDone: onDone,
             onBack: onBack

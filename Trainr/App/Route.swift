@@ -40,7 +40,7 @@ enum Route: Hashable {
     // The week travels with the day for the same reason the completion screens
     // carry it: a note belongs to the session it was written about.
     case debrief(dayNumber: Int, weekNumber: Int)
-    case noteSaved(dayNumber: Int, weekNumber: Int)
+    case noteSaved(dayID: UUID)
     case trainingPreferences
     case editPreference(id: UUID)
     case paywall(reason: PaywallReason)
