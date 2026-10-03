@@ -26,7 +26,14 @@ struct AdjustEquipmentView: View {
 
                 // Entering from an exercise card already answered this, so the
                 // chooser is only for the people who came in without one.
-                if !state.enteredWithExercise {
+                if state.enteredWithExercise {
+                    if let chosen = state.exerciseChoices.first(where: { $0.id == state.selectedExerciseID }) {
+                        Text(chosen.name)
+                            .font(.sectionTitle)
+                            .foregroundStyle(Color.onSurface)
+                            .padding(.top, Spacing.small)
+                    }
+                } else {
                     exerciseChooser
                 }
 

@@ -93,7 +93,7 @@ struct DebriefModelTests {
         model.typeNote("Note")
         model.save()
 
-        #expect(model.pendingSavedEvent == NoteSavedEvent(text: "Note"))
+        #expect(model.pendingSavedEvent == NoteSavedEvent(dayID: world.day.id, text: "Note"))
         model.consumeSavedEvent()
         #expect(model.pendingSavedEvent == nil)
     }

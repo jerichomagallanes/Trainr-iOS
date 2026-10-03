@@ -117,6 +117,33 @@ struct AdjustmentModelTests {
         #expect(model.state.review == nil)
     }
 
+    // Back from a review that could not fit the request, the floor is on the
+    // screen the next number is typed into.
+    @Test("A request the day cannot meet names the shortest version")
+    func aRequestTheDayCannotMeetNamesTheShortestVersion() throws {
+        let model = try model()
+        #expect(model.state.shortestMinutes == nil)
+
+        model.selectMinutes(5)
+        #expect(model.showRecommendation() == nil)
+
+        let floor = try #require(model.state.shortestMinutes)
+        #expect(model.state.review == .infeasible(.tooShortForRequiredWork, minimumMinutes: floor))
+        #expect(floor > 5)
+    }
+
+    @Test("A request the day meets leaves the shortest version unnamed")
+    func aRequestTheDayMeetsLeavesTheShortestVersionUnnamed() throws {
+        let (model, _) = try shortened()
+
+        guard case let .proposed(review)? = model.state.review else {
+            Issue.record("expected a proposal, got \(String(describing: model.state.review))")
+            return
+        }
+        #expect(review.shortestMinutes == nil)
+        #expect(model.state.shortestMinutes == nil)
+    }
+
     @Test("An equipment request needs both an exercise and something to use")
     func anEquipmentRequestNeedsBothAnswers() throws {
         let day = Self.fullDay()

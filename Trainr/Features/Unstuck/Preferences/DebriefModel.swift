@@ -2,6 +2,7 @@ import Foundation
 import Observation
 
 nonisolated struct NoteSavedEvent: Equatable, Sendable {
+    var dayID: UUID
     var text: String
 }
 
@@ -18,7 +19,7 @@ final class DebriefModel {
     private let dayNumber: Int
     private let weekNumber: Int?
     private var user: UserProfile?
-    private var day: WorkoutDay?
+    private var dayID: UUID?
     private var stored: SessionNote?
 
     var canSave: Bool { !note.isBlank }
@@ -38,7 +39,7 @@ final class DebriefModel {
     // rather than leaving another behind.
     func save() {
         let text = note.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !text.isEmpty, let user, let day else { return }
+        guard !text.isEmpty, let user, let dayID else { return }
 
         let store = dependencies.store
         let now = Date()
@@ -50,13 +51,13 @@ final class DebriefModel {
             stored = existing
         } else {
             let fresh = SessionNote(
-                userID: user.id, dayID: day.id, text: text, createdAt: now, updatedAt: now
+                userID: user.id, dayID: dayID, text: text, createdAt: now, updatedAt: now
             )
             guard dependencies.attempt("saveNote", { try store.saveNote(fresh) }) != nil
             else { return }
             stored = fresh
         }
-        pendingSavedEvent = NoteSavedEvent(text: text)
+        pendingSavedEvent = NoteSavedEvent(dayID: dayID, text: text)
     }
 
     func consumeSavedEvent() {
@@ -69,15 +70,14 @@ final class DebriefModel {
         else { return }
         user = profile
 
-        let plans = dependencies.attempt("plans", { try store.plans(for: profile.id) }) ?? []
-        let plan = weekNumber
-            .flatMap { number in plans.first { $0.weekNumber == number } }
-            ?? (weekNumber == nil ? plans.max { $0.weekNumber < $1.weekNumber } : nil)
-        guard let plan, plan.workoutDays.indices.contains(dayNumber - 1) else { return }
+        let week = dependencies.attempt("weekOutline", {
+            try store.weekOutline(userID: profile.id, weekNumber: weekNumber)
+        })
+        guard let week, week.days.indices.contains(dayNumber - 1) else { return }
 
-        let workoutDay = plan.workoutDays[dayNumber - 1]
-        day = workoutDay
-        stored = dependencies.attempt("note", { try store.note(dayID: workoutDay.id) })
+        let day = week.days[dayNumber - 1].id
+        dayID = day
+        stored = dependencies.attempt("note", { try store.note(dayID: day) })
         if let stored { note = stored.text }
     }
 }

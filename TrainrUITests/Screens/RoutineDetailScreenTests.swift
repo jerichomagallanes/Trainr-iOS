@@ -391,6 +391,20 @@ final class RoutineDetailScreenTests: XCTestCase {
         XCTAssertTrue(app.staticTexts["How much time do you have?"].waitForExistence(timeout: 5))
     }
 
+    // The chooser is skipped, so the screen has to say which exercise is being swapped.
+    @MainActor
+    func testAnAlternativeAskedFromAnExerciseRowNamesIt() {
+        openUnstartedDay()
+        let alternative = app.buttons["Need an alternative?"].firstMatch
+        app.scrollUntilHittable(alternative)
+        alternative.tap()
+
+        XCTAssertTrue(app.staticTexts["Which exercise and what's available?"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["Jump Squats"].exists)
+        XCTAssertFalse(app.staticTexts["Which exercise?"].exists)
+        XCTAssertFalse(app.buttons["Walking Lunges"].exists)
+    }
+
     // The whole slice end to end, because what it is for is what the day says
     // afterwards.
     @MainActor

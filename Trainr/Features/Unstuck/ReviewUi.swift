@@ -12,6 +12,7 @@ nonisolated struct ProposedReview: Equatable, Sendable {
     var priorityName: String?
     var goal: FitnessGoal
     var budgetMinutes: Int?
+    var shortestMinutes: Int?
     var scope: TimeScope
     var hasPerformedWork: Bool
     var keptNames: [String] = []
@@ -86,6 +87,7 @@ nonisolated extension PolicyDecision {
             priorityName: summary.keptPriorityKey.flatMap { catalog[$0]?.name },
             goal: goal,
             budgetMinutes: summary.budgetMinutes,
+            shortestMinutes: summary.shortestMinutes,
             scope: hasPerformedWork ? .remaining : .wholeSession,
             hasPerformedWork: hasPerformedWork,
             keptNames: day.exercises
@@ -99,6 +101,14 @@ nonisolated extension PolicyDecision {
             tradeoffs: summary.tradeoffs.map { $0.ui(catalog) },
             rows: summary.rows.map { $0.ui(proposal) }
         )
+    }
+}
+
+nonisolated extension ProposalSummary {
+    // The review must not echo a number the day cannot meet.
+    var shortestMinutes: Int? {
+        guard let after = estimateAfterMinutes, let budget = budgetMinutes, after > budget else { return nil }
+        return after
     }
 }
 

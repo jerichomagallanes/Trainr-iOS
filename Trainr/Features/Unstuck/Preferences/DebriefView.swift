@@ -3,7 +3,7 @@ import SwiftUI
 struct DebriefView: View {
 
     @State private var model: DebriefModel
-    private let onSaved: () -> Void
+    private let onSaved: (UUID) -> Void
     private let onSkip: () -> Void
     private let onBack: () -> Void
 
@@ -11,7 +11,7 @@ struct DebriefView: View {
         dependencies: AppDependencies,
         dayNumber: Int,
         weekNumber: Int? = nil,
-        onSaved: @escaping () -> Void = {},
+        onSaved: @escaping (UUID) -> Void = { _ in },
         onSkip: @escaping () -> Void = {},
         onBack: @escaping () -> Void = {}
     ) {
@@ -55,9 +55,9 @@ struct DebriefView: View {
             }
         }
         .onChange(of: model.pendingSavedEvent) { _, event in
-            guard event != nil else { return }
+            guard let event else { return }
             model.consumeSavedEvent()
-            onSaved()
+            onSaved(event.dayID)
         }
     }
 }

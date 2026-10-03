@@ -13,6 +13,19 @@ nonisolated struct WeeklyPlan: Identifiable, Equatable, Sendable {
     var updatedAt = Date()
 }
 
+nonisolated struct WeekOutline: Identifiable, Equatable, Sendable {
+    var id: UUID
+    var weekNumber: Int
+    var startDate: Date?
+    var days: [DayOutline] = []
+}
+
+nonisolated struct DayOutline: Identifiable, Equatable, Sendable {
+    var id: UUID
+    var dayNumber: Int
+    var status = WorkoutStatus.notStarted
+}
+
 nonisolated struct WorkoutDay: Identifiable, Equatable, Sendable {
     var id = UUID()
     var dayNumber: Int

@@ -4454,6 +4454,17 @@
         }
       }
     },
+    "pro_purchase_pending_google": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your purchase is awaiting approval. Pro will unlock once Google Play confirms payment."
+          }
+        }
+      }
+    },
     "pro_questions": {
       "extractionState": "manual",
       "localizations": {
@@ -4505,6 +4516,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Purchases could not be restored. Check your connection and try again with the Apple Account used to purchase."
+          }
+        }
+      }
+    },
+    "pro_restore_failed_google": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Purchases could not be restored. Check your connection and try again with the Google account used to purchase."
           }
         }
       }
@@ -5011,6 +5033,29 @@
           "stringUnit": {
             "state": "translated",
             "value": "Review a shorter version"
+          }
+        }
+      }
+    },
+    "review_shortest_version_format": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Shortest version: about %1$lld minute"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Shortest version: about %1$lld minutes"
+                }
+              }
+            }
           }
         }
       }
