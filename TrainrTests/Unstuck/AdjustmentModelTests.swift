@@ -173,6 +173,15 @@ struct AdjustmentModelTests {
         #expect(model.showRecommendation() != nil)
     }
 
+    // The estimate itself can only be answered with "already fits".
+    @Test("The length the day already runs to is never offered as a budget")
+    func theCurrentLengthIsNeverOfferedAsABudget() throws {
+        let model = try model()
+
+        #expect(!model.state.presets.isEmpty)
+        #expect(model.state.presets.allSatisfy { $0 < model.state.plannedMinutes })
+    }
+
     @Test("A session too short to shorten offers no preset and enables nothing")
     func aSessionTooShortToShortenOffersNoPreset() throws {
         let model = try model(testDay([planned("dumbbell_bicep_curl", sets: 1, reps: 10)]))

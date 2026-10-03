@@ -16,7 +16,7 @@ nonisolated enum SampleAdjustmentStates {
             weekdayName: "Wednesday",
             goal: .muscleGain,
             reason: .lessTime,
-            presets: [25, 35, 45],
+            presets: [15, 25, 35],
             selectedMinutes: 35
         )
     }
@@ -62,6 +62,7 @@ nonisolated enum SampleAdjustmentStates {
         ProposedReview(
             kind: .substitute,
             substituteEquipment: .dumbbell,
+            substituteLoadable: true,
             goal: .muscleGain,
             scope: .remaining,
             hasPerformedWork: true,

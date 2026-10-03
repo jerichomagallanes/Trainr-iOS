@@ -20,6 +20,7 @@ nonisolated enum L10n {
     static var adjustReasonTime: String { String(localized: "adjust_reason_time") }
     static var adjustReasonTimeHint: String { String(localized: "adjust_reason_time_hint") }
     static var adjustReviewAlternative: String { String(localized: "adjust_review_alternative") }
+    static var adjustReviewBodyweightTitle: String { String(localized: "adjust_review_bodyweight_title") }
     static func adjustReviewEquipmentTitleFormat(_ p1: String) -> String {
         String.localizedStringWithFormat(String(localized: "adjust_review_equipment_title_format"), p1)
     }
@@ -32,6 +33,7 @@ nonisolated enum L10n {
     static func adjustReviewReplaceBodyFormat(_ p1: String, _ p2: String) -> String {
         String.localizedStringWithFormat(String(localized: "adjust_review_replace_body_format"), p1, p2)
     }
+    static var adjustReviewShortenedTitle: String { String(localized: "adjust_review_shortened_title") }
     static func adjustReviewTimeBodyFormat(_ p1: String) -> String {
         String.localizedStringWithFormat(String(localized: "adjust_review_time_body_format"), p1)
     }
@@ -511,6 +513,7 @@ nonisolated enum L10n {
     static var resumeTimer: String { String(localized: "resume_timer") }
     static var retry: String { String(localized: "retry") }
     static var returnToWorkout: String { String(localized: "return_to_workout") }
+    static var reviewAllShortenedMessage: String { String(localized: "review_all_shortened_message") }
     static var reviewDescription: String { String(localized: "review_description") }
     static var reviewNotApplied: String { String(localized: "review_not_applied") }
     static func reviewOriginalRemainingFormat(_ p1: Int) -> String {
@@ -575,6 +578,7 @@ nonisolated enum L10n {
     static var trackWeeklyProgress: String { String(localized: "track_weekly_progress") }
     static var trackYourProgress: String { String(localized: "track_your_progress") }
     static var tradeoff: String { String(localized: "tradeoff") }
+    static var tradeoffDifferentMovement: String { String(localized: "tradeoff_different_movement") }
     static var tradeoffDifferentResistance: String { String(localized: "tradeoff_different_resistance") }
     static func tradeoffLessBarbellFormat(_ p1: String) -> String {
         String.localizedStringWithFormat(String(localized: "tradeoff_less_barbell_format"), p1)
@@ -650,8 +654,14 @@ nonisolated enum L10n {
     static var weightsMarkedIn: String { String(localized: "weights_marked_in") }
     static var welcomeTo: String { String(localized: "welcome_to") }
     static var whatStillNeedsChanging: String { String(localized: "what_still_needs_changing") }
+    static func whyBodyweightFallbackFormat(_ p1: String) -> String {
+        String.localizedStringWithFormat(String(localized: "why_bodyweight_fallback_format"), p1)
+    }
     static func whyEquipmentFormat(_ p1: String) -> String {
         String.localizedStringWithFormat(String(localized: "why_equipment_format"), p1)
+    }
+    static func whyEquipmentUnloadedFormat(_ p1: String) -> String {
+        String.localizedStringWithFormat(String(localized: "why_equipment_unloaded_format"), p1)
     }
     static var whyThisChange: String { String(localized: "why_this_change") }
     static func whyTimeFormat(_ p1: String) -> String {
