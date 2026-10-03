@@ -178,6 +178,42 @@ struct UnstuckPolicyTimeTests {
         #expect(floor > 5)
     }
 
+    // Nothing fits five minutes, and the answer is the floor, not a day with
+    // every remaining exercise omitted.
+    @Test("Five minutes on a day with no compound names the floor instead of emptying it")
+    func fiveMinutesOnADayWithNoCompoundNamesTheFloor() {
+        let day = testDay([
+            planned("warm_up", sets: 1),
+            planned("dumbbell_bicep_curl", sets: 3, reps: 10),
+            planned("bicycle_crunch", sets: 3, reps: 12)
+        ])
+        let floor = estimate(
+            testDay([planned("warm_up", sets: 1), planned("bicycle_crunch", sets: 1, reps: 12)]),
+            .muscleGain
+        )
+
+        #expect(floor > 5)
+        #expect(decide(day, minutes: 5)
+            == .noFeasibleChange(.tooShortForRequiredWork, minimumMinutes: floor))
+    }
+
+    @Test("Five minutes with the warm-up done keeps the last block rather than omitting everything")
+    func fiveMinutesWithTheWarmUpDoneKeepsTheLastBlock() {
+        let day = testDay([
+            planned("warm_up", sets: 1, performed: 1),
+            planned("rowing_machine", sets: 1, seconds: 420),
+            planned("jump_rope", sets: 1, seconds: 600)
+        ])
+        let floor = SessionEstimate.minutes(
+            testDay([planned("rowing_machine", sets: 1, seconds: 420)]),
+            user: testUser(), scope: .remaining, catalog: testCatalog
+        )
+
+        #expect(floor > 5)
+        #expect(decide(day, minutes: 5, scope: .remaining)
+            == .noFeasibleChange(.tooShortForRequiredWork, minimumMinutes: floor))
+    }
+
     @Test("Minutes outside the reviewed range are refused, not clamped")
     func outOfRangeMinutesAreRefused() {
         #expect(decide(fullDay(), minutes: 4) == .noFeasibleChange(.invalidMinutes, minimumMinutes: nil))

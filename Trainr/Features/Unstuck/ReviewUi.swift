@@ -9,6 +9,8 @@ nonisolated enum ReviewUi: Equatable, Sendable {
 nonisolated struct ProposedReview: Equatable, Sendable {
     var kind: ProposalKind
     var substituteEquipment: Equipment?
+    var substituteLoadable = false
+    var bodyweightFallback = false
     var priorityName: String?
     var goal: FitnessGoal
     var budgetMinutes: Int?
@@ -85,6 +87,8 @@ nonisolated extension PolicyDecision {
         return ProposedReview(
             kind: summary.kind,
             substituteEquipment: replaced.flatMap { catalog[$0.toKey]?.equipment },
+            substituteLoadable: replaced.flatMap { catalog[$0.toKey]?.isLoadable } == true,
+            bodyweightFallback: summary.bodyweightFallback,
             // A catalog key is not a name, and no screen may print the slug.
             priorityName: summary.keptPriorityKey.flatMap { catalog[$0]?.name },
             goal: goal,
@@ -96,7 +100,7 @@ nonisolated extension PolicyDecision {
                 .filter { exercise in
                     exercise.sets.contains { $0.omittedBy == nil && !$0.isCompleted }
                 }
-                .filter { !touched.contains($0.exerciseKey) }
+                .filter { !touched.contains($0.exerciseKey) && $0.exerciseKey != SessionTiers.warmUpKey }
                 .map(\.name),
             replacedFrom: replaced?.fromName,
             replacedTo: replaced?.toName,
