@@ -213,6 +213,44 @@ struct WeeklyPlanModelStoreTests {
         TrainingPreference.weekday(of: Date())
     }
 
+    @Test("The standing adjustments are read for every day of the week")
+    func theStandingAdjustmentsAreReadForEveryDay() throws {
+        let plan = try save(week: 1, days: [day(1), day(3)])
+        try adjust(plan.workoutDays[1].id)
+        let model = WeeklyPlanModel(dependencies: dependencies)
+
+        model.refresh()
+
+        #expect(model.state.days.map(\.isAdjusted) == [false, true])
+    }
+
+    @Test("An undone adjustment leaves no marker")
+    func anUndoneAdjustmentLeavesNoMarker() throws {
+        let plan = try save(week: 1, days: [day(1)])
+        let today = try #require(plan.workoutDays.first)
+        try adjust(today.id)
+        let adjustment = try #require(try store.activeAdjustment(dayID: today.id))
+        try store.markUndone(id: adjustment.id, at: Date())
+        let model = WeeklyPlanModel(dependencies: dependencies)
+
+        model.refresh()
+
+        #expect(model.state.days.first?.isAdjusted == false)
+    }
+
+    @Test("A dragged week keeps its adjusted markers")
+    func aDraggedWeekKeepsItsAdjustedMarkers() throws {
+        let plan = try save(week: 1, days: [day(1), day(3), day(5)])
+        let adjusted = plan.workoutDays[1].id
+        try adjust(adjusted)
+        let model = WeeklyPlanModel(dependencies: dependencies)
+        model.refresh()
+
+        model.moveDay(from: 0, to: 1)
+
+        #expect(model.state.days.filter(\.isAdjusted).map(\.day.id) == [adjusted])
+    }
+
     @Test("An adjustment still standing on today shows the ready card")
     func anAdjustmentOnTodayShowsTheReadyCard() throws {
         let plan = try save(week: 1, days: [day(1)])

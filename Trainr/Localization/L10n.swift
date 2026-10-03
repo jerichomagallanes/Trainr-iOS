@@ -513,6 +513,9 @@ nonisolated enum L10n {
     static var returnToWorkout: String { String(localized: "return_to_workout") }
     static var reviewDescription: String { String(localized: "review_description") }
     static var reviewNotApplied: String { String(localized: "review_not_applied") }
+    static func reviewOriginalRemainingFormat(_ p1: Int) -> String {
+        String.localizedStringWithFormat(String(localized: "review_original_remaining_format"), p1)
+    }
     static var reviewProfileDescription: String { String(localized: "review_profile_description") }
     static var reviewRebuilt: String { String(localized: "review_rebuilt") }
     static var reviewShorterVersion: String { String(localized: "review_shorter_version") }

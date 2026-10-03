@@ -82,6 +82,22 @@ final class AdjustmentStore {
         }
     }
 
+    // A substitute kept only for its performed set has nothing to stand on once that set is cleared.
+    func withdrawUndoneSubstitutes(dayID: UUID) -> Int {
+        do {
+            guard let day = try dayRecord(id: dayID) else { return 0 }
+            let undone = Set(day.adjustments.filter { $0.undoneAt != nil }.map(\.id))
+            let orphaned = day.exercises.filter { $0.addedBy.map(undone.contains) == true }
+            guard !orphaned.isEmpty else { return 0 }
+            let withdrawn = orphaned.count(where: { withdraw($0) == 0 })
+            try context.save()
+            return withdrawn
+        } catch {
+            context.rollback()
+            return 0
+        }
+    }
+
     // rollback() drops inserts but, on iOS 26, not property edits — so nothing past a mutation may throw.
     private func applying(_ work: () throws -> ApplyResult) -> ApplyResult {
         do {
@@ -292,18 +308,18 @@ final class AdjustmentStore {
         let added = try context.fetch(FetchDescriptor<WorkoutExerciseRecord>(
             predicate: #Predicate { $0.addedBy == wanted }
         ))
-        var kept = 0
-        for exercise in added {
-            let performed = exercise.sets.filter(\.isCompleted)
-            guard !performed.isEmpty else {
-                context.delete(exercise)
-                continue
-            }
-            for set in exercise.sets.filter({ !$0.isCompleted }) { context.delete(set) }
-            exercise.setCount = performed.count
-            kept += performed.count
+        return added.reduce(0) { $0 + withdraw($1) }
+    }
+
+    private func withdraw(_ exercise: WorkoutExerciseRecord) -> Int {
+        let performed = exercise.sets.filter(\.isCompleted)
+        guard !performed.isEmpty else {
+            context.delete(exercise)
+            return 0
         }
-        return kept
+        for set in exercise.sets.filter({ !$0.isCompleted }) { context.delete(set) }
+        exercise.setCount = performed.count
+        return performed.count
     }
 
     // MARK: - Reading

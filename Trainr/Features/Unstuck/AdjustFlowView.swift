@@ -86,7 +86,10 @@ struct AdjustFlowView: View {
 
     private var pain: some View {
         AdjustPainView(
-            onSaveAndFinishEarly: { onLeave(.finishEarly) },
+            onSaveAndFinishEarly: {
+                model.finishEarly()
+                onLeave(.finishEarly)
+            },
             onReturn: { onLeave(.reload) },
             onBack: { onLeave(.reload) }
         )
@@ -106,7 +109,10 @@ struct AdjustFlowView: View {
                     model.continueWorkout()
                     onLeave(.reload)
                 },
-                onFinishEarly: { onLeave(.finishEarly) },
+                onFinishEarly: {
+                    model.finishEarly()
+                    onLeave(.finishEarly)
+                },
                 onBack: onBack
             )
             // Spent only once a change has actually landed, and before the flow

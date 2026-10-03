@@ -5004,6 +5004,29 @@
         }
       }
     },
+    "review_original_remaining_format": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Original workout · %1$lld minute remaining"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Original workout · %1$lld minutes remaining"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "review_profile_description": {
       "extractionState": "manual",
       "localizations": {

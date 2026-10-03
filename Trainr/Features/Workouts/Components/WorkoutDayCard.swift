@@ -9,6 +9,7 @@ struct WorkoutDayCard: View {
     let day: WorkoutDay
     var isMissed = false
     var finishedEarly = false
+    var isAdjusted = false
     // Nil while the stored day is unadjusted, when its own columns still say
     // what the session is.
     var derived: DerivedDay?
@@ -47,7 +48,8 @@ struct WorkoutDayCard: View {
             .frame(maxWidth: .infinity, alignment: .leading)
 
             WorkoutStatusChip(
-                status: day.status, isMissed: isMissed, finishedEarly: finishedEarly
+                status: day.status, isMissed: isMissed, finishedEarly: finishedEarly,
+                isAdjusted: isAdjusted
             )
         }
         .padding(Spacing.card)

@@ -204,7 +204,10 @@ private struct NoChangeContent: View {
             .foregroundStyle(Color.onSurface)
             .padding(.top, Spacing.small)
         ScopeRow(
-            leading: L10n.originalWorkoutPlannedFormat(review.plannedMinutes), trailing: nil
+            leading: review.hasPerformedWork
+                ? L10n.reviewOriginalRemainingFormat(review.plannedMinutes)
+                : L10n.originalWorkoutPlannedFormat(review.plannedMinutes),
+            trailing: nil
         )
     }
 }

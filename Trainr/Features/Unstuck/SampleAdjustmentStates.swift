@@ -83,7 +83,7 @@ nonisolated enum SampleAdjustmentStates {
     )
 
     static let noChangeReview = ReviewUi.noChange(
-        NoChangeReview(goal: .muscleGain, plannedMinutes: 28)
+        NoChangeReview(goal: .muscleGain, plannedMinutes: 28, hasPerformedWork: false)
     )
 
     static let infeasibleReview = ReviewUi.infeasible(

@@ -353,6 +353,10 @@ final class RoutineDetailModel {
         state.routine = state.routine.clearingProgress()
         state.timer = nil
         persistEveryExercise(completed: false)
+        guard let day = storedDay,
+              dependencies.adjustments.withdrawUndoneSubstitutes(dayID: day.id) > 0
+        else { return }
+        load()
     }
 
     func toggleVideo(at position: Int) {
