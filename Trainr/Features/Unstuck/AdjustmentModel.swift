@@ -117,6 +117,7 @@ final class AdjustmentModel {
     private var user: UserProfile?
     private var dayWeekday: Int?
     private var hasConfirmed = false
+    private var hasFinishedEarly = false
 
     init(
         dependencies: AppDependencies,
@@ -266,13 +267,20 @@ final class AdjustmentModel {
         confirm(sourceAdjustmentID: nil)
     }
 
+    // Not an apply, so no limit is kept: the note leaves with the session it was written for.
+    func finishEarly() {
+        guard !hasFinishedEarly, let user else { return }
+        hasFinishedEarly = true
+        keepNote(for: user, now: Date())
+    }
+
     private func applied(_ proposalID: String, sourceAdjustmentID: UUID) {
         confirm(sourceAdjustmentID: sourceAdjustmentID)
         state.isApplying = false
         appliedProposalID = proposalID
     }
 
-    // The only path that makes either record durable: cancelling, keeping the
+    // The only path that makes the limit durable: cancelling, keeping the
     // original, a failed apply and leaving the flow all end without it.
     private func confirm(sourceAdjustmentID: UUID?) {
         guard !hasConfirmed, let user else { return }
