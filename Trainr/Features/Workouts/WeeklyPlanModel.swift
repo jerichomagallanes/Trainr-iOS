@@ -1,8 +1,8 @@
 import Foundation
 import Observation
 
-// Read off the sets that remain. Nil while the stored day is unadjusted, when
-// the generator's own columns are still the truth.
+// Read off the sets that remain, with the same estimate the session header
+// shows. Nil only without a profile to estimate for, on an unadjusted day.
 nonisolated struct DerivedDay: Equatable, Sendable {
     var minutes: Int
     var exerciseCount: Int
@@ -216,11 +216,11 @@ nonisolated extension WeeklyPlanState {
 
     // duration, exerciseCount and equipment are generator outputs that applying
     // an adjustment deliberately leaves alone, so undo can restore the day
-    // exactly. An adjusted day is therefore read from the sets that remain.
+    // exactly. The card is therefore read from the sets that remain.
     func deriving(user: UserProfile?, catalog: any ExerciseCatalog) -> WeeklyPlanState {
         var derived = self
         derived.days = days.map { planDay in
-            guard planDay.day.isAdjustedToday else { return planDay }
+            guard user != nil || planDay.day.isAdjustedToday else { return planDay }
             var adjusted = planDay
             adjusted.derived = DerivedDay(
                 minutes: user.map { planDay.day.remainingMinutes($0, catalog) }

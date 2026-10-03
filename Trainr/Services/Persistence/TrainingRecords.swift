@@ -123,6 +123,23 @@ final class WeeklyPlanRecord {
             updatedAt: updatedAt
         )
     }
+
+    var outline: WeekOutline {
+        WeekOutline(
+            id: id,
+            weekNumber: weekNumber,
+            startDate: startDate,
+            days: days
+                .sorted { $0.dayNumber < $1.dayNumber }
+                .map {
+                    DayOutline(
+                        id: $0.id,
+                        dayNumber: $0.dayNumber,
+                        status: WorkoutStatus(rawValue: $0.status) ?? .notStarted
+                    )
+                }
+        )
+    }
 }
 
 @Model

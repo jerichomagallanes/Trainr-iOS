@@ -102,7 +102,7 @@ struct AdjustedRoutineTests {
         #expect(try storedDay(dayNumber).status == .completed)
     }
 
-    @Test("An adjusted day reports fewer exercises, less kit and less time than its columns")
+    @Test("An adjusted day reports fewer exercises and less time than its columns, and never a blank line")
     func theDerivedCountsDifferFromTheStoredColumns() throws {
         try omitEverySet(of: "goblet_squat", in: dayNumber)
         let day = try storedDay(dayNumber)
@@ -111,8 +111,7 @@ struct AdjustedRoutineTests {
         #expect(day.isAdjustedToday)
         #expect(day.derivedExerciseCount < day.exerciseCount)
         #expect(day.remainingMinutes(user, dependencies.catalog) < day.duration)
-        #expect(!day.equipment.isEmpty)
-        #expect(day.derivedEquipment(dependencies.catalog).isEmpty)
+        #expect(day.derivedEquipment(dependencies.catalog) == day.equipment)
     }
 
     @Test("Starting over unticks an exercise an adjustment has since omitted")

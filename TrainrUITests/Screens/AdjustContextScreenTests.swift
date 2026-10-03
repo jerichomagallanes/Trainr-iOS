@@ -84,6 +84,8 @@ final class AdjustContextScreenTests: XCTestCase {
         XCTAssertTrue(app.staticTexts["Couldn't read the note. Pick one below."].waitForExistence(timeout: 5))
         XCTAssertTrue(app.staticTexts["Tell us what you need"].exists)
         XCTAssertTrue(app.button(containing: "The time I have").exists)
+        // The read takes the focus with it, so the keyboard is gone by the time the hint lands.
+        XCTAssertFalse(app.textFields.firstMatch.value(forKey: "hasKeyboardFocus") as? Bool ?? false)
     }
 
     @MainActor

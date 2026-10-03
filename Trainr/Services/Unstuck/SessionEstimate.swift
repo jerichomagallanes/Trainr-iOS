@@ -11,17 +11,27 @@ nonisolated enum SessionEstimate {
         scope: TimeScope,
         catalog: any ExerciseCatalog
     ) -> Int {
-        SessionMinutes.forDay(day.exercises.compactMap { exercise in
-            let counted = exercise.counted(in: scope)
-            guard !counted.isEmpty else { return nil }
-            let entry = catalog[exercise.exerciseKey]
-            return SessionMinutes.forExercise(
-                measure: exercise.measure,
-                perSet: counted.map { $0.seconds(exercise.measure, user, entry) },
-                restSeconds: exercise.restTime ?? rest(user, entry),
-                unilateral: entry?.unilateral == true
-            )
+        SessionMinutes.forDay(day.exercises.compactMap {
+            exerciseMinutes($0, user: user, scope: scope, catalog: catalog)
         })
+    }
+
+    // Nil when nothing is left to count, so the day's transitions skip it too.
+    static func exerciseMinutes(
+        _ exercise: WorkoutExercise,
+        user: UserProfile,
+        scope: TimeScope,
+        catalog: any ExerciseCatalog
+    ) -> Int? {
+        let counted = exercise.counted(in: scope)
+        guard !counted.isEmpty else { return nil }
+        let entry = catalog[exercise.exerciseKey]
+        return SessionMinutes.forExercise(
+            measure: exercise.measure,
+            perSet: counted.map { $0.seconds(exercise.measure, user, entry) },
+            restSeconds: exercise.restTime ?? rest(user, entry),
+            unilateral: entry?.unilateral == true
+        )
     }
 
     private static func rest(_ user: UserProfile, _ entry: CatalogExercise?) -> Int {

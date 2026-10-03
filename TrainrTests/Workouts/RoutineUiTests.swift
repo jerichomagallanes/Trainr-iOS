@@ -206,7 +206,7 @@ struct RoutineUiTests {
             WorkoutDay(dayNumber: 5, title: "C", status: .completed, duration: 45, exerciseCount: 3)
         ]
 
-        #expect(RoutineDetailModel.completesTheWeek(days, dayNumber: 2))
-        #expect(!RoutineDetailModel.completesTheWeek(days, dayNumber: 1))
+        #expect(RoutineDetailModel.completesTheWeek(days.map(\.status), dayNumber: 2))
+        #expect(!RoutineDetailModel.completesTheWeek(days.map(\.status), dayNumber: 1))
     }
 }

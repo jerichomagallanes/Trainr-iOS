@@ -209,4 +209,44 @@ struct UnstuckPolicyEquipmentTests {
         #expect(targetSummary.keptPriorityKey == nil)
         #expect(elsewhereSummary.keptPriorityKey == "bicycle_crunch")
     }
+
+    // A movement tagged as needing nothing can still take a load, and a load
+    // is something to find: bodyweight only means unweighted as well.
+    @Test("A bodyweight-only request never proposes weighted work")
+    func aBodyweightOnlyRequestNeverProposesWeightedWork() throws {
+        let catalog = InMemoryExerciseCatalog([
+            Self.quadMovement("goblet_squat", .dumbbell, .weightAndReps),
+            Self.quadMovement("weighted_sissy_squat", Equipment.none, .weightAndReps),
+            Self.quadMovement("sissy_squat", Equipment.none, .reps)
+        ])
+        let day = testDay([planned("goblet_squat", sets: 3, weightKg: 20)])
+
+        let decision = UnstuckPolicy(catalog: catalog).decide(
+            AdjustmentSnapshot(day: day, user: testUser()),
+            constraint: .equipmentUnavailable(exerciseID: day.exercises[0].id, available: [Equipment.none]),
+            requestID: "request-1"
+        )
+
+        let after = try #require(decision.proposal?.changes.first?.after)
+        #expect(after.catalogKey == "sissy_squat")
+        #expect(after.sets.compactMap(\.targetWeightKg).isEmpty)
+    }
+
+    @Test("The catalog tags nothing weighted as bodyweight")
+    func theCatalogTagsNothingWeightedAsBodyweight() {
+        let weightedBodyweight = testCatalog.all
+            .filter { $0.equipment == Equipment.none && $0.isLoadable }
+            .map(\.key)
+
+        #expect(weightedBodyweight.isEmpty)
+    }
+
+    private static func quadMovement(
+        _ key: String, _ equipment: Equipment, _ measure: ExerciseMeasure
+    ) -> CatalogExercise {
+        CatalogExercise(
+            key: key, name: key, primary: .quadriceps, secondary: [], equipment: equipment,
+            measure: measure, pattern: .squat, staple: false, summary: key, steps: []
+        )
+    }
 }

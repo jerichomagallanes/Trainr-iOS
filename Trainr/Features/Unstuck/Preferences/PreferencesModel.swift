@@ -102,13 +102,13 @@ final class PreferencesModel {
     // session that is over has no adjustment left to describe.
     private func todayAdjustment(for profile: UserProfile) -> TodayAdjustmentKind? {
         let store = dependencies.store
-        let plans = dependencies.attempt("plans", { try store.plans(for: profile.id) }) ?? []
-        guard let plan = plans.max(by: { $0.weekNumber < $1.weekNumber }),
-              let start = plan.startDate
-        else { return nil }
+        let week = dependencies.attempt("weekOutline", {
+            try store.weekOutline(userID: profile.id, weekNumber: nil)
+        })
+        guard let week, let start = week.startDate else { return nil }
 
         let today = WorkoutWeek.startOfDay()
-        guard let day = plan.workoutDays.first(where: {
+        guard let day = week.days.first(where: {
             WorkoutWeek.startOfDay(WorkoutWeek.date(of: $0.dayNumber, startingFrom: start)) == today
         }) else { return nil }
 

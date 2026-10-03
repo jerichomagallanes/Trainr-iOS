@@ -26,8 +26,8 @@ nonisolated struct RoutineDetailState: Equatable, Sendable {
     var isShowingAdjustSheet = false
     var scrollToPosition: Int?
     var undoKeptSets: Int?
-    // Nil while the stored day is unadjusted: the header then reads the planned
-    // per-exercise minutes as it always has.
+    // The same estimate the plan card and the time presets use; nil only
+    // without a profile to estimate for, when the header sums the cards.
     var totalMinutes: Int?
 
     // Adjusting is offered by the work left, not by whether an outcome was
@@ -84,19 +84,16 @@ final class RoutineDetailModel {
             return
         }
         state.unitSystem = profile.weightUnits
-        let plans = dependencies.attempt("plans", { try store.plans(for: profile.id) }) ?? []
-        let plan = requestedWeekNumber
-            .flatMap { number in plans.first { $0.weekNumber == number } }
-            ?? (requestedWeekNumber == nil ? plans.max { $0.weekNumber < $1.weekNumber } : nil)
-
-        guard let plan,
-              let index = plan.workoutDays.firstIndex(where: { $0.dayNumber == requestedDayNumber })
+        let week = dependencies.attempt("weekOutline", {
+            try store.weekOutline(userID: profile.id, weekNumber: requestedWeekNumber)
+        })
+        let index = week?.days.firstIndex { $0.dayNumber == requestedDayNumber }
+        guard let week, let index,
+              let day = dependencies.attempt("day", { try store.day(id: week.days[index].id) })
         else {
             state.isLoaded = true
             return
         }
-
-        let day = plan.workoutDays[index]
         storedDay = day
         // History stops at this day's own completion, so a finished day still
         // shows what "previous" meant at the time.
@@ -114,18 +111,17 @@ final class RoutineDetailModel {
         })
 
         state.routine = day.toRoutineUi(
-            previousByKey: previousByKey, catalog: dependencies.catalog, injuries: profile.injuries
+            previousByKey: previousByKey, catalog: dependencies.catalog, injuries: profile.injuries,
+            user: profile
         )
         state.equipment = day.derivedEquipment(dependencies.catalog)
-        state.totalMinutes = day.isAdjustedToday
-            ? day.remainingMinutes(profile, dependencies.catalog)
-            : nil
-        state.date = plan.startDate.map { WorkoutWeek.date(of: day.dayNumber, startingFrom: $0) }
+        state.totalMinutes = day.remainingMinutes(profile, dependencies.catalog)
+        state.date = week.startDate.map { WorkoutWeek.date(of: day.dayNumber, startingFrom: $0) }
             ?? SampleWorkoutData.date(of: day.dayNumber)
         // "Day 2", not day 3: the design counts workout days, not weekdays.
         state.dayNumber = index + 1
-        state.weekNumber = plan.weekNumber
-        state.completesTheWeek = Self.completesTheWeek(plan.workoutDays, dayNumber: index + 1)
+        state.weekNumber = week.weekNumber
+        state.completesTheWeek = Self.completesTheWeek(week.days.map(\.status), dayNumber: index + 1)
         state.outcome = dependencies.attempt("outcome", { try store.outcome(dayID: day.id) })
         state.activeAdjustment = adjustment
         state.adjustedBanner = adjustment.map { banner(for: $0.proposal) }
@@ -552,10 +548,10 @@ final class RoutineDetailModel {
     }
 
     // Finishing the last outstanding day ends the week, not just the day.
-    static func completesTheWeek(_ days: [WorkoutDay], dayNumber: Int) -> Bool {
-        days.enumerated()
+    static func completesTheWeek(_ statuses: [WorkoutStatus], dayNumber: Int) -> Bool {
+        statuses.enumerated()
             .filter { index, _ in index != dayNumber - 1 }
-            .allSatisfy { _, day in day.status == .completed }
+            .allSatisfy { _, status in status == .completed }
     }
 
     static func sampleState(dayNumber: Int = SampleWorkoutData.defaultDayNumber) -> RoutineDetailState {
@@ -570,7 +566,7 @@ final class RoutineDetailModel {
             date: SampleWorkoutData.date(of: day.dayNumber),
             dayNumber: index + 1,
             weekNumber: SampleWorkoutData.weekOne.weekNumber,
-            completesTheWeek: completesTheWeek(days, dayNumber: index + 1),
+            completesTheWeek: completesTheWeek(days.map(\.status), dayNumber: index + 1),
             isLoaded: true
         )
     }
