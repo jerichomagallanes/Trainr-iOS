@@ -33,18 +33,29 @@ struct EditPreferenceModelTests {
         #expect(model.state.canSave)
     }
 
-    // A limit that is not one of today's presets still has to be visible.
-    @Test("A stored limit that is no preset is shown in the field")
-    func aStoredLimitThatIsNoPresetIsShownInTheField() throws {
-        let odd = world.user.workoutDuration - 5
+    // The remembered number is an answer already given, so it is offered as one.
+    @Test("A stored limit off the usual steps is still a preset")
+    func aStoredLimitOffTheUsualStepsIsStillAPreset() throws {
+        let steps = TimePresets.forPlanned(world.user.workoutDuration)
+        let odd = world.user.workoutDuration - 9
+        #expect(!steps.contains(odd))
         let preference = try world.rememberLimit(minutes: odd)
 
         let model = model(preference.id)
 
-        #expect(!model.state.presets.contains(odd))
-        #expect(model.state.customMinutesText == String(odd))
+        #expect(model.state.presets == (steps + [odd]).sorted())
+        #expect(model.state.customMinutesText.isEmpty)
         #expect(model.state.selectedMinutes == odd)
-        #expect(!model.state.isPresetSelected)
+        #expect(model.state.isPresetSelected)
+        #expect(model.state.canSave)
+    }
+
+    @Test("A stored limit already on the steps is not listed twice")
+    func aStoredLimitAlreadyOnTheStepsIsNotListedTwice() throws {
+        let steps = TimePresets.forPlanned(world.user.workoutDuration)
+        let preference = try world.rememberLimit(minutes: try #require(steps.first))
+
+        #expect(model(preference.id).state.presets == steps)
     }
 
     // Editing the value is not the person agreeing to remember it again.

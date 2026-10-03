@@ -58,6 +58,8 @@ struct PluralsTests {
         #expect(L10n.adjustReviewRemainingLineFormat(1) == "Your remaining time: 1 minute")
         #expect(L10n.originalWorkoutPlannedFormat(1).hasSuffix("1 minute planned"))
         #expect(L10n.originalWorkoutPlannedFormat(45).hasSuffix("45 minutes planned"))
+        #expect(L10n.reviewOriginalRemainingFormat(1).hasSuffix("1 minute remaining"))
+        #expect(L10n.reviewOriginalRemainingFormat(12).hasSuffix("12 minutes remaining"))
         #expect(L10n.noShortVersionBodyFormat(1).contains("about 1 minute."))
         #expect(L10n.reviewShortestVersionFormat(1) == "Shortest version: about 1 minute")
         #expect(L10n.reviewShortestVersionFormat(23) == "Shortest version: about 23 minutes")

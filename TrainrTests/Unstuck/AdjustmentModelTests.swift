@@ -91,7 +91,22 @@ struct AdjustmentModelTests {
 
         #expect(model.showRecommendation() == nil)
         #expect(model.state.review == .noChange(
-            NoChangeReview(goal: .muscleGain, plannedMinutes: model.state.plannedMinutes)
+            NoChangeReview(
+                goal: .muscleGain, plannedMinutes: model.state.plannedMinutes, hasPerformedWork: false
+            )
+        ))
+    }
+
+    @Test("A plan that already fits names the time remaining once work is done")
+    func aFittingPlanNamesTheTimeRemainingOnceWorkIsDone() throws {
+        let model = try model(Self.partlyDoneDay())
+        model.selectMinutes(model.state.plannedMinutes + 5)
+
+        #expect(model.showRecommendation() == nil)
+        #expect(model.state.review == .noChange(
+            NoChangeReview(
+                goal: .muscleGain, plannedMinutes: model.state.plannedMinutes, hasPerformedWork: true
+            )
         ))
     }
 
@@ -374,6 +389,53 @@ struct AdjustmentModelTests {
         #expect(model.state.selectedMinutes == carried)
         #expect(model.state.customMinutesText == String(carried))
         #expect(model.state.canShowRecommendation)
+    }
+
+    @Test("Finishing early from the pain screen saves the note")
+    func finishingEarlyFromThePainScreenSavesTheNote() async throws {
+        let model = try model(reason: .other)
+        model.typeNote("my knee hurts ")
+        #expect(await model.chooseFromContext(.other) == .pain)
+        #expect(model.state.reason == .pain)
+
+        model.finishEarly()
+
+        let day = try #require(model.state.day)
+        let note = try #require(try store.note(dayID: day.id))
+        #expect(note.text == "my knee hurts")
+        #expect(note.dayID == day.id)
+    }
+
+    @Test("A second tap on finish early saves the note once")
+    func aSecondTapOnFinishEarlySavesTheNoteOnce() throws {
+        let model = try model(reason: .pain)
+        model.typeNote("my knee hurts")
+
+        model.finishEarly()
+        model.finishEarly()
+
+        let user = try #require(try store.currentUser())
+        #expect(try store.notes(userID: user.id).count == 1)
+    }
+
+    // Finishing early is not an apply, so a ticked box keeps nothing.
+    @Test("Finishing early from an unworkable review saves the note but no limit")
+    func finishingEarlyFromAnUnworkableReviewSavesTheNoteButNoLimit() throws {
+        let model = try model()
+        model.typeNote("only a few minutes")
+        model.typeMinutes("5")
+        model.toggleRemember()
+        #expect(model.showRecommendation() == nil)
+        guard case .infeasible = model.state.review else {
+            Issue.record("expected an infeasible review, got \(String(describing: model.state.review))")
+            return
+        }
+
+        model.finishEarly()
+
+        let day = try #require(model.state.day)
+        #expect(try store.note(dayID: day.id)?.text == "only a few minutes")
+        #expect(try storedPreferences().isEmpty)
     }
 
     @Test("The context route never calls an interpreter that is not installed")

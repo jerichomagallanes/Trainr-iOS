@@ -18,25 +18,30 @@ struct WorkoutStatusChip: View {
     let status: WorkoutStatus
     var isMissed = false
     var finishedEarly = false
+    var isAdjusted = false
 
     var body: some View {
         StatusChip(label: label, fill: fill)
     }
 
+    private var showsAdjusted: Bool { isAdjusted && status != .completed }
+
     private var label: String {
-        switch (isMissed, finishedEarly) {
-        case (true, _): L10n.missed
-        case (false, true): L10n.finishedEarly
-        case (false, false): status.label
+        switch (isMissed, finishedEarly, showsAdjusted) {
+        case (true, _, _): L10n.missed
+        case (false, true, _): L10n.finishedEarly
+        case (false, false, true): L10n.adjusted
+        case (false, false, false): status.label
         }
     }
 
     // Missed deliberately reads in the same grey as "not started".
     private var fill: Color {
-        switch (isMissed, finishedEarly) {
-        case (true, _): .statusIdle
-        case (false, true): .statusDone
-        case (false, false): status.chipColor
+        switch (isMissed, finishedEarly, showsAdjusted) {
+        case (true, _, _): .statusIdle
+        case (false, true, _): .statusDone
+        case (false, false, true): .statusActive
+        case (false, false, false): status.chipColor
         }
     }
 }
@@ -56,6 +61,7 @@ struct WeekStatusChip: View {
         WorkoutStatusChip(status: .completed)
         WorkoutStatusChip(status: .notStarted, isMissed: true)
         WorkoutStatusChip(status: .completed, finishedEarly: true)
+        WorkoutStatusChip(status: .inProgress, isAdjusted: true)
     }
     .padding(Spacing.medium)
 }

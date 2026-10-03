@@ -149,8 +149,9 @@ struct IntentValidatorTests {
         #expect(try validated(worded, "I have HALF an hour left.").minutes == 30)
     }
 
-    @Test("An unknown scope leaves the minutes unactionable")
-    func anUnknownScopeLeavesMinutesUnactionable() throws {
+    // The number was said; only which question it answers is still open.
+    @Test("An unknown scope keeps the minutes with no scope")
+    func anUnknownScopeKeepsTheMinutesWithNoScope() throws {
         let unscoped = extracted(
             intent: .lessTime,
             timeBudget: TimeBudgetMention(minutes: 35, scope: .unknown),
@@ -160,7 +161,7 @@ struct IntentValidatorTests {
 
         let facts = try validated(unscoped, plainNote)
 
-        #expect(facts.minutes == nil)
+        #expect(facts.minutes == 35)
         #expect(facts.scope == nil)
     }
 
