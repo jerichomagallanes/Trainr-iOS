@@ -47,6 +47,7 @@ final class AdjustmentStore {
             context.insert(record)
             record.day = day
             let added = try patch(proposal, on: day, adjustmentID: adjustment.id, strict: true)
+            reopen(day)
             try context.save()
             return .applied(adjustment, addedExerciseID: added)
         }
@@ -98,10 +99,22 @@ final class AdjustmentStore {
         guard let day = record.day else { throw ApplyRejection.unknownDay }
         var stored = try record.adjustment()
         let added = try patch(stored.proposal, on: day, adjustmentID: record.id, strict: false)
+        reopen(day)
         record.undoneAt = nil
         try context.save()
         stored.undoneAt = nil
         return .applied(stored, addedExerciseID: added)
+    }
+
+    // A partial outcome describes the plan it closed; once that plan changes the
+    // day is open again and its status follows the sets, as the session screen's does.
+    private func reopen(_ day: WorkoutDayRecord) {
+        guard let outcome = day.outcome, outcome.finishKind == FinishKind.partial.rawValue else { return }
+        context.delete(outcome)
+        let visible = day.day.visibleExercises
+        let status = WorkoutStatus.derived(performed: visible.count(where: \.isCompleted), of: visible.count)
+        day.status = status.rawValue
+        day.completedAt = status == .completed ? Date() : nil
     }
 
     // MARK: - Validation

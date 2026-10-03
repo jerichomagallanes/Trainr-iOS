@@ -280,9 +280,54 @@ final class RoutineDetailScreenTests: XCTestCase {
 
         XCTAssertTrue(app.staticTexts["LOWER BODY POWER"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.text(containing: "Finished early").exists)
-        XCTAssertFalse(app.buttons["SLIDE TO FINISH THIS WORKOUT"].exists)
+        XCTAssertTrue(app.button(containing: "Adjust today").exists)
+        let slider = app.buttons["SLIDE TO FINISH THIS WORKOUT"]
+        app.scrollUntilHittable(slider)
+        XCTAssertTrue(slider.exists)
         XCTAssertFalse(app.buttons["Finish early"].exists)
         XCTAssertFalse(app.buttons["Start this workout over"].exists)
+    }
+
+    // Finishing early closes nothing for good: the day still offers its
+    // changes, and starting it over takes the early finish off the plan.
+    @MainActor
+    func testADayFinishedEarlyCanBeStartedOverAndIsOpenAgain() {
+        openUnstartedDay()
+        app.buttons["Mark exercise as complete"].firstMatch.tap()
+        XCTAssertTrue(app.buttons["Mark exercise as not complete"].waitForExistence(timeout: 3))
+        let finishEarly = app.buttons["Finish early"]
+        app.scrollUntilHittable(finishEarly)
+        finishEarly.tap()
+        XCTAssertTrue(app.staticTexts["Finish early?"].waitForExistence(timeout: 3))
+        app.buttons["SAVE WORKOUT"].tap()
+        XCTAssertTrue(app.staticTexts["Workout saved"].waitForExistence(timeout: 5))
+        app.buttons["DONE"].tap()
+        XCTAssertTrue(app.staticTexts["YOUR WEEKLY WORKOUT PLAN"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.button(containing: "Finished early").exists)
+
+        app.button(containing: "Lower Body Power").tap()
+
+        XCTAssertTrue(app.staticTexts["LOWER BODY POWER"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.text(containing: "Finished early").exists)
+        XCTAssertTrue(app.button(containing: "Adjust today").exists)
+        XCTAssertTrue(app.buttons["Need an alternative?"].firstMatch.exists)
+        let startOver = app.buttons["Start this workout over"]
+        app.scrollUntilHittable(startOver)
+        XCTAssertTrue(startOver.exists)
+        XCTAssertTrue(app.buttons["SLIDE TO FINISH THIS WORKOUT"].exists)
+        XCTAssertFalse(app.buttons["Finish early"].exists)
+
+        startOver.tap()
+        app.buttons["Start over"].tap()
+
+        XCTAssertTrue(app.buttons["Finish early"].waitForExistence(timeout: 3))
+        XCTAssertFalse(app.text(containing: "Finished early").exists)
+        XCTAssertFalse(app.buttons["Mark exercise as not complete"].exists)
+
+        app.buttons["Back"].tap()
+
+        XCTAssertTrue(app.staticTexts["YOUR WEEKLY WORKOUT PLAN"].waitForExistence(timeout: 10))
+        XCTAssertFalse(app.button(containing: "Finished early").exists)
     }
 
     // MARK: - Adjust today
