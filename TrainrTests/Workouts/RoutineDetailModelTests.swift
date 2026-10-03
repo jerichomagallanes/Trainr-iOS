@@ -332,6 +332,22 @@ struct RoutineDetailModelTests {
         #expect((model.state.expandedHowTo ?? model.state.expandedVideo) == second.position)
     }
 
+    @Test("A guidance note opens the sheet on the exercises and the reasons otherwise")
+    func aGuidanceNoteOpensTheSheetOnTheExercises() {
+        let model = loaded(day: firstDayNumber)
+
+        model.openExercisePicker()
+
+        #expect(model.state.isShowingAdjustSheet)
+        #expect(model.state.isPickingExercise)
+
+        model.dismissAdjustSheet()
+        model.openAdjustSheet()
+
+        #expect(model.state.isShowingAdjustSheet)
+        #expect(!model.state.isPickingExercise)
+    }
+
     @Test("A guidance request for an exercise the day no longer shows does nothing")
     func guidanceForAnAbsentExerciseDoesNothing() {
         let model = loaded(day: firstDayNumber)
