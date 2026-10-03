@@ -354,4 +354,37 @@ struct RoutineDetailModelTests {
 
         #expect(model.state.timer?.remainingSeconds == atRest)
     }
+
+    // MARK: - Minutes
+
+    // One estimate for the header, the plan card and the per-exercise minutes,
+    // adjusted or not: a stale stored duration is never what the screen shows.
+    @Test("The header and the plan card agree on the minutes")
+    func theHeaderAndThePlanCardAgreeOnTheMinutes() throws {
+        let plan = try #require(try dependencies.store.plan(for: userID, weekNumber: 1))
+        let profile = try #require(try dependencies.store.currentUser())
+        let day = try storedDay(firstDayNumber)
+        let card = try #require(
+            WeeklyPlanModel.state(for: plan).deriving(user: profile, catalog: dependencies.catalog)
+                .days.first { $0.day.id == day.id }?.derived
+        )
+
+        let model = loaded(day: firstDayNumber)
+
+        let header = try #require(model.state.totalMinutes)
+        #expect(header == card.minutes)
+        #expect(header == day.remainingMinutes(profile, dependencies.catalog))
+        #expect(header != day.duration)
+        #expect(model.state.routine.exercises.map(\.minutes) != day.visibleExercises.map(\.durationMinutes))
+    }
+
+    @Test("A timer runs for the minutes the card shows")
+    func aTimerRunsForTheMinutesTheCardShows() throws {
+        let model = loaded(day: firstDayNumber)
+        let first = try #require(model.state.routine.exercises.first)
+
+        model.startTimer(for: first)
+
+        #expect(model.state.timer?.totalSeconds == first.minutes * 60)
+    }
 }

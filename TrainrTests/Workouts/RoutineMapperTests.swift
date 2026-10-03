@@ -121,4 +121,19 @@ struct RoutineMapperTests {
         #expect(!weighted.toRoutineUi(previousByKey: ["goblet_squat": [logged]]).exercises[0].isEstimated)
         #expect(!day([exercise("Plank", key: "plank")]).toRoutineUi().exercises[0].isEstimated)
     }
+
+    // Stored minutes describe the day as generated; with a profile to price the
+    // sets, the card counts the sets still planned, so a cut shows on it.
+    @Test func theMinutesFollowTheSetsStillPlanned() {
+        var squat = exercise("Goblet Squat", weightKg: 20)
+        squat.restTime = 60
+        squat.sets = (1...3).map { ExerciseSet(setNumber: $0, targetReps: 10, targetWeightKg: 20) }
+        var cut = squat
+        cut.sets[2].omittedBy = UUID()
+        let user = testUser()
+
+        #expect(day([squat]).toRoutineUi(catalog: catalog).exercises[0].minutes == 10)
+        #expect(day([squat]).toRoutineUi(catalog: catalog, user: user).exercises[0].minutes == 4)
+        #expect(day([cut]).toRoutineUi(catalog: catalog, user: user).exercises[0].minutes == 2)
+    }
 }

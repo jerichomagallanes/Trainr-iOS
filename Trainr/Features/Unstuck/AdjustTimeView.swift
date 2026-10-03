@@ -48,6 +48,12 @@ struct AdjustTimeView: View {
                 )
                 .padding(.top, Spacing.small)
                 FieldError(message: state.hasMinutesError ? L10n.adjustTimeRangeError : nil)
+                if let shortest = state.shortestMinutes {
+                    Text(L10n.reviewShortestVersionFormat(shortest))
+                        .font(.body14)
+                        .foregroundStyle(Color.onSurfaceMuted)
+                        .padding(.top, Spacing.small)
+                }
 
                 priority
                 remember

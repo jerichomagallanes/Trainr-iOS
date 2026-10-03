@@ -1,28 +1,22 @@
 import SwiftUI
 
-// Reads the day's note through the debrief's own model: this route carries the
-// same day and week, so it resolves the note that was just written rather than
+// Reads the note back by the id of the day it was saved against rather than
 // carrying free text through the stack.
 struct NoteSavedView: View {
 
-    @State private var model: DebriefModel
+    @State private var model: NoteSavedModel
     private let onViewPreferences: () -> Void
     private let onDone: () -> Void
     private let onBack: () -> Void
 
     init(
         dependencies: AppDependencies,
-        dayNumber: Int,
-        weekNumber: Int? = nil,
+        dayID: UUID,
         onViewPreferences: @escaping () -> Void = {},
         onDone: @escaping () -> Void = {},
         onBack: @escaping () -> Void = {}
     ) {
-        _model = State(
-            initialValue: DebriefModel(
-                dependencies: dependencies, dayNumber: dayNumber, weekNumber: weekNumber
-            )
-        )
+        _model = State(initialValue: NoteSavedModel(dependencies: dependencies, dayID: dayID))
         self.onViewPreferences = onViewPreferences
         self.onDone = onDone
         self.onBack = onBack
@@ -63,5 +57,5 @@ struct NoteSavedView: View {
 }
 
 #Preview {
-    NoteSavedView(dependencies: .preview, dayNumber: 1, weekNumber: 1)
+    NoteSavedView(dependencies: .preview, dayID: UUID())
 }

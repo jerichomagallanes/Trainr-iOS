@@ -27,13 +27,12 @@ final class FeedbackPromptModel {
         let store = dependencies.store
         guard let profile = dependencies.attempt("currentUser", { try store.currentUser() })
         else { return }
-        let plans = dependencies.attempt("plans", { try store.plans(for: profile.id) }) ?? []
-        let plan = weekNumber
-            .flatMap { number in plans.first { $0.weekNumber == number } }
-            ?? (weekNumber == nil ? plans.max { $0.weekNumber < $1.weekNumber } : nil)
-        guard let plan, plan.workoutDays.indices.contains(dayNumber - 1) else { return }
+        let week = dependencies.attempt("weekOutline", {
+            try store.weekOutline(userID: profile.id, weekNumber: weekNumber)
+        })
+        guard let week, week.days.indices.contains(dayNumber - 1) else { return }
 
-        let day = plan.workoutDays[dayNumber - 1]
+        let day = week.days[dayNumber - 1]
         guard let adjustment = dependencies.attempt(
             "activeAdjustment", { try store.activeAdjustment(dayID: day.id) }
         ) else { return }

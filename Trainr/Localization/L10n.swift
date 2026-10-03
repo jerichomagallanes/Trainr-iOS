@@ -451,11 +451,13 @@ nonisolated enum L10n {
     static var proPurchaseFailed: String { String(localized: "pro_purchase_failed") }
     static var proPurchaseNotActive: String { String(localized: "pro_purchase_not_active") }
     static var proPurchasePending: String { String(localized: "pro_purchase_pending") }
+    static var proPurchasePendingGoogle: String { String(localized: "pro_purchase_pending_google") }
     static var proQuestions: String { String(localized: "pro_questions") }
     static var proRenewalApple: String { String(localized: "pro_renewal_apple") }
     static var proRenewalGoogle: String { String(localized: "pro_renewal_google") }
     static var proRestore: String { String(localized: "pro_restore") }
     static var proRestoreFailed: String { String(localized: "pro_restore_failed") }
+    static var proRestoreFailedGoogle: String { String(localized: "pro_restore_failed_google") }
     static var proRestored: String { String(localized: "pro_restored") }
     static func proSavePercent(_ p1: Int) -> String {
         String.localizedStringWithFormat(String(localized: "pro_save_percent"), p1)
@@ -514,6 +516,9 @@ nonisolated enum L10n {
     static var reviewProfileDescription: String { String(localized: "review_profile_description") }
     static var reviewRebuilt: String { String(localized: "review_rebuilt") }
     static var reviewShorterVersion: String { String(localized: "review_shorter_version") }
+    static func reviewShortestVersionFormat(_ p1: Int) -> String {
+        String.localizedStringWithFormat(String(localized: "review_shortest_version_format"), p1)
+    }
     static func routineDescription(_ p1: String, _ p2: String) -> String {
         String.localizedStringWithFormat(String(localized: "routine_description"), p1, p2)
     }

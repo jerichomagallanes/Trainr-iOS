@@ -19,19 +19,41 @@ nonisolated extension WorkoutDay {
         isAdjustedToday ? visibleExercises.count : exerciseCount
     }
 
+    // Starts from the stored line, which names kit the catalog does not know: a
+    // substitute adds its own, an omitted exercise's goes once nothing visible needs it.
     func derivedEquipment(_ catalog: any ExerciseCatalog) -> [String] {
         guard isAdjustedToday else { return equipment }
-        var kit: [String] = []
-        for item in visibleExercises.compactMap({ catalog[$0.exerciseKey]?.equipment })
-            .filter({ $0 != Equipment.none })
-            .map(\.catalogDisplayText) where !kit.contains(item) {
-            kit.append(item)
+        let visible = visibleExercises
+        let needed = Set(visible.kit(catalog))
+        let dropped = exercises.filter(\.isOmittedToday).kit(catalog).filter { !needed.contains($0) }
+        let kept = equipment.filter { name in !dropped.contains { name.describes($0) } }
+        var added: [String] = []
+        for item in visible.filter({ $0.addedBy != nil }).kit(catalog).map(\.catalogDisplayText)
+        where !added.contains(item) && !kept.contains(where: { $0.describes(item) }) {
+            added.append(item)
         }
-        return kit
+        let line = kept + added
+        return line.isEmpty ? equipment : line
     }
 
     func remainingMinutes(_ user: UserProfile, _ catalog: any ExerciseCatalog) -> Int {
         SessionEstimate.minutes(self, user: user, scope: .wholeSession, catalog: catalog)
+    }
+}
+
+private nonisolated extension [WorkoutExercise] {
+    func kit(_ catalog: any ExerciseCatalog) -> [Equipment] {
+        compactMap { catalog[$0.exerciseKey]?.equipment }.filter { $0 != Equipment.none }
+    }
+}
+
+private nonisolated extension String {
+    func describes(_ equipment: Equipment) -> Bool {
+        describes(equipment.catalogDisplayText)
+    }
+
+    func describes(_ text: String) -> Bool {
+        lowercased().hasPrefix(text.lowercased())
     }
 }
 

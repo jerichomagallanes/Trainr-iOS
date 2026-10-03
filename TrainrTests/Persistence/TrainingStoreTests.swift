@@ -259,4 +259,57 @@ struct TrainingStoreTests {
         #expect(stored.count { $0.weekNumber == 2 } == 1)
         #expect(stored.map(\.weekNumber) == [2, 1])
     }
+
+    // MARK: - Finding one day
+
+    @Test func aWeekOutlineListsTheDaysOfTheWeekAskedForOrTheNewest() throws {
+        let (userID, _) = try seedSamplePlan()
+        var weekTwo = SampleWorkoutData.weekOne
+        weekTwo.id = UUID()
+        weekTwo.userID = userID
+        weekTwo.weekNumber = 2
+        try store.savePlan(weekTwo)
+        let stored = try storedPlan(userID, week: 2)
+
+        let newest = try #require(try store.weekOutline(userID: userID, weekNumber: nil))
+        let first = try #require(try store.weekOutline(userID: userID, weekNumber: 1))
+
+        #expect(newest.id == stored.id)
+        #expect(newest.weekNumber == 2)
+        #expect(newest.startDate == stored.startDate)
+        #expect(newest.days.map(\.id) == stored.workoutDays.map(\.id))
+        #expect(newest.days.map(\.dayNumber) == stored.workoutDays.map(\.dayNumber))
+        #expect(newest.days.map(\.status) == stored.workoutDays.map(\.status))
+        #expect(first.weekNumber == 1)
+        #expect(Set(first.days.map(\.id)).isDisjoint(with: newest.days.map(\.id)))
+        #expect(try store.weekOutline(userID: userID, weekNumber: 3) == nil)
+        #expect(try store.weekOutline(userID: UUID(), weekNumber: nil) == nil)
+    }
+
+    @Test func aDayFindsTheWeekItBelongsTo() throws {
+        let (userID, _) = try seedSamplePlan()
+        var weekTwo = SampleWorkoutData.weekOne
+        weekTwo.id = UUID()
+        weekTwo.userID = userID
+        weekTwo.weekNumber = 2
+        try store.savePlan(weekTwo)
+        let day = try #require(try storedPlan(userID, week: 2).workoutDays.last)
+
+        let week = try #require(try store.weekOutline(dayID: day.id))
+
+        #expect(week.weekNumber == 2)
+        #expect(week.days.map(\.id).contains(day.id))
+        #expect(try store.weekOutline(dayID: UUID()) == nil)
+    }
+
+    @Test func oneDayIsReadWholeByItsId() throws {
+        let (userID, _) = try seedSamplePlan()
+        let expected = try #require(try storedPlan(userID).workoutDays.last)
+
+        let day = try #require(try store.day(id: expected.id))
+
+        #expect(day == expected)
+        #expect(!day.exercises.flatMap(\.sets).isEmpty)
+        #expect(try store.day(id: UUID()) == nil)
+    }
 }
