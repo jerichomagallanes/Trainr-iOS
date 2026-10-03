@@ -275,15 +275,15 @@ struct AdjustmentModelContextTests {
         #expect(model.state.note == note)
     }
 
-    @Test("A guidance note shows the guide hint")
-    func aGuidanceNoteShowsTheGuideHint() async throws {
+    @Test("A guidance note routes to the how-to without a hint")
+    func aGuidanceNoteRoutesToTheHowToWithoutAHint() async throws {
         let note = "How do I do a hip thrust?"
         let answer = try interpreted(note, extracted(intent: .exerciseGuidance))
         let model = try model(interpreter: ReadyInterpreter(answer))
         model.typeNote(note)
 
         #expect(await model.chooseFromContext(.other) == .guide)
-        #expect(model.state.contextHint == .guide)
+        #expect(model.state.contextHint == nil)
     }
 
     @Test("A failed read shows the failed hint")
