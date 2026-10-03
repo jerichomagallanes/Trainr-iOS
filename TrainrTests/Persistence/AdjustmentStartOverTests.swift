@@ -45,6 +45,9 @@ struct AdjustmentStartOverTests {
 
         let kept = try #require(try store.exercise(id: substituteID))
         #expect(kept.sets.map(\.isCompleted) == [true])
+        // Every set it has left was performed, so the list and the counts would
+        // otherwise disagree about the same exercise.
+        #expect(kept.isCompleted)
     }
 
     @Test("Starting over leaves a standing substitute in place")

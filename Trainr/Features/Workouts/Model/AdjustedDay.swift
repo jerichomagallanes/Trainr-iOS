@@ -36,6 +36,12 @@ nonisolated extension WorkoutDay {
         return line.isEmpty ? equipment : line
     }
 
+    // What the cards and the review call it: the day's own name for a movement
+    // outlives the catalog entry it was generated from.
+    func name(of catalogKey: String, catalog: any ExerciseCatalog) -> String {
+        exercises.first { $0.exerciseKey == catalogKey }?.name ?? catalog[catalogKey]?.name ?? ""
+    }
+
     func remainingMinutes(_ user: UserProfile, _ catalog: any ExerciseCatalog) -> Int {
         SessionEstimate.minutes(self, user: user, scope: .wholeSession, catalog: catalog)
     }
@@ -76,5 +82,29 @@ nonisolated struct AdjustedBannerUi: Equatable, Sendable {
         case .reducedSession: L10n.adjustedReducedBanner
         case .replaced: L10n.adjustedReplacedBannerFormat(fromName, toName)
         }
+    }
+}
+
+nonisolated extension AdjustedBannerUi {
+
+    // Named the way the cards and the review name things, and listing its
+    // regions in the review's order: one day may not be described twice.
+    init(_ proposal: AdjustmentProposal, day: WorkoutDay, catalog: any ExerciseCatalog) {
+        if let replaced = proposal.changes.first(where: { $0.kind == .replaceUnperformed }) {
+            self.init(
+                kind: .replaced,
+                fromName: day.name(of: replaced.before.catalogKey, catalog: catalog),
+                toName: replaced.after.map { day.name(of: $0.catalogKey, catalog: catalog) } ?? ""
+            )
+            return
+        }
+        let touched = Set(proposal.changes.compactMap { catalog[$0.before.catalogKey]?.primary.region })
+        let regions = MuscleRegion.allCases.filter(touched.contains)
+        guard !proposal.changes.contains(where: { $0.kind == .omitUnperformed }), !regions.isEmpty
+        else {
+            self.init(kind: .reducedSession)
+            return
+        }
+        self.init(kind: .lessWorkForRegions, regions: regions)
     }
 }

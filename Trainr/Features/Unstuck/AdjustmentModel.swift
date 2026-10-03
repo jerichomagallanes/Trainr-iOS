@@ -13,7 +13,6 @@ nonisolated enum ApplyErrorUi: Equatable, Sendable {
 
 nonisolated enum ContextHint: Equatable, Sendable {
     case chooser
-    case guide
     case failed
 }
 
@@ -203,8 +202,7 @@ final class AdjustmentModel {
         state.reason = route.directReason ?? reason
         state.contextHint = switch route {
         case .chooser: result?.isFailure == true ? .failed : .chooser
-        case .guide: .guide
-        case .time, .equipment, .pain: nil
+        case .guide, .time, .equipment, .pain: nil
         }
         return route
     }

@@ -288,7 +288,7 @@ struct RootView: View {
             SessionSavedView(
                 performedExercises: performed,
                 plannedExercises: planned,
-                offer: offer(dayNumber: dayNumber, weekNumber: weekNumber, style: .card),
+                offer: offer(dayNumber: dayNumber, weekNumber: weekNumber),
                 onBack: pop,
                 onDone: restartOnHome
             )
@@ -296,7 +296,7 @@ struct RootView: View {
         case .dayCompleted(let dayNumber, let weekNumber):
             DayCompletedView(
                 dayNumber: dayNumber,
-                offer: offer(dayNumber: dayNumber, weekNumber: weekNumber, style: .card),
+                offer: offer(dayNumber: dayNumber, weekNumber: weekNumber),
                 onBack: pop,
                 onViewProgress: { path.append(.weeklyProgress) },
                 onBackToPlan: restartOnHome
@@ -438,12 +438,23 @@ private extension RootView {
                 step: route,
                 model: adjustment,
                 onShowRecommendation: showRecommendation,
-                onRouted: { if let next = Route($0) { path.append(next) } },
+                onRouted: routeFromContext,
                 onApplied: { spendAdjustmentCycle($0); leaveAdjustment(.reload) },
                 onLeave: leaveAdjustment,
                 onBack: popAdjustment
             )
         }
+    }
+
+    // The how-to lives on the session screen, so a note read as a form question
+    // is handed back there rather than growing a second way to show it.
+    func routeFromContext(_ route: UnstuckRoute) {
+        guard route != .guide else {
+            leaveAdjustment(.guide)
+            return
+        }
+        guard let next = Route(route) else { return }
+        path.append(next)
     }
 
     // The recommendation is computed first and only then sold: nothing proposed
@@ -482,14 +493,11 @@ private extension RootView {
     // Nothing here reads the gate or the allowance: one question after a
     // session that used an adjustment is free, and the answer changes no
     // future workout.
-    func offer(
-        dayNumber: Int, weekNumber: Int, style: FeedbackOffer.Style = .link
-    ) -> FeedbackOffer {
+    func offer(dayNumber: Int, weekNumber: Int) -> FeedbackOffer {
         FeedbackOffer(
             dependencies: dependencies,
             dayNumber: dayNumber,
             weekNumber: weekNumber,
-            style: style,
             onLeaveNote: {
                 path.append(.debrief(dayNumber: dayNumber, weekNumber: weekNumber))
             },

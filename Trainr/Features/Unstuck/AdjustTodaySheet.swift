@@ -1,15 +1,31 @@
 import SwiftUI
 
 struct AdjustTodaySheet: View {
-    let dayTitle: String
-    let exercises: [String]
-    var onChoose: (DirectReason) -> Void = { _ in }
-    var onShowHowTo: (Int) -> Void = { _ in }
-    var onDismiss: () -> Void = {}
+    private let dayTitle: String
+    private let exercises: [String]
+    private let onChoose: (DirectReason) -> Void
+    private let onShowHowTo: (Int) -> Void
+    private let onDismiss: () -> Void
 
-    @State private var isPickingExercise = false
+    @State private var isPickingExercise: Bool
     @State private var content: CGFloat?
     @State private var inset: CGFloat = 0
+
+    init(
+        dayTitle: String,
+        exercises: [String],
+        startOnExercises: Bool = false,
+        onChoose: @escaping (DirectReason) -> Void = { _ in },
+        onShowHowTo: @escaping (Int) -> Void = { _ in },
+        onDismiss: @escaping () -> Void = {}
+    ) {
+        self.dayTitle = dayTitle
+        self.exercises = exercises
+        _isPickingExercise = State(initialValue: startOnExercises)
+        self.onChoose = onChoose
+        self.onShowHowTo = onShowHowTo
+        self.onDismiss = onDismiss
+    }
 
     var body: some View {
         ScrollView {
@@ -79,7 +95,11 @@ struct AdjustTodaySheet: View {
 
 #Preview("Dark") {
     Color.surfacePage.sheet(isPresented: .constant(true)) {
-        AdjustTodaySheet(dayTitle: "Upper Body Push", exercises: SampleAdjustmentStates.exerciseNames)
+        AdjustTodaySheet(
+            dayTitle: "Upper Body Push",
+            exercises: SampleAdjustmentStates.exerciseNames,
+            startOnExercises: true
+        )
     }
     .preferredColorScheme(.dark)
 }

@@ -77,6 +77,26 @@ struct AdjustmentTopUpTests {
         #expect(substitute.sets.allSatisfy { $0.omittedBy == nil })
     }
 
+    @Test("A substitute an undo ticked off is work to do again once its sets come back")
+    func reapplyClearsTheTickUndoLeft() throws {
+        let day = try seedDay()
+        let original = try #require(day.exercise("dumbbell_step_up"))
+        let proposal = try swap(day, exerciseID: original.id)
+        let applied = try #require(
+            adjustments.apply(proposal, dayID: day.id, reason: .equipmentUnavailable, now: now).applied
+        )
+        let substituteID = try #require(applied.addedExerciseID)
+        try log(try #require(try store.exercise(id: substituteID)).sets[0])
+        _ = adjustments.undo(adjustmentID: applied.adjustment.id, now: later)
+        #expect(try #require(try store.exercise(id: substituteID)).isCompleted)
+
+        adjustments.apply(proposal, dayID: day.id, reason: .equipmentUnavailable, now: laterStill)
+
+        let substitute = try #require(try store.exercise(id: substituteID))
+        #expect(!substitute.isCompleted)
+        #expect(substitute.sets.contains { !$0.isCompleted })
+    }
+
     // MARK: - Seeding
 
     private func seedDay() throws -> WorkoutDay {

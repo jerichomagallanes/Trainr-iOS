@@ -21,7 +21,7 @@ nonisolated extension MuscleRegion {
         case .hamstrings: L10n.regionHamstrings
         case .hips: L10n.regionHips
         case .calves: L10n.regionCalves
-        case .other: L10n.regionOther
+        case .other: L10n.regionOtherLabel
         }
     }
 }

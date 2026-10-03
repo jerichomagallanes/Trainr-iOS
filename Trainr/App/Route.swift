@@ -48,8 +48,8 @@ enum Route: Hashable {
     // entitlement, which is not the screen's identity.
     case pro
 
-    // The interpreter's answer as a step in this stack. Guide and chooser are
-    // answered on the screen that asked rather than by pushing another.
+    // The interpreter's answer as a step in this stack. Chooser is answered on
+    // the screen that asked, and guide is handed back to the session screen.
     init?(_ route: UnstuckRoute) {
         switch route {
         case .time: self = .adjustTime

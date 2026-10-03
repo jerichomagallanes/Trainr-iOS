@@ -132,7 +132,6 @@ struct AdjustContextView: View {
     private func hintText(_ hint: ContextHint) -> String {
         switch hint {
         case .chooser: L10n.contextHintChooser
-        case .guide: L10n.contextHintGuide
         case .failed: L10n.contextHintFailed
         }
     }
