@@ -61,21 +61,24 @@ struct AdjustTimeView: View {
         }
     }
 
+    @ViewBuilder
     private var presets: some View {
-        HStack(spacing: Spacing.small) {
-            ForEach(state.presets, id: \.self) { preset in
-                ToggleChip(
-                    text: L10n.minutesShortFormat(preset),
-                    isSelected: state.isPresetSelected && state.selectedMinutes == preset,
-                    height: ComponentHeight.medium,
-                    horizontalPadding: Spacing.small,
-                    fillsWidth: true
-                ) {
-                    onSelectMinutes(preset)
+        if !state.presets.isEmpty {
+            HStack(spacing: Spacing.small) {
+                ForEach(state.presets, id: \.self) { preset in
+                    ToggleChip(
+                        text: L10n.minutesShortFormat(preset),
+                        isSelected: state.isPresetSelected && state.selectedMinutes == preset,
+                        height: ComponentHeight.medium,
+                        horizontalPadding: Spacing.small,
+                        fillsWidth: true
+                    ) {
+                        onSelectMinutes(preset)
+                    }
                 }
             }
+            .padding(.top, Spacing.medium)
         }
-        .padding(.top, Spacing.medium)
     }
 
     // Offered only where a weekday can be named and the answer is about the

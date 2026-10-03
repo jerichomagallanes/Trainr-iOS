@@ -29,14 +29,14 @@ nonisolated enum SamplePreferenceStates {
     static let editing = EditPreferenceState(
         isLoaded: true,
         weekdayName: "Tuesday",
-        presets: [25, 35, 45],
+        presets: [15, 25, 35],
         selectedMinutes: 35
     )
 
     static let editingWithError = EditPreferenceState(
         isLoaded: true,
         weekdayName: "Tuesday",
-        presets: [25, 35, 45],
+        presets: [15, 25, 35],
         customMinutesText: "3",
         hasMinutesError: true
     )

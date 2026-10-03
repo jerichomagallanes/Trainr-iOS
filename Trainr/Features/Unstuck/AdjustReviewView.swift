@@ -83,7 +83,7 @@ private struct ProposedContent: View {
 
         card
 
-        if review.kind == .substitute {
+        if review.substituteLoadable {
             Disclosure(label: L10n.howToChooseWeight) {
                 Text(L10n.chooseWeightBody1)
                     .font(.body14)
@@ -96,18 +96,23 @@ private struct ProposedContent: View {
         }
 
         Disclosure(label: L10n.whyThisChange) {
-            Text(
-                review.kind == .substitute
-                    ? L10n.whyEquipmentFormat(review.replacedTo ?? "")
-                    : L10n.whyTimeFormat(priority)
-            )
-            .font(.body14)
-            .foregroundStyle(Color.onSurface)
+            Text(whyThisChange)
+                .font(.body14)
+                .foregroundStyle(Color.onSurface)
             Text(L10n.missedSetsNotAdded)
                 .font(.body14)
                 .foregroundStyle(Color.onSurface)
                 .padding(.top, Spacing.small)
         }
+    }
+
+    private var whyThisChange: String {
+        guard review.kind == .substitute else { return L10n.whyTimeFormat(priority) }
+        let name = review.replacedTo ?? ""
+        if review.bodyweightFallback { return L10n.whyBodyweightFallbackFormat(name) }
+        return review.substituteLoadable
+            ? L10n.whyEquipmentFormat(name)
+            : L10n.whyEquipmentUnloadedFormat(name)
     }
 
     private func timeLine(_ minutes: Int) -> String {
@@ -119,6 +124,7 @@ private struct ProposedContent: View {
 
     private var title: String {
         guard review.kind == .substitute else { return L10n.adjustReviewTimeTitle }
+        guard review.substituteEquipment != Equipment.none else { return L10n.adjustReviewBodyweightTitle }
         return L10n.adjustReviewEquipmentTitleFormat(
             review.substituteEquipment?.displayName.lowercased() ?? ""
         )
@@ -126,11 +132,9 @@ private struct ProposedContent: View {
 
     private var card: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Text(
-                review.priorityName.map(L10n.adjustReviewKeepFormat) ?? L10n.adjustReviewAlternative
-            )
-            .font(.sectionTitle)
-            .foregroundStyle(Color.onSurface)
+            Text(cardTitle)
+                .font(.sectionTitle)
+                .foregroundStyle(Color.onSurface)
             Text(summaryLine)
                 .font(.body14)
                 .foregroundStyle(Color.onSurface)
@@ -141,7 +145,7 @@ private struct ProposedContent: View {
             Disclosure(label: L10n.seeExactChanges) {
                 ForEach(review.rows, id: \.self) { ChangeRowLine(row: $0) }
                 Text(
-                    review.kind == .substitute
+                    review.substituteLoadable
                         ? L10n.changesRestKeptChooseWeight
                         : L10n.changesRestUnchanged
                 )
@@ -159,11 +163,17 @@ private struct ProposedContent: View {
         .padding(.top, Spacing.medium)
     }
 
+    private var cardTitle: String {
+        if let name = review.priorityName { return L10n.adjustReviewKeepFormat(name) }
+        return review.kind == .substitute ? L10n.adjustReviewAlternative : L10n.adjustReviewShortenedTitle
+    }
+
     private var summaryLine: String {
-        guard let from = review.replacedFrom, let to = review.replacedTo else {
-            return L10n.adjustReviewTimeBodyFormat(UnstuckText.joinAnd(review.keptNames))
+        if let from = review.replacedFrom, let to = review.replacedTo {
+            return L10n.adjustReviewReplaceBodyFormat(from, to)
         }
-        return L10n.adjustReviewReplaceBodyFormat(from, to)
+        guard !review.keptNames.isEmpty else { return L10n.reviewAllShortenedMessage }
+        return L10n.adjustReviewTimeBodyFormat(UnstuckText.joinAnd(review.keptNames))
     }
 
     private var tradeoffs: some View {

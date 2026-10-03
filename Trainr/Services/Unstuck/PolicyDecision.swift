@@ -29,6 +29,7 @@ nonisolated enum TradeoffCode: String, CaseIterable, Sendable {
     case lessWorkForRegions = "less_work_for_regions"
     case reducedSession = "reduced_session"
     case differentResistance = "different_resistance"
+    case differentMovement = "different_movement"
     case lessBarbellPractice = "less_barbell_practice"
     case separateLoadHistory = "separate_load_history"
 }
@@ -50,6 +51,7 @@ nonisolated struct ProposalSummary: Equatable, Sendable {
     var keptPriorityKey: String?
     var tradeoffs: [Tradeoff]
     var rows: [ChangeRow]
+    var bodyweightFallback: Bool
     var estimateBeforeMinutes: Int?
     var estimateAfterMinutes: Int?
     var budgetMinutes: Int?

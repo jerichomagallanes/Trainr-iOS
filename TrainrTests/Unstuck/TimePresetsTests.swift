@@ -4,23 +4,25 @@ import Testing
 @Suite("The time choices offered")
 struct TimePresetsTests {
 
-    @Test("The choices end at the planned length, ten minutes apart")
-    func presetsEndAtThePlannedLength() {
-        #expect(TimePresets.forPlanned(45) == [25, 35, 45])
-        #expect(TimePresets.forPlanned(30) == [10, 20, 30])
-        #expect(TimePresets.forPlanned(60) == [40, 50, 60])
+    @Test("The choices stop below the planned length, ten minutes apart")
+    func presetsStopBelowThePlannedLength() {
+        #expect(TimePresets.forPlanned(45) == [15, 25, 35])
+        #expect(TimePresets.forPlanned(39) == [19, 29])
+        #expect(TimePresets.forPlanned(60) == [30, 40, 50])
     }
 
     @Test("A short plan is offered fewer choices rather than one below ten minutes")
     func aShortPlanIsOfferedFewerChoices() {
-        #expect(TimePresets.forPlanned(25) == [15, 25])
-        #expect(TimePresets.forPlanned(15) == [15])
+        #expect(TimePresets.forPlanned(30) == [10, 20])
+        #expect(TimePresets.forPlanned(25) == [15])
     }
 
-    @Test("A plan shorter than the floor still offers the session as planned")
-    func aPlanShorterThanTheFloorOffersItself() {
-        #expect(TimePresets.forPlanned(9) == [9])
-        #expect(TimePresets.forPlanned(5) == [5])
+    // The planned length itself can only be answered with "already fits".
+    @Test("A plan with nothing below it offers no preset")
+    func aPlanWithNothingBelowItOffersNoPreset() {
+        #expect(TimePresets.forPlanned(19).isEmpty)
+        #expect(TimePresets.forPlanned(9).isEmpty)
+        #expect(TimePresets.forPlanned(5).isEmpty)
     }
 
     @Test("The supported range is narrower than the schema bound")

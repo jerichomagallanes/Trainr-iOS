@@ -78,6 +78,7 @@ nonisolated struct UnstuckPolicy: Sendable {
                 code: code, regions: regions(of: touched), exerciseKeys: touched.map(\.exerciseKey)
             )],
             rows: touched.map { row(of: $0, kept: kept[$0.id, default: 0]) },
+            bodyweightFallback: false,
             estimateBeforeMinutes: before,
             estimateAfterMinutes: after,
             budgetMinutes: minutes
@@ -125,6 +126,7 @@ nonisolated struct UnstuckPolicy: Sendable {
             )
         )
         let tradeoffs = tradeoffs(from: entry, to: candidate)
+        let fallback = candidate.equipment == Equipment.none && !available.contains(Equipment.none)
         let priority = snapshot.priority?.catalogKey
         let proposal = AdjustmentProposal(
             proposalID: proposalID(requestID, revision, constraint),
@@ -152,6 +154,7 @@ nonisolated struct UnstuckPolicy: Sendable {
                 fromKey: target.exerciseKey, fromName: target.name,
                 toKey: candidate.key, toName: candidate.name, sets: unperformed.count
             )],
+            bodyweightFallback: fallback,
             estimateBeforeMinutes: nil,
             estimateAfterMinutes: nil,
             budgetMinutes: nil
@@ -172,24 +175,28 @@ nonisolated struct UnstuckPolicy: Sendable {
         var kept = Dictionary(uniqueKeysWithValues: day.exercises.map { ($0.id, $0.unperformed.count) })
         let order = droppable(day, tiers: tiers, shape: shape)
         func fits() -> Bool { estimate(day.shrunk(to: kept), user, scope) <= budget }
+        // The last working set outside the warm-up is never shed: a shorter session is still one.
+        func working() -> Int { kept.filter { tiers[$0.key] != .warmUp }.values.reduce(0, +) }
 
         var moved = true
         while moved && !fits() {
             moved = false
-            for exercise in order where canLoseASet(exercise, kept, tiers, shape) {
+            for exercise in order where canLoseASet(exercise, kept, tiers, shape) && working() > 1 {
                 kept[exercise.id, default: 0] -= 1
                 moved = true
                 if fits() { break }
             }
         }
         if !fits() {
-            for exercise in order where kept[exercise.id, default: 0] > 0 {
-                kept[exercise.id] = 0
+            for exercise in order {
+                let remaining = kept[exercise.id, default: 0]
+                guard remaining > 0 else { continue }
+                kept[exercise.id] = working() > remaining ? 0 : 1
                 if fits() { break }
             }
         }
         if !fits(), let primary = day.exercises.first(where: { tiers[$0.id] == .primaryCompound }) {
-            while canLoseASet(primary, kept, tiers, shape) {
+            while canLoseASet(primary, kept, tiers, shape) && working() > 1 {
                 kept[primary.id, default: 0] -= 1
                 if fits() { break }
             }
@@ -210,11 +217,17 @@ nonisolated struct UnstuckPolicy: Sendable {
                 && !InjuryGuard.excludes($0, for: user.injuries)
                 && ($0.primary == entry.primary || ($0.pattern == entry.pattern && $0.role == .compound))
         }
-        let sameMeasure = eligible.filter { $0.measure == target.measure }
-        let pool = sameMeasure.isEmpty
-            ? eligible.filter { Self.interchangeable(target.measure).contains($0.measure) }
-            : sameMeasure
+        // Bodyweight is the fallback, offered only when nothing in the ticked kit trains the same muscles.
+        let usable = eligible.filter { available.contains($0.equipment) }
+        let pool = Self.pool(usable.isEmpty ? eligible : usable, for: target.measure)
         return pool.min { ranked($0, $1, against: entry) }
+    }
+
+    private static func pool(_ candidates: [CatalogExercise], for measure: ExerciseMeasure) -> [CatalogExercise] {
+        let sameMeasure = candidates.filter { $0.measure == measure }
+        return sameMeasure.isEmpty
+            ? candidates.filter { interchangeable(measure).contains($0.measure) }
+            : sameMeasure
     }
 
     private func ranked(_ lhs: CatalogExercise, _ rhs: CatalogExercise, against target: CatalogExercise) -> Bool {
@@ -243,13 +256,13 @@ nonisolated struct UnstuckPolicy: Sendable {
         var named: [Tradeoff] = []
         if entry.equipment == .barbell && candidate.equipment != .barbell {
             named.append(Tradeoff(code: .lessBarbellPractice, exerciseKeys: keys))
-        } else if entry.equipment != candidate.equipment {
+        } else if entry.equipment != candidate.equipment && candidate.isLoadable {
             named.append(Tradeoff(code: .differentResistance, exerciseKeys: keys))
         }
         if candidate.isLoadable {
             named.append(Tradeoff(code: .separateLoadHistory, exerciseKeys: [candidate.key]))
         }
-        return named.isEmpty ? [Tradeoff(code: .differentResistance, exerciseKeys: keys)] : named
+        return named.isEmpty ? [Tradeoff(code: .differentMovement, exerciseKeys: keys)] : named
     }
 
     // A seed, never the weight that was on the bar: the two movements do not
