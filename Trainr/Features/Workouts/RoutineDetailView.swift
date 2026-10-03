@@ -81,7 +81,11 @@ struct RoutineDetailView: View {
             guard let returned else { return }
             returningFromAdjustment = nil
             model.load()
-            if returned == .finishEarly { model.askToFinishEarly() }
+            switch returned {
+            case .reload: break
+            case .finishEarly: model.askToFinishEarly()
+            case .guide: model.openExercisePicker()
+            }
         }
         .onChange(of: howToRequest) { _, requested in
             guard let requested else { return }
@@ -131,6 +135,7 @@ struct RoutineDetailView: View {
             AdjustTodaySheet(
                 dayTitle: routine.title,
                 exercises: routine.exercises.map(\.name),
+                startOnExercises: state.isPickingExercise,
                 onChoose: { reason in
                     pendingReason = reason
                     model.dismissAdjustSheet()

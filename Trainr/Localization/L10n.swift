@@ -128,7 +128,6 @@ nonisolated enum L10n {
     }
     static var contextHintChooser: String { String(localized: "context_hint_chooser") }
     static var contextHintFailed: String { String(localized: "context_hint_failed") }
-    static var contextHintGuide: String { String(localized: "context_hint_guide") }
     static var contextOptionEquipment: String { String(localized: "context_option_equipment") }
     static var contextOptionEquipmentHint: String { String(localized: "context_option_equipment_hint") }
     static var contextOptionTime: String { String(localized: "context_option_time") }
@@ -500,7 +499,7 @@ nonisolated enum L10n {
     static var regionCore: String { String(localized: "region_core") }
     static var regionHamstrings: String { String(localized: "region_hamstrings") }
     static var regionHips: String { String(localized: "region_hips") }
-    static var regionOther: String { String(localized: "region_other") }
+    static var regionOtherLabel: String { String(localized: "region_other_label") }
     static var regionQuads: String { String(localized: "region_quads") }
     static var regionShoulders: String { String(localized: "region_shoulders") }
     static func rememberWeekdayLimitFormat(_ p1: String) -> String {

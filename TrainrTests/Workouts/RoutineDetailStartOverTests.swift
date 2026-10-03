@@ -75,6 +75,35 @@ struct RoutineDetailStartOverTests {
         #expect(reopened.state.outcome == nil)
     }
 
+    @Test("Starting over on a day finished in full clears that outcome too")
+    func startingOverClearsAFullOutcome() throws {
+        let model = loaded()
+        model.completeRoutine()
+        #expect(model.state.outcome?.finishKind == .full)
+
+        model.clearProgress()
+
+        #expect(model.state.outcome == nil)
+        #expect(try store.outcome(dayID: day.id) == nil)
+        let reopened = try #require(try store.day(id: day.id))
+        #expect(reopened.status == .notStarted)
+        #expect(reopened.completedAt == nil)
+    }
+
+    @Test("Correcting a number on a day finished in full leaves that outcome alone")
+    func correctingANumberLeavesAFullOutcomeAlone() throws {
+        let model = loaded()
+        model.completeRoutine()
+        let exercise = try #require(model.state.routine.exercises.first)
+        var corrected = try #require(exercise.sets.first)
+        corrected.actualReps = 9
+
+        model.update(corrected, at: exercise.position)
+
+        #expect(model.state.outcome?.finishKind == .full)
+        #expect(try store.outcome(dayID: day.id) != nil)
+    }
+
     @Test("Starting over leaves a standing substitute in place")
     func startingOverLeavesAStandingSubstituteInPlace() throws {
         let substituteID = try swapped()

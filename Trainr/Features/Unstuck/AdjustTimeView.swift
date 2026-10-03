@@ -9,18 +9,25 @@ struct AdjustTimeView: View {
     var onKeepPlan: () -> Void = {}
     var onBack: () -> Void = {}
 
+    // The number pad has no return key, and a field left focused is restored as
+    // first responder when the review is popped, over a footer that no longer
+    // lifts for it.
+    @FocusState private var isMinutesFocused: Bool
+
     private var customMinutes: Binding<String> {
         Binding(get: { state.customMinutesText }, set: onTypeMinutes)
     }
 
     var body: some View {
-        ScreenScaffold(onBack: onBack) {
+        ScreenScaffold(onBack: back) {
             VStack(spacing: Spacing.tight) {
                 PrimaryButton(
                     title: L10n.showRecommendation,
-                    isEnabled: state.canShowRecommendation,
-                    action: onShowRecommendation
-                )
+                    isEnabled: state.canShowRecommendation
+                ) {
+                    isMinutesFocused = false
+                    onShowRecommendation()
+                }
                 QuietAction(title: L10n.keepTodaysPlan, action: onKeepPlan)
             }
         } content: {
@@ -46,6 +53,7 @@ struct AdjustTimeView: View {
                 AppTextField(
                     placeholder: L10n.adjustTimeOther, text: customMinutes, keyboard: .numberPad
                 )
+                .focused($isMinutesFocused)
                 .padding(.top, Spacing.small)
                 FieldError(message: state.hasMinutesError ? L10n.adjustTimeRangeError : nil)
                 if let shortest = state.shortestMinutes {
@@ -59,6 +67,17 @@ struct AdjustTimeView: View {
                 remember
             }
         }
+        .toolbar {
+            ToolbarItemGroup(placement: .keyboard) {
+                Spacer()
+                Button(L10n.done) { isMinutesFocused = false }
+            }
+        }
+    }
+
+    private func back() {
+        isMinutesFocused = false
+        onBack()
     }
 
     @ViewBuilder

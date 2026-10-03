@@ -24,6 +24,7 @@ nonisolated struct RoutineDetailState: Equatable, Sendable {
     var activeAdjustment: AppliedAdjustment?
     var adjustedBanner: AdjustedBannerUi?
     var isShowingAdjustSheet = false
+    var isPickingExercise = false
     var scrollToPosition: Int?
     var undoKeptSets: Int?
     // The same estimate the plan card and the time presets use; nil only
@@ -40,6 +41,7 @@ nonisolated struct RoutineDetailState: Equatable, Sendable {
 nonisolated enum AdjustmentReturn: Equatable, Sendable {
     case reload
     case finishEarly
+    case guide
 }
 
 nonisolated struct SessionSavedEvent: Equatable, Sendable {
@@ -124,7 +126,9 @@ final class RoutineDetailModel {
         state.completesTheWeek = Self.completesTheWeek(week.days.map(\.status), dayNumber: index + 1)
         state.outcome = dependencies.attempt("outcome", { try store.outcome(dayID: day.id) })
         state.activeAdjustment = adjustment
-        state.adjustedBanner = adjustment.map { banner(for: $0.proposal) }
+        state.adjustedBanner = adjustment.map {
+            AdjustedBannerUi($0.proposal, day: day, catalog: dependencies.catalog)
+        }
         // The note belongs to one undo, not to whatever the day shows next.
         state.undoKeptSets = nil
         state.isLoaded = true
@@ -134,10 +138,19 @@ final class RoutineDetailModel {
 
     func openAdjustSheet() {
         state.isShowingAdjustSheet = true
+        state.isPickingExercise = false
+    }
+
+    // A note asking how a movement is done has already answered the sheet's
+    // first question, so it opens on the exercises.
+    func openExercisePicker() {
+        state.isShowingAdjustSheet = true
+        state.isPickingExercise = true
     }
 
     func dismissAdjustSheet() {
         state.isShowingAdjustSheet = false
+        state.isPickingExercise = false
     }
 
     // "Show me how" is the existing tutorial on the card, not a new screen.
@@ -145,6 +158,7 @@ final class RoutineDetailModel {
         guard let exercise = state.routine.exercises.first(where: { $0.position == position })
         else { return }
         state.isShowingAdjustSheet = false
+        state.isPickingExercise = false
         if exercise.steps.isEmpty {
             state.expandedVideo = position
         } else {
@@ -175,25 +189,6 @@ final class RoutineDetailModel {
         reopen()
         state.undoKeptSets = kept > 0 ? kept : nil
         return adjustment.proposal.proposalID
-    }
-
-    private func banner(for proposal: AdjustmentProposal) -> AdjustedBannerUi {
-        let catalog = dependencies.catalog
-        if let replaced = proposal.changes.first(where: { $0.kind == .replaceUnperformed }) {
-            return AdjustedBannerUi(
-                kind: .replaced,
-                fromName: catalog[replaced.before.catalogKey]?.name ?? "",
-                toName: replaced.after.flatMap { catalog[$0.catalogKey]?.name } ?? ""
-            )
-        }
-        var regions: [MuscleRegion] = []
-        for region in proposal.changes.compactMap({ catalog[$0.before.catalogKey]?.primary.region })
-        where !regions.contains(region) {
-            regions.append(region)
-        }
-        guard !proposal.changes.contains(where: { $0.kind == .omitUnperformed }), !regions.isEmpty
-        else { return AdjustedBannerUi(kind: .reducedSession) }
-        return AdjustedBannerUi(kind: .lessWorkForRegions, regions: regions)
     }
 
     // MARK: - Editing
@@ -348,7 +343,7 @@ final class RoutineDetailModel {
     // The day's status follows from its exercises, so persistDayStatus moves it
     // back out of completed without being told to.
     func clearProgress() {
-        reopen()
+        reopen(anyOutcome: true)
         cancelTick()
         state.routine = state.routine.clearingProgress()
         state.timer = nil
@@ -453,9 +448,10 @@ final class RoutineDetailModel {
 
     // New work on a day finished early opens it again: the partial outcome goes,
     // and the status follows the sets until the day is finished once more. A
-    // corrected number is not new work, so it leaves the day closed.
-    private func reopen() {
-        guard state.outcome?.finishKind == .partial, let day = storedDay,
+    // corrected number is not new work, so it leaves the day closed; starting
+    // over is, and takes a full outcome with it.
+    private func reopen(anyOutcome: Bool = false) {
+        guard let kind = state.outcome?.finishKind, anyOutcome || kind == .partial, let day = storedDay,
               dependencies.attempt("deleteOutcome", { try dependencies.store.deleteOutcome(dayID: day.id) }) != nil
         else { return }
         state.outcome = nil

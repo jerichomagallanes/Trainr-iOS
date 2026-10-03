@@ -1147,17 +1147,6 @@
         }
       }
     },
-    "context_hint_guide": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Trainr can't coach form yet. Pick what to change below."
-          }
-        }
-      }
-    },
     "context_option_equipment": {
       "extractionState": "manual",
       "localizations": {
@@ -4883,13 +4872,13 @@
         }
       }
     },
-    "region_other": {
+    "region_other_label": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "other"
+            "value": "conditioning"
           }
         }
       }

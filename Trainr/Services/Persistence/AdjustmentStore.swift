@@ -276,6 +276,7 @@ final class AdjustmentStore {
         let omitted = Dictionary(
             grouping: added.sets.filter { !$0.isCompleted && $0.omittedBy != nil }, by: \.setNumber
         )
+        var restored = false
         for (index, set) in after.sets.enumerated() where !live.contains(index + 1) {
             if let row = omitted[index + 1]?.min(by: { $0.id.uuidString < $1.id.uuidString }) {
                 row.targetReps = set.targetReps
@@ -287,8 +288,11 @@ final class AdjustmentStore {
                 context.insert(record)
                 record.exercise = added
             }
+            restored = true
         }
         added.setCount = after.sets.count
+        // An undo that kept it ticked it off; a set put back is work still to do.
+        if restored { added.isCompleted = false }
         return added.id
     }
 
@@ -319,6 +323,8 @@ final class AdjustmentStore {
         }
         for set in exercise.sets.filter({ !$0.isCompleted }) { context.delete(set) }
         exercise.setCount = performed.count
+        // Nothing unperformed is left, so the row the list counts has to agree.
+        exercise.isCompleted = true
         return performed.count
     }
 
