@@ -130,10 +130,10 @@ nonisolated enum IntentValidator {
     }
 
     private static func actionableFacts(_ extraction: IntentExtraction) -> ActionableFacts {
-        let budget = extraction.timeBudget.flatMap { $0.scope == .unknown ? nil : $0 }
+        let budget = extraction.timeBudget
         return ActionableFacts(
             minutes: budget?.minutes,
-            scope: budget?.scope,
+            scope: budget.flatMap { $0.scope == .unknown ? nil : $0.scope },
             equipmentMention: extraction.equipmentMention,
             memoryCandidate: extraction.memoryCandidate,
             painConcern: extraction.concern == .painOrUnclearDiscomfort

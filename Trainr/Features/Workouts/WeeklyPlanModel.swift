@@ -15,6 +15,7 @@ nonisolated struct WeeklyPlanDay: Identifiable, Equatable, Sendable {
     var isToday = false
     var isPast = false
     var finishKind: FinishKind?
+    var isAdjusted = false
     var derived: DerivedDay?
 
     var id: UUID { day.id }
@@ -64,6 +65,7 @@ final class WeeklyPlanModel {
     private let dependencies: AppDependencies
     private let requestedWeekNumber: Int?
     private var finishKinds: [UUID: FinishKind] = [:]
+    private var adjustedDayIDs: Set<UUID> = []
     private var user: UserProfile?
 
     init(dependencies: AppDependencies, weekNumber: Int? = nil) {
@@ -82,12 +84,16 @@ final class WeeklyPlanModel {
             state = WeeklyPlanState(hasLoaded: true, hasPlan: false)
             return
         }
-        let outcomes = dependencies.attempt("outcomes", {
-            try dependencies.store.outcomes(dayIDs: stored.workoutDays.map(\.id))
-        }) ?? []
+        let dayIDs = stored.workoutDays.map(\.id)
+        let store = dependencies.store
+        let outcomes = dependencies.attempt("outcomes", { try store.outcomes(dayIDs: dayIDs) }) ?? []
         finishKinds = Dictionary(
             outcomes.map { ($0.dayID, $0.finishKind) }, uniquingKeysWith: { first, _ in first }
         )
+        let adjustments = dependencies.attempt("activeAdjustments", {
+            try store.activeAdjustments(dayIDs: dayIDs)
+        }) ?? []
+        adjustedDayIDs = Set(adjustments.map(\.dayID))
         state = Self.state(
             for: stored,
             isCurrentWeek: stored.weekNumber == newest?.weekNumber,
@@ -95,7 +101,8 @@ final class WeeklyPlanModel {
             // is always finished, and that says nothing about whether the plan
             // is ready for another.
             canAddWeek: newest?.isReadyForTheNextWeek() ?? false,
-            finishKinds: finishKinds
+            finishKinds: finishKinds,
+            adjustedDayIDs: adjustedDayIDs
         )
         .deriving(user: user, catalog: dependencies.catalog)
         readMemory()
@@ -135,7 +142,7 @@ final class WeeklyPlanModel {
         moved.workoutDays = reordered.sorted { $0.dayNumber < $1.dayNumber }
         state = Self.state(
             for: moved, isCurrentWeek: state.isCurrentWeek, canAddWeek: state.canAddWeek,
-            finishKinds: finishKinds
+            finishKinds: finishKinds, adjustedDayIDs: adjustedDayIDs
         )
         .deriving(user: user, catalog: dependencies.catalog)
 
@@ -179,6 +186,7 @@ final class WeeklyPlanModel {
         // week added while another is being trained would move home onto it.
         canAddWeek: Bool? = nil,
         finishKinds: [UUID: FinishKind] = [:],
+        adjustedDayIDs: Set<UUID> = [],
         now: Date = Date(),
         calendar: Calendar = .current
     ) -> WeeklyPlanState {
@@ -196,7 +204,8 @@ final class WeeklyPlanModel {
                     date: date,
                     isToday: midnight == today,
                     isPast: midnight < today,
-                    finishKind: finishKinds[day.id]
+                    finishKind: finishKinds[day.id],
+                    isAdjusted: adjustedDayIDs.contains(day.id)
                 )
             },
             weekStart: start,

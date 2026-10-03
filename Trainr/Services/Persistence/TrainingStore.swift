@@ -396,6 +396,16 @@ extension TrainingStore {
             .adjustment()
     }
 
+    func activeAdjustments(dayIDs: [UUID]) throws -> [AppliedAdjustment] {
+        let wanted = Set(dayIDs)
+        guard !wanted.isEmpty else { return [] }
+        return try context.fetch(FetchDescriptor<WorkoutDayRecord>(
+            predicate: #Predicate { wanted.contains($0.id) }
+        ))
+        .flatMap { $0.adjustments.filter { $0.undoneAt == nil } }
+        .map { try $0.adjustment() }
+    }
+
     func adjustments(dayID: UUID) throws -> [AppliedAdjustment] {
         try dayRecord(id: dayID)?.adjustments
             .sorted { ordered($0, $1) }

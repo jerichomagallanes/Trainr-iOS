@@ -210,6 +210,28 @@ struct AdjustmentModelContextTests {
         #expect(model.state.customMinutesText == String(minutes))
     }
 
+    @Test("A number with no scope word still reaches the time screen")
+    func aNumberWithNoScopeWordStillReachesTheTimeScreen() async throws {
+        let note = "I only have 30 minutes today"
+        let answer = try interpreted(
+            note,
+            extracted(
+                intent: .lessTime,
+                timeBudget: TimeBudgetMention(minutes: 30, scope: .unknown),
+                clarification: .durationScope,
+                evidence: [Evidence(field: .timeBudget, quote: "30 minutes today")]
+            )
+        )
+        let model = try model(interpreter: ReadyInterpreter(answer))
+        model.typeNote(note)
+
+        #expect(await model.chooseFromContext(.other) == .time)
+
+        #expect(model.state.scope == .wholeSession)
+        #expect(model.state.selectedMinutes == 30)
+        #expect(model.state.canShowRecommendation)
+    }
+
     @Test("A whole-session number is not carried onto a remaining screen")
     func aWholeSessionNumberIsNotCarriedOntoARemainingScreen() async throws {
         let model = try model(Self.partlyDoneDay(), interpreter: ReadyInterpreter(try timeAnswer()))

@@ -26,6 +26,7 @@ nonisolated struct NoChangeReview: Equatable, Sendable {
     var priorityName: String?
     var goal: FitnessGoal
     var plannedMinutes: Int
+    var hasPerformedWork: Bool
 }
 
 nonisolated struct TradeoffUi: Equatable, Hashable, Sendable {
@@ -61,7 +62,8 @@ nonisolated extension PolicyDecision {
             .noChange(
                 NoChangeReview(
                     priorityName: nil, goal: goal,
-                    plannedMinutes: estimateMinutes ?? plannedMinutes
+                    plannedMinutes: estimateMinutes ?? plannedMinutes,
+                    hasPerformedWork: hasPerformedWork
                 )
             )
         case let .noFeasibleChange(reason, minimumMinutes):

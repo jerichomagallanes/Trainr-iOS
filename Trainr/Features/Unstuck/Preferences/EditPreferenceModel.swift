@@ -73,13 +73,12 @@ final class EditPreferenceModel {
         }
         stored = existing
 
-        let presets = TimePresets.forPlanned(profile.workoutDuration)
+        let presets = Set(TimePresets.forPlanned(profile.workoutDuration) + [existing.minutes])
             .filter(TimePresets.isSupported)
+            .sorted()
         state.presets = presets
         state.weekdayName = WorkoutDateFormatter.weekdayName(iso: existing.weekday)
         state.selectedMinutes = existing.minutes
-        // A stored limit that is no preset has to show in the field rather than
-        // leave the screen looking unanswered.
         state.customMinutesText = presets.contains(existing.minutes) ? "" : String(existing.minutes)
         state.isLoaded = true
     }

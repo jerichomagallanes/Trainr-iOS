@@ -28,6 +28,16 @@ struct WeeklyPlanModelTests {
         #expect(!state.days[2].isPast && !state.days[2].isToday)
     }
 
+    @Test("A day with an adjustment standing is marked adjusted")
+    func aDayWithAnAdjustmentStandingIsMarkedAdjusted() throws {
+        let days = [day(1), day(3), day(5)]
+        let state = WeeklyPlanModel.state(
+            for: plan(days, start: calendar.startOfDay(for: Date())), adjustedDayIDs: [days[1].id]
+        )
+
+        #expect(state.days.filter(\.isAdjusted).map(\.day.id) == [days[1].id])
+    }
+
     @Test("An unfinished day in the past is missed; a finished one is not")
     func missedIsDerivedRatherThanStored() throws {
         let start = calendar.startOfDay(for: Date())
