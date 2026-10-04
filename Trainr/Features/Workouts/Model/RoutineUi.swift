@@ -29,8 +29,21 @@ nonisolated struct RoutineUi: Equatable, Sendable {
         mapping(position) { $0.isCompleted ? $0.notLogged() : $0.loggedAsPrescribed() }
     }
 
-    func markCompleted(at position: Int) -> RoutineUi {
-        mapping(position) { $0.loggedAsPrescribed() }
+    // The timer measured one span of time, so it may fill the one set that span
+    // was: never a second set, never a rep or a weight, and it ticks nothing.
+    func loggingMeasuredSeconds(_ seconds: Int, at position: Int) -> RoutineUi {
+        mapping(position) { exercise in
+            guard let measured = exercise.measuredSet else { return exercise }
+            var logged = exercise
+            logged.sets = exercise.sets.map { set in
+                guard set.setNumber == measured.setNumber else { return set }
+                var filled = set
+                filled.actualSeconds = seconds
+                filled.actualOrigin = .measured
+                return filled
+            }
+            return logged
+        }
     }
 
     func updating(_ set: ExerciseSet, at position: Int) -> RoutineUi {

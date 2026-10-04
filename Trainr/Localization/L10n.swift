@@ -571,6 +571,7 @@ nonisolated enum L10n {
     static var thingsYouAskedToRemember: String { String(localized: "things_you_asked_to_remember") }
     static var timeColumn: String { String(localized: "time_column") }
     static var timeForWholeWorkout: String { String(localized: "time_for_whole_workout") }
+    static var timerFinished: String { String(localized: "timer_finished") }
     static var timerPaused: String { String(localized: "timer_paused") }
     static var todayOnly: String { String(localized: "today_only") }
     static var todaysAdjustment: String { String(localized: "todays_adjustment") }

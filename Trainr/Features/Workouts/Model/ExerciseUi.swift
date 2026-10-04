@@ -28,6 +28,15 @@ nonisolated struct ExerciseUi: Identifiable, Equatable, Sendable {
     var isEstimated: Bool {
         measure == .weightAndReps && previousSets.isEmpty && sets.contains { $0.targetWeightKg != nil }
     }
+
+    // The one set a countdown may fill: a single span of time, neither held
+    // already nor ticked.
+    var measuredSet: ExerciseSet? {
+        guard measure == .duration, sets.count == 1, let only = sets.first,
+              only.actualSeconds == nil, !only.isCompleted
+        else { return nil }
+        return only
+    }
 }
 
 // A countdown that knows when it ends rather than counting ticks: a late tick,
@@ -39,16 +48,20 @@ nonisolated struct ExerciseTimerUi: Equatable, Sendable {
     var totalSeconds: Int
     // Nil while paused, when remainingSeconds is the truth instead.
     var endsAt: Date?
+    // Ran out rather than was stopped: it stays on the row at 0:00 saying so,
+    // and offers no way to carry on, because there is nothing left to count.
+    var isFinished = false
 
     init(
         position: Int, remainingSeconds: Int, isRunning: Bool,
-        totalSeconds: Int? = nil, endsAt: Date? = nil
+        totalSeconds: Int? = nil, endsAt: Date? = nil, isFinished: Bool = false
     ) {
         self.position = position
         self.remainingSeconds = remainingSeconds
         self.isRunning = isRunning
         self.totalSeconds = totalSeconds ?? remainingSeconds
         self.endsAt = endsAt
+        self.isFinished = isFinished
     }
 
     static func running(position: Int, totalSeconds: Int, from now: Date) -> ExerciseTimerUi {
@@ -80,10 +93,18 @@ nonisolated struct ExerciseTimerUi: Equatable, Sendable {
         isRunning = true
     }
 
+    mutating func finish() {
+        remainingSeconds = 0
+        endsAt = nil
+        isRunning = false
+        isFinished = true
+    }
+
     mutating func reset() {
         remainingSeconds = totalSeconds
         endsAt = nil
         isRunning = false
+        isFinished = false
     }
 
     var display: String { SetFormatting.seconds(remainingSeconds) }

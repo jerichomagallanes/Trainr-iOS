@@ -25,6 +25,7 @@ struct AppTextField: View {
                     .strokeBorder(isFocused ? Color.focus : .outlineControl, lineWidth: 1)
             }
             .tint(.focus)
+            .keyboardDone(whenFocused: isFocused && keyboard.isNumeric) { isFocused = false }
     }
 }
 

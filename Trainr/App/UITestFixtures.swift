@@ -40,6 +40,8 @@ enum UITestFixtures {
             try? store.savePlan(week(1, for: user, startingDaysAgo: 9, shape: .midWeek))
         case "lastDayLeft":
             try? store.savePlan(week(1, for: user, startingDaysAgo: 4, shape: .lastDayLeft))
+        case "shortTimers":
+            try? store.savePlan(timedWeek(for: user))
         default:
             assertionFailure("Unknown fixture \(name)")
         }
@@ -196,6 +198,37 @@ enum UITestFixtures {
             return shaped
         }
         return plan
+    }
+
+    // A countdown short enough for a test to sit through, on a hold that is one
+    // set of its own, beside work counted in reps that a countdown may not fill.
+    private static func timedWeek(for user: UserProfile) -> WeeklyPlan {
+        WeeklyPlan(
+            userID: user.id,
+            weekNumber: 1,
+            title: "Strength Foundations",
+            startDate: WorkoutWeek.startOfDay(),
+            workoutDays: [
+                WorkoutDay(
+                    dayNumber: 1,
+                    title: "Timed Core",
+                    duration: 10,
+                    exerciseCount: 2,
+                    exercises: [
+                        WorkoutExercise(
+                            exerciseKey: "plank", name: "Plank", measure: .duration,
+                            sets: [ExerciseSet(setNumber: 1)],
+                            durationMinutes: 1
+                        ),
+                        WorkoutExercise(
+                            exerciseKey: "bicep_curl", name: "Bicep Curls", measure: .reps,
+                            sets: [ExerciseSet(setNumber: 1, targetReps: 10)],
+                            durationMinutes: 1
+                        )
+                    ]
+                )
+            ]
+        )
     }
 
     // Day 3's unperformed work folded into the unstarted day, so 35 minutes is a real cut.

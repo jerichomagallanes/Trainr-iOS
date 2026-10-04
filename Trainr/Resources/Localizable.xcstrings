@@ -5578,6 +5578,17 @@
         }
       }
     },
+    "timer_finished": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Time is up. Tick the set when you are done."
+          }
+        }
+      }
+    },
     "timer_paused": {
       "extractionState": "manual",
       "localizations": {

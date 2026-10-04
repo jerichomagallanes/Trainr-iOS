@@ -5,6 +5,7 @@ import Foundation
 nonisolated enum ActualOrigin: String, Codable, CaseIterable, Sendable {
     case none = "NONE"
     case typed = "TYPED"
+    case measured = "MEASURED"
     case confirmedTarget = "CONFIRMED_TARGET"
     case legacyUnknown = "LEGACY_UNKNOWN"
 }

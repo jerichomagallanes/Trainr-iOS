@@ -11,6 +11,7 @@ struct ScreenContent<Content: View>: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.horizontal, Spacing.large)
+            .dismissesKeyboardOnTap()
         }
         .padding(.vertical, Spacing.medium)
         .scrollDismissesKeyboard(.interactively)

@@ -106,7 +106,7 @@ struct RoutineUiTests {
         let start = routine(sets: [set(1)])
         #expect(start.totalMinutes == 15)
         #expect(start.completionPercentage == 0)
-        #expect(start.markCompleted(at: 1).completionPercentage == 50)
+        #expect(start.toggleCompleted(at: 1).completionPercentage == 50)
         #expect(start.completingAll().isComplete)
     }
 
@@ -208,5 +208,69 @@ struct RoutineUiTests {
 
         #expect(RoutineDetailModel.completesTheWeek(days.map(\.status), dayNumber: 2))
         #expect(!RoutineDetailModel.completesTheWeek(days.map(\.status), dayNumber: 1))
+    }
+
+    // MARK: - What a countdown may write
+
+    private func timedRoutine(sets: Int, seconds: Int = 60) -> RoutineUi {
+        RoutineUi(
+            title: "Cardio & Core",
+            exercises: [
+                ExerciseUi(
+                    position: 1, name: "Plank", description: "", minutes: 5, measure: .duration,
+                    sets: (1...sets).map { ExerciseSet(setNumber: $0, targetSeconds: seconds) }
+                )
+            ]
+        )
+    }
+
+    @Test("The time measured fills the one set it measured and ticks nothing")
+    func measuredTimeFillsOneSet() throws {
+        let logged = timedRoutine(sets: 1, seconds: 300).loggingMeasuredSeconds(240, at: 1)
+
+        let exercise = try #require(logged.exercises.first)
+        let set = try #require(exercise.sets.first)
+        #expect(set.actualSeconds == 240)
+        #expect(set.targetSeconds == 300)
+        #expect(set.actualReps == nil)
+        #expect(set.actualWeightKg == nil)
+        #expect(!set.isCompleted)
+        #expect(!exercise.isCompleted)
+        #expect(set.actualOrigin == .measured)
+    }
+
+    // One countdown ran, so it is evidence for one set and not for several.
+    @Test("A timed exercise of several sets is left alone")
+    func severalTimedSetsAreLeftAlone() {
+        let routine = timedRoutine(sets: 3)
+
+        #expect(routine.loggingMeasuredSeconds(240, at: 1) == routine)
+    }
+
+    @Test("A set already timed is not overwritten")
+    func anAlreadyTimedSetIsKept() {
+        let logged = timedRoutine(sets: 1).loggingMeasuredSeconds(240, at: 1)
+
+        #expect(logged.loggingMeasuredSeconds(90, at: 1) == logged)
+    }
+
+    // Ticking is the person saying the set is done; a countdown ending after
+    // that may not write a number onto it.
+    @Test("A set already ticked is not filled by the timer")
+    func aTickedSetIsNotFilled() throws {
+        let start = timedRoutine(sets: 1)
+        var ticked = try #require(start.exercises.first?.sets.first)
+        ticked.isCompleted = true
+        let marked = start.updating(ticked, at: 1)
+
+        #expect(marked.loggingMeasuredSeconds(240, at: 1) == marked)
+    }
+
+    @Test("An exercise counted in reps is never filled by the timer")
+    func repsAreNeverFilledByTheTimer() {
+        let start = routine(sets: [set(1), set(2)])
+
+        #expect(start.loggingMeasuredSeconds(240, at: 1) == start)
+        #expect(start.loggingMeasuredSeconds(240, at: 2) == start)
     }
 }
