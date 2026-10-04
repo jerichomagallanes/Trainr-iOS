@@ -2,7 +2,7 @@ import Foundation
 
 // A session is a time budget, and rest spends most of it. Heavy strength work
 // asks 3-5 minutes between sets (ACSM 2009; Schoenfeld 2016), so half an hour
-// buys six working sets.
+// buys far fewer sets than a circuit does.
 nonisolated enum SessionBudget {
 
     // Warm-up, changing, and the walk between stations.
@@ -35,10 +35,16 @@ nonisolated enum SessionBudget {
         }
     }
 
+    // A bound on volume, not the measure of the day. Rest falls between the
+    // sets of a movement, not after its last one, where the walk to the next
+    // station replaces it; counted after every set this stops being a bound
+    // and becomes the limit a day halts at, well short of the answer.
     static func maxSetsPerSession(_ user: UserProfile) -> Int {
+        let movements = SessionShape.forGoal(user.fitnessGoal).slotCount
+        let rest = restSeconds(for: user.fitnessGoal, role: .isolation)
         let usableSeconds = (user.workoutDuration - overheadMinutes) * 60
-        let perSet = workSecondsPerSet + restSeconds(for: user.fitnessGoal)
-        return max(floorSets, usableSeconds / perSet)
+            - (movements - 1) * SessionMinutes.transitionSeconds + movements * rest
+        return max(floorSets, usableSeconds / (workSecondsPerSet + rest))
     }
 
     // The session length is what the client answered; this is the point past

@@ -143,6 +143,49 @@ struct PlanSkeletonBuilderTests {
         }
     }
 
+    // The gap this closes: ninety minutes of muscle gain with a barbell and
+    // dumbbells was built as a sixty-seven-minute day, a quarter of the answer
+    // missing because the skeleton never asked for the sets the budget already
+    // allowed. A training day now reaches the answer wherever the split holds
+    // enough honest work to fill it, which at 30, 45 and 60 minutes it does.
+    @Test func aTrainingDayIsBuiltToTheSessionLengthThatWasAskedFor() {
+        for goal in [FitnessGoal.muscleGain, .strength] {
+            for minutes in [30, 45, 60] {
+                let answer = user(goal: goal, days: 7, minutes: minutes, kit: [.barbell, .dumbbell])
+                for day in build(answer).days where day.focus.isHard {
+                    #expect((minutes * 9 / 10...minutes * 11 / 10).contains(day.minutes),
+                            "\(goal) \(minutes)m \(day.id)")
+                }
+            }
+        }
+    }
+
+    // Ninety minutes is more than eight movements of muscle gain honestly
+    // hold, so the day is left at what it really contains rather than padded
+    // with sets nobody asked for, and the setup screen says so.
+    @Test func anAnswerTheSplitCannotFillIsLeftShortRatherThanPadded() {
+        let days = build(user(goal: .muscleGain, days: 7, minutes: 90)).days
+
+        #expect((days.map(\.minutes).max() ?? 0) < 90 * 9 / 10)
+        for slot in days.flatMap(\.slots) {
+            #expect(slot.sets <= Self.mostHonestSets, "\(slot.id)")
+        }
+    }
+
+    // Where a day cannot be filled it is left short rather than padded, and
+    // nothing is ever built past the length that was asked for by more than
+    // the tenth allowed either way: dropping a whole movement to save a single
+    // minute costs the client more than the minute does.
+    @Test func noDayIsEverBudgetedPastTheAnswer() {
+        for user in everyAnswer() {
+            for day in build(user).days {
+                let place = "\(user.fitnessGoal) \(user.workoutDaysPerWeek)d \(user.workoutDuration)m "
+                    + "\(user.availableEquipment) \(day.id)"
+                #expect(day.minutes <= user.workoutDuration * 11 / 10, "\(place)")
+            }
+        }
+    }
+
     // A full-body week has its press and its pull in the second and third
     // slots, not the first.
     @Test func aFullGymWeekCoversASquatAPressAndAPull() {
@@ -204,4 +247,8 @@ struct PlanSkeletonBuilderTests {
     @Test func theWeekIsTitledForWhoItIsFor() {
         #expect(build(user(experience: .beginner)).title == "Beginner Muscle Building")
     }
+
+    // The most sets the muscle-gain shape prescribes for one movement, plus the
+    // two a long session may stretch it by.
+    private static let mostHonestSets = 6
 }

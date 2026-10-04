@@ -542,6 +542,9 @@ nonisolated enum L10n {
     static var seeExactChanges: String { String(localized: "see_exact_changes") }
     static var selectDaysPlaceholder: String { String(localized: "select_days_placeholder") }
     static var sessionDuration: String { String(localized: "session_duration") }
+    static func sessionsFallShortMessage(_ p1: Int) -> String {
+        String.localizedStringWithFormat(String(localized: "sessions_fall_short_message"), p1)
+    }
     static var setColumn: String { String(localized: "set_column") }
     static var setUpYourWorkout: String { String(localized: "set_up_your_workout") }
     static func setsFromToFormat(_ p1: Int, _ p2: Int) -> String {

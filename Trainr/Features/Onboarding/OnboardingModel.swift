@@ -36,6 +36,8 @@ final class OnboardingModel {
     // screen, so a chip can never lead to an empty week.
     let stockedEquipment: Set<Equipment>
 
+    private let skeletons: PlanSkeletonBuilder
+
     // One plan at a time; the model outlives the screen, so a rerun must not begin complete.
     private var isWorking = false
     // The request has no cancellation point of its own; a run nobody awaits must not write.
@@ -46,9 +48,29 @@ final class OnboardingModel {
         store = dependencies.store
         planGenerator = dependencies.planGenerator
         stockedEquipment = Set(dependencies.catalog.all.map(\.equipment))
+        skeletons = PlanSkeletonBuilder(catalog: dependencies.catalog)
         if let stored = dependencies.attempt("currentUser", { try store.currentUser() }) {
             profile = stored
         }
+    }
+
+    // The longest session these answers can actually build, so a length no day
+    // of the split can fill is said on the screen that asks for it rather than
+    // quietly delivered two thirds of. The longest, because a recovery day is
+    // meant to be short and is no sign the answer cannot be met.
+    func longestSessionMinutes(equipment: [Equipment], daysPerWeek: Int, duration: Int) async -> Int {
+        var answers = profile
+        answers.availableEquipment = equipment
+        answers.workoutDaysPerWeek = daysPerWeek
+        answers.workoutDuration = duration
+        let skeletons = skeletons
+        let weekNumber = Self.firstWeek
+        return await Task.detached {
+            let week = skeletons.build(
+                PlanRequest(user: answers, weekNumber: weekNumber, startDate: .distantPast)
+            )
+            return week.days.map(\.minutes).max() ?? duration
+        }.value
     }
 
     // Blank before answering: the profile's defaults are real values, not choices anyone made.

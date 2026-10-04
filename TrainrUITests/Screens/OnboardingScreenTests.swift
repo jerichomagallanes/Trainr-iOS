@@ -336,6 +336,26 @@ final class OnboardingScreenTests: XCTestCase {
         }
     }
 
+    // A length the week cannot fill is said on the screen that asks for it,
+    // rather than left to be found later as a day two thirds the size.
+    @MainActor
+    func testASessionLengthTheWeekCannotFillSaysSoWhereItIsChosen() {
+        app = .launched(startingAt: "setup")
+        XCTAssertTrue(app.staticTexts["SET UP YOUR WORKOUT"].waitForExistence(timeout: 20))
+        app.buttons["Bodyweight only"].tap()
+        app.buttons["Choose how many days"].tap()
+        app.buttons["3 days"].tap()
+
+        let note = app.staticTexts.matching(
+            NSPredicate(format: "label BEGINSWITH %@", "With these answers")).firstMatch
+        app.scrollUntilHittable(app.buttons["90 mins"])
+        app.buttons["90 mins"].tap()
+        XCTAssertTrue(note.waitForExistence(timeout: 10))
+
+        app.buttons["30 mins"].tap()
+        XCTAssertTrue(note.waitForNonExistence(timeout: 10))
+    }
+
     // MARK: - Limitations
 
     @MainActor

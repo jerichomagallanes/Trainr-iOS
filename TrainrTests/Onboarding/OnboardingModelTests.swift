@@ -65,6 +65,32 @@ struct OnboardingModelTests {
         #expect(model.filled(for: .setup, editing: false) != nil)
     }
 
+    // Eight movements of muscle gain do not honestly fill an hour and a half,
+    // and the screen that asks for the length is told what the sessions will
+    // really come to rather than quietly handing over two thirds of one.
+    @Test("A session length the split cannot fill is reported at what it will come to")
+    func aSessionLengthTheSplitCannotFillIsReportedAtWhatItWillComeTo() async throws {
+        let model = OnboardingModel(dependencies: try dependencies())
+        model.updateFitnessGoal(.muscleGain)
+
+        let longest = await model.longestSessionMinutes(
+            equipment: [Equipment.none], daysPerWeek: 3, duration: 90)
+
+        #expect(longest > 0)
+        #expect(longest < 90)
+    }
+
+    @Test("The answer a day can fill is reported back unchanged")
+    func theAnswerADayCanFillIsReportedBackUnchanged() async throws {
+        let model = OnboardingModel(dependencies: try dependencies())
+        model.updateFitnessGoal(.muscleGain)
+
+        let longest = await model.longestSessionMinutes(
+            equipment: [.barbell, .dumbbell], daysPerWeek: 3, duration: 45)
+
+        #expect(longest >= 45 * 9 / 10)
+    }
+
     @Test("Body units and lifting units are kept apart")
     func unitsAreSeparate() throws {
         let model = OnboardingModel(dependencies: try dependencies())

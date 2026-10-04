@@ -17,6 +17,15 @@ nonisolated enum RepWindow {
         return widened(window, for: user)
     }
 
+    // What the first week of a movement asks for: the bottom of the window,
+    // except that twelve push-ups is not where a beginner starts.
+    static func openingReps(_ user: UserProfile, _ exercise: CatalogExercise) -> Int {
+        let window = forExercise(user, exercise)
+        let beginnerBodyweight = exercise.measure == .reps
+            && user.experienceLevel == .beginner && exercise.role == .compound
+        return beginnerBodyweight ? min(window.lowerBound, beginnerBodyweightReps) : window.lowerBound
+    }
+
     // How much load a successful week adds. Bigger muscles tolerate a bigger
     // jump than a lateral raise does.
     static func loadStepFraction(_ user: UserProfile, _ exercise: CatalogExercise) -> Double {
@@ -50,6 +59,7 @@ nonisolated enum RepWindow {
         return window
     }
 
+    private static let beginnerBodyweightReps = 8
     private static let olderAdultAge = 65
     private static let minorAge = 18
     private static let cautiousStep = 0.025

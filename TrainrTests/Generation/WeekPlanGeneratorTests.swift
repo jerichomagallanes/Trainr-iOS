@@ -77,14 +77,45 @@ struct WeekPlanGeneratorTests {
         }
     }
 
-    // Weight loss takes the rest of the session as conditioning, so its
-    // sessions are the length that was asked for.
+    // Weight loss and endurance take the rest of the session as conditioning,
+    // so their sessions are the length that was asked for rather than a
+    // fraction of it. A tenth either way, not exactly: the week is cast after
+    // the day is sized, so the movement that fills a slot can cost a little
+    // more or less than the two it was budgeted against.
     @Test("A weight-loss session is about the length that was asked for")
     func weightLossFillsTheSession() async throws {
-        for requested in Constants.Workout.durationOptions {
-            let built = try #require(await plan(user(goal: .weightLoss, minutes: requested)))
-            for day in built.workoutDays {
-                #expect((requested * 3 / 4...requested).contains(day.duration), "asked for \(requested)")
+        for goal in [FitnessGoal.weightLoss, .endurance] {
+            for requested in Constants.Workout.durationOptions {
+                let built = try #require(await plan(user(goal: goal, minutes: requested)))
+                for day in built.workoutDays {
+                    #expect((requested * 9 / 10...requested * 11 / 10).contains(day.duration),
+                            "\(goal) asked for \(requested)")
+                }
+            }
+        }
+    }
+
+    // The day the client is handed is the day that was budgeted. Where the two
+    // part company a week can be built that its own plan card calls ninety
+    // minutes and its day header calls sixty.
+    @Test("Every day runs for about as long as it was budgeted for")
+    func everyDayRunsForAboutAsLongAsItWasBudgetedFor() async throws {
+        let kits: [[Equipment]] = [[Equipment.none], [.dumbbell], Equipment.allCases]
+        for goal in FitnessGoal.allCases {
+            for minutes in [30, 60, 90] {
+                for days in [3, 5, 7] {
+                    for kit in kits {
+                        let answer = user(goal: goal, days: days, minutes: minutes, kit: kit)
+                        let budgets = PlanSkeletonBuilder(catalog: catalog).build(
+                            PlanRequest(user: answer, weekNumber: 1, startDate: Date(timeIntervalSince1970: 0))
+                        ).days.reduce(into: [Int: Int]()) { $0[$1.dayNumber] = $1.minutes }
+                        for day in try #require(await plan(answer)).workoutDays {
+                            let budgeted = try #require(budgets[day.dayNumber])
+                            #expect((budgeted * 9 / 10...budgeted * 11 / 10).contains(day.duration),
+                                    "\(goal) \(days)d \(minutes)m \(kit) day \(day.dayNumber)")
+                        }
+                    }
+                }
             }
         }
     }

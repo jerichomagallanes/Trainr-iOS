@@ -5281,6 +5281,29 @@
         }
       }
     },
+    "sessions_fall_short_message": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "With these answers the longest session only fills about %lld minute."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "With these answers the longest session only fills about %lld minutes."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "set_column": {
       "extractionState": "manual",
       "localizations": {
