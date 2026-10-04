@@ -107,13 +107,17 @@ struct ExerciseCard<Extras: View>: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
 
-                // One line, for the first injury the client declared that this
-                // movement asks care with.
-                if let caution = exercise.caution {
-                    Text(caution.cautionText)
-                        .font(.body14)
+                if !exercise.cautions.isEmpty {
+                    Text(L10n.cautionTitle)
+                        .font(.labelMedium)
                         .foregroundStyle(Color.dangerInk)
                         .frame(maxWidth: .infinity, alignment: .leading)
+                    ForEach(exercise.cautions, id: \.self) { caution in
+                        Text(caution.cautionText)
+                            .font(.body14)
+                            .foregroundStyle(Color.dangerInk)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
                 }
             }
 

@@ -102,11 +102,13 @@ struct RoutineMapperTests {
     }
 
     @Test func aMovementAnInjuryAsksCareWithSaysWhichOnlyForThatClient() throws {
-        let squat = try #require(catalog.all.first { InjuryGuard.caution(for: $0, injuries: [.knee]) != nil })
+        let squat = try #require(
+            catalog.all.first { !InjuryGuard.cautions(for: $0, injuries: [.knee]).isEmpty }
+        )
         let stored = day([exercise(squat.name, key: squat.key)])
 
-        #expect(stored.toRoutineUi(catalog: catalog, injuries: [.knee]).exercises[0].caution == .knee)
-        #expect(stored.toRoutineUi(catalog: catalog).exercises[0].caution == nil)
+        #expect(stored.toRoutineUi(catalog: catalog, injuries: [.knee]).exercises[0].cautions == [.knee])
+        #expect(stored.toRoutineUi(catalog: catalog).exercises[0].cautions.isEmpty)
     }
 
     // Never lifted before means the weight is the app's guess; once there is

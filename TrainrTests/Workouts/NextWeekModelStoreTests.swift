@@ -32,6 +32,8 @@ struct NextWeekModelStoreTests {
         AppDependencies(store: store, planGenerator: generator, breadcrumbs: NoBreadcrumbs())
     }
 
+    // A finished day carries the work that finished it: the status alone is not
+    // what readiness counts.
     private func day(_ number: Int, _ status: WorkoutStatus = .notStarted) -> WorkoutDay {
         WorkoutDay(
             dayNumber: number, title: "Day \(number)", status: status, duration: 30,
@@ -40,7 +42,7 @@ struct NextWeekModelStoreTests {
                 WorkoutExercise(
                     exerciseKey: "goblet_squat", name: "Goblet Squat",
                     sets: [ExerciseSet(setNumber: 1, targetReps: 10, actualReps: 9)],
-                    durationMinutes: 10
+                    durationMinutes: 10, isCompleted: status == .completed
                 )
             ]
         )

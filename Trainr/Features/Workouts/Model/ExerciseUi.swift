@@ -18,7 +18,8 @@ nonisolated struct ExerciseUi: Identifiable, Equatable, Sendable {
     var primaryMuscle = ""
     var secondaryMuscles: [String] = []
     var steps: [String] = []
-    var caution: Injury?
+    // Every injury the client declared that this movement asks care with.
+    var cautions: [Injury] = []
     var isCompleted = false
 
     var id: Int { position }

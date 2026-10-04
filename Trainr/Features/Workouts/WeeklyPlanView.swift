@@ -8,10 +8,15 @@ struct WeeklyPlanView: View {
     // Owned here, so a screen rebuilt around it keeps the week it read.
     @State private var model: WeeklyPlanModel
     private let versionName: String
+    private let buildNumber: Int
     private let onDayTap: (WorkoutDay) -> Void
     private let onTrackProgress: () -> Void
     private let onStartWorkout: (WorkoutDay) -> Void
     private let onLeavePlanConfirmed: () -> Void
+    // Asked at the tap: a confirmation that threatens to erase everything must
+    // never be raised for something that cannot go ahead.
+    private let askBeforeNewPlan: (() -> Void) -> Void
+    private let askBeforeRewritingWeek: (() -> Void) -> Void
     private let onUpdateProfile: () -> Void
     private let onOpenPro: () -> Void
     private let onStartNextWeek: () -> Void
@@ -29,10 +34,13 @@ struct WeeklyPlanView: View {
         dependencies: AppDependencies,
         weekNumber: Int? = nil,
         versionName: String = "",
+        buildNumber: Int = 0,
         onDayTap: @escaping (WorkoutDay) -> Void = { _ in },
         onTrackProgress: @escaping () -> Void = {},
         onStartWorkout: @escaping (WorkoutDay) -> Void = { _ in },
         onLeavePlanConfirmed: @escaping () -> Void = {},
+        askBeforeNewPlan: @escaping (() -> Void) -> Void = { $0() },
+        askBeforeRewritingWeek: @escaping (() -> Void) -> Void = { $0() },
         onUpdateProfile: @escaping () -> Void = {},
         onOpenPro: @escaping () -> Void = {},
         onStartNextWeek: @escaping () -> Void = {},
@@ -47,10 +55,13 @@ struct WeeklyPlanView: View {
             initialValue: WeeklyPlanModel(dependencies: dependencies, weekNumber: weekNumber)
         )
         self.versionName = versionName
+        self.buildNumber = buildNumber
         self.onDayTap = onDayTap
         self.onTrackProgress = onTrackProgress
         self.onStartWorkout = onStartWorkout
         self.onLeavePlanConfirmed = onLeavePlanConfirmed
+        self.askBeforeNewPlan = askBeforeNewPlan
+        self.askBeforeRewritingWeek = askBeforeRewritingWeek
         self.onUpdateProfile = onUpdateProfile
         self.onOpenPro = onOpenPro
         self.onStartNextWeek = onStartNextWeek
@@ -97,11 +108,8 @@ struct WeeklyPlanView: View {
         .background(Color.surfacePage)
         .toolbar(.hidden, for: .navigationBar)
         .onAppear { model.refresh() }
-        .alert(L10n.aboutTheApp, isPresented: $showAbout) {
-            Button(L10n.close) {}
-        } message: {
-            Text(L10n.appVersionFormat(versionName) + "\n\n"
-                + L10n.appAboutMessage + "\n\n" + L10n.healthDisclaimer)
+        .sheet(isPresented: $showAbout) {
+            AboutView(versionName: versionName, buildNumber: buildNumber)
         }
         .alert(L10n.regenerateWeekTitle, isPresented: $showRegenerateDialog) {
             Button(L10n.regenerateWeekConfirm, role: .destructive, action: onRegenerateWeek)
@@ -120,7 +128,7 @@ struct WeeklyPlanView: View {
     }
 
     private var loggedWorkouts: Int {
-        state.days.count { $0.day.status == .completed }
+        state.days.count(where: \.day.countsAsCompleted)
     }
 
     // A List rather than a ScrollView: reorder by long press, edge scrolling and
@@ -231,15 +239,17 @@ struct WeeklyPlanView: View {
             // can be written again.
             if !state.canAddWeek {
                 Button(L10n.regenerateWeek) {
-                    if loggedWorkouts > 0 {
-                        showRegenerateDialog = true
-                    } else {
-                        onRegenerateWeek()
+                    askBeforeRewritingWeek {
+                        if loggedWorkouts > 0 {
+                            showRegenerateDialog = true
+                        } else {
+                            onRegenerateWeek()
+                        }
                     }
                 }
             }
             if isHome {
-                Button(L10n.regeneratePlan) { showLeaveDialog = true }
+                Button(L10n.regeneratePlan) { askBeforeNewPlan { showLeaveDialog = true } }
             }
         } label: {
             Image(systemName: "ellipsis")
@@ -369,6 +379,43 @@ struct WeeklyPlanView: View {
     private func move(from source: IndexSet, to destination: Int) {
         guard let from = source.first else { return }
         model.moveDay(from: from, to: destination > from ? destination - 1 : destination)
+    }
+}
+
+// A sheet rather than an alert: the documents have to be reachable without
+// the paywall, and an alert cannot carry a link.
+private struct AboutView: View {
+    let versionName: String
+    let buildNumber: Int
+
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(alignment: .leading, spacing: Spacing.large) {
+                    Text(L10n.appVersionFormat(versionName, buildNumber))
+                    Text(L10n.appAboutMessage)
+                    Text(L10n.healthDisclaimer)
+                    Link(L10n.proTerms, destination: ProLinks.terms)
+                        .foregroundStyle(Color.brandStrong)
+                    Link(L10n.proPrivacy, destination: ProLinks.privacy)
+                        .foregroundStyle(Color.brandStrong)
+                }
+                .font(.body16)
+                .foregroundStyle(Color.onSurface)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(Spacing.large)
+            }
+            .background(Color.surfacePage)
+            .navigationTitle(L10n.aboutTheApp)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button(L10n.close) { dismiss() }
+                }
+            }
+        }
     }
 }
 

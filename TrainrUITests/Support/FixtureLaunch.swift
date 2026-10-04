@@ -97,4 +97,10 @@ extension XCUIApplication {
     func text(containing text: String) -> XCUIElement {
         staticTexts.matching(NSPredicate(format: "label CONTAINS[c] %@", text)).firstMatch
     }
+
+    // A SwiftUI Link is a link on some iOS versions and a button on others, so
+    // a test that names one must not also name its element type.
+    func document(_ label: String) -> XCUIElement {
+        descendants(matching: .any).matching(NSPredicate(format: "label == %@", label)).firstMatch
+    }
 }

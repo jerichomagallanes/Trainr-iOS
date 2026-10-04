@@ -73,24 +73,41 @@ nonisolated enum BodyMetricsConverter {
         return cm > 0 ? String(Int(cm.rounded())) : ""
     }
 
-    // A kilogram round-tripped through pounds is a long decimal, and this field is typed into.
-    static func formatKilograms(_ kg: Double) -> String {
-        if kg.truncatingRemainder(dividingBy: 1) == 0 {
-            String(Int(kg))
-        } else {
-            String((kg * 10).rounded() / 10)
-        }
+    // The tenth the field accepts, kept in both directions: rounding pounds to a
+    // whole number on the way out loses the tenth of a kilogram on the way back.
+    static func formatWeight(_ value: Double) -> String {
+        let rounded = (value * 10).rounded() / 10
+        return rounded.truncatingRemainder(dividingBy: 1) == 0
+            ? String(Int(rounded))
+            : String(rounded)
     }
 
     static func convertWeightToImperial(_ weightKg: String) -> String {
         guard let kg = Double(weightKg) else { return "" }
         let lbs = kg * Constants.Workout.poundsPerKilogram
-        return lbs > 0 ? String(Int(lbs.rounded())) : ""
+        return lbs > 0 ? formatWeight(lbs) : ""
     }
 
     static func convertWeightToMetric(_ weightLbs: String) -> String {
         guard let lbs = Double(weightLbs) else { return "" }
         let kg = lbs / Constants.Workout.poundsPerKilogram
-        return kg > 0 ? String(Int(kg.rounded())) : ""
+        return kg > 0 ? formatWeight(kg) : ""
+    }
+
+    // What a field shows and the text it was converted from. A whole inch is
+    // coarser than a centimetre, so no pair of conversions can be each other's
+    // inverse; the text handed over is kept and given back instead.
+    nonisolated struct UnitSwap: Equatable, Sendable {
+        var shown = ""
+        var typed: String?
+    }
+
+    static func swapUnits(
+        _ current: String, last: UnitSwap, convert: (String) -> String
+    ) -> UnitSwap {
+        guard let typed = last.typed, last.shown == current else {
+            return UnitSwap(shown: convert(current), typed: current)
+        }
+        return UnitSwap(shown: typed)
     }
 }

@@ -7,8 +7,29 @@ struct WeeklyPlanModelTests {
 
     private let calendar = Calendar(identifier: .gregorian)
 
-    private func day(_ number: Int, _ status: WorkoutStatus = .notStarted) -> WorkoutDay {
-        WorkoutDay(dayNumber: number, title: "Day \(number)", status: status, duration: 45, exerciseCount: 4)
+    // What finishing a session leaves behind: the day is closed and the work is
+    // logged against it.
+    private func day(
+        _ number: Int, _ status: WorkoutStatus = .notStarted, performed: Bool? = nil
+    ) -> WorkoutDay {
+        WorkoutDay(
+            dayNumber: number, title: "Day \(number)", status: status, duration: 45,
+            exerciseCount: 4,
+            exercises: [
+                WorkoutExercise(
+                    name: "Movement", isCompleted: performed ?? (status == .completed)
+                )
+            ]
+        )
+    }
+
+    private func dayWithSetsLogged(_ number: Int) -> WorkoutDay {
+        var closedEarly = day(number, .completed, performed: false)
+        closedEarly.exercises[0].sets = [
+            ExerciseSet(setNumber: 1, isCompleted: true),
+            ExerciseSet(setNumber: 2, isCompleted: false)
+        ]
+        return closedEarly
     }
 
     private func plan(_ days: [WorkoutDay], start: Date) -> WeeklyPlan {
@@ -103,6 +124,44 @@ struct WeeklyPlanModelTests {
 
         let open = plan([day(1, .completed), day(3)], start: start)
         #expect(!open.isReadyForTheNextWeek(now: start, calendar: calendar))
+    }
+
+    // Readiness counts the outcome, so the start button must too, or a week
+    // closed with nothing logged offers neither a session nor a way on.
+    @Test("A day closed with nothing performed is still offered as the next session")
+    func aDayClosedWithNothingPerformedIsStillOffered() throws {
+        let start = calendar.startOfDay(for: Date())
+        let now = calendar.date(byAdding: .day, value: 1, to: start)!
+        let state = WeeklyPlanModel.state(
+            for: plan([day(1, .completed), day(3, .completed, performed: false)], start: start),
+            now: now, calendar: calendar
+        )
+
+        #expect(state.nextWorkout?.day.dayNumber == 3)
+        #expect(!state.canStartNextWeek)
+    }
+
+    // Finishing every day early and logging nothing is not a week of training,
+    // so it must not unlock the next one before the dates run out.
+    @Test("A week closed with nothing performed is not ready for the next one")
+    func aWeekClosedWithNothingPerformedIsNotReady() throws {
+        let start = calendar.startOfDay(for: Date())
+        let closed = plan(
+            [day(1, .completed, performed: false), day(3, .completed, performed: false)],
+            start: start
+        )
+
+        #expect(!closed.isReadyForTheNextWeek(now: start, calendar: calendar))
+    }
+
+    // Two sets of three is work done, and the exercise never ticks itself until
+    // all of them are.
+    @Test("A week closed early with sets logged is ready for the next one")
+    func aWeekClosedEarlyWithSetsLoggedIsReady() throws {
+        let start = calendar.startOfDay(for: Date())
+        let trained = plan([dayWithSetsLogged(1), dayWithSetsLogged(3)], start: start)
+
+        #expect(trained.isReadyForTheNextWeek(now: start, calendar: calendar))
     }
 
     @Test("A week whose dates have run out is ready even with days unfinished")

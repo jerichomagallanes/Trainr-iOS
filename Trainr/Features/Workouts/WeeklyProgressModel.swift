@@ -54,7 +54,7 @@ final class WeeklyProgressModel {
         of plan: WeeklyPlan, now: Date = Date(), calendar: Calendar = .current
     ) -> WeekProgressUi {
         let start = plan.startDate ?? WorkoutWeek.startOfDay(plan.createdAt, calendar: calendar)
-        let completed = plan.workoutDays.count { $0.status == .completed }
+        let completed = plan.workoutDays.count(where: \.countsAsCompleted)
         let total = plan.workoutDays.count
         // Over only once the day after it has arrived.
         let over = now >= WorkoutWeek.date(

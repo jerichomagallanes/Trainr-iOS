@@ -135,7 +135,8 @@ final class WeeklyPlanRecord {
                     DayOutline(
                         id: $0.id,
                         dayNumber: $0.dayNumber,
-                        status: WorkoutStatus(rawValue: $0.status) ?? .notStarted
+                        status: WorkoutStatus(rawValue: $0.status) ?? .notStarted,
+                        countsAsCompleted: $0.day.countsAsCompleted
                     )
                 }
         )

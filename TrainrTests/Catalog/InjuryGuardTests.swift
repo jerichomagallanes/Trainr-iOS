@@ -21,7 +21,7 @@ struct InjuryGuardTests {
     @Test func noInjuryRulesNothingOutAndCautionsNothing() {
         for exercise in [squat, bench, press] {
             #expect(!InjuryGuard.excludes(exercise, for: []))
-            #expect(InjuryGuard.caution(for: exercise, injuries: []) == nil)
+            #expect(InjuryGuard.cautions(for: exercise, injuries: []).isEmpty)
         }
     }
 
@@ -32,25 +32,40 @@ struct InjuryGuardTests {
 
     // Care rather than refusal.
     @Test func aMovementThatTouchesAnInjuryIsOfferedWithACaution() {
-        #expect(InjuryGuard.caution(for: bench, injuries: [.shoulder]) == .shoulder)
-        #expect(InjuryGuard.caution(for: squat, injuries: [.knee]) == .knee)
-        #expect(InjuryGuard.caution(for: bench, injuries: [.knee]) == nil)
+        #expect(InjuryGuard.cautions(for: bench, injuries: [.shoulder]) == [.shoulder])
+        #expect(InjuryGuard.cautions(for: squat, injuries: [.knee]) == [.knee])
+        #expect(InjuryGuard.cautions(for: bench, injuries: [.knee]).isEmpty)
     }
 
     @Test func aRuledOutMovementIsNeverAlsoCautioned() {
-        #expect(InjuryGuard.caution(for: press, injuries: [.shoulder]) == nil)
+        #expect(InjuryGuard.cautions(for: press, injuries: [.shoulder]).isEmpty)
     }
 
-    @Test func twoInjuriesThatBothTouchAMovementGiveTheOneDeclaredFirst() {
-        #expect(InjuryGuard.caution(for: squat, injuries: [.knee, .hip]) == .knee)
-        #expect(InjuryGuard.caution(for: squat, injuries: [.hip, .knee]) == .hip)
+    // No declared injury goes unheard because of what else was declared.
+    @Test func everyInjuryThatTouchesAMovementIsCautioned() {
+        #expect(InjuryGuard.cautions(for: squat, injuries: [.knee, .ankle, .hip])
+            == [.knee, .ankle, .hip])
+    }
+
+    // The client's answers arrive in whatever order they were tapped; the card
+    // must not.
+    @Test func theLinesReadNarrowestFirstWhateverOrderTheInjuriesWereDeclaredIn() {
+        let oneWay = InjuryGuard.cautions(for: squat, injuries: [.knee, .lowerBack])
+        let theOther = InjuryGuard.cautions(for: squat, injuries: [.lowerBack, .knee])
+
+        #expect(oneWay == [.knee, .lowerBack])
+        #expect(theOther == oneWay)
+    }
+
+    @Test func anInjuryDeclaredTwiceIsStillOneLine() {
+        #expect(InjuryGuard.cautions(for: squat, injuries: [.knee, .knee]) == [.knee])
     }
 
     @Test func everyInjuryCautionsAtLeastOneKindOfMovement() {
         let probes = MovementPattern.allCases.map { movement("probe", $0) }
 
         for injury in Injury.allCases {
-            #expect(probes.contains { InjuryGuard.caution(for: $0, injuries: [injury]) != nil })
+            #expect(probes.contains { !InjuryGuard.cautions(for: $0, injuries: [injury]).isEmpty })
         }
     }
 }

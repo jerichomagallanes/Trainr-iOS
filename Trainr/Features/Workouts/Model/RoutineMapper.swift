@@ -32,7 +32,7 @@ nonisolated extension WorkoutDay {
                     primaryMuscle: movement?.primary.displayText ?? "",
                     secondaryMuscles: movement?.secondary.map(\.displayText) ?? [],
                     steps: movement?.steps ?? [],
-                    caution: movement.flatMap { InjuryGuard.caution(for: $0, injuries: injuries) },
+                    cautions: movement.map { InjuryGuard.cautions(for: $0, injuries: injuries) } ?? [],
                     isCompleted: exercise.isCompleted
                 )
             }

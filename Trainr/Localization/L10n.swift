@@ -80,8 +80,8 @@ nonisolated enum L10n {
     static var anythingToChangeTitle: String { String(localized: "anything_to_change_title") }
     static var appAboutMessage: String { String(localized: "app_about_message") }
     static var appName: String { String(localized: "app_name") }
-    static func appVersionFormat(_ p1: String) -> String {
-        String.localizedStringWithFormat(String(localized: "app_version_format"), p1)
+    static func appVersionFormat(_ p1: String, _ p2: Int) -> String {
+        String.localizedStringWithFormat(String(localized: "app_version_format"), p1, p2)
     }
     static var appearance: String { String(localized: "appearance") }
     static var appearanceDark: String { String(localized: "appearance_dark") }
@@ -116,6 +116,7 @@ nonisolated enum L10n {
     static var cautionLowerBack: String { String(localized: "caution_lower_back") }
     static var cautionNeck: String { String(localized: "caution_neck") }
     static var cautionShoulder: String { String(localized: "caution_shoulder") }
+    static var cautionTitle: String { String(localized: "caution_title") }
     static var cautionWrist: String { String(localized: "caution_wrist") }
     static var changesRestKeptChooseWeight: String { String(localized: "changes_rest_kept_choose_weight") }
     static var changesRestUnchanged: String { String(localized: "changes_rest_unchanged") }

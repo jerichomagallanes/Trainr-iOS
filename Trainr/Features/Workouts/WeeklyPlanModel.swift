@@ -53,9 +53,9 @@ nonisolated struct WeeklyPlanState: Equatable, Sendable {
     // A day that has passed is offered only while the week is still running:
     // once its dates have run out that day is a record and cannot be trained.
     var nextWorkout: WeeklyPlanDay? {
-        let upcoming = days.first { !$0.isPast && $0.day.status != .completed }
+        let upcoming = days.first { !$0.isPast && !$0.day.countsAsCompleted }
         if upcoming != nil || weekHasEnded { return upcoming }
-        return days.first { $0.day.status != .completed }
+        return days.first { !$0.day.countsAsCompleted }
     }
 
     var nextWorkoutIsToday: Bool { nextWorkout?.isToday == true }

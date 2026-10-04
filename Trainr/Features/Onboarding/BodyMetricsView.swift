@@ -11,6 +11,10 @@ struct BodyMetricsView: View {
     @State private var useMetric: Bool
     @State private var heightTouched = false
     @State private var weightTouched = false
+    // Switching units must not edit the measurement: what a conversion was
+    // given is kept so the way back reads what was typed.
+    @State private var heightSwap = BodyMetricsConverter.UnitSwap()
+    @State private var weightSwap = BodyMetricsConverter.UnitSwap()
     @FocusState private var focusedField: Field?
 
     private enum Field {
@@ -40,7 +44,7 @@ struct BodyMetricsView: View {
         _weight = State(initialValue: storedWeight.map { kg in
             startsImperial
                 ? BodyMetricsConverter.convertWeightToImperial(String(kg))
-                : BodyMetricsConverter.formatKilograms(kg)
+                : BodyMetricsConverter.formatWeight(kg)
         } ?? "")
         _useMetric = State(initialValue: !startsImperial)
     }
@@ -186,13 +190,18 @@ struct BodyMetricsView: View {
     private func switchUnits(toMetric: Bool) {
         guard toMetric != useMetric else { return }
         focusedField = nil
-        if toMetric {
-            height = BodyMetricsConverter.convertHeightToMetric(height)
-            weight = BodyMetricsConverter.convertWeightToMetric(weight)
-        } else {
-            height = BodyMetricsConverter.convertHeightToImperial(height)
-            weight = BodyMetricsConverter.convertWeightToImperial(weight)
+        heightSwap = BodyMetricsConverter.swapUnits(height, last: heightSwap) {
+            toMetric
+                ? BodyMetricsConverter.convertHeightToMetric($0)
+                : BodyMetricsConverter.convertHeightToImperial($0)
         }
+        weightSwap = BodyMetricsConverter.swapUnits(weight, last: weightSwap) {
+            toMetric
+                ? BodyMetricsConverter.convertWeightToMetric($0)
+                : BodyMetricsConverter.convertWeightToImperial($0)
+        }
+        height = heightSwap.shown
+        weight = weightSwap.shown
         useMetric = toMetric
     }
 
