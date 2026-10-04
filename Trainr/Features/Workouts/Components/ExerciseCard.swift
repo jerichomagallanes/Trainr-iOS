@@ -7,6 +7,7 @@ struct ExerciseCard<Extras: View>: View {
     var onSetChanged: (ExerciseSet) -> Void = { _ in }
     var onAddSet: () -> Void = {}
     var onDeleteSet: (ExerciseSet) -> Void = { _ in }
+    var isReadOnly = false
     @ViewBuilder let extras: Extras
 
     @ScaledMetric(relativeTo: .caption) private var muscleSize = TextRole.body12.size
@@ -60,20 +61,33 @@ struct ExerciseCard<Extras: View>: View {
                 .foregroundStyle(accentInk)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
+            tick
+        }
+        .padding(.horizontal, Spacing.tight)
+        .padding(.top, Spacing.card)
+    }
+
+    @ViewBuilder
+    private var tick: some View {
+        if isReadOnly {
+            tickMark
+                .accessibilityLabel(exercise.isCompleted ? L10n.completed : L10n.notCompleted)
+        } else {
             Button(action: onToggleCompleted) {
-                Image(systemName: exercise.isCompleted ? "checkmark.square.fill" : "square")
-                    .font(.oneOff(26))
-                    .foregroundStyle(exercise.isCompleted ? Color.statusDoneInk : Color.outlineControl)
-                    .frame(width: 30, height: 30)
-                    .contentShape(.rect)
+                tickMark.contentShape(.rect)
             }
             .buttonStyle(.plain)
             .accessibilityLabel(
                 exercise.isCompleted ? L10n.markExerciseIncomplete : L10n.markExerciseComplete
             )
         }
-        .padding(.horizontal, Spacing.tight)
-        .padding(.top, Spacing.card)
+    }
+
+    private var tickMark: some View {
+        Image(systemName: exercise.isCompleted ? "checkmark.square.fill" : "square")
+            .font(.oneOff(26))
+            .foregroundStyle(exercise.isCompleted ? Color.statusDoneInk : Color.outlineControl)
+            .frame(width: 30, height: 30)
     }
 
     private func body(padding: CGFloat) -> some View {
@@ -107,7 +121,7 @@ struct ExerciseCard<Extras: View>: View {
 
             VStack(alignment: .leading, spacing: Spacing.small) {
                 // Drawn even with no sets: gating it takes the Add set button away
-                // with the last row, leaving no way to get one back.
+                // with the last row, leaving a live day no way to get one back.
                 ExerciseSetTable(
                     measure: exercise.measure,
                     sets: exercise.sets,
@@ -115,7 +129,8 @@ struct ExerciseCard<Extras: View>: View {
                     units: units,
                     onSetChanged: onSetChanged,
                     onAddSet: onAddSet,
-                    onDeleteSet: onDeleteSet
+                    onDeleteSet: onDeleteSet,
+                    isReadOnly: isReadOnly
                 )
 
                 if exercise.isEstimated {
@@ -153,7 +168,8 @@ extension ExerciseCard where Extras == EmptyView {
         onToggleCompleted: @escaping () -> Void,
         onSetChanged: @escaping (ExerciseSet) -> Void = { _ in },
         onAddSet: @escaping () -> Void = {},
-        onDeleteSet: @escaping (ExerciseSet) -> Void = { _ in }
+        onDeleteSet: @escaping (ExerciseSet) -> Void = { _ in },
+        isReadOnly: Bool = false
     ) {
         self.init(
             exercise: exercise,
@@ -162,6 +178,7 @@ extension ExerciseCard where Extras == EmptyView {
             onSetChanged: onSetChanged,
             onAddSet: onAddSet,
             onDeleteSet: onDeleteSet,
+            isReadOnly: isReadOnly,
             extras: { EmptyView() }
         )
     }

@@ -27,13 +27,17 @@ nonisolated struct RoutineDetailState: Equatable, Sendable {
     var isPickingExercise = false
     var scrollToPosition: Int?
     var undoKeptSets: Int?
+    // A day in a week that is over is a record: nothing on it may be written.
+    var isReadOnly = false
     // The same estimate the plan card and the time presets use; nil only
     // without a profile to estimate for, when the header sums the cards.
     var totalMinutes: Int?
 
     // Adjusting is offered by the work left, not by whether an outcome was
     // recorded: a day finished early still has sets to change.
-    var hasRemainingWork: Bool { outcome?.finishKind != .full && routine.hasUnperformedWork }
+    var hasRemainingWork: Bool {
+        !isReadOnly && outcome?.finishKind != .full && routine.hasUnperformedWork
+    }
 }
 
 // What the adjust flow left behind when it closed. Either way the stored day is
@@ -118,8 +122,11 @@ final class RoutineDetailModel {
         )
         state.equipment = day.derivedEquipment(dependencies.catalog)
         state.totalMinutes = day.remainingMinutes(profile, dependencies.catalog)
-        state.date = week.startDate.map { WorkoutWeek.date(of: day.dayNumber, startingFrom: $0) }
-            ?? SampleWorkoutData.date(of: day.dayNumber)
+        // Plans stored before startDate existed fall back to the sample week,
+        // the same way the plan list dates them.
+        let weekStart = week.startDate ?? SampleWorkoutData.weekStart
+        state.date = WorkoutWeek.date(of: day.dayNumber, startingFrom: weekStart)
+        state.isReadOnly = WorkoutWeek.hasEnded(weekStartingAt: weekStart)
         // "Day 2", not day 3: the design counts workout days, not weekdays.
         state.dayNumber = index + 1
         state.weekNumber = week.weekNumber
@@ -137,6 +144,7 @@ final class RoutineDetailModel {
     // MARK: - Adjusting
 
     func openAdjustSheet() {
+        guard !state.isReadOnly else { return }
         state.isShowingAdjustSheet = true
         state.isPickingExercise = false
     }
@@ -144,6 +152,7 @@ final class RoutineDetailModel {
     // A note asking how a movement is done has already answered the sheet's
     // first question, so it opens on the exercises.
     func openExercisePicker() {
+        guard !state.isReadOnly else { return }
         state.isShowingAdjustSheet = true
         state.isPickingExercise = true
     }
@@ -182,7 +191,7 @@ final class RoutineDetailModel {
     // Returns the undone cycle so the caller can hand its allowance back.
     @discardableResult
     func undoAdjustment() -> String? {
-        guard let adjustment = state.activeAdjustment else { return nil }
+        guard !state.isReadOnly, let adjustment = state.activeAdjustment else { return nil }
         let result = dependencies.adjustments.undo(adjustmentID: adjustment.id, now: Date())
         load()
         guard case let .restored(_, kept) = result else { return nil }
@@ -194,6 +203,7 @@ final class RoutineDetailModel {
     // MARK: - Editing
 
     func toggleExercise(at position: Int) {
+        guard !state.isReadOnly else { return }
         reopen()
         let routine = state.routine.toggleCompleted(at: position)
         let nowCompleted = routine.exercises.contains { $0.position == position && $0.isCompleted }
@@ -206,6 +216,7 @@ final class RoutineDetailModel {
     }
 
     func update(_ set: ExerciseSet, at position: Int) {
+        guard !state.isReadOnly else { return }
         let was = completion(at: position)
         if set.isCompleted != isTicked(setNumber: set.setNumber, at: position) { reopen() }
         state.routine = state.routine.updating(set, at: position)
@@ -221,6 +232,7 @@ final class RoutineDetailModel {
     }
 
     func addSet(at position: Int) {
+        guard !state.isReadOnly else { return }
         reopen()
         let was = completion(at: position)
         state.routine = state.routine.addingSet(at: position)
@@ -233,7 +245,8 @@ final class RoutineDetailModel {
     }
 
     func deleteSet(numbered setNumber: Int, at position: Int) {
-        guard let sets = state.routine.exercises.first(where: { $0.position == position })?.sets,
+        guard !state.isReadOnly,
+              let sets = state.routine.exercises.first(where: { $0.position == position })?.sets,
               let set = sets.first(where: { $0.setNumber == setNumber })
         else { return }
 
@@ -251,6 +264,7 @@ final class RoutineDetailModel {
     }
 
     func completeRoutine() {
+        guard !state.isReadOnly else { return }
         cancelTick()
         state.routine = state.routine.completingAll()
         state.timer = nil
@@ -271,6 +285,7 @@ final class RoutineDetailModel {
     // MARK: - Finishing early
 
     func askToFinishEarly() {
+        guard !state.isReadOnly else { return }
         state.isConfirmingFinishEarly = true
         state.saveFailed = false
     }
@@ -286,7 +301,7 @@ final class RoutineDetailModel {
     // is ticked, so the record reads back as the work actually done.
     func finishEarly() {
         // A burst of taps saves once: the event stands until the view has left.
-        guard pendingSavedEvent == nil else { return }
+        guard !state.isReadOnly, pendingSavedEvent == nil else { return }
         cancelTick()
         state.timer = nil
         guard let day = storedDay else { return }
@@ -343,6 +358,7 @@ final class RoutineDetailModel {
     // The day's status follows from its exercises, so persistDayStatus moves it
     // back out of completed without being told to.
     func clearProgress() {
+        guard !state.isReadOnly else { return }
         reopen(anyOutcome: true)
         cancelTick()
         state.routine = state.routine.clearingProgress()
@@ -367,6 +383,7 @@ final class RoutineDetailModel {
     // MARK: - Timer
 
     func startTimer(for exercise: ExerciseUi) {
+        guard !state.isReadOnly else { return }
         cancelTick()
         state.timer = .running(
             position: exercise.position,

@@ -6,6 +6,7 @@ import UIKit
 struct SwipeToDelete<Content: View>: View {
 
     var label: String
+    var enabled = true
     let onDelete: () -> Void
     @ViewBuilder let content: Content
 
@@ -15,10 +16,17 @@ struct SwipeToDelete<Content: View>: View {
     private static var actionWidth: CGFloat { 72 }
 
     var body: some View {
+        if enabled { swipeable } else { row }
+    }
+
+    // The fill belongs to the row itself: a row that refuses the swipe still
+    // sits on a card rather than on the page.
+    private var row: some View { content.background(Color.surfaceCard) }
+
+    private var swipeable: some View {
         ZStack(alignment: .trailing) {
             deleteAction
-            content
-                .background(Color.surfaceCard)
+            row
                 .offset(x: offset)
                 .gesture(
                     HorizontalPan(

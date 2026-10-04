@@ -457,4 +457,41 @@ final class RoutineDetailScreenTests: XCTestCase {
         XCTAssertEqual(app.buttons.matching(NSPredicate(format: "label == %@", "Show video tutorial")).count, 2)
         XCTAssertEqual(app.buttons.matching(NSPredicate(format: "label == %@", "How to perform")).count, 3)
     }
+
+    // Every day of this week is behind us, so the screen is the record of one.
+    @MainActor
+    private func openRecordedDay() {
+        app = .launched(.weekGoneBy)
+        XCTAssertTrue(app.staticTexts["YOUR WEEKLY WORKOUT PLAN"].waitForExistence(timeout: 20))
+        app.button(containing: "Cardio & Core").tap()
+        XCTAssertTrue(app.staticTexts["CARDIO & CORE"].waitForExistence(timeout: 5))
+    }
+
+    @MainActor
+    func testARecordOffersNothingThatWrites() {
+        openRecordedDay()
+
+        for label in [
+            "Mark exercise as complete", "Mark exercise as not complete",
+            "Mark set as complete", "Mark set as not complete",
+            "Add set", "Delete set", "Start timer", "Finish early",
+            "Start this workout over", "Need an alternative?", "Undo adjustment"
+        ] {
+            XCTAssertFalse(app.buttons[label].exists, label)
+        }
+        XCTAssertFalse(app.button(containing: "Adjust today").exists)
+        XCTAssertFalse(app.staticTexts["SLIDE TO FINISH THIS WORKOUT"].exists)
+        XCTAssertEqual(app.textFields.count, 0)
+    }
+
+    @MainActor
+    func testARecordShowsWhatWasLoggedAndHowTheWorkIsDone() {
+        openRecordedDay()
+
+        XCTAssertTrue(app.staticTexts["5:00"].exists)
+        XCTAssertTrue(app.images["Completed"].exists)
+        XCTAssertTrue(app.images["Not completed"].exists)
+        XCTAssertTrue(app.buttons["How to perform"].firstMatch.exists)
+        XCTAssertTrue(app.buttons["Show video tutorial"].firstMatch.exists)
+    }
 }

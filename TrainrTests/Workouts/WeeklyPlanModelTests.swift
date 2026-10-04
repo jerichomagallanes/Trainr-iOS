@@ -68,6 +68,33 @@ struct WeeklyPlanModelTests {
         #expect(finished.nextWorkout == nil)
     }
 
+    // The day screen reads a week that is over as a record, so nothing may send
+    // anyone to a missed session in it.
+    @Test("A week whose dates have run out offers no missed day to start")
+    func aWeekGoneByOffersNothingToTrain() throws {
+        let start = calendar.startOfDay(for: Date())
+        let now = calendar.date(byAdding: .day, value: 7, to: start)!
+        let state = WeeklyPlanModel.state(
+            for: plan([day(1), day(3), day(5)], start: start), now: now, calendar: calendar
+        )
+
+        #expect(state.weekHasEnded)
+        #expect(state.nextWorkout == nil)
+        #expect(state.canStartNextWeek)
+    }
+
+    @Test("A plan stored without a start date is read by the same fallback")
+    func aLegacyWeekIsNotStranded() throws {
+        let legacy = WeeklyPlan(
+            userID: UUID(), weekNumber: 1, title: "Week 1", workoutDays: [day(1), day(3)]
+        )
+        let state = WeeklyPlanModel.state(for: legacy, calendar: calendar)
+
+        #expect(state.weekHasEnded)
+        #expect(state.nextWorkout == nil)
+        #expect(state.canStartNextWeek)
+    }
+
     @Test("A week whose days are all done is ready for the next one")
     func readinessFollowsTheWeek() throws {
         let start = calendar.startOfDay(for: Date())
