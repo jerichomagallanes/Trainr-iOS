@@ -3,6 +3,7 @@ import SwiftUI
 struct BodyMetricsView: View {
     var isEditing = false
     let age: Int?
+    let onEntryChanged: (BodyMetricsEntry) -> Void
     let onNext: (Double, Double, UnitSystem) -> Void
     let onBack: () -> Void
 
@@ -26,27 +27,34 @@ struct BodyMetricsView: View {
         initial: UserProfile? = nil,
         age: Int? = nil,
         isEditing: Bool = false,
+        inProgress: BodyMetricsEntry? = nil,
+        onEntryChanged: @escaping (BodyMetricsEntry) -> Void = { _ in },
         onNext: @escaping (Double, Double, UnitSystem) -> Void,
         onBack: @escaping () -> Void
     ) {
         self.isEditing = isEditing
         self.age = age ?? initial?.age
+        self.onEntryChanged = onEntryChanged
         self.onNext = onNext
         self.onBack = onBack
 
         // The profile is stored in cm and kg whatever was typed, so the fields are seeded converted.
         let startsImperial = initial?.bodyUnitSystem == .imperial
         let storedHeight = (initial?.height).flatMap { $0 > 0 ? String(Int($0)) : nil } ?? ""
-        _height = State(initialValue: startsImperial
+        _height = State(initialValue: inProgress?.height ?? (startsImperial
             ? BodyMetricsConverter.convertHeightToImperial(storedHeight)
-            : storedHeight)
+            : storedHeight))
         let storedWeight = (initial?.weight).flatMap { $0 > 0 ? $0 : nil }
-        _weight = State(initialValue: storedWeight.map { kg in
+        _weight = State(initialValue: inProgress?.weight ?? (storedWeight.map { kg in
             startsImperial
                 ? BodyMetricsConverter.convertWeightToImperial(String(kg))
                 : BodyMetricsConverter.formatWeight(kg)
-        } ?? "")
-        _useMetric = State(initialValue: !startsImperial)
+        } ?? ""))
+        _useMetric = State(initialValue: inProgress?.useMetric ?? !startsImperial)
+    }
+
+    private var entry: BodyMetricsEntry {
+        BodyMetricsEntry(height: height, weight: weight, useMetric: useMetric)
     }
 
     // Validated on what the text parses to: "595" passes the imperial filter and parses to zero.
@@ -129,6 +137,7 @@ struct BodyMetricsView: View {
             if oldValue == .height { heightTouched = true }
             if oldValue == .weight { weightTouched = true }
         }
+        .onChange(of: entry, initial: true) { _, typed in onEntryChanged(typed) }
     }
 
     private var unitTabs: some View {
@@ -190,11 +199,15 @@ struct BodyMetricsView: View {
     private func switchUnits(toMetric: Bool) {
         guard toMetric != useMetric else { return }
         focusedField = nil
-        heightSwap = BodyMetricsConverter.swapUnits(height, last: heightSwap) {
-            toMetric
-                ? BodyMetricsConverter.convertHeightToMetric($0)
-                : BodyMetricsConverter.convertHeightToImperial($0)
-        }
+        heightSwap = BodyMetricsConverter.swapUnits(
+            height, last: heightSwap,
+            keeping: { BodyMetricsConverter.acceptedHeight($0, useMetric: toMetric) },
+            convert: {
+                toMetric
+                    ? BodyMetricsConverter.convertHeightToMetric($0)
+                    : BodyMetricsConverter.convertHeightToImperial($0)
+            }
+        )
         weightSwap = BodyMetricsConverter.swapUnits(weight, last: weightSwap) {
             toMetric
                 ? BodyMetricsConverter.convertWeightToMetric($0)

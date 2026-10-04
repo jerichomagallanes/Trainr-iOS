@@ -12,24 +12,28 @@ struct ProPaywallView: View {
     @State private var openQuestion: String?
     @State private var isWorking = false
     @State private var notice: String?
+    // The width a plan card needs before it has to break its own words.
+    @ScaledMetric(relativeTo: .subheadline) private var planMinWidth: CGFloat = 84
 
     var body: some View {
-        ScreenContent {
-            VStack(alignment: .leading, spacing: 0) {
-                title
-                Spacer().frame(height: Spacing.section)
-                features
-                Spacer().frame(height: Spacing.sectionGap)
-                comparison
-                Spacer().frame(height: Spacing.sectionGap)
-                questions
-                Spacer().frame(height: Spacing.sectionGap)
-                support
-                Spacer().frame(height: Spacing.large)
+        GeometryReader { screen in
+            ScreenContent {
+                VStack(alignment: .leading, spacing: 0) {
+                    title
+                    Spacer().frame(height: Spacing.section)
+                    features
+                    Spacer().frame(height: Spacing.sectionGap)
+                    comparison
+                    Spacer().frame(height: Spacing.sectionGap)
+                    questions
+                    Spacer().frame(height: Spacing.sectionGap)
+                    support
+                    Spacer().frame(height: Spacing.large)
+                }
             }
+            .background(Color.surfacePage)
+            .safeAreaInset(edge: .bottom, spacing: 0) { purchaseBar(in: screen.size) }
         }
-        .background(Color.surfacePage)
-        .safeAreaInset(edge: .bottom, spacing: 0) { purchaseBar }
         .task {
             await entitlements.refresh()
             selected = Self.preferred(from: packages)
@@ -228,72 +232,74 @@ struct ProPaywallView: View {
         }
     }
 
-    private var purchaseBar: some View {
-        VStack(spacing: Spacing.small) {
-            if packages.isEmpty {
-                Text(L10n.proUnavailable)
-                    .font(.body14)
-                    .foregroundStyle(Color.onSurfaceMuted)
-            } else {
-                HStack(spacing: Spacing.small) {
-                    ForEach(packages, id: \.identifier) { planCard($0) }
+    // Pinned, and every word in it grows with the text setting, so it is held
+    // to a share of the screen and scrolls inside that.
+    private func purchaseBar(in screen: CGSize) -> some View {
+        let ceiling = screen.height * PinnedShare.bar
+        return CappedScroll(ceiling: ceiling) {
+            VStack(spacing: Spacing.small) {
+                CappedScroll(ceiling: ceiling * PinnedShare.offer) {
+                    offer(in: screen.width)
                 }
-            }
-            PrimaryButton(title: callToAction, isEnabled: selected != nil && !isWorking) {
-                Task { await buy() }
-            }
-            if let note = renewalNote {
-                Text(note)
-                    .font(.body12)
+                PrimaryButton(title: callToAction, isEnabled: selected != nil && !isWorking) {
+                    Task { await buy() }
+                }
+                if let note = renewalNote {
+                    Text(note)
+                        .font(.body12)
+                        .foregroundStyle(Color.onSurfaceMuted)
+                        .multilineTextAlignment(.center)
+                }
+                Button(L10n.proNotNow, action: onClose)
+                    .font(.labelMedium)
                     .foregroundStyle(Color.onSurfaceMuted)
-                    .multilineTextAlignment(.center)
             }
-            Button(L10n.proNotNow, action: onClose)
-                .font(.labelMedium)
-                .foregroundStyle(Color.onSurfaceMuted)
+            .padding(Spacing.large)
         }
-        .padding(Spacing.large)
         .pinnedBar()
     }
 
-    private func planCard(_ package: Package) -> some View {
-        let isSelected = selected?.identifier == package.identifier
-        return Button { selected = package } label: {
-            VStack(spacing: 0) {
-                if let saved = saving(on: package) {
-                    Text(L10n.proSavePercent(saved))
-                        .font(.body12)
-                        .foregroundStyle(Color.onBrand)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 3)
-                        .background(Color.brandLarge)
-                }
-                VStack(spacing: 2) {
-                    Text(term(package))
-                        .font(.labelMedium)
-                        .foregroundStyle(isSelected ? Color.onSurfaceSelected : .onSurface)
-                    Text(package.storeProduct.localizedPriceString)
-                        .font(.sectionTitle)
-                        .foregroundStyle(isSelected ? Color.onSurfaceSelected : .onSurface)
-                    Text(billing(package))
-                        .font(.body12)
-                        .foregroundStyle(isSelected ? Color.onSurfaceSelected : .onSurfaceMuted)
-                }
-                .padding(.vertical, Spacing.small)
-                .padding(.horizontal, 4)
-                .frame(maxWidth: .infinity)
+    // Side by side while every card still has room for its own words; once the
+    // text setting takes that away they stack full width, where a price has the
+    // whole line and nothing has to be broken or cut.
+    @ViewBuilder
+    private func offer(in width: CGFloat) -> some View {
+        if packages.isEmpty {
+            Text(L10n.proUnavailable)
+                .font(.body14)
+                .foregroundStyle(Color.onSurfaceMuted)
+        } else if fitsAbreast(in: width) {
+            HStack(spacing: Spacing.small) {
+                ForEach(packages, id: \.identifier) { planCard($0) }
             }
-            .frame(maxWidth: .infinity)
-            .background(isSelected ? Color.surfaceSelected : Color.surfaceCard)
-            .clipShape(.rect(cornerRadius: CornerRadius.medium))
-            .overlay {
-                RoundedRectangle(cornerRadius: CornerRadius.medium)
-                    .strokeBorder(
-                        isSelected ? Color.brandLarge : Color.outlineControl, lineWidth: 1
-                    )
+        } else {
+            VStack(spacing: Spacing.small) {
+                ForEach(packages, id: \.identifier) { planCard($0, stacked: true) }
             }
         }
-        .buttonStyle(.plain)
+    }
+
+    private func fitsAbreast(in width: CGFloat) -> Bool {
+        Self.fitsAbreast(packages.count, minWidth: planMinWidth, within: width)
+    }
+
+    static func fitsAbreast(_ count: Int, minWidth: CGFloat, within width: CGFloat) -> Bool {
+        guard count > 1 else { return true }
+        let cards = CGFloat(count)
+        let needed = minWidth * cards + Spacing.small * (cards - 1)
+        return needed <= width - Spacing.large * 2
+    }
+
+    private func planCard(_ package: Package, stacked: Bool = false) -> some View {
+        PlanCard(
+            term: term(package),
+            price: package.storeProduct.localizedPriceString,
+            billing: billing(package),
+            saved: saving(on: package),
+            isSelected: selected?.identifier == package.identifier,
+            stacked: stacked,
+            onSelect: { selected = package }
+        )
     }
 
     // Nothing for a lifetime purchase, which never renews, and naming the trial
@@ -437,4 +443,73 @@ private enum Mark {
     case yes
     case no
     case text(String)
+}
+
+private struct PlanCard: View {
+    let term: String
+    let price: String
+    let billing: String
+    let saved: Int?
+    let isSelected: Bool
+    var stacked = false
+    let onSelect: () -> Void
+
+    private var ink: Color { isSelected ? .onSurfaceSelected : .onSurface }
+    private var subdued: Color { isSelected ? .onSurfaceSelected : .onSurfaceMuted }
+
+    var body: some View {
+        Button(action: onSelect) {
+            VStack(spacing: 0) {
+                if let saved {
+                    Text(L10n.proSavePercent(saved))
+                        .font(.body12)
+                        .foregroundStyle(Color.onBrand)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 3)
+                        .background(Color.brandLarge)
+                }
+                if stacked { spread } else { stack }
+            }
+            .frame(maxWidth: .infinity)
+            .background(isSelected ? Color.surfaceSelected : Color.surfaceCard)
+            .clipShape(.rect(cornerRadius: CornerRadius.medium))
+            .overlay {
+                RoundedRectangle(cornerRadius: CornerRadius.medium)
+                    .strokeBorder(
+                        isSelected ? Color.brandLarge : Color.outlineControl, lineWidth: 1
+                    )
+            }
+        }
+        .buttonStyle(.plain)
+    }
+
+    private var stack: some View {
+        VStack(spacing: 2) {
+            Text(term).font(.labelMedium).foregroundStyle(ink)
+            Text(price).font(.sectionTitle).foregroundStyle(ink)
+            Text(billing).font(.body12).foregroundStyle(subdued)
+        }
+        .padding(.vertical, Spacing.small)
+        .padding(.horizontal, 4)
+        .frame(maxWidth: .infinity)
+    }
+
+    // The term and what it bills take the line's slack; the price keeps its own
+    // width, because a price that is cut is a price the screen has not stated.
+    private var spread: some View {
+        HStack(spacing: Spacing.small) {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(term).font(.labelMedium).foregroundStyle(ink)
+                Text(billing).font(.body12).foregroundStyle(subdued)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            Text(price)
+                .font(.sectionTitle)
+                .foregroundStyle(ink)
+                .fixedSize(horizontal: false, vertical: true)
+                .layoutPriority(1)
+        }
+        .padding(.vertical, Spacing.small)
+        .padding(.horizontal, Spacing.card)
+    }
 }

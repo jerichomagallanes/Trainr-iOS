@@ -28,6 +28,23 @@ final class ExerciseSetTableScreenTests: XCTestCase {
         start.press(forDuration: 0.05, thenDragTo: end)
     }
 
+    // A fixed 24pt box clipped the tick at the largest accessibility size, and
+    // the number beside it was a blob in a column it had outgrown.
+    @MainActor
+    func testTheSetTickGrowsWithTheTextSetting() {
+        app = .launched(.midWeek, arguments: XCUIApplication.largestTextSize)
+        XCTAssertTrue(app.staticTexts["YOUR WEEKLY WORKOUT PLAN"].waitForExistence(timeout: 20))
+        // Every card is several screens tall at this size, so the day has to be
+        // scrolled to before it is in the tree at all.
+        let card = app.button(containing: "Lower Body Power")
+        for _ in 0..<15 where !card.exists { app.swipeUp() }
+        card.tap()
+        XCTAssertTrue(app.staticTexts["LOWER BODY POWER"].waitForExistence(timeout: 10))
+
+        XCTAssertTrue(setTicks.firstMatch.waitForExistence(timeout: 10))
+        XCTAssertGreaterThan(setTicks.firstMatch.frame.width, 40)
+    }
+
     @MainActor
     func testColumnsFollowTheMeasure() {
         open("Lower Body Power")

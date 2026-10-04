@@ -14,16 +14,18 @@ struct ReviewView: View {
             closeInsteadOfBack: isRegenerating || isProfileUpdate
         ) {
             VStack(spacing: Spacing.small) {
-                // With the button rather than at the end of the scroll: this is the moment it matters.
+                PrimaryButton(
+                    title: isProfileUpdate ? L10n.saveProfile : L10n.generateMyWorkoutPlan,
+                    action: onConfirm
+                )
+                // With the button rather than at the end of the scroll: this is
+                // the moment it matters. Under it rather than over it: the bar
+                // is capped, and whatever comes second is the part that scrolls.
                 if !isProfileUpdate {
                     Text(L10n.healthDisclaimer)
                         .font(.body12)
                         .foregroundStyle(Color.onSurfaceMuted)
                 }
-                PrimaryButton(
-                    title: isProfileUpdate ? L10n.saveProfile : L10n.generateMyWorkoutPlan,
-                    action: onConfirm
-                )
             }
         } content: {
             if !isRegenerating && !isProfileUpdate {

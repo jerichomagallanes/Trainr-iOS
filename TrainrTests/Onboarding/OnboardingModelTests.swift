@@ -243,4 +243,39 @@ struct OnboardingModelTests {
 
         #expect(!model.isCompleted)
     }
+
+    @Test("A preferred name is stored without the space that was typed after it")
+    func aPreferredNameIsStoredTrimmed() throws {
+        let model = OnboardingModel(dependencies: try dependencies())
+
+        model.updateBasicInfo(
+            firstName: "Jericho ", age: 30, gender: .male, experience: .beginner
+        )
+
+        #expect(model.profile.firstName == "Jericho")
+    }
+
+    @Test("Measurements that were typed but not submitted are given back")
+    func measurementsTypedButNotSubmittedAreGivenBack() throws {
+        let model = OnboardingModel(dependencies: try dependencies())
+
+        model.rememberBodyMetrics(
+            BodyMetricsEntry(height: "5", weight: "154", useMetric: false)
+        )
+
+        #expect(model.bodyMetricsInProgress()
+            == BodyMetricsEntry(height: "5", weight: "154", useMetric: false))
+    }
+
+    @Test("Submitting the measurements step clears what it was holding")
+    func submittingTheMeasurementsStepClearsIt() throws {
+        let model = OnboardingModel(dependencies: try dependencies())
+        model.rememberBodyMetrics(
+            BodyMetricsEntry(height: "175", weight: "70", useMetric: true)
+        )
+
+        model.updateBodyMetrics(height: 175, weight: 70, units: .metric)
+
+        #expect(model.bodyMetricsInProgress() == nil)
+    }
 }

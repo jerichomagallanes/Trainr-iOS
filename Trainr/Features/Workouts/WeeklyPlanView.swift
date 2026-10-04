@@ -431,6 +431,7 @@ private struct AdjustedTodayCard: View {
                     .foregroundStyle(Color.onSurface)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 StatusChip(label: L10n.adjusted, fill: .statusActive)
+                    .layoutPriority(1)
             }
             Text(
                 kind == .alternative

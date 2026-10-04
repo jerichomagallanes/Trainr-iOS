@@ -13,12 +13,12 @@ extension XCUIApplication {
     // Opens straight onto the named screen with the earlier answers already given,
     // for a test whose subject is that one screen rather than the walk to it.
     @MainActor
-    static func launched(startingAt step: String) -> XCUIApplication {
+    static func launched(startingAt step: String, arguments: [String] = []) -> XCUIApplication {
         let app = XCUIApplication()
         app.launchArguments = [
             "-inMemoryStore", "-splashSeconds", "0",
             "-startAtStep", step
-        ]
+        ] + arguments
         app.launch()
         return app
     }
@@ -64,7 +64,7 @@ extension XCUIApplication {
             weight.tap()
             weight.typeText("72")
         }
-        XCTAssertTrue(staticTexts["Normal weight"].waitForExistence(timeout: 5))
+        XCTAssertTrue(staticTexts["Healthy weight"].waitForExistence(timeout: 5))
         buttons["NEXT"].tap()
         XCTAssertTrue(staticTexts["YOUR FITNESS GOALS"].waitForExistence(timeout: 5))
     }

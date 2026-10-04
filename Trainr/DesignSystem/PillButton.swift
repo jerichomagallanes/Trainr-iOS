@@ -6,6 +6,10 @@ struct PillButton: View {
     var filled = true
     let action: () -> Void
 
+    // A point size that holds a glyph has to grow with the text, or the icon is
+    // a blob beside a label twice its height.
+    @ScaledMetric(relativeTo: .subheadline) private var iconSide: CGFloat = 24
+
     private var content: Color { filled ? .onBrand : .onSurface }
 
     var body: some View {
@@ -13,14 +17,18 @@ struct PillButton: View {
             HStack(spacing: Spacing.extraSmall) {
                 Image(systemName: systemImage)
                     .font(.oneOff(14, .semibold))
-                    .frame(width: 24, height: 24)
+                    .frame(width: iconSide, height: iconSide)
                 Text(title)
                     .font(.labelLarge)
+                    .fixedSize(horizontal: false, vertical: true)
             }
             .foregroundStyle(content)
             .padding(.leading, 5)
             .padding(.trailing, Spacing.card)
-            .frame(height: ComponentHeight.pill)
+            .padding(.vertical, 2)
+            // A floor rather than a height: the label grows with the text
+            // setting and would otherwise be cut off top and bottom.
+            .frame(minHeight: ComponentHeight.pill)
             .background(
                 filled ? Color.brandStrong : Color.surfaceRaised,
                 in: .rect(cornerRadius: CornerRadius.medium)
