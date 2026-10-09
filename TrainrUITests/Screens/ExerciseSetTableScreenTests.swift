@@ -114,6 +114,69 @@ final class ExerciseSetTableScreenTests: XCTestCase {
         )
     }
 
+    // Android's cell let a fourth digit through when the digits arrived one at a
+    // time, so the same keystrokes are pinned here.
+    @MainActor
+    func testAFourthRepDigitNeverLandsOneKeystrokeAtATime() {
+        open("Lower Body Power")
+
+        let reps = app.textFields.firstMatch
+        reps.tap()
+        reps.typeText("999")
+        XCTAssertEqual(reps.value as? String, "999")
+
+        reps.typeText("9")
+        XCTAssertEqual(reps.value as? String, "999")
+        XCTAssertTrue(app.staticTexts["Reps must be between 0 and 999"].exists)
+
+        reopen()
+        XCTAssertEqual(app.textFields.firstMatch.value as? String, "999")
+    }
+
+    @MainActor
+    func testAnExtraWeightDigitNeverLandsOneKeystrokeAtATime() {
+        open("Lower Body Power")
+
+        let weight = stepUpWeight()
+        app.scrollUntilHittable(weight)
+        weight.tap()
+        weight.typeText("1000")
+        XCTAssertEqual(weight.value as? String, "1000")
+
+        weight.typeText("0")
+        XCTAssertEqual(weight.value as? String, "1000")
+        XCTAssertTrue(app.staticTexts["Weight must be between 0 and 1000 kg"].exists)
+
+        reopen()
+        let reread = stepUpWeight()
+        app.scrollUntilHittable(reread)
+        XCTAssertEqual(reread.value as? String, "1000")
+    }
+
+    // Read back through the store rather than off the screen, so a number the
+    // field refused cannot still be the one that was logged.
+    @MainActor
+    private func reopen() {
+        app.buttons["Done"].tap()
+        app.buttons["Back"].tap()
+        XCTAssertTrue(app.staticTexts["YOUR WEEKLY WORKOUT PLAN"].waitForExistence(timeout: 10))
+        app.button(containing: "Lower Body Power").tap()
+        XCTAssertTrue(app.staticTexts["LOWER BODY POWER"].waitForExistence(timeout: 5))
+    }
+
+    // Step-Ups is the day's only weighted exercise, prescribing 12 kg for 10
+    // reps, so the cell beside the one field asking for 10 is its weight.
+    @MainActor
+    private func stepUpWeight() -> XCUIElement {
+        let fields = app.textFields
+        let prescribed = (0..<fields.count).map { fields.element(boundBy: $0).value as? String }
+        guard let reps = prescribed.firstIndex(of: "10"), reps > 0 else {
+            XCTFail("the day no longer has a weighted exercise prescribing 10 reps")
+            return fields.firstMatch
+        }
+        return fields.element(boundBy: reps - 1)
+    }
+
     // The pad used to sit over the bottom of the session until the person left it.
     @MainActor
     func testTheNumberPadHasAWayOut() {
