@@ -8,14 +8,17 @@ struct RoutineDetailFixture {
 
     let dependencies: AppDependencies
     let userID: UUID
+    let createdAt: Date
     let firstDayNumber = 1
     let lastDayNumber = 3
 
     // A week that is over turns its days into records, so a fixture meant to be
-    // written to is dated against the day the test runs. Nil dates the week
-    // nowhere, the shape a plan stored before the column existed comes back in.
+    // written to is dated against the day the test runs. Nil stores no date at
+    // all, the shape a plan edited by hand comes back in.
     // A hold of a few seconds on a set of its own, for the countdown that fills it.
-    init(weekStartingDaysAgo daysAgo: Int? = 0, holdSeconds: Int? = nil) throws {
+    init(
+        weekStartingDaysAgo daysAgo: Int? = 0, createdDaysAgo: Int = 0, holdSeconds: Int? = nil
+    ) throws {
         let store = TrainingStore(container: try TrainingStore.container(inMemory: true))
         dependencies = AppDependencies(
             store: store, planGenerator: WeekPlanGenerator(), breadcrumbs: NoBreadcrumbs()
@@ -23,6 +26,7 @@ struct RoutineDetailFixture {
         let profile = UserProfile(firstName: "Alex", age: 30)
         try store.saveUser(profile)
         userID = profile.id
+        createdAt = Self.start(daysAgo: createdDaysAgo)
         try store.savePlan(
             WeeklyPlan(
                 userID: profile.id,
@@ -32,13 +36,16 @@ struct RoutineDetailFixture {
                 workoutDays: [
                     Self.day(1, "Full Body", holdSeconds: holdSeconds),
                     Self.day(3, "Lower Body")
-                ]
+                ],
+                createdAt: createdAt
             )
         )
     }
 
-    func loaded(day dayNumber: Int) -> RoutineDetailModel {
-        let model = RoutineDetailModel(dependencies: dependencies, dayNumber: dayNumber)
+    func loaded(day dayNumber: Int, wallClock: WallClock = .system) -> RoutineDetailModel {
+        let model = RoutineDetailModel(
+            dependencies: dependencies, dayNumber: dayNumber, wallClock: wallClock
+        )
         model.load()
         return model
     }

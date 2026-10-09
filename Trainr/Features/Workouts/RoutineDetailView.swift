@@ -26,10 +26,13 @@ struct RoutineDetailView: View {
         onWeekCompleted: @escaping (Int, Int) -> Void = { _, _ in },
         onSessionSaved: @escaping (SessionSavedEvent) -> Void = { _ in },
         onAdjust: @escaping (DirectReason, UUID?) -> Void = { _, _ in },
-        onUndone: @escaping (String) -> Void = { _ in }
+        onUndone: @escaping (String) -> Void = { _ in },
+        // Handed in only by a test that has to hold the same model the screen
+        // reads, the way the Android route takes its view model.
+        model: RoutineDetailModel? = nil
     ) {
         _model = State(
-            initialValue: RoutineDetailModel(
+            initialValue: model ?? RoutineDetailModel(
                 dependencies: dependencies, dayNumber: dayNumber, weekNumber: weekNumber
             )
         )
@@ -92,8 +95,11 @@ struct RoutineDetailView: View {
             howToRequest = nil
             model.showHowTo(key: requested)
         }
-        // On the outer view on purpose: hung on the routine alone, swapping in
-        // the confirmation would read as leaving and kill a running timer.
+        // All three on the outer view: hung on the routine alone, swapping in
+        // the confirmation would read as leaving and kill a running timer, and
+        // the confirmation is part of a day that can outlive its own week while
+        // it is up.
+        .onDayChange { model.load() }
         .onAppear { model.screenCameBack(announcing: TimerAlert.fire) }
         .onDisappear { model.screenWentAway() }
     }

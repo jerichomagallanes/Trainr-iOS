@@ -17,6 +17,7 @@ nonisolated struct WeekOutline: Identifiable, Equatable, Sendable {
     var id: UUID
     var weekNumber: Int
     var startDate: Date?
+    var createdAt = Date()
     var days: [DayOutline] = []
 }
 
@@ -38,11 +39,11 @@ nonisolated struct WorkoutDay: Identifiable, Equatable, Sendable {
     var exercises: [WorkoutExercise] = []
     var completedAt: Date?
 
+    var hasPerformedWork: Bool { exercises.contains(where: \.wasPerformed) }
+
     // Finishing early closes the day whatever was logged, so the status alone
     // would count a session nobody performed as a day of training.
-    var countsAsCompleted: Bool {
-        status == .completed && exercises.contains(where: \.wasPerformed)
-    }
+    var countsAsCompleted: Bool { status == .completed && hasPerformedWork }
 }
 
 nonisolated struct WorkoutExercise: Identifiable, Equatable, Sendable {

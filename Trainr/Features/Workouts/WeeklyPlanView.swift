@@ -108,6 +108,9 @@ struct WeeklyPlanView: View {
         .background(Color.surfacePage)
         .toolbar(.hidden, for: .navigationBar)
         .onAppear { model.refresh() }
+        // The date is what ends the week, and it can change under a screen
+        // nobody has left.
+        .onDayChange { model.refresh() }
         .sheet(isPresented: $showAbout) {
             AboutView(versionName: versionName, buildNumber: buildNumber)
         }
@@ -158,6 +161,7 @@ struct WeeklyPlanView: View {
                     weekday: WorkoutDateFormatter.weekday(planDay.date),
                     day: planDay.day,
                     isMissed: planDay.isMissed,
+                    isPartlyDone: planDay.isPartlyDone,
                     finishedEarly: planDay.finishKind == .partial,
                     isAdjusted: planDay.isAdjusted,
                     derived: planDay.derived,

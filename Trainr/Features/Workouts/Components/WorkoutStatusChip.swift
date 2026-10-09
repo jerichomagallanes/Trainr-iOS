@@ -20,6 +20,7 @@ struct StatusChip: View {
 struct WorkoutStatusChip: View {
     let status: WorkoutStatus
     var isMissed = false
+    var isPartlyDone = false
     var finishedEarly = false
     var isAdjusted = false
 
@@ -30,21 +31,24 @@ struct WorkoutStatusChip: View {
     private var showsAdjusted: Bool { isAdjusted && status != .completed }
 
     private var label: String {
-        switch (isMissed, finishedEarly, showsAdjusted) {
-        case (true, _, _): L10n.missed
-        case (false, true, _): L10n.finishedEarly
-        case (false, false, true): L10n.adjusted
-        case (false, false, false): status.label
+        switch (isMissed, isPartlyDone, finishedEarly, showsAdjusted) {
+        case (true, _, _, _): L10n.missed
+        case (false, true, _, _): L10n.partlyDone
+        case (false, false, true, _): L10n.finishedEarly
+        case (false, false, false, true): L10n.adjusted
+        case (false, false, false, false): status.label
         }
     }
 
-    // Missed deliberately reads in the same grey as "not started".
+    // Missed deliberately reads in the same grey as "not started"; a day that
+    // was trained but never closed keeps the colour of work done.
     private var fill: Color {
-        switch (isMissed, finishedEarly, showsAdjusted) {
-        case (true, _, _): .statusIdle
-        case (false, true, _): .statusDone
-        case (false, false, true): .statusActive
-        case (false, false, false): status.chipColor
+        switch (isMissed, isPartlyDone, finishedEarly, showsAdjusted) {
+        case (true, _, _, _): .statusIdle
+        case (false, true, _, _): .statusActive
+        case (false, false, true, _): .statusDone
+        case (false, false, false, true): .statusActive
+        case (false, false, false, false): status.chipColor
         }
     }
 }
@@ -63,6 +67,7 @@ struct WeekStatusChip: View {
         WorkoutStatusChip(status: .inProgress)
         WorkoutStatusChip(status: .completed)
         WorkoutStatusChip(status: .notStarted, isMissed: true)
+        WorkoutStatusChip(status: .inProgress, isPartlyDone: true)
         WorkoutStatusChip(status: .completed, finishedEarly: true)
         WorkoutStatusChip(status: .inProgress, isAdjusted: true)
     }
