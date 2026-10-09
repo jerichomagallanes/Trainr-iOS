@@ -34,12 +34,13 @@ final class ExerciseSetTableScreenTests: XCTestCase {
     func testTheSetTickGrowsWithTheTextSetting() {
         app = .launched(.midWeek, arguments: XCUIApplication.largestTextSize)
         XCTAssertTrue(app.staticTexts["YOUR WEEKLY WORKOUT PLAN"].waitForExistence(timeout: 20))
-        // Every card is several screens tall at this size, so the day has to be
-        // scrolled to before it is in the tree at all.
+        // A card is taller than the screen at this size, so its centre — which is
+        // where a tap lands — stays behind the pinned bar until the plan is
+        // scrolled well past it, and XCTest still calls the card hittable there.
         let card = app.button(containing: "Lower Body Power")
-        for _ in 0..<15 where !card.exists { app.swipeUp() }
-        card.tap()
-        XCTAssertTrue(app.staticTexts["LOWER BODY POWER"].waitForExistence(timeout: 10))
+        let bar = app.buttons["START TODAY'S WORKOUT"]
+        for _ in 0..<15 where !card.exists || card.frame.midY > bar.frame.minY { app.swipeUp() }
+        XCTAssertTrue(app.tap(card, until: app.staticTexts["LOWER BODY POWER"]))
 
         XCTAssertTrue(setTicks.firstMatch.waitForExistence(timeout: 10))
         XCTAssertGreaterThan(setTicks.firstMatch.frame.width, 40)
