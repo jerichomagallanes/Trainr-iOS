@@ -6,6 +6,11 @@ nonisolated enum NumberEntry: Equatable, Sendable {
     case outOfRange
 }
 
+nonisolated struct Held: Equatable, Sendable {
+    let text: String
+    let saysRange: Bool
+}
+
 // Pure rules per measure, so a keystroke that could not be shown or stored is
 // refused as it arrives rather than corrected after the fact.
 nonisolated enum NumberRules {
@@ -22,6 +27,7 @@ nonisolated enum NumberRules {
     private static let maxDecimals = 2
     private static let maxFaceDigits = 4
     private static let maxFaceSeconds = 59
+    private static let secondsDigits = 2
 
     static func maxWeight(in units: UnitSystem) -> Int {
         units == .imperial ? maxWeightLb : maxWeightKg
@@ -45,14 +51,13 @@ nonisolated enum NumberRules {
         return typed > Double(maxWeight(in: units)) ? .outOfRange : .accepted
     }
 
-    // The cell shows a clock face over the seconds it stores, so a keystroke is
-    // judged by the digits that face would hold: at most four, with a seconds
-    // figure of 59 or less, or it would read as a time the cell does not hold.
-    // The zero in "0:05" is the face's own rather than something typed.
-    // Backspacing "m:ss" hands back "m:s", whose last two digits are a minute
-    // and a ten of seconds ("6:30" -> 63): a shorter face is read as the digit
-    // buffer it is, or the delete key would be dead on most times.
-    static func duration(_ face: String, isShortening: Bool = false) -> NumberEntry {
+    // A buffer is only a finished face once it is full, and until then it is
+    // still taking digits: "63" is the 63 seconds the cell holds, and 16:40 is
+    // typed through a "164" that reads as 1:64 for one keystroke. The zero in
+    // "0:05" is the face's own rather than something typed, and a backspace
+    // always leaves a buffer short of full, so the delete key stays alive on
+    // every time the cell can hold.
+    static func duration(_ face: String) -> NumberEntry {
         let digits = face.filter { $0 != ":" }
         guard !digits.isEmpty else { return .accepted }
         guard digits.allSatisfy(isDigit) else { return .malformed }
@@ -60,11 +65,32 @@ nonisolated enum NumberRules {
         let typed = String(digits.drop { $0 == "0" })
         guard !typed.isEmpty else { return .accepted }
         guard typed.count <= maxFaceDigits else { return .outOfRange }
-        guard isShortening || (Int(typed.suffix(2)) ?? 0) <= maxFaceSeconds else {
+        guard typed.count < maxFaceDigits
+                || (Int(typed.suffix(secondsDigits)) ?? 0) <= maxFaceSeconds else {
             return .malformed
         }
         guard let total = SetFormatting.secondsFromDigits(typed) else { return .malformed }
         return total > maxSeconds ? .outOfRange : .accepted
+    }
+
+    // A keystroke turned away for its size has to say so or it is swallowed in
+    // silence, and a cell left holding too big a number keeps saying so until
+    // the number is back in range. Any keystroke that is taken has been
+    // answered.
+    static func holding(
+        current: String, proposed: String, _ check: (String) -> NumberEntry
+    ) -> Held {
+        let entry = check(proposed)
+        let text: String
+        switch entry {
+        case .accepted:
+            text = proposed
+        case .outOfRange:
+            text = movesTowardRange(from: current, to: proposed, check) ? proposed : current
+        case .malformed:
+            text = current
+        }
+        return Held(text: text, saysRange: entry == .outOfRange || check(text) == .outOfRange)
     }
 
     // A number stored above the maximum has to be correctable: every step down

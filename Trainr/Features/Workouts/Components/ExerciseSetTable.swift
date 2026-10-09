@@ -292,19 +292,12 @@ private struct NumberCell: View {
     }
 
     private func judge(_ typed: String, against previous: String) {
-        switch check(typed) {
-        case .accepted:
-            onOutOfRange(nil)
+        let held = NumberRules.holding(current: previous, proposed: typed, check)
+        onOutOfRange(held.saysRange ? rangeMessage : nil)
+        if held.text == typed {
             onChange(typed.isEmpty ? nil : typed)
-        case .outOfRange:
-            onOutOfRange(rangeMessage)
-            if NumberRules.movesTowardRange(from: previous, to: typed, check) {
-                onChange(typed.isEmpty ? nil : typed)
-            } else {
-                text = previous
-            }
-        case .malformed:
-            text = previous
+        } else {
+            text = held.text
         }
     }
 }
@@ -359,34 +352,24 @@ private struct DurationCell: View {
         // onAppear alone leaves a stale time. Only on disagreement, so a
         // write-back never interrupts typing.
         .onChange(of: seconds) { _, latest in
-            let shown = latest.map(SetFormatting.seconds) ?? ""
-            if shown != text { text = shown }
+            if SetFormatting.secondsFromDigits(text) != latest {
+                text = latest.map(SetFormatting.seconds) ?? ""
+            }
         }
     }
 
     private func judge(_ typed: String, against previous: String) {
-        switch NumberRules.duration(typed, isShortening: typed.count < previous.count) {
-        case .accepted:
-            onOutOfRange(nil)
-            let total = elapsed(typed)
-            // Written back as the face of the seconds it now holds, so the
-            // clock shown can never read as a time the cell does not store.
-            text = total.map(SetFormatting.seconds) ?? ""
-            onChange(total)
-        case .outOfRange:
-            onOutOfRange(rangeMessage)
-            if NumberRules.movesTowardRange(from: previous, to: typed, { NumberRules.duration($0) }) {
-                onChange(elapsed(typed))
-            } else {
-                text = previous
-            }
-        case .malformed:
-            text = previous
-        }
-    }
+        let held = NumberRules.holding(current: previous, proposed: typed, NumberRules.duration)
+        onOutOfRange(held.saysRange ? rangeMessage : nil)
 
-    private func elapsed(_ face: String) -> Int? {
-        SetFormatting.secondsFromDigits(face.filter { $0 != ":" })
+        // Written back as the digits that were typed rather than as the seconds
+        // they add up to: rewriting "63" to the 1:03 it holds would land the
+        // next digit in the minutes and read 10:30 instead of 6:30.
+        let shown = SetFormatting.clockFace(held.text)
+        if shown != text { text = shown }
+
+        let total = SetFormatting.secondsFromDigits(shown)
+        if total != seconds { onChange(total) }
     }
 }
 

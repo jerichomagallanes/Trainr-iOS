@@ -24,6 +24,27 @@ struct SetFormattingTests {
         #expect(SetFormatting.secondsFromDigits("5959") == 3599)
     }
 
+    // 6-3-0 used to stall at 0:06, and writing "63" back as the 1:03 it is
+    // stored as would land the third digit in the minutes and read 10:30.
+    @Test("A clock is written as the digits typed, not as the seconds they hold")
+    func theFaceKeepsTheDigitsTyped() {
+        #expect(SetFormatting.clockFace("") == "")
+        #expect(SetFormatting.clockFace("6") == "0:06")
+        #expect(SetFormatting.clockFace("63") == "0:63")
+        #expect(SetFormatting.clockFace("630") == "6:30")
+        #expect(SetFormatting.clockFace("164") == "1:64")
+        #expect(SetFormatting.clockFace("1640") == "16:40")
+        #expect(SetFormatting.clockFace("0:06") == "0:06")
+    }
+
+    // A time logged by the exercise timer can run past the four digits the
+    // keypad types, and the clock still has to read as the time that is stored.
+    @Test("A time past the longest typable one is still shown in full")
+    func aLongTimeIsShownInFull() {
+        #expect(SetFormatting.clockFace("12000") == "120:00")
+        #expect(SetFormatting.seconds(7200) == "120:00")
+    }
+
     @Test("A weight drops a trailing zero but keeps a real fraction")
     func weightsAreReadable() {
         #expect(SetFormatting.weight(20, in: .metric) == "20")
