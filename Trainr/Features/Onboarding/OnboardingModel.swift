@@ -2,11 +2,14 @@ import Foundation
 import Observation
 
 // What the measurements step currently has typed in it, in the units it is
-// showing. Text rather than numbers: a part-typed "5" is not a height yet.
+// showing. Text rather than numbers: a part-typed "5" is not a height yet. The
+// swaps carry the measurements behind that text, which the index is read from.
 nonisolated struct BodyMetricsEntry: Equatable, Sendable {
     var height: String
     var weight: String
     var useMetric: Bool
+    var heightSwap = BodyMetricsConverter.UnitSwap()
+    var weightSwap = BodyMetricsConverter.UnitSwap()
 }
 
 enum OnboardingStep {

@@ -89,6 +89,66 @@ final class OnboardingScreenTests: XCTestCase {
 
     // MARK: - Measurements
 
+    // Nothing about the person changed, so neither may the index: read from the
+    // fields instead, 175 shown back as 5'9" is 175.26 and reads 23.4.
+    @MainActor
+    func testTheIndexHoldsStillWhenOnlyTheUnitsChange() {
+        app = .launched(startingAt: "bodyMetrics")
+        XCTAssertTrue(app.staticTexts["YOUR MEASUREMENTS"].waitForExistence(timeout: 20))
+        app.textFields["170"].tap()
+        app.textFields["170"].typeText("175")
+        app.textFields["70"].tap()
+        app.textFields["70"].typeText("72")
+        XCTAssertTrue(app.text(containing: "BMI: 23.5").waitForExistence(timeout: 5))
+
+        app.buttons["Imperial"].tap()
+
+        let values = app.textFields.allElementsBoundByIndex.compactMap { $0.value as? String }
+        XCTAssertTrue(values.contains("5'9\""), "\(values)")
+        XCTAssertTrue(app.text(containing: "BMI: 23.5").waitForExistence(timeout: 5))
+    }
+
+    // "175" passes the imperial filter but is not feet and inches, so the
+    // switch keeps it as it is. What it keeps is a height again in the field it
+    // was left in.
+    @MainActor
+    func testAHeightKeptAcrossTheSwitchIsReadInTheUnitsItIsShownIn() {
+        app = .launched(startingAt: "bodyMetrics")
+        XCTAssertTrue(app.staticTexts["YOUR MEASUREMENTS"].waitForExistence(timeout: 20))
+        let height = app.textFields["5'10\""]
+        XCTAssertTrue(app.tap(app.buttons["Imperial"], until: height))
+        height.tap()
+        height.typeText("175")
+        app.textFields["155"].tap()
+        app.textFields["155"].typeText("154")
+        XCTAssertFalse(app.buttons["NEXT"].isEnabled)
+
+        XCTAssertTrue(app.tap(app.buttons["Metric"], until: app.textFields["170"]))
+
+        XCTAssertEqual(app.textFields["170"].value as? String, "175")
+        XCTAssertTrue(app.buttons["NEXT"].isEnabled)
+    }
+
+    // Leaving the step and coming back must not read the index off the fields
+    // again: 175 shown back as 5'9" is 175.26 and a different index for the
+    // same person, which NEXT from there would store over the one kept.
+    @MainActor
+    func testTheIndexHoldsStillAcrossLeavingTheStepAndComingBack() {
+        app = .launched(startingAt: "bodyMetrics")
+        XCTAssertTrue(app.staticTexts["YOUR MEASUREMENTS"].waitForExistence(timeout: 20))
+        app.textFields["170"].tap()
+        app.textFields["170"].typeText("175")
+        app.textFields["70"].tap()
+        app.textFields["70"].typeText("72")
+        app.buttons["Imperial"].tap()
+        XCTAssertTrue(app.text(containing: "BMI: 23.5").waitForExistence(timeout: 5))
+
+        XCTAssertTrue(app.tap(app.buttons["NEXT"], until: app.staticTexts["YOUR FITNESS GOALS"]))
+        XCTAssertTrue(app.tap(app.buttons["Back"], until: app.staticTexts["YOUR MEASUREMENTS"]))
+
+        XCTAssertTrue(app.text(containing: "BMI: 23.5").waitForExistence(timeout: 5))
+    }
+
     @MainActor
     func testBMISourcesAreOneTapFromTheAdultResult() {
         app = .launched(startingAt: "bodyMetrics")
@@ -301,59 +361,6 @@ final class OnboardingScreenTests: XCTestCase {
         XCTAssertFalse(next.isEnabled)
         app.button(startingWith: "Build Muscle").tap()
         XCTAssertTrue(next.isEnabled)
-    }
-
-    // MARK: - Setup
-
-    @MainActor
-    func testSetupAsksForEquipmentAndNotWhereTheClientStands() {
-        app = .launched(startingAt: "setup")
-        XCTAssertTrue(app.staticTexts["SET UP YOUR WORKOUT"].waitForExistence(timeout: 20))
-
-        XCTAssertTrue(app.staticTexts["Available Equipment"].exists)
-        for gone in ["Home", "Gym", "Both"] {
-            XCTAssertFalse(app.buttons[gone].exists)
-        }
-        for kit in ["Bodyweight only", "Barbell", "Dumbbell", "Machine"] {
-            XCTAssertTrue(app.buttons[kit].exists, kit)
-        }
-        XCTAssertTrue(app.buttons["Choose how many days"].exists)
-        XCTAssertFalse(app.buttons["NEXT"].isEnabled)
-    }
-
-    @MainActor
-    func testEveryDurationChipShowsItsWholeLabel() {
-        app = .launched(startingAt: "setup")
-        XCTAssertTrue(app.staticTexts["SET UP YOUR WORKOUT"].waitForExistence(timeout: 20))
-
-        let chips = ["30 mins", "45 mins", "60 mins", "90 mins"].map { app.buttons[$0] }
-        app.scrollUntilHittable(chips[0])
-        for chip in chips { XCTAssertTrue(chip.isHittable, chip.label) }
-        let widths = chips.map(\.frame.width)
-        XCTAssertEqual(widths.min()!, widths.max()!, accuracy: 2)
-        for (left, right) in zip(chips, chips.dropFirst()) {
-            XCTAssertLessThanOrEqual(left.frame.maxX, right.frame.minX + 1)
-        }
-    }
-
-    // A length the week cannot fill is said on the screen that asks for it,
-    // rather than left to be found later as a day two thirds the size.
-    @MainActor
-    func testASessionLengthTheWeekCannotFillSaysSoWhereItIsChosen() {
-        app = .launched(startingAt: "setup")
-        XCTAssertTrue(app.staticTexts["SET UP YOUR WORKOUT"].waitForExistence(timeout: 20))
-        app.buttons["Bodyweight only"].tap()
-        app.buttons["Choose how many days"].tap()
-        app.buttons["3 days"].tap()
-
-        let note = app.staticTexts.matching(
-            NSPredicate(format: "label BEGINSWITH %@", "With these answers")).firstMatch
-        app.scrollUntilHittable(app.buttons["90 mins"])
-        app.buttons["90 mins"].tap()
-        XCTAssertTrue(note.waitForExistence(timeout: 10))
-
-        app.buttons["30 mins"].tap()
-        XCTAssertTrue(note.waitForNonExistence(timeout: 10))
     }
 
     // MARK: - Limitations

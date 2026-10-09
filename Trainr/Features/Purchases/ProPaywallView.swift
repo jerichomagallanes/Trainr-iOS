@@ -245,13 +245,15 @@ struct ProPaywallView: View {
         }
     }
 
-    // Pinned, and every word in it grows with the text setting, so it is held
-    // to a share of the screen and scrolls inside that.
+    // The offer is the one part of the bar that grows without bound, so it is
+    // held to a share of the screen of its own and the call to action, the
+    // renewal note and the way out are laid out after it. The bar keeps a
+    // ceiling of its own so it can never take the page, and says so when the
+    // text setting leaves it holding something back.
     private func purchaseBar(in screen: CGSize) -> some View {
-        let ceiling = screen.height * PinnedShare.bar
-        return CappedScroll(ceiling: ceiling) {
+        CappedScroll(ceiling: screen.height * PinnedShare.purchaseBar) {
             VStack(spacing: Spacing.small) {
-                CappedScroll(ceiling: ceiling * PinnedShare.offer) {
+                CappedScroll(ceiling: screen.height * PinnedShare.offer) {
                     offer(in: screen.width)
                 }
                 PrimaryButton(title: callToAction, isEnabled: selected != nil && !isWorking) {
