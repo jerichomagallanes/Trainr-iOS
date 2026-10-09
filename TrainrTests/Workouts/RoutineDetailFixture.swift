@@ -43,6 +43,26 @@ struct RoutineDetailFixture {
         return model
     }
 
+    // Swaps a movement the way the adjust flow does: the stored row is replaced
+    // by a new one at the same position, not edited in place.
+    @discardableResult
+    func replace(exerciseID: UUID) throws -> UUID {
+        let day = try storedDay(firstDayNumber)
+        let user = try #require(try dependencies.store.user(id: userID))
+        let proposal = try #require(UnstuckPolicy(catalog: dependencies.catalog).decide(
+            AdjustmentSnapshot(day: day, user: user),
+            constraint: .equipmentUnavailable(exerciseID: exerciseID, available: []),
+            requestID: "request-swap"
+        ).proposal)
+        let result = dependencies.adjustments.apply(
+            proposal, dayID: day.id, reason: .equipmentUnavailable, now: Date()
+        )
+        guard case let .applied(_, added) = result else {
+            throw SwapFailure.notApplied(String(describing: result))
+        }
+        return try #require(added)
+    }
+
     func storedDay(_ dayNumber: Int) throws -> WorkoutDay {
         let plan = try #require(try dependencies.store.plan(for: userID, weekNumber: 1))
         return try #require(plan.workoutDays.first { $0.dayNumber == dayNumber })
@@ -84,4 +104,8 @@ struct RoutineDetailFixture {
             durationMinutes: 10
         )
     }
+}
+
+nonisolated enum SwapFailure: Error {
+    case notApplied(String)
 }
