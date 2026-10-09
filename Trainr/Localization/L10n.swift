@@ -173,6 +173,9 @@ nonisolated enum L10n {
     }
     static var edit: String { String(localized: "edit") }
     static var editAppliesToFuture: String { String(localized: "edit_applies_to_future") }
+    static func editSection(_ p1: String) -> String {
+        String.localizedStringWithFormat(String(localized: "edit_section"), p1)
+    }
     static var enterYourAge: String { String(localized: "enter_your_age") }
     static var enterYourFirstName: String { String(localized: "enter_your_first_name") }
     static var equipmentBarbell: String { String(localized: "equipment_barbell") }
@@ -405,12 +408,17 @@ nonisolated enum L10n {
     static var proCompareGenerated: String { String(localized: "pro_compare_generated") }
     static var proCompareHistory: String { String(localized: "pro_compare_history") }
     static var proCompareLogging: String { String(localized: "pro_compare_logging") }
+    static var proCompareNo: String { String(localized: "pro_compare_no") }
     static var proCompareOne: String { String(localized: "pro_compare_one") }
     static var proComparePro: String { String(localized: "pro_compare_pro") }
     static var proCompareRepeat: String { String(localized: "pro_compare_repeat") }
     static var proCompareRewrite: String { String(localized: "pro_compare_rewrite") }
+    static func proCompareRow(_ p1: String, _ p2: String, _ p3: String, _ p4: String, _ p5: String) -> String {
+        String.localizedStringWithFormat(String(localized: "pro_compare_row"), p1, p2, p3, p4, p5)
+    }
     static var proCompareTimer: String { String(localized: "pro_compare_timer") }
     static var proCompareTitle: String { String(localized: "pro_compare_title") }
+    static var proCompareYes: String { String(localized: "pro_compare_yes") }
     static var proContinue: String { String(localized: "pro_continue") }
     static var proFaqCancelA: String { String(localized: "pro_faq_cancel_a") }
     static var proFaqCancelQ: String { String(localized: "pro_faq_cancel_q") }
@@ -546,8 +554,23 @@ nonisolated enum L10n {
     static func sessionsFallShortMessage(_ p1: Int) -> String {
         String.localizedStringWithFormat(String(localized: "sessions_fall_short_message"), p1)
     }
+    static func setCellTarget(_ p1: String, _ p2: String) -> String {
+        String.localizedStringWithFormat(String(localized: "set_cell_target"), p1, p2)
+    }
     static var setColumn: String { String(localized: "set_column") }
+    static func setNumberLabel(_ p1: String) -> String {
+        String.localizedStringWithFormat(String(localized: "set_number_label"), p1)
+    }
+    static func setRepsCell(_ p1: String) -> String {
+        String.localizedStringWithFormat(String(localized: "set_reps_cell"), p1)
+    }
+    static func setTimeCell(_ p1: String) -> String {
+        String.localizedStringWithFormat(String(localized: "set_time_cell"), p1)
+    }
     static var setUpYourWorkout: String { String(localized: "set_up_your_workout") }
+    static func setWeightCell(_ p1: String, _ p2: String) -> String {
+        String.localizedStringWithFormat(String(localized: "set_weight_cell"), p1, p2)
+    }
     static func setsFromToFormat(_ p1: Int, _ p2: Int) -> String {
         String.localizedStringWithFormat(String(localized: "sets_from_to_format"), p1, p2)
     }
@@ -578,6 +601,9 @@ nonisolated enum L10n {
     static var timeForWholeWorkout: String { String(localized: "time_for_whole_workout") }
     static var timerFinished: String { String(localized: "timer_finished") }
     static var timerPaused: String { String(localized: "timer_paused") }
+    static func timerRemaining(_ p1: String) -> String {
+        String.localizedStringWithFormat(String(localized: "timer_remaining"), p1)
+    }
     static var todayOnly: String { String(localized: "today_only") }
     static var todaysAdjustment: String { String(localized: "todays_adjustment") }
     static var trackWeeklyProgress: String { String(localized: "track_weekly_progress") }
@@ -655,6 +681,8 @@ nonisolated enum L10n {
     }
     static var weightPlaceholderKg: String { String(localized: "weight_placeholder_kg") }
     static var weightPlaceholderLbs: String { String(localized: "weight_placeholder_lbs") }
+    static var weightUnitKilograms: String { String(localized: "weight_unit_kilograms") }
+    static var weightUnitPounds: String { String(localized: "weight_unit_pounds") }
     static var weightsInLabel: String { String(localized: "weights_in_label") }
     static var weightsMarkedIn: String { String(localized: "weights_marked_in") }
     static var welcomeTo: String { String(localized: "welcome_to") }

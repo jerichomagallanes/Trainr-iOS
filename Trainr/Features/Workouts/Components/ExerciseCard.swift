@@ -85,6 +85,8 @@ struct ExerciseCard<Extras: View>: View {
             .accessibilityLabel(
                 exercise.isCompleted ? L10n.markExerciseIncomplete : L10n.markExerciseComplete
             )
+            .accessibilityAddTraits(.isToggle)
+            .accessibilityValue(exercise.isCompleted ? L10n.completed : L10n.notCompleted)
         }
     }
 
@@ -162,6 +164,7 @@ struct ExerciseCard<Extras: View>: View {
             Image(systemName: "clock")
                 .font(.oneOff(15))
                 .foregroundStyle(Color.onSurface)
+                .accessibilityHidden(true)
             Text(L10n.minutes(exercise.minutes))
                 .font(.body14)
                 .foregroundStyle(Color.onSurface)

@@ -160,6 +160,7 @@ private struct ProfileSection: View {
                 Button(L10n.edit, action: onEdit)
                     .font(.labelLarge)
                     .foregroundStyle(Color.brandStrong)
+                    .accessibilityLabel(L10n.editSection(title))
             }
             ForEach(items, id: \.0) { label, value in
                 HStack(alignment: .top, spacing: Spacing.card) {

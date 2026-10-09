@@ -268,7 +268,7 @@ final class OnboardingScreenTests: XCTestCase {
         XCTAssertTrue(app.staticTexts["5'10\""].exists)
         XCTAssertTrue(app.staticTexts["154 lbs"].exists)
 
-        app.buttons.matching(identifier: "Edit").element(boundBy: 1).tap()
+        app.buttons["Edit Measurements"].tap()
         XCTAssertTrue(app.staticTexts["YOUR MEASUREMENTS"].waitForExistence(timeout: 5))
         let values = app.textFields.allElementsBoundByIndex.compactMap { $0.value as? String }
         XCTAssertTrue(values.contains("5'10\""), "\(values)")
@@ -283,7 +283,7 @@ final class OnboardingScreenTests: XCTestCase {
         XCTAssertTrue(app.staticTexts["175 cm"].exists)
         XCTAssertTrue(app.staticTexts["72.0 kg"].exists)
 
-        app.buttons.matching(identifier: "Edit").element(boundBy: 1).tap()
+        app.buttons["Edit Measurements"].tap()
         XCTAssertTrue(app.staticTexts["YOUR MEASUREMENTS"].waitForExistence(timeout: 5))
         let values = app.textFields.allElementsBoundByIndex.compactMap { $0.value as? String }
         XCTAssertTrue(values.contains("175"), "\(values)")
@@ -393,7 +393,9 @@ final class OnboardingScreenTests: XCTestCase {
         XCTAssertTrue(app.staticTexts["30 years old"].exists)
         XCTAssertTrue(app.staticTexts["Build Muscle"].exists)
         XCTAssertTrue(app.staticTexts["Lower Back Pain"].exists)
-        XCTAssertEqual(app.buttons.matching(identifier: "Edit").count, 5)
+        XCTAssertEqual(
+            app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "Edit ")).count, 5
+        )
         XCTAssertTrue(app.buttons["Back"].exists)
         XCTAssertFalse(app.buttons["Close"].exists)
     }
@@ -417,7 +419,7 @@ final class OnboardingScreenTests: XCTestCase {
         app = .launched(startingAt: "review")
         XCTAssertTrue(app.staticTexts["YOUR FITNESS PROFILE"].waitForExistence(timeout: 20))
 
-        app.buttons.matching(identifier: "Edit").element(boundBy: 0).tap()
+        app.buttons["Edit Personal Information"].tap()
         XCTAssertTrue(app.textFields["Enter your name"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.buttons["Close"].exists)
         XCTAssertFalse(app.otherElements["stepProgress"].exists)

@@ -68,6 +68,7 @@ struct ProPaywallView: View {
                     Image(systemName: reason.symbol)
                         .font(.oneOff(30))
                         .foregroundStyle(Color.brandStrong)
+                        .accessibilityHidden(true)
                     Text(reason.heading)
                         .font(.sectionTitle)
                         .foregroundStyle(Color.onSurface)
@@ -101,6 +102,7 @@ struct ProPaywallView: View {
                 .font(.oneOff(18))
                 .foregroundStyle(Color.brandStrong)
                 .frame(width: 28, height: 28)
+                .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 2) {
                 Text(heading)
                     .font(.labelLarge)
@@ -147,6 +149,16 @@ struct ProPaywallView: View {
                 mark(row.pro).frame(width: 72)
             }
             .padding(.vertical, Spacing.small)
+            // A tick on its own belongs to no column, so the line is read as one
+            // sentence rather than as three unrelated elements.
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel(PaywallComparison.rowLabel(
+                feature: row.label,
+                freeHead: L10n.proCompareFree,
+                free: PaywallComparison.word(row.free),
+                proHead: L10n.proComparePro,
+                pro: PaywallComparison.word(row.pro)
+            ))
         }
     }
 
@@ -193,6 +205,7 @@ struct ProPaywallView: View {
                     Image(systemName: isOpen ? "chevron.up" : "chevron.down")
                         .font(.oneOff(12, .semibold))
                         .foregroundStyle(Color.onSurfaceMuted)
+                        .accessibilityHidden(true)
                 }
                 if isOpen {
                     Text(entry.answer)
@@ -443,6 +456,27 @@ private enum Mark {
     case yes
     case no
     case text(String)
+}
+
+enum PaywallComparison {
+
+    static func rowLabel(
+        feature: String,
+        freeHead: String,
+        free: String,
+        proHead: String,
+        pro: String
+    ) -> String {
+        L10n.proCompareRow(feature, freeHead, free, proHead, pro)
+    }
+
+    fileprivate static func word(_ mark: Mark) -> String {
+        switch mark {
+        case .yes: L10n.proCompareYes
+        case .no: L10n.proCompareNo
+        case .text(let text): text
+        }
+    }
 }
 
 private struct PlanCard: View {

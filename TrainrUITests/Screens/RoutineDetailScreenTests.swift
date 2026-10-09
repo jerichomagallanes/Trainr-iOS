@@ -37,7 +37,7 @@ final class RoutineDetailScreenTests: XCTestCase {
     func testListsEveryExerciseAndOffersEachATimer() {
         openUnstartedDay()
 
-        let tickBoxes = app.buttons.matching(identifier: "square")
+        let tickBoxes = app.switches.matching(identifier: "square")
             .matching(NSPredicate(format: "label == %@", "Mark exercise as complete"))
         XCTAssertEqual(tickBoxes.count, 4)
         XCTAssertEqual(app.buttons.matching(NSPredicate(format: "label == %@", "Start timer")).count, 4)
@@ -48,7 +48,7 @@ final class RoutineDetailScreenTests: XCTestCase {
         openFinishedDay()
 
         XCTAssertFalse(app.buttons["Start timer"].exists)
-        XCTAssertTrue(app.buttons["Mark exercise as not complete"].exists)
+        XCTAssertTrue(app.switches["Mark exercise as not complete"].exists)
     }
 
     @MainActor
@@ -57,9 +57,9 @@ final class RoutineDetailScreenTests: XCTestCase {
         let timers = app.buttons.matching(NSPredicate(format: "label == %@", "Start timer"))
         let before = timers.count
 
-        app.buttons["Mark exercise as complete"].firstMatch.tap()
+        app.switches["Mark exercise as complete"].firstMatch.tap()
 
-        XCTAssertTrue(app.buttons["Mark exercise as not complete"].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.switches["Mark exercise as not complete"].waitForExistence(timeout: 3))
         XCTAssertEqual(timers.count, before - 1)
     }
 
@@ -90,7 +90,7 @@ final class RoutineDetailScreenTests: XCTestCase {
         XCTAssertTrue(app.staticTexts["Exercise in progress…"].waitForExistence(timeout: 3))
 
         let clock = app.staticTexts.matching(
-            NSPredicate(format: "label MATCHES %@", "^[0-9]+:[0-9]{2}$")
+            NSPredicate(format: "label MATCHES %@", "^Time left: [0-9]+:[0-9]{2}$")
         ).firstMatch
         let top = clock.label
         Thread.sleep(forTimeInterval: 2.2)
@@ -106,7 +106,7 @@ final class RoutineDetailScreenTests: XCTestCase {
     @MainActor
     func testAddingASetAppendsARow() {
         openUnstartedDay()
-        let setTicks = app.buttons.matching(NSPredicate(format: "label == %@", "Mark set as complete"))
+        let setTicks = app.switches.matching(NSPredicate(format: "label == %@", "Mark set as complete"))
         let before = setTicks.count
 
         app.buttons["Add set"].firstMatch.tap()
@@ -208,7 +208,7 @@ final class RoutineDetailScreenTests: XCTestCase {
         app.buttons["Start over"].tap()
 
         XCTAssertTrue(app.buttons["SLIDE TO FINISH THIS WORKOUT"].waitForExistence(timeout: 3))
-        XCTAssertFalse(app.buttons["Mark exercise as not complete"].exists)
+        XCTAssertFalse(app.switches["Mark exercise as not complete"].exists)
     }
 
     // The muscles are the catalog's answer to "what does this train", and the
@@ -293,8 +293,8 @@ final class RoutineDetailScreenTests: XCTestCase {
     @MainActor
     func testADayFinishedEarlyCanBeStartedOverAndIsOpenAgain() {
         openUnstartedDay()
-        app.buttons["Mark exercise as complete"].firstMatch.tap()
-        XCTAssertTrue(app.buttons["Mark exercise as not complete"].waitForExistence(timeout: 3))
+        app.switches["Mark exercise as complete"].firstMatch.tap()
+        XCTAssertTrue(app.switches["Mark exercise as not complete"].waitForExistence(timeout: 3))
         let finishEarly = app.buttons["Finish early"]
         app.scrollUntilHittable(finishEarly)
         finishEarly.tap()
@@ -322,7 +322,7 @@ final class RoutineDetailScreenTests: XCTestCase {
 
         XCTAssertTrue(app.buttons["Finish early"].waitForExistence(timeout: 3))
         XCTAssertFalse(app.text(containing: "Finished early").exists)
-        XCTAssertFalse(app.buttons["Mark exercise as not complete"].exists)
+        XCTAssertFalse(app.switches["Mark exercise as not complete"].exists)
 
         app.buttons["Back"].tap()
 
@@ -472,12 +472,17 @@ final class RoutineDetailScreenTests: XCTestCase {
         openRecordedDay()
 
         for label in [
-            "Mark exercise as complete", "Mark exercise as not complete",
-            "Mark set as complete", "Mark set as not complete",
             "Add set", "Delete set", "Start timer", "Finish early",
             "Start this workout over", "Need an alternative?", "Undo adjustment"
         ] {
             XCTAssertFalse(app.buttons[label].exists, label)
+        }
+        // A tick is a toggle, so it answers to switches rather than buttons.
+        for label in [
+            "Mark exercise as complete", "Mark exercise as not complete",
+            "Mark set as complete", "Mark set as not complete"
+        ] {
+            XCTAssertFalse(app.switches[label].exists, label)
         }
         XCTAssertFalse(app.button(containing: "Adjust today").exists)
         XCTAssertFalse(app.staticTexts["SLIDE TO FINISH THIS WORKOUT"].exists)
