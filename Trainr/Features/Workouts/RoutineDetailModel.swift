@@ -69,6 +69,11 @@ final class RoutineDetailModel {
     // same weekday of the newest one.
     private let requestedWeekNumber: Int?
 
+    // The end of a countdown is the only thing the screen has to announce, and a
+    // screen that was away for it has nothing to catch up on, so it is dropped
+    // rather than kept until somebody asks.
+    @ObservationIgnored var onTimerFinished: (() -> Void)?
+
     private var ticker: Task<Void, Never>?
     // Nil when the routine came from no stored day, so nothing persists rows
     // that do not exist.
@@ -385,11 +390,11 @@ final class RoutineDetailModel {
     func startTimer(for exercise: ExerciseUi) {
         guard !state.isReadOnly else { return }
         cancelTick()
-        state.timer = .running(
-            position: exercise.position,
-            totalSeconds: exercise.minutes * Constants.Workout.secondsPerMinute,
-            from: Date()
-        )
+        // A held set is timed by its own span: the minutes on the card are the
+        // whole block rounded up, and the countdown's length is what gets logged.
+        let countdown = exercise.measuredSet?.targetSeconds
+            ?? (exercise.minutes * Constants.Workout.secondsPerMinute)
+        state.timer = .running(position: exercise.position, totalSeconds: countdown, from: Date())
         startTicking()
     }
 
@@ -399,7 +404,7 @@ final class RoutineDetailModel {
     }
 
     func resumeTimer() {
-        guard state.timer != nil else { return }
+        guard state.timer?.isFinished == false else { return }
         cancelTick()
         state.timer?.resume(at: Date())
         startTicking()
@@ -433,11 +438,22 @@ final class RoutineDetailModel {
             state.timer = timer
             return true
         }
-        reopen()
-        state.routine = state.routine.markCompleted(at: timer.position)
-        state.timer = nil
-        persistExercise(at: timer.position, completed: true)
+        finish(timer)
         return false
+    }
+
+    // Running out ends the countdown and says so. It ticks nothing and never
+    // writes a rep or a weight; the one number it may leave is the time it
+    // measured, on a set that is itself a span of time.
+    private func finish(_ timer: ExerciseTimerUi) {
+        state.routine = state.routine.loggingMeasuredSeconds(
+            timer.totalSeconds, at: timer.position
+        )
+        var ended = timer
+        ended.finish()
+        state.timer = ended
+        persistFilledSets(at: [timer.position])
+        onTimerFinished?()
     }
 
     private func cancelTick() {
@@ -450,6 +466,7 @@ final class RoutineDetailModel {
     // screen nobody is looking at.
     func screenWentAway() {
         cancelTick()
+        onTimerFinished = nil
     }
 
     // MARK: - Persistence
@@ -569,22 +586,5 @@ final class RoutineDetailModel {
         statuses.enumerated()
             .filter { index, _ in index != dayNumber - 1 }
             .allSatisfy { _, status in status == .completed }
-    }
-
-    static func sampleState(dayNumber: Int = SampleWorkoutData.defaultDayNumber) -> RoutineDetailState {
-        let days = SampleWorkoutData.weekOne.workoutDays
-        let index = days.firstIndex { $0.dayNumber == dayNumber } ?? 0
-        guard days.indices.contains(index) else { return RoutineDetailState(isLoaded: true) }
-        let day = days[index]
-
-        return RoutineDetailState(
-            routine: day.toRoutineUi(catalog: SampleWorkoutData.catalog),
-            equipment: day.equipment,
-            date: SampleWorkoutData.date(of: day.dayNumber),
-            dayNumber: index + 1,
-            weekNumber: SampleWorkoutData.weekOne.weekNumber,
-            completesTheWeek: completesTheWeek(days.map(\.status), dayNumber: index + 1),
-            isLoaded: true
-        )
     }
 }

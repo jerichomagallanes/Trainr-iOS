@@ -15,6 +15,9 @@ enum Fixture: String {
     // midWeek dated a week and a half back, so every day on it is a record.
     case weekGoneBy
     case lastDayLeft
+    // One day: a hold with no time prescribed, so the cell can only show what
+    // the countdown measured, and work counted in reps.
+    case shortTimers
 }
 
 extension XCUIApplication {

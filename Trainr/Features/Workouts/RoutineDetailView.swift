@@ -94,6 +94,7 @@ struct RoutineDetailView: View {
         }
         // On the outer view on purpose: hung on the routine alone, swapping in
         // the confirmation would read as leaving and kill a running timer.
+        .onAppear { model.onTimerFinished = TimerAlert.fire }
         .onDisappear { model.screenWentAway() }
     }
 
@@ -183,7 +184,9 @@ struct RoutineDetailView: View {
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(Spacing.screen)
+                .dismissesKeyboardOnTap()
             }
+            .scrollDismissesKeyboard(.interactively)
             .onChange(of: state.scrollToPosition) { _, position in
                 guard let position else { return }
                 withAnimation { scroll.scrollTo(position, anchor: .top) }

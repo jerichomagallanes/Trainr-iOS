@@ -94,6 +94,31 @@ final class ExerciseSetTableScreenTests: XCTestCase {
         )
     }
 
+    // The pad used to sit over the bottom of the session until the person left it.
+    @MainActor
+    func testTheNumberPadHasAWayOut() {
+        open("Lower Body Power")
+        let field = app.textFields.firstMatch
+
+        field.tap()
+        XCTAssertTrue(app.keyboards.element.waitForExistence(timeout: 5))
+        app.buttons["Done"].tap()
+        XCTAssertTrue(keyboardWentAway())
+
+        field.tap()
+        XCTAssertTrue(app.keyboards.element.waitForExistence(timeout: 5))
+        app.staticTexts.matching(identifier: "Set").firstMatch.tap()
+        XCTAssertTrue(keyboardWentAway())
+    }
+
+    @MainActor
+    private func keyboardWentAway() -> Bool {
+        let gone = XCTNSPredicateExpectation(
+            predicate: NSPredicate(format: "exists == false"), object: app.keyboards.element
+        )
+        return XCTWaiter().wait(for: [gone], timeout: 5) == .completed
+    }
+
     @MainActor
     func testSwipingARowAwayDeletesExactlyThatSet() {
         open("Lower Body Power")

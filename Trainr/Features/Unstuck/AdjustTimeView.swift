@@ -9,9 +9,8 @@ struct AdjustTimeView: View {
     var onKeepPlan: () -> Void = {}
     var onBack: () -> Void = {}
 
-    // The number pad has no return key, and a field left focused is restored as
-    // first responder when the review is popped, over a footer that no longer
-    // lifts for it.
+    // A field left focused is restored as first responder when the review is
+    // popped, over a footer that no longer lifts for it.
     @FocusState private var isMinutesFocused: Bool
 
     private var customMinutes: Binding<String> {
@@ -65,12 +64,6 @@ struct AdjustTimeView: View {
 
                 priority
                 remember
-            }
-        }
-        .toolbar {
-            ToolbarItemGroup(placement: .keyboard) {
-                Spacer()
-                Button(L10n.done) { isMinutesFocused = false }
             }
         }
     }
