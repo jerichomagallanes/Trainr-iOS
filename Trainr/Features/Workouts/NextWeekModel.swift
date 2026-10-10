@@ -10,16 +10,22 @@ final class NextWeekModel {
     // State rather than a callback: a screen rebuilt mid-generation would never
     // hear a callback made by the one it replaced.
     private(set) var isReady = false
+    // Ready says the screen may leave; this says a week was written. They are
+    // not the same: a run that found the week already there is ready and has
+    // nothing to charge for.
+    private(set) var wroteAWeek = false
 
     private let dependencies: AppDependencies
+    private let charge: () -> Void
     // Without this a second ask runs alongside the first and both write a week.
     private var isWorking = false
     // The request runs to completion either way, having no cancellation point
     // of its own; cancelling only stops the week being written.
     private var run: Task<Void, Never>?
 
-    init(dependencies: AppDependencies) {
+    init(dependencies: AppDependencies, charge: @escaping () -> Void = {}) {
         self.dependencies = dependencies
+        self.charge = charge
     }
 
     // The finished week seeds the request, so the next week progresses from
@@ -51,8 +57,8 @@ final class NextWeekModel {
         let copy = Self.repeated(source, weekNumber: latest.weekNumber + 1, startingOn: startAfter(latest))
         // Ready means a week was written, so it cannot be announced from a
         // defer: the guard above can turn the copy down.
-        guard dependencies.attempt("savePlan", { try dependencies.store.savePlan(copy) }) != nil
-        else { return }
+        wroteAWeek = wrote(copy)
+        guard wroteAWeek else { return }
         isReady = true
     }
 
@@ -74,6 +80,7 @@ final class NextWeekModel {
     private func beginRun() {
         failure = nil
         isReady = false
+        wroteAWeek = false
     }
 
     func cancelRun() {
@@ -102,7 +109,7 @@ final class NextWeekModel {
             failureCount += 1
             return
         }
-        dependencies.attempt("savePlan", { try dependencies.store.savePlan(plan) })
+        wroteAWeek = wrote(plan)
         isReady = true
     }
 
@@ -136,10 +143,20 @@ final class NextWeekModel {
             failureCount += 1
             return
         }
-        // Only now: one week per number, so the old goes with the new in hand.
-        dependencies.attempt("deletePlan", { try dependencies.store.deletePlan(id: current.id) })
-        dependencies.attempt("savePlan", { try dependencies.store.savePlan(plan) })
+        // One save, not a delete and a save: saving replaces the week carrying
+        // this number, and there is no transaction to put the two inside, so a
+        // write that fails after a delete would take the week and its logs with it.
+        wroteAWeek = wrote(plan)
         isReady = true
+    }
+
+    // Charged where the week lands rather than on the screen that asked for it:
+    // the screen's own wait outlives the save, and the process can end inside it.
+    private func wrote(_ plan: WeeklyPlan) -> Bool {
+        guard dependencies.attempt("savePlan", { try dependencies.store.savePlan(plan) }) != nil
+        else { return false }
+        charge()
+        return true
     }
 
     // Nothing when the next week already exists, so revisiting the completion

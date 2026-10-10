@@ -61,6 +61,23 @@ final class TrainingStore {
         try context.save()
     }
 
+    // One save, because saving the user cascades away every week they have
+    // trained: written apart, a week that does not land leaves no plan at all.
+    func saveUser(_ profile: UserProfile, startingWith plan: WeeklyPlan) throws {
+        do {
+            if let existing = try userRecord(id: profile.id) {
+                context.delete(existing)
+            }
+            let owner = UserRecord(profile)
+            context.insert(owner)
+            context.insert(planRecord(plan, owner: owner))
+            try context.save()
+        } catch {
+            context.rollback()
+            throw error
+        }
+    }
+
     func user(id: UUID) throws -> UserProfile? {
         try userRecord(id: id)?.profile
     }
@@ -93,18 +110,28 @@ final class TrainingStore {
         guard let owner = try userRecord(id: plan.userID) else {
             throw StoreError.noSuchUser(plan.userID)
         }
-        // Every week carrying this number, not just the first: a store that
-        // somehow holds two should not be left holding one.
-        for existing in owner.plans where existing.weekNumber == plan.weekNumber {
-            try detachNotes(from: existing.days)
-            context.delete(existing)
+        do {
+            // Every week carrying this number, not just the first: a store that
+            // somehow holds two should not be left holding one.
+            for existing in owner.plans where existing.weekNumber == plan.weekNumber {
+                try detachNotes(from: existing.days)
+                context.delete(existing)
+            }
+            context.insert(planRecord(plan, owner: owner))
+            try context.save()
+        } catch {
+            // The delete is pending until the save: left behind, the next
+            // unrelated save in the app commits it and the week goes anyway.
+            context.rollback()
+            throw error
         }
+    }
 
+    private func planRecord(_ plan: WeeklyPlan, owner: UserRecord) -> WeeklyPlanRecord {
         let record = WeeklyPlanRecord(plan)
         record.user = owner
         record.days = plan.workoutDays.map(dayRecord)
-        context.insert(record)
-        try context.save()
+        return record
     }
 
     func plans(for userID: UUID) throws -> [WeeklyPlan] {
