@@ -81,6 +81,43 @@ struct SetFormattingTests {
         #expect(cell.contains("100"))
     }
 
+    @Test("A filled cell is named by its column and set")
+    func aFilledCellIsNamedByItsColumnAndSet() {
+        #expect(
+            SetFormatting.cellLabel(column: "Set 1 weight in kilograms", value: "17.5", target: "20")
+                == "Set 1 weight in kilograms"
+        )
+        #expect(
+            SetFormatting.cellLabel(column: "Set 2 reps", value: "6", target: "12") == "Set 2 reps"
+        )
+    }
+
+    // The placeholder is the prescription; reading it as the value claims a set
+    // that was never logged.
+    @Test("An empty cell offers its target without claiming it")
+    func anEmptyCellOffersItsTargetWithoutClaimingIt() {
+        #expect(
+            SetFormatting.cellLabel(column: "Set 1 reps", value: nil, target: "12")
+                == "Set 1 reps, target 12"
+        )
+        #expect(
+            SetFormatting.cellLabel(column: "Set 3 time", value: nil, target: "1:30")
+                == "Set 3 time, target 1:30"
+        )
+    }
+
+    @Test("A cell with neither value nor target is just its column")
+    func aCellWithNeitherValueNorTargetIsJustItsColumn() {
+        #expect(SetFormatting.cellLabel(column: "Set 1 reps", value: nil, target: nil) == "Set 1 reps")
+    }
+
+    @Test("A set cell names the unit its column is showing")
+    func aWeightCellNamesItsUnit() {
+        #expect(L10n.setWeightCell("1", L10n.weightUnitKilograms) == "Set 1 weight in kilograms")
+        #expect(L10n.setWeightCell("1", L10n.weightUnitPounds) == "Set 1 weight in pounds")
+        #expect(L10n.setNumberLabel("3") == "Set 3")
+    }
+
     @Test("A timer counts down in the same clock shape")
     func timerDisplayMatches() {
         #expect(ExerciseTimerUi(position: 1, remainingSeconds: 58, isRunning: true).display == "0:58")

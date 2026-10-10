@@ -1578,6 +1578,17 @@
         }
       }
     },
+    "edit_section": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Edit %1$@"
+          }
+        }
+      }
+    },
     "enter_your_age": {
       "extractionState": "manual",
       "localizations": {
@@ -3948,6 +3959,17 @@
         }
       }
     },
+    "pro_compare_no": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No"
+          }
+        }
+      }
+    },
     "pro_compare_one": {
       "extractionState": "manual",
       "localizations": {
@@ -3992,6 +4014,17 @@
         }
       }
     },
+    "pro_compare_row": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@: %2$@, %3$@. %4$@, %5$@."
+          }
+        }
+      }
+    },
     "pro_compare_timer": {
       "extractionState": "manual",
       "localizations": {
@@ -4010,6 +4043,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Need to compare?"
+          }
+        }
+      }
+    },
+    "pro_compare_yes": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yes"
           }
         }
       }
@@ -5315,6 +5359,17 @@
         }
       }
     },
+    "set_cell_target": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@, target %2$@"
+          }
+        }
+      }
+    },
     "set_column": {
       "extractionState": "manual",
       "localizations": {
@@ -5326,6 +5381,39 @@
         }
       }
     },
+    "set_number_label": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Set %1$@"
+          }
+        }
+      }
+    },
+    "set_reps_cell": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Set %1$@ reps"
+          }
+        }
+      }
+    },
+    "set_time_cell": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Set %1$@ time"
+          }
+        }
+      }
+    },
     "set_up_your_workout": {
       "extractionState": "manual",
       "localizations": {
@@ -5333,6 +5421,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "SET UP YOUR WORKOUT"
+          }
+        }
+      }
+    },
+    "set_weight_cell": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Set %1$@ weight in %2$@"
           }
         }
       }
@@ -5641,6 +5740,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Timer paused"
+          }
+        }
+      }
+    },
+    "timer_remaining": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Time left: %1$@"
           }
         }
       }
@@ -6204,6 +6314,28 @@
           "stringUnit": {
             "state": "translated",
             "value": "155"
+          }
+        }
+      }
+    },
+    "weight_unit_kilograms": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "kilograms"
+          }
+        }
+      }
+    },
+    "weight_unit_pounds": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "pounds"
           }
         }
       }

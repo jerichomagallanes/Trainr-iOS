@@ -34,7 +34,7 @@ final class TimerFinishScreenTests: XCTestCase {
     }
 
     private var ticks: XCUIElementQuery {
-        app.buttons.matching(NSPredicate(format: "label == %@", "Mark set as complete"))
+        app.switches.matching(NSPredicate(format: "label == %@", "Mark set as complete"))
     }
 
     // A hold is what the countdown measured, so that set may carry the time it
@@ -44,8 +44,8 @@ final class TimerFinishScreenTests: XCTestCase {
         openTimedDay()
         let ticked = ticks.count
         let time = app.textFields.firstMatch
-        // An empty cell reads its target back, so a hold with nothing
-        // prescribed is the only cell whose time can have come from the
+        // A cell carries its target in its label, not its value, so a hold with
+        // nothing prescribed is the only cell whose time can have come from the
         // countdown.
         XCTAssertEqual(time.value as? String ?? "", "")
         startTimer(at: 0)
@@ -53,7 +53,7 @@ final class TimerFinishScreenTests: XCTestCase {
         XCTAssertTrue(app.staticTexts["Time is up. Tick the set when you are done."]
             .waitForExistence(timeout: blockSeconds + settle))
 
-        XCTAssertTrue(app.staticTexts["0:00"].exists)
+        XCTAssertTrue(app.staticTexts["Time left: 0:00"].exists)
         XCTAssertFalse(app.buttons["Pause"].exists)
         XCTAssertFalse(app.buttons["Resume"].exists)
         XCTAssertTrue(app.buttons["Reset"].exists)
@@ -61,8 +61,8 @@ final class TimerFinishScreenTests: XCTestCase {
 
         XCTAssertEqual(time.value as? String, "1:00")
         XCTAssertEqual(ticks.count, ticked)
-        XCTAssertFalse(app.buttons["Mark set as not complete"].exists)
-        XCTAssertFalse(app.buttons["Mark exercise as not complete"].exists)
+        XCTAssertFalse(app.switches["Mark set as not complete"].exists)
+        XCTAssertFalse(app.switches["Mark exercise as not complete"].exists)
     }
 
     // Running out is nobody doing the work: the numbers it used to write became
@@ -77,7 +77,7 @@ final class TimerFinishScreenTests: XCTestCase {
             .waitForExistence(timeout: blockSeconds + settle))
 
         XCTAssertEqual(ticks.count, ticked)
-        XCTAssertFalse(app.buttons["Mark set as not complete"].exists)
-        XCTAssertFalse(app.buttons["Mark exercise as not complete"].exists)
+        XCTAssertFalse(app.switches["Mark set as not complete"].exists)
+        XCTAssertFalse(app.switches["Mark exercise as not complete"].exists)
     }
 }

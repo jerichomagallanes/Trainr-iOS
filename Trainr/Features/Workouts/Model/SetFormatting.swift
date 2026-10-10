@@ -40,6 +40,13 @@ nonisolated enum SetFormatting {
         return minutes * Constants.Workout.secondsPerMinute + seconds
     }
 
+    // The target is a prescription rather than something that was entered, so an
+    // empty cell carries it in its label instead of reading as a logged value.
+    static func cellLabel(column: String, value: String?, target: String?) -> String {
+        guard value == nil, let target else { return column }
+        return L10n.setCellTarget(column, target)
+    }
+
     // A set prescribed but never logged shows a dash, not its target.
     static func previousCell(
         measure: ExerciseMeasure,

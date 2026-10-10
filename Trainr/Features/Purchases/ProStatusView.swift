@@ -58,6 +58,7 @@ struct ProStatusView: View {
                 .font(.oneOff(18))
                 .foregroundStyle(Color.brandStrong)
                 .frame(width: 28, height: 28)
+                .accessibilityHidden(true)
             Text(heading)
                 .font(.labelLarge)
                 .foregroundStyle(Color.onSurface)

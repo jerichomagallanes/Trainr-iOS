@@ -17,7 +17,7 @@ final class ExerciseSetTableScreenTests: XCTestCase {
     }
 
     private var setTicks: XCUIElementQuery {
-        app.buttons.matching(NSPredicate(format: "label == %@", "Mark set as complete"))
+        app.switches.matching(NSPredicate(format: "label == %@", "Mark set as complete"))
     }
 
     // Started from the tick box at the right edge so the swipe has room to travel.
@@ -66,9 +66,10 @@ final class ExerciseSetTableScreenTests: XCTestCase {
         open("Lower Body Power")
 
         let first = app.textFields.firstMatch
-        XCTAssertEqual(first.value as? String, "12")
+        XCTAssertEqual(first.label, "Set 1 reps, target 12")
+        XCTAssertEqual(first.value as? String ?? "", "")
         XCTAssertEqual(setTicks.count, 13)
-        XCTAssertFalse(app.buttons["Mark set as not complete"].exists)
+        XCTAssertFalse(app.switches["Mark set as not complete"].exists)
     }
 
     @MainActor
@@ -76,7 +77,7 @@ final class ExerciseSetTableScreenTests: XCTestCase {
         open("Lower Body Power")
         setTicks.firstMatch.tap()
 
-        XCTAssertTrue(app.buttons["Mark set as not complete"].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.switches["Mark set as not complete"].waitForExistence(timeout: 3))
         XCTAssertEqual(setTicks.count, 12)
     }
 
@@ -183,12 +184,14 @@ final class ExerciseSetTableScreenTests: XCTestCase {
     }
 
     // Step-Ups is the day's only weighted exercise, prescribing 12 kg for 10
-    // reps, so the cell beside the one field asking for 10 is its weight.
+    // reps, so the cell beside the one field asking for 10 is its weight. An
+    // unlogged cell carries its target in its label rather than its value.
     @MainActor
     private func stepUpWeight() -> XCUIElement {
         let fields = app.textFields
-        let prescribed = (0..<fields.count).map { fields.element(boundBy: $0).value as? String }
-        guard let reps = prescribed.firstIndex(of: "10"), reps > 0 else {
+        let labels = (0..<fields.count).map { fields.element(boundBy: $0).label }
+        guard let reps = labels.firstIndex(where: { $0.hasSuffix("reps, target 10") }), reps > 0
+        else {
             XCTFail("the day no longer has a weighted exercise prescribing 10 reps")
             return fields.firstMatch
         }

@@ -127,6 +127,7 @@ private struct SetRow: View {
                     .font(.labelLarge)
                     .foregroundStyle(Color.onSurface)
                     .frame(minWidth: setColumnWidth)
+                    .accessibilityLabel(L10n.setNumberLabel("\(set.setNumber)"))
 
                 if let previousText {
                     Text(previousText)
@@ -154,6 +155,10 @@ private struct SetRow: View {
         NumberCell(
             value: set.actualWeightKg.map { SetFormatting.weight($0, in: units) },
             placeholder: set.targetWeightKg.map { SetFormatting.weight($0, in: units) },
+            column: L10n.setWeightCell(
+                "\(set.setNumber)",
+                units == .imperial ? L10n.weightUnitPounds : L10n.weightUnitKilograms
+            ),
             isDecimal: true,
             rangeMessage: L10n.valueRangeHint(
                 L10n.weightLabel,
@@ -189,6 +194,8 @@ private struct SetRow: View {
             }
             .buttonStyle(.plain)
             .accessibilityLabel(set.isCompleted ? L10n.markSetIncomplete : L10n.markSetComplete)
+            .accessibilityAddTraits(.isToggle)
+            .accessibilityValue(set.isCompleted ? L10n.completed : L10n.notCompleted)
         }
     }
 
@@ -206,6 +213,7 @@ private struct SetRow: View {
             DurationCell(
                 seconds: set.actualSeconds,
                 placeholderSeconds: set.targetSeconds,
+                column: L10n.setTimeCell("\(set.setNumber)"),
                 rangeMessage: L10n.valueRangeHint(
                     L10n.timeColumn,
                     SetFormatting.seconds(NumberRules.lowestSeconds),
@@ -223,6 +231,7 @@ private struct SetRow: View {
             NumberCell(
                 value: set.actualReps.map(String.init),
                 placeholder: set.targetReps.map(String.init),
+                column: L10n.setRepsCell("\(set.setNumber)"),
                 isDecimal: false,
                 rangeMessage: L10n.valueRangeHint(
                     L10n.repsColumn, "\(NumberRules.lowestReps)", "\(NumberRules.maxReps)"
@@ -245,6 +254,7 @@ private struct SetRow: View {
 private struct NumberCell: View {
     let value: String?
     let placeholder: String?
+    let column: String
     let isDecimal: Bool
     let rangeMessage: String
     let check: (String) -> NumberEntry
@@ -278,6 +288,10 @@ private struct NumberCell: View {
                     .strokeBorder(Color.outlineControl, lineWidth: 1)
             }
             .padding(.horizontal, Spacing.extraSmall)
+            .accessibilityLabel(
+                SetFormatting.cellLabel(column: column, value: value, target: placeholder)
+            )
+            .accessibilityValue(text)
             .onAppear { text = value ?? "" }
             // The same number written another way is not a correction: "22." and
             // "22.50" both hold 22.5, and rewriting the field would eat the
@@ -307,6 +321,7 @@ private struct NumberCell: View {
 private struct DurationCell: View {
     let seconds: Int?
     let placeholderSeconds: Int?
+    let column: String
     let rangeMessage: String
     var isReadOnly = false
     let onChange: (Int?) -> Void
@@ -347,6 +362,12 @@ private struct DurationCell: View {
                 .strokeBorder(Color.outlineControl, lineWidth: 1)
         }
         .padding(.horizontal, Spacing.extraSmall)
+        .accessibilityLabel(SetFormatting.cellLabel(
+            column: column,
+            value: seconds.map(SetFormatting.seconds),
+            target: placeholderSeconds.map(SetFormatting.seconds)
+        ))
+        .accessibilityValue(text)
         .onAppear { text = face }
         // The row keeps its id when the stored seconds are rewritten, so
         // onAppear alone leaves a stale time. Only on disagreement, so a
