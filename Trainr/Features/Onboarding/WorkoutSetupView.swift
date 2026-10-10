@@ -3,6 +3,9 @@ import SwiftUI
 struct WorkoutSetupView: View {
     let stockedEquipment: Set<Equipment>
     var isEditing = false
+    // The longest session these answers can really build, which is the answer
+    // itself unless the split cannot fill it.
+    let longestSessionMinutes: ([Equipment], Int, Int) async -> Int
     let onNext: ([Equipment], UnitSystem?, Int, Int) -> Void
     let onBack: () -> Void
 
@@ -10,16 +13,19 @@ struct WorkoutSetupView: View {
     @State private var selectedDays: Int?
     @State private var selectedDuration: Int?
     @State private var selectedLiftingUnits: UnitSystem?
+    @State private var fallsShortAt: Int?
 
     init(
         stockedEquipment: Set<Equipment> = Set(Equipment.choices),
         initial: UserProfile? = nil,
         isEditing: Bool = false,
+        longestSessionMinutes: @escaping ([Equipment], Int, Int) async -> Int = { _, _, duration in duration },
         onNext: @escaping ([Equipment], UnitSystem?, Int, Int) -> Void,
         onBack: @escaping () -> Void
     ) {
         self.stockedEquipment = stockedEquipment
         self.isEditing = isEditing
+        self.longestSessionMinutes = longestSessionMinutes
         self.onNext = onNext
         self.onBack = onBack
         _selectedEquipment = State(initialValue: Set(initial?.availableEquipment ?? []))
@@ -128,8 +134,33 @@ struct WorkoutSetupView: View {
                     }
                 }
 
+                if let fallsShortAt {
+                    Spacer().frame(height: Spacing.card)
+                    Text(L10n.sessionsFallShortMessage(fallsShortAt))
+                        .font(.body12)
+                        .foregroundStyle(Color.onSurfaceMuted)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+            }
+            // Off the main actor: this builds a whole week, and it is rerun on
+            // every chip tap.
+            .task(id: answered) {
+                guard let days = selectedDays, let duration = selectedDuration else {
+                    fallsShortAt = nil
+                    return
+                }
+                let longest = await longestSessionMinutes(equipmentList, days, duration)
+                // A chip tap cancels this run, but the build it awaits is detached
+                // and finishes anyway; without the check it writes a note for the
+                // answer that was tapped away.
+                guard !Task.isCancelled else { return }
+                fallsShortAt = longest * 10 < duration * 9 ? longest : nil
             }
         }
+    }
+
+    private var answered: [String] {
+        equipmentList.map(\.rawValue) + ["\(selectedDays ?? 0)", "\(selectedDuration ?? 0)"]
     }
 
     private var equipmentOptions: [(Equipment, String)] {
