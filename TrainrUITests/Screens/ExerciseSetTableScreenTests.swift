@@ -114,6 +114,86 @@ final class ExerciseSetTableScreenTests: XCTestCase {
         )
     }
 
+    // Android's cell let a fourth digit through when the digits arrived one at a
+    // time, so the same keystrokes are pinned here.
+    @MainActor
+    func testAFourthRepDigitNeverLandsOneKeystrokeAtATime() {
+        open("Lower Body Power")
+
+        let reps = app.textFields.firstMatch
+        reps.tap()
+        reps.typeText("999")
+        wait(reps, toRead: "999")
+
+        reps.typeText("9")
+        // The message is raised by the pass that refuses the digit, so waiting
+        // for it is what gives the reading below the chance to fail: read any
+        // sooner and a cell that has not applied the fourth digit yet answers
+        // 999 for the wrong reason.
+        XCTAssertTrue(app.staticTexts["Reps must be between 0 and 999"].waitForExistence(timeout: 5))
+        XCTAssertEqual(reps.value as? String, "999")
+
+        reopen()
+        wait(app.textFields.firstMatch, toRead: "999")
+    }
+
+    @MainActor
+    func testAnExtraWeightDigitNeverLandsOneKeystrokeAtATime() {
+        open("Lower Body Power")
+
+        let weight = stepUpWeight()
+        app.scrollUntilHittable(weight)
+        weight.tap()
+        weight.typeText("1000")
+        wait(weight, toRead: "1000")
+
+        weight.typeText("0")
+        XCTAssertTrue(app.staticTexts["Weight must be between 0 and 1000 kg"].waitForExistence(timeout: 5))
+        XCTAssertEqual(weight.value as? String, "1000")
+
+        reopen()
+        let reread = stepUpWeight()
+        app.scrollUntilHittable(reread)
+        wait(reread, toRead: "1000")
+    }
+
+    @MainActor
+    private func wait(_ field: XCUIElement, toRead expected: String) {
+        let arrived = XCTNSPredicateExpectation(
+            predicate: NSPredicate(format: "value == %@", expected),
+            object: field
+        )
+        XCTAssertEqual(
+            XCTWaiter().wait(for: [arrived], timeout: 5),
+            .completed,
+            "the field reads \(field.value as? String ?? "nothing"), not \(expected)"
+        )
+    }
+
+    // Read back through the store rather than off the screen, so a number the
+    // field refused cannot still be the one that was logged.
+    @MainActor
+    private func reopen() {
+        app.buttons["Done"].tap()
+        app.buttons["Back"].tap()
+        XCTAssertTrue(app.staticTexts["YOUR WEEKLY WORKOUT PLAN"].waitForExistence(timeout: 10))
+        app.button(containing: "Lower Body Power").tap()
+        XCTAssertTrue(app.staticTexts["LOWER BODY POWER"].waitForExistence(timeout: 5))
+    }
+
+    // Step-Ups is the day's only weighted exercise, prescribing 12 kg for 10
+    // reps, so the cell beside the one field asking for 10 is its weight.
+    @MainActor
+    private func stepUpWeight() -> XCUIElement {
+        let fields = app.textFields
+        let prescribed = (0..<fields.count).map { fields.element(boundBy: $0).value as? String }
+        guard let reps = prescribed.firstIndex(of: "10"), reps > 0 else {
+            XCTFail("the day no longer has a weighted exercise prescribing 10 reps")
+            return fields.firstMatch
+        }
+        return fields.element(boundBy: reps - 1)
+    }
+
     // The pad used to sit over the bottom of the session until the person left it.
     @MainActor
     func testTheNumberPadHasAWayOut() {
