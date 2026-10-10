@@ -78,24 +78,72 @@ struct BodyMetricsConverterTests {
         #expect(BodyMetricsConverter.convertHeightToMetric("510") == "")
     }
 
-    @Test("Kilograms and pounds convert to whole numbers both ways")
+    @Test("Kilograms and pounds keep the tenth the field accepts, both ways")
     func weightConversion() {
-        #expect(BodyMetricsConverter.convertWeightToImperial("70") == "154")
-        #expect(BodyMetricsConverter.convertWeightToImperial("80") == "176")
+        #expect(BodyMetricsConverter.convertWeightToImperial("70") == "154.3")
+        #expect(BodyMetricsConverter.convertWeightToImperial("650") == "1433")
         #expect(BodyMetricsConverter.convertWeightToImperial("abc") == "")
-        #expect(BodyMetricsConverter.convertWeightToMetric("154") == "70")
+        #expect(BodyMetricsConverter.convertWeightToMetric("154") == "69.9")
         #expect(BodyMetricsConverter.convertWeightToMetric("abc") == "")
     }
 
-    @Test("A round trip through the other units lands within a kilogram or two centimetres")
-    func roundTrips() {
-        let weightBack = BodyMetricsConverter.convertWeightToMetric(
-            BodyMetricsConverter.convertWeightToImperial("72"))
-        #expect(abs((Int(weightBack) ?? 0) - 72) <= 1)
+    @Test("A weight round trip gives back the kilograms that were typed")
+    func weightRoundTripIsExact() {
+        for typed in ["70", "95.5", "80.1", "20", "650"] {
+            let back = BodyMetricsConverter.convertWeightToMetric(
+                BodyMetricsConverter.convertWeightToImperial(typed))
 
-        let heightBack = BodyMetricsConverter.convertHeightToMetric(
-            BodyMetricsConverter.convertHeightToImperial("175"))
-        #expect(abs((Int(heightBack) ?? 0) - 175) <= 2)
+            #expect(Double(back) == Double(typed))
+        }
+    }
+
+    // A whole inch is coarser than a centimetre, so the conversions cannot be
+    // each other's inverse; the text handed over is given back instead.
+    @Test("A swapped field gives back the centimetres that were typed")
+    func heightRoundTripGivesBackWhatWasTyped() {
+        let toImperial = BodyMetricsConverter.swapUnits(
+            "177", last: BodyMetricsConverter.UnitSwap(),
+            convert: BodyMetricsConverter.convertHeightToImperial
+        )
+        let back = BodyMetricsConverter.swapUnits(
+            toImperial.shown, last: toImperial,
+            convert: BodyMetricsConverter.convertHeightToMetric
+        )
+
+        #expect(toImperial.shown == "5'10\"")
+        #expect(back.shown == "177")
+    }
+
+    @Test("An edited field is converted rather than given back")
+    func anEditedFieldIsConverted() {
+        let toImperial = BodyMetricsConverter.swapUnits(
+            "177", last: BodyMetricsConverter.UnitSwap(),
+            convert: BodyMetricsConverter.convertHeightToImperial
+        )
+        let back = BodyMetricsConverter.swapUnits(
+            "5'11\"", last: toImperial, convert: BodyMetricsConverter.convertHeightToMetric
+        )
+
+        #expect(back.shown == "180")
+    }
+
+    @Test("Switching units over and over never drifts")
+    func repeatedSwapsNeverDrift() {
+        var text = "177"
+        var swap = BodyMetricsConverter.UnitSwap()
+        var metric = true
+
+        for _ in 0..<6 {
+            swap = BodyMetricsConverter.swapUnits(text, last: swap) {
+                metric
+                    ? BodyMetricsConverter.convertHeightToImperial($0)
+                    : BodyMetricsConverter.convertHeightToMetric($0)
+            }
+            text = swap.shown
+            metric.toggle()
+        }
+
+        #expect(text == "177")
     }
 
     @Test("Parsing hands back raw metric values and converts imperial ones")
@@ -118,9 +166,9 @@ struct BodyMetricsConverterTests {
         #expect(BodyMetricsConverter.calculateBMI(height: "0", weight: "70", useMetric: true) == nil)
     }
 
-    @Test("Whole kilograms print without a decimal; fractions keep one")
-    func formatKilograms() {
-        #expect(BodyMetricsConverter.formatKilograms(72) == "72")
-        #expect(BodyMetricsConverter.formatKilograms(72.46) == "72.5")
+    @Test("Whole numbers print without a decimal; fractions keep one")
+    func formatWeight() {
+        #expect(BodyMetricsConverter.formatWeight(72) == "72")
+        #expect(BodyMetricsConverter.formatWeight(72.46) == "72.5")
     }
 }

@@ -104,8 +104,8 @@ final class OnboardingScreenTests: XCTestCase {
         XCTAssertTrue(sources.isHittable)
         sources.tap()
         XCTAssertTrue(app.staticTexts["About BMI & sources"].waitForExistence(timeout: 5))
-        XCTAssertTrue(app.links["CDC: Adult BMI categories"].exists)
-        XCTAssertTrue(app.links["CDC: About BMI"].exists)
+        XCTAssertTrue(app.document("CDC: Adult BMI categories").exists)
+        XCTAssertTrue(app.document("CDC: About BMI").exists)
         let screenshot = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
         screenshot.name = "BMI citations"
         screenshot.lifetime = .keepAlways
@@ -191,7 +191,25 @@ final class OnboardingScreenTests: XCTestCase {
         XCTAssertTrue(app.staticTexts["Weight (lbs)"].exists)
         let values = app.textFields.allElementsBoundByIndex.compactMap { $0.value as? String }
         XCTAssertTrue(values.contains("5'7\""), "\(values)")
-        XCTAssertTrue(values.contains("154"), "\(values)")
+        XCTAssertTrue(values.contains("154.3"), "\(values)")
+    }
+
+    // Looking at a measurement in the other units must not edit it.
+    @MainActor
+    func testARoundTripThroughImperialLeavesTheMeasurementsAlone() {
+        app = .launched(startingAt: "bodyMetrics")
+        XCTAssertTrue(app.staticTexts["YOUR MEASUREMENTS"].waitForExistence(timeout: 20))
+        app.textFields["170"].tap()
+        app.textFields["170"].typeText("177")
+        app.textFields["70"].tap()
+        app.textFields["70"].typeText("95.5")
+
+        app.buttons["Imperial"].tap()
+        app.buttons["Metric"].tap()
+
+        let values = app.textFields.allElementsBoundByIndex.compactMap { $0.value as? String }
+        XCTAssertTrue(values.contains("177"), "\(values)")
+        XCTAssertTrue(values.contains("95.5"), "\(values)")
     }
 
     @MainActor

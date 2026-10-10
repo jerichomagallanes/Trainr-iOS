@@ -143,12 +143,31 @@ final class WeeklyPlanScreenTests: XCTestCase {
 
     @MainActor
     func testAboutShowsWhichBuildIsRunning() {
+        openAbout()
+
+        // The build next to the version, so a tester can say which one they ran.
+        let stamp = app.staticTexts.matching(
+            NSPredicate(format: "label MATCHES %@", #"Version .+ \(\d+\)"#)
+        ).firstMatch
+        XCTAssertTrue(stamp.waitForExistence(timeout: 3))
+        app.buttons["Close"].tap()
+    }
+
+    // The paywall is not somewhere everyone goes, and the documents have to be
+    // readable without it.
+    @MainActor
+    func testAboutLinksToTheTermsAndThePrivacyPolicy() {
+        openAbout()
+
+        XCTAssertTrue(app.document("Terms of Use").waitForExistence(timeout: 3))
+        XCTAssertTrue(app.document("Privacy Policy").exists)
+    }
+
+    @MainActor
+    private func openAbout() {
         openPlan(.midWeek)
         app.buttons["Profile and app"].tap()
         app.buttons["About Trainr"].tap()
-
-        XCTAssertTrue(app.text(containing: "Version ").waitForExistence(timeout: 3))
-        app.buttons["Close"].tap()
     }
 
     @MainActor
@@ -175,6 +194,26 @@ final class WeeklyPlanScreenTests: XCTestCase {
         XCTAssertFalse(app.buttons["Track Weekly Progress →"].exists)
         XCTAssertFalse(app.buttons["Workout plan options"].exists)
         XCTAssertFalse(app.buttons["GENERATE NEXT WEEK"].exists)
+    }
+
+    // The week being trained is still the week that can be written again, so the
+    // menu it is opened with from Weekly Progress has to reach the generation.
+    @MainActor
+    func testRewritingTheCurrentWeekOpenedFromProgressRunsTheGeneration() {
+        openPlan(.midWeek)
+        app.buttons["Track Weekly Progress \u{2192}"].tap()
+        XCTAssertTrue(app.staticTexts["WEEKLY PROGRESS"].waitForExistence(timeout: 5))
+        app.button(startingWith: "Week 1").tap()
+        XCTAssertTrue(app.buttons["Back"].waitForExistence(timeout: 5))
+
+        app.buttons["Workout plan options"].tap()
+        app.buttons["Generate this week again"].tap()
+        XCTAssertTrue(app.staticTexts["Generate this week again?"].waitForExistence(timeout: 3))
+        app.buttons["Generate again"].tap()
+
+        XCTAssertTrue(app.staticTexts["YOUR WEEKLY WORKOUT PLAN"].waitForExistence(timeout: 20))
+        XCTAssertTrue(app.text(containing: "Week 1:").exists)
+        XCTAssertFalse(app.buttons["Back"].exists)
     }
 
     @MainActor

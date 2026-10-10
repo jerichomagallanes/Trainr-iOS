@@ -6,7 +6,7 @@ extension WeeklyPlan {
     // week the app calls yours. Enforced here rather than in a menu's
     // visibility, because a screen may forget to ask and the write must refuse.
     func isReadyForTheNextWeek(now: Date = Date(), calendar: Calendar = .current) -> Bool {
-        let allDone = !workoutDays.isEmpty && workoutDays.allSatisfy { $0.status == .completed }
+        let allDone = !workoutDays.isEmpty && workoutDays.allSatisfy(\.countsAsCompleted)
         // The fallback the plan list reads dates by, so a plan stored before
         // startDate existed is not left without a way on.
         let start = startDate ?? SampleWorkoutData.weekStart

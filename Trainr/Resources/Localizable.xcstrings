@@ -669,7 +669,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Version %1$@"
+            "value": "Version %1$@ (%2$lld)"
           }
         }
       }
@@ -1033,6 +1033,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Stay in a range your shoulder is comfortable in."
+          }
+        }
+      }
+    },
+    "caution_title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "What to watch"
           }
         }
       }

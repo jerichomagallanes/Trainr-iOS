@@ -200,14 +200,33 @@ struct RoutineUiTests {
 
     @Test("A week ends when every other day is already done")
     func lastOutstandingDayEndsTheWeek() {
-        let days = [
-            WorkoutDay(dayNumber: 1, title: "A", status: .completed, duration: 45, exerciseCount: 3),
-            WorkoutDay(dayNumber: 3, title: "B", status: .notStarted, duration: 45, exerciseCount: 3),
-            WorkoutDay(dayNumber: 5, title: "C", status: .completed, duration: 45, exerciseCount: 3)
-        ]
+        let counted = [true, false, true]
 
-        #expect(RoutineDetailModel.completesTheWeek(days.map(\.status), dayNumber: 2))
-        #expect(!RoutineDetailModel.completesTheWeek(days.map(\.status), dayNumber: 1))
+        #expect(RoutineDetailModel.completesTheWeek(counted, dayNumber: 2))
+        #expect(!RoutineDetailModel.completesTheWeek(counted, dayNumber: 1))
+    }
+
+    // A day closed early with nothing logged is not a day of training, so it
+    // cannot be what the week is celebrated for.
+    @Test("A day closed with nothing performed leaves the week open")
+    func aDayClosedWithNothingPerformedLeavesTheWeekOpen() {
+        var closedEarly = WorkoutDay(
+            dayNumber: 1, title: "A", status: .completed, duration: 45, exerciseCount: 3,
+            exercises: [WorkoutExercise(name: "Movement")]
+        )
+        let trained = WorkoutDay(
+            dayNumber: 5, title: "C", status: .completed, duration: 45, exerciseCount: 3,
+            exercises: [WorkoutExercise(name: "Movement", isCompleted: true)]
+        )
+
+        #expect(!RoutineDetailModel.completesTheWeek(
+            [closedEarly, trained].map(\.countsAsCompleted), dayNumber: 2
+        ))
+
+        closedEarly.exercises[0].sets = [ExerciseSet(setNumber: 1, isCompleted: true)]
+        #expect(RoutineDetailModel.completesTheWeek(
+            [closedEarly, trained].map(\.countsAsCompleted), dayNumber: 2
+        ))
     }
 
     // MARK: - What a countdown may write

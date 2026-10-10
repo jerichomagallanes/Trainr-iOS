@@ -135,7 +135,7 @@ final class RoutineDetailModel {
         // "Day 2", not day 3: the design counts workout days, not weekdays.
         state.dayNumber = index + 1
         state.weekNumber = week.weekNumber
-        state.completesTheWeek = Self.completesTheWeek(week.days.map(\.status), dayNumber: index + 1)
+        state.completesTheWeek = Self.completesTheWeek(week.days.map(\.countsAsCompleted), dayNumber: index + 1)
         state.outcome = dependencies.attempt("outcome", { try store.outcome(dayID: day.id) })
         state.activeAdjustment = adjustment
         state.adjustedBanner = adjustment.map {
@@ -582,9 +582,9 @@ final class RoutineDetailModel {
     }
 
     // Finishing the last outstanding day ends the week, not just the day.
-    static func completesTheWeek(_ statuses: [WorkoutStatus], dayNumber: Int) -> Bool {
-        statuses.enumerated()
+    static func completesTheWeek(_ counted: [Bool], dayNumber: Int) -> Bool {
+        counted.enumerated()
             .filter { index, _ in index != dayNumber - 1 }
-            .allSatisfy { _, status in status == .completed }
+            .allSatisfy { _, countsAsCompleted in countsAsCompleted }
     }
 }

@@ -21,9 +21,15 @@ struct WeeklyPlanModelStoreTests {
         userID = profile.id
     }
 
+    // A finished day carries the work that finished it: the status alone is not
+    // what the plan counts.
     private func day(_ number: Int, _ status: WorkoutStatus = .notStarted) -> WorkoutDay {
         WorkoutDay(
-            dayNumber: number, title: "Day \(number)", status: status, duration: 30, exerciseCount: 2
+            dayNumber: number, title: "Day \(number)", status: status, duration: 30,
+            exerciseCount: 2,
+            exercises: [
+                WorkoutExercise(name: "Movement", isCompleted: status == .completed)
+            ]
         )
     }
 

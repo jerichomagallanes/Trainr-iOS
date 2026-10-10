@@ -18,7 +18,7 @@ extension RoutineDetailModel {
             date: SampleWorkoutData.date(of: day.dayNumber),
             dayNumber: index + 1,
             weekNumber: SampleWorkoutData.weekOne.weekNumber,
-            completesTheWeek: completesTheWeek(days.map(\.status), dayNumber: index + 1),
+            completesTheWeek: completesTheWeek(days.map(\.countsAsCompleted), dayNumber: index + 1),
             isLoaded: true
         )
     }

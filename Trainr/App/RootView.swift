@@ -111,6 +111,7 @@ struct RootView: View {
             WeeklyPlanView(
                 dependencies: dependencies,
                 versionName: Self.version,
+                buildNumber: Self.build,
                 onDayTap: { path.append(.routineDetail(dayNumber: $0.dayNumber, weekNumber: nil)) },
                 onTrackProgress: { path.append(.weeklyProgress) },
                 onStartWorkout: {
@@ -121,11 +122,13 @@ struct RootView: View {
                 onLeavePlanConfirmed: {
                     path.append(.review(fromPlan: true, profileOnly: false))
                 },
+                askBeforeNewPlan: { allowed in ask(.freshPlan, then: allowed) },
+                askBeforeRewritingWeek: { allowed in ask(.rewrite, then: allowed) },
                 onUpdateProfile: { path.append(.review(fromPlan: true, profileOnly: true)) },
                 onOpenPro: { path.append(.pro) },
                 onStartNextWeek: { ask(.nextWeek) { path.append(.generatingNextWeek) } },
                 onRepeatWeek: { ask(.nextWeek) { nextWeek?.repeatWeek() } },
-                onRegenerateWeek: { ask(.rewrite) { path.append(.regeneratingWeek) } },
+                onRegenerateWeek: { path.append(.regeneratingWeek) },
                 onCreatePlan: {
                     path.append(.review(fromPlan: true, profileOnly: false))
                 },
@@ -214,6 +217,10 @@ struct RootView: View {
 
     static var version: String {
         Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? ""
+    }
+
+    static var build: Int {
+        Int(Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "") ?? 0
     }
 
     @ViewBuilder
@@ -405,6 +412,7 @@ private extension RootView {
                         .routineDetail(dayNumber: $0.dayNumber, weekNumber: weekNumber)
                     )
                 },
+                askBeforeRewritingWeek: { allowed in ask(.rewrite, then: allowed) },
                 // The copy joins the plan at the end, so refreshing here would
                 // re-read the old week; home is where the copy now lives.
                 onRepeatWeek: {
@@ -413,6 +421,7 @@ private extension RootView {
                         if nextWeek?.isReady == true { restartOnHome() }
                     }
                 },
+                onRegenerateWeek: { path.append(.regeneratingWeek) },
                 onBack: pop
             )
 

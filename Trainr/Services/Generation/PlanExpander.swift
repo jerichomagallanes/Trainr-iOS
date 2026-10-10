@@ -55,7 +55,7 @@ nonisolated struct PlanExpander: Sendable {
                 sets: slot.sets,
                 now: request.startDate.addingTimeInterval(Double(dayNumber - 1) * Self.secondsPerDay),
                 deload: deload,
-                cautioned: InjuryGuard.caution(for: movement, injuries: request.user.injuries) != nil,
+                cautioned: !InjuryGuard.cautions(for: movement, injuries: request.user.injuries).isEmpty,
                 secondsBudget: slot.secondsPerSet
             ))
             if fallback == nil { fallback = (movement, target) }

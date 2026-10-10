@@ -24,6 +24,7 @@ nonisolated struct DayOutline: Identifiable, Equatable, Sendable {
     var id: UUID
     var dayNumber: Int
     var status = WorkoutStatus.notStarted
+    var countsAsCompleted = false
 }
 
 nonisolated struct WorkoutDay: Identifiable, Equatable, Sendable {
@@ -36,6 +37,12 @@ nonisolated struct WorkoutDay: Identifiable, Equatable, Sendable {
     var equipment: [String] = []
     var exercises: [WorkoutExercise] = []
     var completedAt: Date?
+
+    // Finishing early closes the day whatever was logged, so the status alone
+    // would count a session nobody performed as a day of training.
+    var countsAsCompleted: Bool {
+        status == .completed && exercises.contains(where: \.wasPerformed)
+    }
 }
 
 nonisolated struct WorkoutExercise: Identifiable, Equatable, Sendable {
@@ -59,6 +66,12 @@ nonisolated struct WorkoutExercise: Identifiable, Equatable, Sendable {
     var addedBy: UUID?
 
     var isOmittedToday: Bool { !sets.isEmpty && sets.allSatisfy { $0.omittedBy != nil } }
+
+    // A ticked set is work performed: an exercise never ticks itself until every
+    // set is, and two of three sets logged is still a session that happened.
+    var wasPerformed: Bool {
+        !isOmittedToday && (isCompleted || sets.contains(where: \.isCompleted))
+    }
 }
 
 nonisolated struct ExerciseSet: Identifiable, Equatable, Sendable {
