@@ -117,7 +117,7 @@ struct RoutineDetailView: View {
             // routine loads, so nothing would prime. Read live rather than from
             // the change, which can carry the value it was scheduled with.
             let current = model.state
-            guard current.isLoaded else { return }
+            guard current.isLoaded, !current.isReadOnly else { return }
             let isComplete = current.routine.isComplete
             let previous = wasComplete
             wasComplete = isComplete
@@ -206,7 +206,7 @@ struct RoutineDetailView: View {
                     // moves, so without this a screen reader never hears that
                     // the day changed.
                     .accessibilityAddTraits(.updatesFrequently)
-                if state.outcome?.finishKind != .full {
+                if !state.isReadOnly, state.outcome?.finishKind != .full {
                     Button(L10n.undoAdjustment) {
                         if let cycleID = model.undoAdjustment() { onUndone(cycleID) }
                     }
@@ -318,8 +318,9 @@ struct RoutineDetailView: View {
                     onSetChanged: { model.update($0, at: exercise.position) },
                     onAddSet: { model.addSet(at: exercise.position) },
                     onDeleteSet: { model.deleteSet(numbered: $0.setNumber, at: exercise.position) },
+                    isReadOnly: state.isReadOnly,
                     extras: {
-                        if !exercise.isCompleted {
+                        if !exercise.isCompleted && !state.isReadOnly {
                             ExerciseTimer(
                                 timer: state.timer?.position == exercise.position
                                     ? state.timer : nil,
@@ -329,16 +330,11 @@ struct RoutineDetailView: View {
                                 onReset: model.resetTimer,
                                 onStop: model.stopTimer
                             )
-                            if !exercise.steps.isEmpty {
-                                HowToSection(
-                                    steps: exercise.steps,
-                                    isExpanded: state.expandedHowTo == exercise.position,
-                                    onToggle: { model.toggleHowTo(at: exercise.position) },
-                                    video: { tutorial(for: exercise) }
-                                )
-                            } else {
-                                tutorial(for: exercise)
-                            }
+                        }
+                        // A record reads: how a movement is done is still worth
+                        // showing once the work was ticked off.
+                        if !exercise.isCompleted || state.isReadOnly {
+                            howTo(for: exercise)
                             alternative(for: exercise)
                         }
                     }
@@ -347,6 +343,20 @@ struct RoutineDetailView: View {
             }
         }
         .padding(.top, Spacing.section)
+    }
+
+    @ViewBuilder
+    private func howTo(for exercise: ExerciseUi) -> some View {
+        if !exercise.steps.isEmpty {
+            HowToSection(
+                steps: exercise.steps,
+                isExpanded: state.expandedHowTo == exercise.position,
+                onToggle: { model.toggleHowTo(at: exercise.position) },
+                video: { tutorial(for: exercise) }
+            )
+        } else {
+            tutorial(for: exercise)
+        }
     }
 
     @ViewBuilder
@@ -372,7 +382,9 @@ struct RoutineDetailView: View {
     // over, but not finished early again while that outcome stands.
     @ViewBuilder
     private var footer: some View {
-        if !routine.isComplete {
+        if state.isReadOnly {
+            EmptyView()
+        } else if !routine.isComplete {
             SlideToConfirm(title: L10n.slideToCompleteRoutine) { model.completeRoutine() }
                 .padding(.top, Spacing.section + Spacing.tight)
             if !finishedEarly {

@@ -13,6 +13,7 @@ struct ExerciseSetTable: View {
     let onSetChanged: (ExerciseSet) -> Void
     let onAddSet: () -> Void
     var onDeleteSet: (ExerciseSet) -> Void = { _ in }
+    var isReadOnly = false
 
     private static let checkSize: CGFloat = 24
 
@@ -20,14 +21,15 @@ struct ExerciseSetTable: View {
 
     var body: some View {
         VStack(spacing: Spacing.small) {
-            // The Add set button below is never conditional: deleting the last
-            // set has to leave a way back.
+            // The Add set button below is not tied to the headings either, so
+            // deleting the last set leaves a live day a way back.
             if !sets.isEmpty {
                 headings
             }
             ForEach(sets) { set in
                 SwipeToDelete(
                     label: L10n.deleteSet,
+                    enabled: !isReadOnly,
                     onDelete: { onDeleteSet(set) },
                     content: {
                         SetRow(
@@ -41,6 +43,7 @@ struct ExerciseSetTable: View {
                                 )
                                 : nil,
                             units: units,
+                            isReadOnly: isReadOnly,
                             onSetChanged: onSetChanged
                         )
                     }
@@ -49,7 +52,9 @@ struct ExerciseSetTable: View {
                 // dismissed row's state.
                 .id(set.id)
             }
-            addSetButton
+            if !isReadOnly {
+                addSetButton
+            }
         }
     }
 
@@ -104,6 +109,7 @@ private struct SetRow: View {
     let set: ExerciseSet
     let previousText: String?
     let units: UnitSystem
+    let isReadOnly: Bool
     let onSetChanged: (ExerciseSet) -> Void
 
     var body: some View {
@@ -125,7 +131,8 @@ private struct SetRow: View {
                 NumberCell(
                     value: set.actualWeightKg.map { SetFormatting.weight($0, in: units) },
                     placeholder: set.targetWeightKg.map { SetFormatting.weight($0, in: units) },
-                    isDecimal: true
+                    isDecimal: true,
+                    isReadOnly: isReadOnly
                 ) { entered in
                     var changed = set
                     changed.actualWeightKg = entered
@@ -139,20 +146,33 @@ private struct SetRow: View {
             measureCell
                 .frame(maxWidth: .infinity)
 
+            tick
+        }
+    }
+
+    @ViewBuilder
+    private var tick: some View {
+        if isReadOnly {
+            tickMark
+                .accessibilityLabel(set.isCompleted ? L10n.completed : L10n.notCompleted)
+        } else {
             Button {
                 var changed = set
                 changed.isCompleted.toggle()
                 onSetChanged(changed)
             } label: {
-                Image(systemName: set.isCompleted ? "checkmark.square.fill" : "square")
-                    .font(.oneOff(20))
-                    .foregroundStyle(set.isCompleted ? Color.statusDoneInk : Color.outlineControl)
-                    .frame(width: 24, height: 24)
-                    .contentShape(.rect)
+                tickMark.contentShape(.rect)
             }
             .buttonStyle(.plain)
             .accessibilityLabel(set.isCompleted ? L10n.markSetIncomplete : L10n.markSetComplete)
         }
+    }
+
+    private var tickMark: some View {
+        Image(systemName: set.isCompleted ? "checkmark.square.fill" : "square")
+            .font(.oneOff(20))
+            .foregroundStyle(set.isCompleted ? Color.statusDoneInk : Color.outlineControl)
+            .frame(width: 24, height: 24)
     }
 
     @ViewBuilder
@@ -161,7 +181,8 @@ private struct SetRow: View {
         case .duration:
             DurationCell(
                 seconds: set.actualSeconds,
-                placeholderSeconds: set.targetSeconds
+                placeholderSeconds: set.targetSeconds,
+                isReadOnly: isReadOnly
             ) { entered in
                 var changed = set
                 changed.actualSeconds = entered
@@ -171,7 +192,8 @@ private struct SetRow: View {
             NumberCell(
                 value: set.actualReps.map(String.init),
                 placeholder: set.targetReps.map(String.init),
-                isDecimal: false
+                isDecimal: false,
+                isReadOnly: isReadOnly
             ) { entered in
                 var changed = set
                 changed.actualReps = entered.flatMap(Int.init)
@@ -187,11 +209,20 @@ private struct NumberCell: View {
     let value: String?
     let placeholder: String?
     let isDecimal: Bool
+    var isReadOnly = false
     let onChange: (String?) -> Void
 
     @State private var text = ""
 
     var body: some View {
+        if isReadOnly {
+            LoggedCell(value: value, placeholder: placeholder)
+        } else {
+            field
+        }
+    }
+
+    private var field: some View {
         TextField(placeholder ?? "", text: $text)
             .font(.body14)
             .foregroundStyle(Color.onSurface)
@@ -223,6 +254,7 @@ private struct NumberCell: View {
 private struct DurationCell: View {
     let seconds: Int?
     let placeholderSeconds: Int?
+    var isReadOnly = false
     let onChange: (Int?) -> Void
 
     // Own state, not a computed binding: that keeps what was typed and shows
@@ -230,6 +262,17 @@ private struct DurationCell: View {
     @State private var text = ""
 
     var body: some View {
+        if isReadOnly {
+            LoggedCell(
+                value: seconds.map(SetFormatting.seconds),
+                placeholder: placeholderSeconds.map(SetFormatting.seconds)
+            )
+        } else {
+            field
+        }
+    }
+
+    private var field: some View {
         TextField(placeholderSeconds.map(SetFormatting.seconds) ?? "", text: $text)
             .onChange(of: text) { _, typed in
                 let digits = String(String(typed.filter(\.isNumber)).suffix(4))
@@ -257,5 +300,22 @@ private struct DurationCell: View {
             let formatted = latest.map(SetFormatting.seconds) ?? ""
             if formatted != text { text = formatted }
         }
+    }
+}
+
+// A record shows what was logged and keeps the prescription muted behind it,
+// the way the field it stands in for reads.
+private struct LoggedCell: View {
+    let value: String?
+    let placeholder: String?
+
+    var body: some View {
+        Text(value ?? placeholder ?? "")
+            .font(.body14)
+            .foregroundStyle(value == nil ? Color.onSurfaceMuted : Color.onSurface)
+            .multilineTextAlignment(.center)
+            .frame(minHeight: setRowHeight)
+            .frame(maxWidth: .infinity)
+            .padding(.horizontal, Spacing.extraSmall)
     }
 }

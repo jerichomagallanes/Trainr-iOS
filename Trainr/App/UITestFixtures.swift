@@ -36,6 +36,8 @@ enum UITestFixtures {
             try? store.savePlan(week(1, for: user, startingDaysAgo: 0, shape: .fresh))
         case "missedDay":
             try? store.savePlan(week(1, for: user, startingDaysAgo: 2, shape: .fresh))
+        case "weekGoneBy":
+            try? store.savePlan(week(1, for: user, startingDaysAgo: 9, shape: .midWeek))
         case "lastDayLeft":
             try? store.savePlan(week(1, for: user, startingDaysAgo: 4, shape: .lastDayLeft))
         default:

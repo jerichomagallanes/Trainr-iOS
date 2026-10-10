@@ -11,7 +11,10 @@ struct RoutineDetailFixture {
     let firstDayNumber = 1
     let lastDayNumber = 3
 
-    init() throws {
+    // A week that is over turns its days into records, so a fixture meant to be
+    // written to is dated against the day the test runs. Nil dates the week
+    // nowhere, the shape a plan stored before the column existed comes back in.
+    init(weekStartingDaysAgo daysAgo: Int? = 0) throws {
         let store = TrainingStore(container: try TrainingStore.container(inMemory: true))
         dependencies = AppDependencies(
             store: store, planGenerator: WeekPlanGenerator(), breadcrumbs: NoBreadcrumbs()
@@ -24,7 +27,7 @@ struct RoutineDetailFixture {
                 userID: profile.id,
                 weekNumber: 1,
                 title: "Week 1",
-                startDate: Calendar(identifier: .gregorian).startOfDay(for: Date()),
+                startDate: daysAgo.map(Self.start(daysAgo:)),
                 workoutDays: [Self.day(1, "Full Body"), Self.day(3, "Lower Body")]
             )
         )
@@ -39,6 +42,12 @@ struct RoutineDetailFixture {
     func storedDay(_ dayNumber: Int) throws -> WorkoutDay {
         let plan = try #require(try dependencies.store.plan(for: userID, weekNumber: 1))
         return try #require(plan.workoutDays.first { $0.dayNumber == dayNumber })
+    }
+
+    private static func start(daysAgo: Int) -> Date {
+        let calendar = Calendar(identifier: .gregorian)
+        let today = calendar.startOfDay(for: Date())
+        return calendar.date(byAdding: .day, value: -daysAgo, to: today) ?? today
     }
 
     private static func day(_ number: Int, _ title: String) -> WorkoutDay {

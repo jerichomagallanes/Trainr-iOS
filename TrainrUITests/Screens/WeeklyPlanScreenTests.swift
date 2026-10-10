@@ -221,4 +221,15 @@ final class WeeklyPlanScreenTests: XCTestCase {
         XCTAssertEqual(app.button(containing: "Full Body Strength").frame.minY, before, accuracy: 2)
         XCTAssertTrue(app.button(containing: "Full Body Strength, Completed").exists)
     }
+
+    // A missed session cannot be trained once its week is over, so the only way
+    // on is the next week.
+    @MainActor
+    func testAWeekWhoseDatesRanOutOffersNoSessionToStart() {
+        openPlan(.weekGoneBy)
+
+        XCTAssertFalse(app.buttons["START NEXT WORKOUT"].exists)
+        XCTAssertFalse(app.buttons["START TODAY'S WORKOUT"].exists)
+        XCTAssertTrue(app.buttons["GENERATE NEXT WEEK"].exists)
+    }
 }

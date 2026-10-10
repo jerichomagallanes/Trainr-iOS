@@ -12,6 +12,8 @@ enum Fixture: String {
     case twoWeeks
     case freshWeek
     case missedDay
+    // midWeek dated a week and a half back, so every day on it is a record.
+    case weekGoneBy
     case lastDayLeft
 }
 

@@ -19,6 +19,8 @@ struct RoutineDetailStartOverTests {
         try store.saveUser(user)
         var plan = SampleWorkoutData.weekOne
         plan.userID = user.id
+        // The sample week is long over, and a week that is over is a record.
+        plan.startDate = Calendar(identifier: .gregorian).startOfDay(for: Date())
         plan.workoutDays = [try #require(plan.workoutDays.last)]
         try store.savePlan(plan)
         day = try #require(try store.plan(for: user.id, weekNumber: 1)?.workoutDays.first)

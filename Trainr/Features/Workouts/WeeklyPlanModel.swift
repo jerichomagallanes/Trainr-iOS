@@ -32,6 +32,7 @@ nonisolated struct WeeklyPlanState: Equatable, Sendable {
     var days: [WeeklyPlanDay] = []
     var weekStart = SampleWorkoutData.weekStart
     var weekEnd = SampleWorkoutData.weekEnd
+    var weekHasEnded = false
     // An empty plan and a plan not read yet must never be mistaken for one
     // another.
     var hasLoaded = false
@@ -49,9 +50,12 @@ nonisolated struct WeeklyPlanState: Equatable, Sendable {
 
     // A day already passed is never offered as "today's workout". Nil once
     // every session is done, so a finished week leads to the next one instead.
+    // A day that has passed is offered only while the week is still running:
+    // once its dates have run out that day is a record and cannot be trained.
     var nextWorkout: WeeklyPlanDay? {
-        days.first { !$0.isPast && $0.day.status != .completed }
-            ?? days.first { $0.day.status != .completed }
+        let upcoming = days.first { !$0.isPast && $0.day.status != .completed }
+        if upcoming != nil || weekHasEnded { return upcoming }
+        return days.first { $0.day.status != .completed }
     }
 
     var nextWorkoutIsToday: Bool { nextWorkout?.isToday == true }
@@ -211,6 +215,9 @@ final class WeeklyPlanModel {
             weekStart: start,
             weekEnd: WorkoutWeek.date(
                 of: Constants.Workout.daysPerWeek, startingFrom: start, calendar: calendar
+            ),
+            weekHasEnded: WorkoutWeek.hasEnded(
+                weekStartingAt: start, now: now, calendar: calendar
             ),
             hasLoaded: true,
             hasPlan: !isSample,
