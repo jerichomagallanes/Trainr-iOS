@@ -14,10 +14,19 @@ struct RootView: View {
     @State private var entitlements = Entitlements(breadcrumbs: AppDependencies.shared.breadcrumbs)
     @State private var ads = Ads(breadcrumbs: AppDependencies.shared.breadcrumbs)
     private let allowance: any FreeGenerationAllowance = StoredGenerationAllowance()
+    private let adjustments: any AdjustmentAllowance = StoredAdjustmentAllowance()
     @State private var onboarding: OnboardingModel?
     @State private var phase = Phase.splash
     @State private var path: [Route] = []
     @State private var nextWeek: NextWeekModel?
+    // Created when the adjust flow is entered and cleared when it is left, so
+    // the draft lives exactly as long as the flow does.
+    @State private var adjustment: AdjustmentModel?
+    @State private var returningFromAdjustment: AdjustmentReturn?
+    // Created when the follow-up is accepted and cleared when it is left, so
+    // the one answer it writes belongs to one adjustment.
+    @State private var feedback: AdjustmentFeedbackModel?
+    @State private var howToRequest: String?
     // Bumped to give home a new identity, and with it a model that re-reads.
     @State private var planGeneration = 0
     @State private var prompt: PaywallReason?
@@ -38,6 +47,20 @@ struct RootView: View {
         .environment(entitlements)
         .environment(ads)
         .preferredColorScheme(appearance.mode.colorScheme)
+        // Pushed only once the draft has been through an update of its own: a
+        // destination built in the same one captures this view while the model
+        // is still nil, and keeps the empty screen it drew. Keyed on which
+        // draft rather than on there being one: the interactive back-swipe
+        // leaves the model behind, and the next entry still has to push.
+        .onChange(of: adjustment.map { ObjectIdentifier($0) }) { _, draft in
+            if draft != nil { path.append(.adjustEntry) }
+        }
+        // Keyed on which question rather than on there being one: the
+        // interactive back-swipe leaves the model behind, and the next offer
+        // still has to push.
+        .onChange(of: feedback.map { ObjectIdentifier($0) }) { _, question in
+            if question != nil { path.append(.adjustmentFeedback) }
+        }
         .sheet(item: $prompt, onDismiss: openAfterPrompt) { reason in
             ProPromptSheet(reason: reason) {
                 afterPrompt = .paywall(reason: reason)
@@ -105,7 +128,14 @@ struct RootView: View {
                 onRegenerateWeek: { ask(.rewrite) { path.append(.regeneratingWeek) } },
                 onCreatePlan: {
                     path.append(.review(fromPlan: true, profileOnly: false))
-                }
+                },
+                onAdjustToday: { day, minutes in
+                    adjustment = AdjustmentModel(
+                        dependencies: dependencies, dayNumber: day.dayNumber,
+                        reason: .lessTime, minutes: minutes
+                    )
+                },
+                onTrainingPreferences: { path.append(.trainingPreferences) }
             )
             .id(planGeneration)
         }
@@ -120,7 +150,8 @@ struct RootView: View {
 
     // Spent only on a week that arrived.
     private func spendFreeGeneration() {
-        guard !entitlements.isPro else { return }
+        guard GenerationGate.spends(isPro: entitlements.isPro, canSell: entitlements.canSell)
+        else { return }
         allowance.markUsed()
     }
 
@@ -128,11 +159,39 @@ struct RootView: View {
     // asks for Pro, and it asks where the tap happened rather than by replacing
     // the screen.
     private func ask(_ reason: PaywallReason, then action: () -> Void) {
-        if entitlements.isPro || !allowance.hasBeenUsed() {
-            action()
-        } else {
-            prompt = reason
+        switch GenerationGate.decide(
+            used: allowance.hasBeenUsed(),
+            isPro: entitlements.isPro,
+            canSell: entitlements.canSell
+        ) {
+        case .allowed: action()
+        case .ask: prompt = reason
         }
+    }
+
+    // The free week is never consulted here: an adjustment is included on its
+    // own terms, and the two allowances must not spend each other.
+    private func askForAdjustment(_ cycleID: String?, then action: () -> Void) {
+        switch AdjustmentGate.decide(
+            cycleID: cycleID,
+            included: adjustments.includedCycleID(),
+            isPro: entitlements.isPro,
+            canSell: entitlements.canSell
+        ) {
+        case .allowed: action()
+        case .ask: prompt = .adjust
+        }
+    }
+
+    // Spent only on a change that was actually applied.
+    private func spendAdjustmentCycle(_ cycleID: String) {
+        guard AdjustmentGate.spends(isPro: entitlements.isPro, canSell: entitlements.canSell)
+        else { return }
+        adjustments.consume(cycleID: cycleID)
+    }
+
+    private func restoreAdjustmentCycle(_ cycleID: String) {
+        adjustments.restore(cycleID: cycleID)
     }
 
     private func restartOnHome() {
@@ -153,124 +212,39 @@ struct RootView: View {
         return 2
     }
 
-    fileprivate static var version: String {
+    static var version: String {
         Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? ""
     }
 
     @ViewBuilder
     private func destination(for route: Route) -> some View {
         if let onboarding {
-            destination(for: route, onboarding: onboarding)
-        }
-    }
-
-    @ViewBuilder
-    private func destination(for route: Route, onboarding: OnboardingModel) -> some View {
-        switch route {
-        case .basicInfo(let editing):
-            BasicInfoView(
-                initial: onboarding.filled(for: .basicInfo, editing: editing),
-                isEditing: editing,
-                onNext: { firstName, age, gender, experience in
-                    onboarding.updateBasicInfo(
-                        firstName: firstName, age: age, gender: gender, experience: experience)
-                    step(editing: editing, next: .bodyMetrics(editing: false))
-                },
-                onBack: pop
-            )
-
-        case .bodyMetrics(let editing):
-            BodyMetricsView(
-                initial: onboarding.filled(for: .bodyMetrics, editing: editing),
-                age: onboarding.profile.age,
-                isEditing: editing,
-                onNext: { height, weight, units in
-                    onboarding.updateBodyMetrics(height: height, weight: weight, units: units)
-                    step(editing: editing, next: .fitnessGoal(editing: false))
-                },
-                onBack: pop
-            )
-
-        case .fitnessGoal(let editing):
-            FitnessGoalView(
-                initial: onboarding.filled(for: .goals, editing: editing),
-                isEditing: editing,
-                onNext: { goal in
-                    onboarding.updateFitnessGoal(goal)
-                    step(editing: editing, next: .workoutSetup(editing: false))
-                },
-                onBack: pop
-            )
-
-        case .workoutSetup(let editing):
-            WorkoutSetupView(
-                stockedEquipment: onboarding.stockedEquipment,
-                initial: onboarding.filled(for: .setup, editing: editing),
-                isEditing: editing,
-                onNext: { equipment, liftingUnits, days, duration in
-                    onboarding.updateWorkoutSetup(
-                        equipment: equipment, liftingUnits: liftingUnits,
-                        daysPerWeek: days, duration: duration)
-                    step(editing: editing, next: .limitations(editing: false))
-                },
-                onBack: pop
-            )
-
-        case .limitations(let editing):
-            LimitationsView(
-                initial: onboarding.filled(for: .limitations, editing: editing),
-                isEditing: editing,
-                onNext: { injuries in
-                    onboarding.updateLimitations(injuries: injuries)
-                    step(editing: editing, next: .review(fromPlan: false, profileOnly: false))
-                },
-                onBack: pop
-            )
-
-        case .review(let fromPlan, let profileOnly):
-            ReviewView(
-                profile: onboarding.profile,
-                isRegenerating: fromPlan,
-                isProfileUpdate: profileOnly,
-                onConfirm: {
-                    if profileOnly {
-                        onboarding.updateProfileOnly { path = [] }
-                    } else {
-                        if fromPlan {
+            if route.isOnboarding {
+                OnboardingFlowView(
+                    step: route,
+                    model: onboarding,
+                    onStep: step(editing:next:),
+                    onEdit: { path.append($0) },
+                    onConfirm: { fromPlan, profileOnly in
+                        if profileOnly {
+                            onboarding.updateProfileOnly { path = [] }
+                        } else if fromPlan {
                             ask(.freshPlan) { path.append(.generating) }
                         } else {
                             path.append(.generating)
                         }
-                    }
-                },
-                onBack: pop,
-                onEdit: { editRoute in path.append(editRoute) }
-            )
-
-        case .generating:
-            GeneratingView(
-                isReady: onboarding.isCompleted,
-                onStart: { onboarding.saveUserProfile() },
-                onDone: {
+                    },
                     // Spent once the week has arrived, whichever tier built it,
                     // so a failed generation costs nothing.
-                    spendFreeGeneration()
-                    restartOnHome()
-                },
-                failure: onboarding.generationFailure,
-                failureCount: onboarding.failureCount,
-                onRetry: { onboarding.saveUserProfile() },
-                // Nothing was written yet, and cancelRun stops the abandoned
-                // run from writing one.
-                onGiveUp: {
-                    onboarding.cancelRun()
-                    pop()
-                },
-                giveUpLabel: L10n.backToProfile
-            )
-
-        default:
-            workoutDestination(for: route)
+                    onGenerated: {
+                        spendFreeGeneration()
+                        restartOnHome()
+                    },
+                    onBack: pop
+                )
+            } else {
+                workoutDestination(for: route)
+            }
         }
     }
 
@@ -282,26 +256,63 @@ struct RootView: View {
                 dependencies: dependencies,
                 dayNumber: dayNumber,
                 weekNumber: weekNumber,
+                returningFromAdjustment: $returningFromAdjustment,
+                howToRequest: $howToRequest,
                 onBack: pop,
-                onDayCompleted: { path.append(.dayCompleted(dayNumber: $0)) },
-                onWeekCompleted: { path.append(.weekCompleted(weekNumber: $0)) }
+                onDayCompleted: { day, week in
+                    path.append(.dayCompleted(dayNumber: day, weekNumber: week))
+                },
+                onWeekCompleted: { week, day in
+                    path.append(.weekCompleted(weekNumber: week, dayNumber: day))
+                },
+                onSessionSaved: {
+                    path.append(
+                        .sessionSaved(
+                            dayNumber: $0.dayNumber,
+                            weekNumber: $0.weekNumber,
+                            performed: $0.performedExercises,
+                            planned: $0.plannedExercises
+                        )
+                    )
+                },
+                onAdjust: { reason, exerciseID in
+                    adjustment = AdjustmentModel(
+                        dependencies: dependencies, dayNumber: dayNumber,
+                        weekNumber: weekNumber, reason: reason, exerciseID: exerciseID
+                    )
+                },
+                onUndone: restoreAdjustmentCycle
             )
 
-        case .dayCompleted(let dayNumber):
+        case .sessionSaved(let dayNumber, let weekNumber, let performed, let planned):
+            SessionSavedView(
+                performedExercises: performed,
+                plannedExercises: planned,
+                offer: offer(dayNumber: dayNumber, weekNumber: weekNumber),
+                onBack: pop,
+                onDone: restartOnHome
+            )
+
+        case .dayCompleted(let dayNumber, let weekNumber):
             DayCompletedView(
                 dayNumber: dayNumber,
+                offer: offer(dayNumber: dayNumber, weekNumber: weekNumber),
                 onBack: pop,
                 onViewProgress: { path.append(.weeklyProgress) },
                 onBackToPlan: restartOnHome
             )
 
-        case .weekCompleted(let weekNumber):
+        case .weekCompleted(let weekNumber, let dayNumber):
             WeekCompletedView(
                 weekNumber: weekNumber,
+                offer: offer(dayNumber: dayNumber, weekNumber: weekNumber),
                 onBack: pop,
                 onViewProgress: { path.append(.weeklyProgress) },
                 onGenerateNextWeek: { ask(.nextWeek) { path.append(.generatingNextWeek) } }
             )
+
+        case .adjustmentFeedback, .feedbackDetail, .feedbackOutcome, .feedbackPain:
+            feedbackDestination(for: route)
 
         case .weeklyProgress:
             WeeklyProgressView(
@@ -311,6 +322,51 @@ struct RootView: View {
                 onLastWeekDeleted: restartOnHome
             )
 
+        default:
+            planDestination(for: route)
+        }
+    }
+
+    @ViewBuilder
+    private func generating(start: @escaping () -> Void) -> some View {
+        if let nextWeek {
+            GeneratingView(
+                isReady: nextWeek.isReady,
+                onStart: start,
+                onDone: {
+                    spendFreeGeneration()
+                    restartOnHome()
+                },
+                failure: nextWeek.failure,
+                failureCount: nextWeek.failureCount,
+                onRetry: start,
+                onGiveUp: {
+                    nextWeek.cancelRun()
+                    pop()
+                },
+                giveUpLabel: L10n.cancel
+            )
+        }
+    }
+
+    private func step(editing: Bool, next: Route) {
+        if editing {
+            pop()
+        } else {
+            path.append(next)
+        }
+    }
+
+    private func pop() {
+        if !path.isEmpty { path.removeLast() }
+    }
+}
+
+private extension RootView {
+
+    @ViewBuilder
+    func planDestination(for route: Route) -> some View {
+        switch route {
         // Leaves as soon as Pro is there, whether it was just bought or the
         // entitlement read landed after the gate had already opened this.
         case .paywall(let reason):
@@ -360,61 +416,163 @@ struct RootView: View {
                 onBack: pop
             )
 
+        case .debrief, .noteSaved, .trainingPreferences, .editPreference:
+            PreferencesFlowView(
+                step: route,
+                dependencies: dependencies,
+                onOpen: { path.append($0) },
+                onReplace: { if !path.isEmpty { path[path.count - 1] = $0 } },
+                onDone: restartOnHome,
+                onBack: pop
+            )
+
         default:
-            EmptyView()
+            adjustDestination(for: route)
         }
     }
 
     @ViewBuilder
-    private func generating(start: @escaping () -> Void) -> some View {
-        if let nextWeek {
-            GeneratingView(
-                isReady: nextWeek.isReady,
-                onStart: start,
-                onDone: {
-                    spendFreeGeneration()
-                    restartOnHome()
-                },
-                failure: nextWeek.failure,
-                failureCount: nextWeek.failureCount,
-                onRetry: start,
-                onGiveUp: {
-                    nextWeek.cancelRun()
-                    pop()
-                },
-                giveUpLabel: L10n.cancel
+    func adjustDestination(for route: Route) -> some View {
+        if let adjustment, route.isAdjustment {
+            AdjustFlowView(
+                step: route,
+                model: adjustment,
+                onShowRecommendation: showRecommendation,
+                onRouted: routeFromContext,
+                onApplied: { spendAdjustmentCycle($0); leaveAdjustment(.reload) },
+                onLeave: leaveAdjustment,
+                onBack: popAdjustment
             )
         }
     }
 
-    private func step(editing: Bool, next: Route) {
-        if editing {
-            pop()
-        } else {
-            path.append(next)
+    // The how-to lives on the session screen, so a note read as a form question
+    // is handed back there rather than growing a second way to show it.
+    func routeFromContext(_ route: UnstuckRoute) {
+        guard route != .guide else {
+            leaveAdjustment(.guide)
+            return
+        }
+        guard let next = Route(route) else { return }
+        path.append(next)
+    }
+
+    // The recommendation is computed first and only then sold: nothing proposed
+    // means there is nothing to sell, and someone whose plan already fits must
+    // read that rather than a price.
+    func showRecommendation() {
+        guard let adjustment else { return }
+        let proposalID = adjustment.showRecommendation()
+        guard adjustment.state.review != nil else { return }
+        guard let proposalID else {
+            path.append(.adjustReview)
+            return
+        }
+        askForAdjustment(proposalID) { path.append(.adjustReview) }
+    }
+
+    // The draft goes when the last step does: the push watches for one appearing,
+    // and a stale one never appears again.
+    func popAdjustment() {
+        pop()
+        if path.last?.isAdjustment != true { adjustment = nil }
+    }
+
+    // Opened from home there is no session screen behind the flow to tell, and
+    // the cards the change may have moved are home's own.
+    func leaveAdjustment(_ returned: AdjustmentReturn) {
+        while path.last?.isAdjustment == true { path.removeLast() }
+        adjustment = nil
+        guard path.contains(where: \.isRoutineDetail) else {
+            restartOnHome()
+            return
+        }
+        returningFromAdjustment = returned
+    }
+
+    // Nothing here reads the gate or the allowance: one question after a
+    // session that used an adjustment is free, and the answer changes no
+    // future workout.
+    func offer(dayNumber: Int, weekNumber: Int) -> FeedbackOffer {
+        FeedbackOffer(
+            dependencies: dependencies,
+            dayNumber: dayNumber,
+            weekNumber: weekNumber,
+            onLeaveNote: {
+                path.append(.debrief(dayNumber: dayNumber, weekNumber: weekNumber))
+            },
+            onOffer: { adjustmentID in
+                feedback = AdjustmentFeedbackModel(
+                    dependencies: dependencies, adjustmentID: adjustmentID
+                )
+            }
+        )
+    }
+
+    @ViewBuilder
+    func feedbackDestination(for route: Route) -> some View {
+        if let feedback {
+            FeedbackFlowView(
+                step: route,
+                model: feedback,
+                onDetail: { path.append(.feedbackDetail) },
+                onSaved: routeAfterAnswer,
+                onSaveForLater: closeFeedback,
+                onOpenGuidance: openGuidance,
+                onLeave: leaveFeedback,
+                onBack: popFeedback
+            )
         }
     }
 
-    private func pop() {
-        if !path.isEmpty { path.removeLast() }
-    }
-}
-
-private struct SplashView: View {
-    var body: some View {
-        VStack(spacing: Spacing.medium) {
-            Image("Wordmark")
-                .resizable()
-                .scaledToFit()
-                .frame(width: 180)
-                .accessibilityLabel(L10n.appName)
-            Text(L10n.versionFormat(Self.version))
-                .font(.body14)
-                .foregroundStyle(Color.onSurface)
+    func routeAfterAnswer(_ answer: FeedbackAnswer?) {
+        switch answer {
+        case nil: leaveFeedback()
+        // Discomfort goes to the free guidance and is never answered with a
+        // substitute (C09).
+        case .discomfort: path.append(.feedbackPain)
+        case .somethingElse: askForTheirOwnWords()
+        default: path.append(.feedbackOutcome)
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color.surfacePage)
     }
 
-    private static var version: String { RootView.version }
+    // The answer is already recorded, so their own words take the place of the
+    // fixed outcome line rather than following it.
+    func askForTheirOwnWords() {
+        guard let session = feedback?.state.session else {
+            path.append(.feedbackOutcome)
+            return
+        }
+        closeFeedback()
+        path.append(
+            .debrief(dayNumber: session.dayNumber, weekNumber: session.weekNumber)
+        )
+    }
+
+    func popFeedback() {
+        pop()
+        if path.last?.isFeedback != true { feedback = nil }
+    }
+
+    func closeFeedback() {
+        while path.last?.isFeedback == true { path.removeLast() }
+        feedback = nil
+    }
+
+    func leaveFeedback() {
+        restartOnHome()
+        feedback = nil
+    }
+
+    // Back to the day itself with the exercise named, which is where the how-to
+    // already lives; there is no separate guidance screen to push.
+    func openGuidance(_ exerciseKey: String) {
+        guard let index = path.lastIndex(where: \.isRoutineDetail) else {
+            leaveFeedback()
+            return
+        }
+        howToRequest = exerciseKey
+        path.removeSubrange((index + 1)...)
+        feedback = nil
+    }
 }

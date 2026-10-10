@@ -3,23 +3,29 @@ import Foundation
 nonisolated extension WorkoutDay {
 
     // What a movement is and how it is done come from the catalog; a stored
-    // week only says which movement and how much.
+    // week only says which movement and how much. Omitted sets and the
+    // exercises left with none are today's adjustment, not today's routine.
+    // The minutes are read off the sets still planned, so a cut shows on the card.
     func toRoutineUi(
         previousByKey: [String: [ExerciseSet]] = [:],
         catalog: (any ExerciseCatalog)? = nil,
-        injuries: [Injury] = []
+        injuries: [Injury] = [],
+        user: UserProfile? = nil
     ) -> RoutineUi {
         RoutineUi(
             title: title,
-            exercises: exercises.enumerated().map { index, exercise in
+            exercises: visibleExercises.enumerated().map { index, exercise in
                 let movement = catalog?[exercise.exerciseKey]
                 return ExerciseUi(
                     position: index + 1,
+                    exerciseID: exercise.id,
                     name: exercise.name,
                     description: movement?.summary ?? "",
-                    minutes: exercise.durationMinutes,
+                    minutes: minutes(of: exercise, user: user, catalog: catalog),
                     measure: exercise.measure,
-                    sets: exercise.sets,
+                    sets: exercise.sets.filter { $0.omittedBy == nil },
+                    omittedSetNumbers: exercise.sets.filter { $0.omittedBy != nil }
+                        .map(\.setNumber),
                     previousSets: previousByKey[exercise.exerciseKey] ?? [],
                     videoURL: exercise.videoTutorialURL
                         ?? ExerciseVideoCatalog.url(for: exercise.exerciseKey),
@@ -31,6 +37,14 @@ nonisolated extension WorkoutDay {
                 )
             }
         )
+    }
+
+    private func minutes(
+        of exercise: WorkoutExercise, user: UserProfile?, catalog: (any ExerciseCatalog)?
+    ) -> Int {
+        guard let user, let catalog else { return exercise.durationMinutes }
+        return SessionEstimate.exerciseMinutes(exercise, user: user, scope: .wholeSession, catalog: catalog)
+            ?? exercise.durationMinutes
     }
 }
 

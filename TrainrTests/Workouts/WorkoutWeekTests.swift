@@ -30,6 +30,18 @@ struct WorkoutWeekTests {
         #expect(WorkoutWeek.date(of: 7, startingFrom: start, calendar: calendar) == date(2026, 10, 4))
     }
 
+    @Test("A week is over only once its seventh day has passed")
+    func aWeekEndsAfterItsLastDay() {
+        let start = date(2026, 9, 7)
+
+        #expect(!WorkoutWeek.hasEnded(weekStartingAt: start, now: date(2026, 9, 13, hour: 23),
+                                      calendar: calendar))
+        #expect(!WorkoutWeek.hasEnded(weekStartingAt: start, now: date(2026, 9, 13),
+                                      calendar: calendar))
+        #expect(WorkoutWeek.hasEnded(weekStartingAt: start, now: date(2026, 9, 14),
+                                     calendar: calendar))
+    }
+
     @Test("Start of day drops the time and keeps the date")
     func startOfDay() {
         #expect(WorkoutWeek.startOfDay(date(2026, 9, 9, hour: 22), calendar: calendar) == date(2026, 9, 9))

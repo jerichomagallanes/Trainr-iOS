@@ -26,9 +26,9 @@ struct ExerciseTimer: View {
                 .foregroundStyle(Color.brandStrong)
                 .monospacedDigit()
                 .accessibilityLabel(timer.display)
-            Text(timer.isRunning ? L10n.exerciseInProgress : L10n.timerPaused)
+            Text(note(timer))
                 .font(.body12)
-                .foregroundStyle(Color.onSurfaceMuted)
+                .foregroundStyle(timer.isFinished ? Color.brandStrong : Color.onSurfaceMuted)
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, Spacing.card)
@@ -38,12 +38,22 @@ struct ExerciseTimer: View {
         }
     }
 
+    private func note(_ timer: ExerciseTimerUi) -> String {
+        switch (timer.isFinished, timer.isRunning) {
+        case (true, _): L10n.timerFinished
+        case (false, true): L10n.exerciseInProgress
+        case (false, false): L10n.timerPaused
+        }
+    }
+
     private func controls(_ timer: ExerciseTimerUi) -> some View {
         HStack(spacing: Spacing.tight) {
-            if timer.isRunning {
-                PillButton(title: L10n.pauseTimer, systemImage: "pause.fill", action: onPause)
-            } else {
-                PillButton(title: L10n.resumeTimer, systemImage: "play.fill", action: onResume)
+            if !timer.isFinished {
+                PillButton(
+                    title: timer.isRunning ? L10n.pauseTimer : L10n.resumeTimer,
+                    systemImage: timer.isRunning ? "pause.fill" : "play.fill",
+                    action: timer.isRunning ? onPause : onResume
+                )
             }
             PillButton(
                 title: L10n.resetTimer, systemImage: "arrow.clockwise", filled: false, action: onReset
@@ -60,6 +70,13 @@ struct ExerciseTimer: View {
         ExerciseTimer(timer: nil, onStart: {}, onPause: {}, onResume: {}, onReset: {}, onStop: {})
         ExerciseTimer(
             timer: ExerciseTimerUi(position: 2, remainingSeconds: 58, isRunning: true),
+            onStart: {}, onPause: {}, onResume: {}, onReset: {}, onStop: {}
+        )
+        ExerciseTimer(
+            timer: ExerciseTimerUi(
+                position: 6, remainingSeconds: 0, isRunning: false,
+                totalSeconds: 300, isFinished: true
+            ),
             onStart: {}, onPause: {}, onResume: {}, onReset: {}, onStop: {}
         )
     }

@@ -188,6 +188,25 @@ struct WeekPlanGeneratorTests {
         #expect(movements(second) != movements(first))
     }
 
+    // A substitute swapped in for one day was never one of last week's
+    // movements, so it neither breaks the carry nor earns a place next week.
+    @Test func aSubstituteAddedForOneDayIsNotCarriedIntoNextWeek() async throws {
+        let first = try #require(await plan(user())).logged()
+        let chosen = Set(movements(first).flatMap { $0 })
+        let spare = try #require(catalog.all.first { !chosen.contains($0.key) })
+        var substituted = first
+        var extra = substituted.workoutDays[0].exercises[0]
+        extra.id = UUID()
+        extra.exerciseKey = spare.key
+        extra.name = spare.name
+        extra.addedBy = UUID()
+        substituted.workoutDays[0].exercises.append(extra)
+
+        let second = try #require(await plan(user(), history: [substituted]))
+
+        #expect(movements(second) == movements(first))
+    }
+
     @Test func askingForNewMovementsIsNeverAnsweredWithLastWeeks() async throws {
         let first = try #require(await plan(user())).logged()
 

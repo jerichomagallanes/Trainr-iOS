@@ -5,24 +5,32 @@ enum Fixture: String {
     case noPlan
     // The sample week re-dated onto today: first day done, today's in progress.
     case midWeek
+    // midWeek with day 3's unperformed exercises added to today's, so a 35-minute budget is a cut.
+    case longDay
     case finishedWeek
     // A finished week behind a week in progress.
     case twoWeeks
     case freshWeek
     case missedDay
+    // midWeek dated a week and a half back, so every day on it is a record.
+    case weekGoneBy
     case lastDayLeft
+    // One day: a hold with no time prescribed, so the cell can only show what
+    // the countdown measured, and work counted in reps.
+    case shortTimers
 }
 
 extension XCUIApplication {
 
     @MainActor
-    static func launched(_ fixture: Fixture, pro: Bool = false) -> XCUIApplication {
+    static func launched(_ fixture: Fixture, pro: Bool = false, arguments: [String] = []) -> XCUIApplication {
         let app = XCUIApplication()
         app.launchArguments = [
             "-inMemoryStore", "-seedFixture", fixture.rawValue,
             "-splashSeconds", "0"
         ]
         if pro { app.launchArguments += ["-proUnlocked"] }
+        app.launchArguments += arguments
         app.launch()
         return app
     }

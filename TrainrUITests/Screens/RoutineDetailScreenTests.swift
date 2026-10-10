@@ -228,6 +228,223 @@ final class RoutineDetailScreenTests: XCTestCase {
         XCTAssertTrue(app.staticTexts["1"].firstMatch.exists)
     }
 
+    @MainActor
+    func testFinishEarlyIsOfferedOnlyWhileThereIsSomethingLeftToDo() {
+        openUnstartedDay()
+        let finishEarly = app.buttons["Finish early"]
+        app.scrollUntilHittable(finishEarly)
+        XCTAssertTrue(finishEarly.exists)
+
+        openFinishedDay()
+        app.scrollUntilHittable(app.buttons["Start this workout over"])
+        XCTAssertFalse(app.buttons["Finish early"].exists)
+    }
+
+    @MainActor
+    func testFinishingEarlyAsksFirstAndKeepTrainingReturns() {
+        openUnstartedDay()
+        let finishEarly = app.buttons["Finish early"]
+        app.scrollUntilHittable(finishEarly)
+        finishEarly.tap()
+
+        XCTAssertTrue(app.staticTexts["Finish early?"].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.staticTexts["0 of 4 exercises completed"].exists)
+        XCTAssertTrue(app.staticTexts["Unchecked sets stay unperformed. Your logged work is kept."].exists)
+
+        app.buttons["Keep training"].tap()
+
+        XCTAssertTrue(app.staticTexts["LOWER BODY POWER"].waitForExistence(timeout: 3))
+        XCTAssertFalse(app.staticTexts["Finish early?"].exists)
+    }
+
+    // The whole partial finish, because what it is for is what the plan and the
+    // reopened day say afterwards.
+    @MainActor
+    func testSavingEarlyKeepsTheDayAsFinishedEarly() {
+        openUnstartedDay()
+        let finishEarly = app.buttons["Finish early"]
+        app.scrollUntilHittable(finishEarly)
+        finishEarly.tap()
+        XCTAssertTrue(app.staticTexts["Finish early?"].waitForExistence(timeout: 3))
+
+        app.buttons["SAVE WORKOUT"].tap()
+
+        XCTAssertTrue(app.staticTexts["Workout saved"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.text(containing: "0 of 4 exercises").exists)
+        app.buttons["DONE"].tap()
+
+        XCTAssertTrue(app.staticTexts["YOUR WEEKLY WORKOUT PLAN"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.button(containing: "Finished early").exists)
+
+        app.button(containing: "Lower Body Power").tap()
+
+        XCTAssertTrue(app.staticTexts["LOWER BODY POWER"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.text(containing: "Finished early").exists)
+        XCTAssertTrue(app.button(containing: "Adjust today").exists)
+        let slider = app.buttons["SLIDE TO FINISH THIS WORKOUT"]
+        app.scrollUntilHittable(slider)
+        XCTAssertTrue(slider.exists)
+        XCTAssertFalse(app.buttons["Finish early"].exists)
+        XCTAssertFalse(app.buttons["Start this workout over"].exists)
+    }
+
+    // Finishing early closes nothing for good: the day still offers its
+    // changes, and starting it over takes the early finish off the plan.
+    @MainActor
+    func testADayFinishedEarlyCanBeStartedOverAndIsOpenAgain() {
+        openUnstartedDay()
+        app.buttons["Mark exercise as complete"].firstMatch.tap()
+        XCTAssertTrue(app.buttons["Mark exercise as not complete"].waitForExistence(timeout: 3))
+        let finishEarly = app.buttons["Finish early"]
+        app.scrollUntilHittable(finishEarly)
+        finishEarly.tap()
+        XCTAssertTrue(app.staticTexts["Finish early?"].waitForExistence(timeout: 3))
+        app.buttons["SAVE WORKOUT"].tap()
+        XCTAssertTrue(app.staticTexts["Workout saved"].waitForExistence(timeout: 5))
+        app.buttons["DONE"].tap()
+        XCTAssertTrue(app.staticTexts["YOUR WEEKLY WORKOUT PLAN"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.button(containing: "Finished early").exists)
+
+        app.button(containing: "Lower Body Power").tap()
+
+        XCTAssertTrue(app.staticTexts["LOWER BODY POWER"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.text(containing: "Finished early").exists)
+        XCTAssertTrue(app.button(containing: "Adjust today").exists)
+        XCTAssertTrue(app.buttons["Need an alternative?"].firstMatch.exists)
+        let startOver = app.buttons["Start this workout over"]
+        app.scrollUntilHittable(startOver)
+        XCTAssertTrue(startOver.exists)
+        XCTAssertTrue(app.buttons["SLIDE TO FINISH THIS WORKOUT"].exists)
+        XCTAssertFalse(app.buttons["Finish early"].exists)
+
+        startOver.tap()
+        app.buttons["Start over"].tap()
+
+        XCTAssertTrue(app.buttons["Finish early"].waitForExistence(timeout: 3))
+        XCTAssertFalse(app.text(containing: "Finished early").exists)
+        XCTAssertFalse(app.buttons["Mark exercise as not complete"].exists)
+
+        app.buttons["Back"].tap()
+
+        XCTAssertTrue(app.staticTexts["YOUR WEEKLY WORKOUT PLAN"].waitForExistence(timeout: 10))
+        XCTAssertFalse(app.button(containing: "Finished early").exists)
+    }
+
+    // MARK: - Adjust today
+
+    @MainActor
+    func testTheAdjustSheetOffersEveryReasonAndAWayOut() {
+        openUnstartedDay()
+        let adjust = app.button(containing: "Adjust today")
+        app.scrollUntilHittable(adjust)
+        adjust.tap()
+
+        XCTAssertTrue(app.staticTexts["What would help today?"].waitForExistence(timeout: 3))
+        for reason in [
+            "I have less time", "Equipment is unavailable", "Show me how",
+            "Something hurts", "Something else"
+        ] {
+            XCTAssertTrue(app.button(containing: reason).exists, reason)
+        }
+
+        app.buttons["Keep today's plan"].tap()
+
+        XCTAssertFalse(app.staticTexts["What would help today?"].waitForExistence(timeout: 2))
+    }
+
+    // Pain asks nothing and offers nothing in exchange: no policy, no gate.
+    @MainActor
+    func testSomethingHurtsLeadsStraightToThePauseScreen() {
+        openUnstartedDay()
+        let adjust = app.button(containing: "Adjust today")
+        app.scrollUntilHittable(adjust)
+        adjust.tap()
+        XCTAssertTrue(app.staticTexts["What would help today?"].waitForExistence(timeout: 3))
+
+        app.button(containing: "Something hurts").tap()
+
+        XCTAssertTrue(app.staticTexts["Pause this exercise"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["SAVE AND FINISH EARLY"].exists)
+
+        app.buttons["Return to workout"].tap()
+
+        XCTAssertTrue(app.staticTexts["LOWER BODY POWER"].waitForExistence(timeout: 5))
+    }
+
+    // Backing out has to take the draft with it, or the flow never opens again.
+    @MainActor
+    func testAdjustTodayOpensAgainAfterBackingOutOfAStep() {
+        openUnstartedDay()
+        let adjust = app.button(containing: "Adjust today")
+        app.scrollUntilHittable(adjust)
+        adjust.tap()
+        XCTAssertTrue(app.staticTexts["What would help today?"].waitForExistence(timeout: 3))
+        app.button(containing: "I have less time").tap()
+        XCTAssertTrue(app.staticTexts["How much time do you have?"].waitForExistence(timeout: 5))
+
+        app.buttons["Back"].tap()
+        app.scrollUntilHittable(adjust)
+        adjust.tap()
+        XCTAssertTrue(app.staticTexts["What would help today?"].waitForExistence(timeout: 3))
+        app.button(containing: "I have less time").tap()
+
+        XCTAssertTrue(app.staticTexts["How much time do you have?"].waitForExistence(timeout: 5))
+    }
+
+    // The chooser is skipped, so the screen has to say which exercise is being swapped.
+    @MainActor
+    func testAnAlternativeAskedFromAnExerciseRowNamesIt() {
+        openUnstartedDay()
+        let alternative = app.buttons["Need an alternative?"].firstMatch
+        app.scrollUntilHittable(alternative)
+        alternative.tap()
+
+        XCTAssertTrue(app.staticTexts["Which exercise and what's available?"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["Jump Squats"].exists)
+        XCTAssertFalse(app.staticTexts["Which exercise?"].exists)
+        XCTAssertFalse(app.buttons["Walking Lunges"].exists)
+    }
+
+    // The whole slice end to end, because what it is for is what the day says
+    // afterwards.
+    @MainActor
+    func testShorteningTodayAppliesTheChangeAndCanBeUndone() {
+        openUnstartedDay()
+        let adjust = app.button(containing: "Adjust today")
+        app.scrollUntilHittable(adjust)
+        adjust.tap()
+        XCTAssertTrue(app.staticTexts["What would help today?"].waitForExistence(timeout: 3))
+
+        app.button(containing: "I have less time").tap()
+        XCTAssertTrue(app.staticTexts["How much time do you have?"].waitForExistence(timeout: 5))
+
+        let presets = app.buttons.matching(NSPredicate(format: "label MATCHES %@", "^[0-9]+ min$"))
+        XCTAssertTrue(presets.firstMatch.waitForExistence(timeout: 3))
+        presets.element(boundBy: 0).tap()
+
+        app.buttons["SHOW RECOMMENDATION"].tap()
+
+        XCTAssertTrue(app.staticTexts["A shorter workout for today"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["Today only"].exists)
+        let changes = app.button(containing: "See exact changes")
+        app.scrollUntilHittable(changes)
+        changes.tap()
+        XCTAssertTrue(app.text(containing: "Other exercises and planned rests").waitForExistence(timeout: 3))
+
+        let apply = app.buttons["USE THIS WORKOUT"]
+        app.scrollUntilHittable(apply)
+        apply.tap()
+
+        XCTAssertTrue(app.staticTexts["LOWER BODY POWER"].waitForExistence(timeout: 5))
+        let banner = app.staticTexts["Adjusted for today"]
+        app.scrollUntilHittable(banner)
+        XCTAssertTrue(banner.exists)
+
+        app.buttons["Undo adjustment"].tap()
+
+        XCTAssertFalse(app.staticTexts["Adjusted for today"].waitForExistence(timeout: 3))
+    }
+
     // Cardio & Core opens on two whole-session movements with a tutorial and
     // no steps, then three with both.
     @MainActor
@@ -239,5 +456,42 @@ final class RoutineDetailScreenTests: XCTestCase {
 
         XCTAssertEqual(app.buttons.matching(NSPredicate(format: "label == %@", "Show video tutorial")).count, 2)
         XCTAssertEqual(app.buttons.matching(NSPredicate(format: "label == %@", "How to perform")).count, 3)
+    }
+
+    // Every day of this week is behind us, so the screen is the record of one.
+    @MainActor
+    private func openRecordedDay() {
+        app = .launched(.weekGoneBy)
+        XCTAssertTrue(app.staticTexts["YOUR WEEKLY WORKOUT PLAN"].waitForExistence(timeout: 20))
+        app.button(containing: "Cardio & Core").tap()
+        XCTAssertTrue(app.staticTexts["CARDIO & CORE"].waitForExistence(timeout: 5))
+    }
+
+    @MainActor
+    func testARecordOffersNothingThatWrites() {
+        openRecordedDay()
+
+        for label in [
+            "Mark exercise as complete", "Mark exercise as not complete",
+            "Mark set as complete", "Mark set as not complete",
+            "Add set", "Delete set", "Start timer", "Finish early",
+            "Start this workout over", "Need an alternative?", "Undo adjustment"
+        ] {
+            XCTAssertFalse(app.buttons[label].exists, label)
+        }
+        XCTAssertFalse(app.button(containing: "Adjust today").exists)
+        XCTAssertFalse(app.staticTexts["SLIDE TO FINISH THIS WORKOUT"].exists)
+        XCTAssertEqual(app.textFields.count, 0)
+    }
+
+    @MainActor
+    func testARecordShowsWhatWasLoggedAndHowTheWorkIsDone() {
+        openRecordedDay()
+
+        XCTAssertTrue(app.staticTexts["5:00"].exists)
+        XCTAssertTrue(app.images["Completed"].exists)
+        XCTAssertTrue(app.images["Not completed"].exists)
+        XCTAssertTrue(app.buttons["How to perform"].firstMatch.exists)
+        XCTAssertTrue(app.buttons["Show video tutorial"].firstMatch.exists)
     }
 }

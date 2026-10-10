@@ -13,6 +13,19 @@ nonisolated struct WeeklyPlan: Identifiable, Equatable, Sendable {
     var updatedAt = Date()
 }
 
+nonisolated struct WeekOutline: Identifiable, Equatable, Sendable {
+    var id: UUID
+    var weekNumber: Int
+    var startDate: Date?
+    var days: [DayOutline] = []
+}
+
+nonisolated struct DayOutline: Identifiable, Equatable, Sendable {
+    var id: UUID
+    var dayNumber: Int
+    var status = WorkoutStatus.notStarted
+}
+
 nonisolated struct WorkoutDay: Identifiable, Equatable, Sendable {
     var id = UUID()
     var dayNumber: Int
@@ -43,6 +56,9 @@ nonisolated struct WorkoutExercise: Identifiable, Equatable, Sendable {
     var videoTutorialURL: String?
     var isCompleted = false
     var notes = ""
+    var addedBy: UUID?
+
+    var isOmittedToday: Bool { !sets.isEmpty && sets.allSatisfy { $0.omittedBy != nil } }
 }
 
 nonisolated struct ExerciseSet: Identifiable, Equatable, Sendable {
@@ -55,6 +71,8 @@ nonisolated struct ExerciseSet: Identifiable, Equatable, Sendable {
     var actualWeightKg: Double?
     var actualSeconds: Int?
     var isCompleted = false
+    var actualOrigin = ActualOrigin.none
+    var omittedBy: UUID?
 }
 
 // The raw values are what exercise-catalog.json and the stored records spell.
@@ -68,4 +86,12 @@ nonisolated enum WorkoutStatus: String, Codable, CaseIterable, Sendable {
     case notStarted
     case inProgress
     case completed
+
+    static func derived(performed: Int, of planned: Int) -> WorkoutStatus {
+        switch performed {
+        case 0: .notStarted
+        case planned: .completed
+        default: .inProgress
+        }
+    }
 }

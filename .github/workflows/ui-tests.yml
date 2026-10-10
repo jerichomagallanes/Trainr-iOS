@@ -49,9 +49,9 @@ jobs:
           - shard: onboarding
             classes: OnboardingScreenTests OnboardingFlowTests SplashAndOrientationTests TrainrUITests
           - shard: routine
-            classes: RoutineDetailScreenTests ExerciseSetTableScreenTests CompletionScreenTests
+            classes: RoutineDetailScreenTests AdjustContextScreenTests UnstuckJourneyTests ExerciseSetTableScreenTests CompletionScreenTests
           - shard: plan
-            classes: WeeklyPlanScreenTests WeeklyProgressScreenTests GeneratingScreenTests PlanAfterEmptyingTests PaywallGateTests
+            classes: WeeklyPlanScreenTests WeeklyProgressScreenTests GeneratingScreenTests PlanAfterEmptyingTests PaywallGateTests TimerFinishScreenTests
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 

@@ -18,6 +18,10 @@ struct WeeklyPlanView: View {
     private let onRepeatWeek: () -> Void
     private let onRegenerateWeek: () -> Void
     private let onCreatePlan: () -> Void
+    // The limit already confirmed for today's weekday travels with the tap, so
+    // the flow opens on that answer instead of asking for it again.
+    private let onAdjustToday: (WorkoutDay, Int) -> Void
+    private let onTrainingPreferences: () -> Void
     // Set only when a week was opened from Weekly Progress.
     private let onBack: (() -> Void)?
 
@@ -35,6 +39,8 @@ struct WeeklyPlanView: View {
         onRepeatWeek: @escaping () -> Void = {},
         onRegenerateWeek: @escaping () -> Void = {},
         onCreatePlan: @escaping () -> Void = {},
+        onAdjustToday: @escaping (WorkoutDay, Int) -> Void = { _, _ in },
+        onTrainingPreferences: @escaping () -> Void = {},
         onBack: (() -> Void)? = nil
     ) {
         _model = State(
@@ -51,6 +57,8 @@ struct WeeklyPlanView: View {
         self.onRepeatWeek = onRepeatWeek
         self.onRegenerateWeek = onRegenerateWeek
         self.onCreatePlan = onCreatePlan
+        self.onAdjustToday = onAdjustToday
+        self.onTrainingPreferences = onTrainingPreferences
         self.onBack = onBack
     }
 
@@ -128,6 +136,7 @@ struct WeeklyPlanView: View {
                     .frame(height: 1)
                 weekRange
                 if isHome {
+                    todayCard
                     trackProgressLink
                 }
             }
@@ -141,6 +150,9 @@ struct WeeklyPlanView: View {
                     weekday: WorkoutDateFormatter.weekday(planDay.date),
                     day: planDay.day,
                     isMissed: planDay.isMissed,
+                    finishedEarly: planDay.finishKind == .partial,
+                    isAdjusted: planDay.isAdjusted,
+                    derived: planDay.derived,
                     onTap: { onDayTap(planDay.day) }
                 )
                 .listRowSeparator(.hidden)
@@ -149,6 +161,14 @@ struct WeeklyPlanView: View {
                 .moveDisabled(isBrowsedWeek || planDay.isFrozen)
             }
             .onMove(perform: move)
+
+            if isHome && state.hasMemory {
+                TextAction(title: L10n.trainingPreferences, action: onTrainingPreferences)
+                    .listRowSeparator(.hidden)
+                    .listRowInsets(.init(top: 0, leading: 0, bottom: Spacing.medium, trailing: 0))
+                    .listRowBackground(Color.clear)
+                    .moveDisabled(true)
+            }
         }
         .listStyle(.plain)
         .environment(\.defaultMinListRowHeight, 0)
@@ -156,6 +176,24 @@ struct WeeklyPlanView: View {
         .contentMargins(.horizontal, Spacing.screen, for: .scrollContent)
         .contentMargins(.vertical, Spacing.medium, for: .scrollContent)
         .safeAreaInset(edge: .bottom, spacing: 0) { bottomAction }
+    }
+
+    // One card at most, and the adjustment wins: a change already applied is
+    // what today is, and the remembered limit is only an offer.
+    @ViewBuilder
+    private var todayCard: some View {
+        if let today = state.days.first(where: \.isToday) {
+            if let adjustment = state.todayAdjustment {
+                AdjustedTodayCard(kind: adjustment) { onDayTap(today.day) }
+            } else if let preference = state.todayPreference {
+                WeekdayPreferenceCard(
+                    weekdayName: WorkoutDateFormatter.weekdayName(iso: preference.weekday),
+                    minutes: preference.minutes
+                ) {
+                    onAdjustToday(today.day, preference.minutes)
+                }
+            }
+        }
     }
 
     private var heading: some View {
@@ -284,6 +322,7 @@ struct WeeklyPlanView: View {
         return Menu {
             Button(L10n.updateProfile, action: onUpdateProfile)
             Button(L10n.proName, action: onOpenPro)
+            Button(L10n.trainingPreferences, action: onTrainingPreferences)
             Picker(L10n.appearance, selection: $preference.mode) {
                 ForEach(AppearanceMode.allCases, id: \.self) { mode in
                     Label(mode.label, systemImage: mode.symbol).tag(mode)
@@ -330,6 +369,63 @@ struct WeeklyPlanView: View {
     private func move(from source: IndexSet, to destination: Int) {
         guard let from = source.first else { return }
         model.moveDay(from: from, to: destination > from ? destination - 1 : destination)
+    }
+}
+
+private struct AdjustedTodayCard: View {
+    let kind: TodayAdjustmentKind
+    var onViewWorkout: () -> Void = {}
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: Spacing.extraSmall) {
+            HStack(alignment: .firstTextBaseline) {
+                Text(L10n.readyForToday)
+                    .font(.sectionTitle)
+                    .foregroundStyle(Color.onSurface)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                StatusChip(label: L10n.adjusted, fill: .statusActive)
+            }
+            Text(
+                kind == .alternative
+                    ? L10n.adjustedEquipmentCardBody
+                    : L10n.adjustedTimeCardBody
+            )
+            .font(.body14)
+            .foregroundStyle(Color.onSurfaceMuted)
+            TextAction(title: L10n.viewTodaysWorkout, action: onViewWorkout)
+        }
+        .multilineTextAlignment(.leading)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(Spacing.card)
+        .overlay {
+            RoundedRectangle(cornerRadius: CornerRadius.medium)
+                .strokeBorder(Color.outlineControl, lineWidth: 1)
+        }
+    }
+}
+
+private struct WeekdayPreferenceCard: View {
+    let weekdayName: String
+    let minutes: Int
+    var onReviewShorter: () -> Void = {}
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: Spacing.extraSmall) {
+            Text(L10n.weekdayPreferenceFormat(weekdayName))
+                .font(.sectionTitle)
+                .foregroundStyle(Color.onSurface)
+            Text(L10n.usuallyHaveMinutesFormat(minutes))
+                .font(.body14)
+                .foregroundStyle(Color.onSurfaceMuted)
+            TextAction(title: L10n.reviewShorterVersion, action: onReviewShorter)
+        }
+        .multilineTextAlignment(.leading)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(Spacing.card)
+        .overlay {
+            RoundedRectangle(cornerRadius: CornerRadius.medium)
+                .strokeBorder(Color.outlineControl, lineWidth: 1)
+        }
     }
 }
 

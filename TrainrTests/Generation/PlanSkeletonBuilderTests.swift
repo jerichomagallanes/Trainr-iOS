@@ -44,6 +44,23 @@ struct PlanSkeletonBuilderTests {
         }
     }
 
+    // A substitute stood in for one day; it was never part of last week's plan,
+    // so the ranking that favours continuity must not offer it back.
+    @Test func aSubstituteFromLastWeekIsNotRankedAsContinuity() throws {
+        let profile = user()
+        let clean = build(profile)
+        let slot = try #require(clean.days.flatMap(\.openSlots).first { $0.candidates.count > 1 })
+        var added = WorkoutExercise(name: "Substitute")
+        added.exerciseKey = slot.candidates[1]
+        added.addedBy = UUID()
+        var day = WorkoutDay(dayNumber: 1, title: "Full Body", duration: 45, exerciseCount: 1)
+        day.exercises = [added]
+        var previous = WeeklyPlan(userID: profile.id, weekNumber: 1, title: "Strength")
+        previous.workoutDays = [day]
+
+        #expect(build(profile, previous: previous) == clean)
+    }
+
     @Test func theSplitFollowsHowManyDaysWereAskedFor() {
         for days in 1...7 { #expect(build(user(days: days)).days.count == days) }
         #expect(build(user(days: 4)).days.map(\.focus) == [.upper, .lower, .upper, .lower])
