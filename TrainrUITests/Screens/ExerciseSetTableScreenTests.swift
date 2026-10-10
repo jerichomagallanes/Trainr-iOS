@@ -88,6 +88,9 @@ final class ExerciseSetTableScreenTests: XCTestCase {
 
         typeTime("500", into: time, reading: "5:00")
         typeTime("5001", into: time, reading: "50:01")
+        // 6-3-0 used to stall at 0:06, with the last two keystrokes swallowed.
+        typeTime("630", into: time, reading: "6:30")
+        typeTime("900", into: time, reading: "9:00")
     }
 
     // Cleared and retyped whole rather than repaired digit by digit. Every digit
