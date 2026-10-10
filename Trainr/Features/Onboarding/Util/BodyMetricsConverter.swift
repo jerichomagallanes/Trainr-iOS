@@ -8,15 +8,37 @@ nonisolated enum BodyMetricsConverter {
         return age >= 20
     }
 
+    static func parseHeightCm(_ height: String, useMetric: Bool) -> Double {
+        useMetric ? Double(height) ?? 0 : parseImperialHeight(height)
+    }
+
+    static func parseWeightKg(_ weight: String, useMetric: Bool) -> Double {
+        let typed = Double(weight) ?? 0
+        return useMetric ? typed : typed / Constants.Workout.poundsPerKilogram
+    }
+
     static func parseMetrics(
         height: String, weight: String, useMetric: Bool
     ) -> (heightCm: Double, weightKg: Double) {
-        if useMetric {
-            (Double(height) ?? 0, Double(weight) ?? 0)
-        } else {
-            (parseImperialHeight(height),
-             (Double(weight) ?? 0) / Constants.Workout.poundsPerKilogram)
-        }
+        (parseHeightCm(height, useMetric: useMetric), parseWeightKg(weight, useMetric: useMetric))
+    }
+
+    // The measurements themselves, which a unit switch does not change. A field
+    // showing what a conversion made of a measurement is read back as the
+    // measurement it was given: a whole inch is coarser than a centimetre, so
+    // the fields alone would move the index when only the units moved.
+    static func keptMetrics(
+        height: String, weight: String, useMetric: Bool,
+        heightSwap: UnitSwap, weightSwap: UnitSwap
+    ) -> (heightCm: Double, weightKg: Double) {
+        let before = !useMetric
+        let cm = heightSwap.measurementBehind(height)
+            .map { parseHeightCm($0, useMetric: before) }
+            ?? parseHeightCm(height, useMetric: useMetric)
+        let kg = weightSwap.measurementBehind(weight)
+            .map { parseWeightKg($0, useMetric: before) }
+            ?? parseWeightKg(weight, useMetric: useMetric)
+        return (cm, kg)
     }
 
     // Smart punctuation turns a typed apostrophe into U+2019 and a quote into
@@ -55,8 +77,12 @@ nonisolated enum BodyMetricsConverter {
 
     static func calculateBMI(height: String, weight: String, useMetric: Bool) -> Double? {
         let (heightCm, weightKg) = parseMetrics(height: height, weight: weight, useMetric: useMetric)
+        return bodyMassIndex(heightCm: heightCm, weightKg: weightKg)
+    }
+
+    static func bodyMassIndex(heightCm: Double, weightKg: Double) -> Double? {
         guard heightCm.isFinite, weightKg.isFinite, heightCm > 0, weightKg > 0 else { return nil }
-        let heightMetres = heightCm / 100
+        let heightMetres = heightCm / centimetresPerMetre
         return weightKg / (heightMetres * heightMetres)
     }
 
@@ -100,6 +126,14 @@ nonisolated enum BodyMetricsConverter {
     nonisolated struct UnitSwap: Equatable, Sendable {
         var shown = ""
         var typed: String?
+
+        // The text a swap was handed, while the field is still showing what the
+        // swap made of it. Nothing is behind a part-typed measurement that was
+        // kept rather than converted: it never left the units being shown.
+        func measurementBehind(_ current: String) -> String? {
+            guard shown == current, let typed, typed != shown else { return nil }
+            return typed
+        }
     }
 
     static func swapUnits(
@@ -120,4 +154,6 @@ nonisolated enum BodyMetricsConverter {
         }
         return UnitSwap(shown: typed)
     }
+
+    private static let centimetresPerMetre = 100.0
 }

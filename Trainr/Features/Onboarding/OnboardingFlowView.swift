@@ -75,6 +75,7 @@ struct OnboardingFlowView: View {
             stockedEquipment: model.stockedEquipment,
             initial: model.filled(for: .setup, editing: editing),
             isEditing: editing,
+            bodyUnits: model.profile.bodyUnitSystem,
             longestSessionMinutes: { equipment, days, duration in
                 await model.longestSessionMinutes(
                     equipment: equipment, daysPerWeek: days, duration: duration)

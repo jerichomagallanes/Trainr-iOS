@@ -29,9 +29,13 @@ struct ScreenScaffold<Content: View, BottomButton: View>: View {
 
 nonisolated enum PinnedShare {
     static let bar: CGFloat = 0.34
-    // The offer gives way first, so the button under it is in the bar whatever
-    // the text setting does to the cards above it.
-    static let offer: CGFloat = 0.5
+    // The paywall's bar carries the offer, the call to action, what it renews
+    // at and the way out, which a third of the screen cuts off at 667pt.
+    static let purchaseBar: CGFloat = 0.5
+    // A list of cards is the one part of a pinned bar that grows without bound,
+    // so it is the part held to a share of the screen; whatever is laid out
+    // under it is then never scrolled out of the bar.
+    static let offer: CGFloat = 1.0 / 6.0
 }
 
 // A pinned bar that holds more than a button grows with the text setting until
@@ -45,14 +49,21 @@ struct CappedScroll<Content: View>: View {
     // one it is proposed no height at all, so it reports the same figure either
     // way and the two cannot chase each other.
     @State private var natural: CGFloat = 0
+    @State private var scrolled: CGFloat = 0
 
     private var overflows: Bool { ceiling > 0 && natural > ceiling }
 
     var body: some View {
         if overflows {
-            ScrollView { measured }
+            ScrollView { measured.padding(.trailing, ScrollThumb.gutter) }
                 .frame(height: ceiling)
                 .scrollBounceBehavior(.basedOnSize)
+                .onScrollGeometryChange(for: CGFloat.self) { $0.contentOffset.y } action: {
+                    scrolled = $1
+                }
+                .overlay(alignment: .topTrailing) {
+                    ScrollThumb(viewport: ceiling, content: natural, scrolled: scrolled)
+                }
         } else {
             measured
         }
@@ -60,6 +71,30 @@ struct CappedScroll<Content: View>: View {
 
     private var measured: some View {
         content.onGeometryChange(for: CGFloat.self) { $0.size.height } action: { natural = $0 }
+    }
+}
+
+// Nothing says a short scroll view scrolls while it sits still, and content cut
+// at a hard edge reads as the end of it: that is how the paywall's only way out
+// came to look missing.
+private struct ScrollThumb: View {
+    let viewport: CGFloat
+    let content: CGFloat
+    let scrolled: CGFloat
+
+    static let gutter: CGFloat = 7
+    private static let width: CGFloat = 3
+    private static let shortest: CGFloat = 24
+
+    var body: some View {
+        let hidden = content - viewport
+        if hidden > 0, viewport > 0 {
+            let thumb = max(viewport * viewport / content, Self.shortest)
+            Capsule()
+                .fill(Color.outlineControl)
+                .frame(width: Self.width, height: thumb)
+                .offset(y: (viewport - thumb) * min(max(scrolled / hidden, 0), 1))
+        }
     }
 }
 

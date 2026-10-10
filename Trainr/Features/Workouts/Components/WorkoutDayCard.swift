@@ -5,6 +5,7 @@ struct WorkoutDayCard: View {
     // The equipment line is one AttributedString in two weights, so its label
     // size is read here rather than set by a modifier.
     @ScaledMetric(relativeTo: .subheadline) private var labelSize = TextRole.labelMedium.size
+    @Environment(\.dynamicTypeSize) private var textSize
     let weekday: String
     let day: WorkoutDay
     var isMissed = false
@@ -38,7 +39,7 @@ struct WorkoutDayCard: View {
     }
 
     private var header: some View {
-        HStack(alignment: .top) {
+        headerLayout {
             VStack(alignment: .leading, spacing: 0) {
                 Text(weekday)
                     .font(.sectionTitle)
@@ -96,6 +97,18 @@ struct WorkoutDayCard: View {
         .padding(Spacing.card)
         .background(Color.surfaceCard)
     }
+
+    private var headerLayout: AnyLayout {
+        Self.sharesARow(at: textSize)
+            ? AnyLayout(HStackLayout(alignment: .top))
+            : AnyLayout(VStackLayout(alignment: .leading, spacing: Spacing.small))
+    }
+
+    // The chip keeps the width it asks for so its own label is never squeezed
+    // to a column of letters. Past this point it asks for more of the row than
+    // the weekday beside it has words to spare, which is how "Thursday" came to
+    // be drawn as "Thursd / ay"; from there the two take a line each.
+    static func sharesARow(at size: DynamicTypeSize) -> Bool { !size.isAccessibilitySize }
 
     private var equipment: [String] { derived?.equipment ?? day.equipment }
 

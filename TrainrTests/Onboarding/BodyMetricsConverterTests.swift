@@ -213,4 +213,63 @@ struct BodyMetricsConverterTests {
         #expect(BodyMetricsConverter.formatWeight(72) == "72")
         #expect(BodyMetricsConverter.formatWeight(72.46) == "72.5")
     }
+
+    private func swappedToImperial() -> (BodyMetricsConverter.UnitSwap, BodyMetricsConverter.UnitSwap) {
+        (BodyMetricsConverter.swapUnits(
+            "175", last: BodyMetricsConverter.UnitSwap(),
+            keeping: { BodyMetricsConverter.acceptedHeight($0, useMetric: false) },
+            convert: BodyMetricsConverter.convertHeightToImperial),
+         BodyMetricsConverter.swapUnits(
+            "72", last: BodyMetricsConverter.UnitSwap(),
+            convert: BodyMetricsConverter.convertWeightToImperial))
+    }
+
+    // Whole inches are coarser than centimetres, so 175 shown back as 5'9" and
+    // read from the field is 175.26 and a different index for the same person.
+    @Test("The index does not move when only the units are switched")
+    func theIndexDoesNotMoveWhenOnlyTheUnitsAreSwitched() {
+        let (heightSwap, weightSwap) = swappedToImperial()
+        #expect(heightSwap.shown == "5'9\"")
+        #expect(weightSwap.shown == "158.7")
+
+        let kept = BodyMetricsConverter.keptMetrics(
+            height: heightSwap.shown, weight: weightSwap.shown, useMetric: false,
+            heightSwap: heightSwap, weightSwap: weightSwap)
+
+        #expect(kept.heightCm == 175)
+        #expect(kept.weightKg == 72)
+        #expect(BodyMetricsConverter.bodyMassIndex(
+            heightCm: kept.heightCm, weightKg: kept.weightKg)
+            == BodyMetricsConverter.calculateBMI(height: "175", weight: "72", useMetric: true))
+    }
+
+    // The imperial filter allows "175", which is not feet and inches, so the
+    // switch keeps it as it is rather than emptying the field. What it keeps is
+    // in the units it is now shown in, not the ones it was typed in.
+    @Test("A measurement kept across the switch is read in the units it is shown in")
+    func aKeptMeasurementIsReadInTheUnitsItIsShownIn() {
+        let heightSwap = BodyMetricsConverter.swapUnits(
+            "175", last: BodyMetricsConverter.UnitSwap(),
+            keeping: { BodyMetricsConverter.acceptedHeight($0, useMetric: true) },
+            convert: BodyMetricsConverter.convertHeightToMetric)
+
+        let kept = BodyMetricsConverter.keptMetrics(
+            height: heightSwap.shown, weight: "72", useMetric: true,
+            heightSwap: heightSwap, weightSwap: BodyMetricsConverter.UnitSwap())
+
+        #expect(heightSwap.shown == "175")
+        #expect(kept.heightCm == 175)
+    }
+
+    @Test("A measurement edited after the switch is read as it is shown")
+    func anEditedMeasurementIsReadAsItIsShown() {
+        let (heightSwap, weightSwap) = swappedToImperial()
+
+        let kept = BodyMetricsConverter.keptMetrics(
+            height: "5'10\"", weight: "160", useMetric: false,
+            heightSwap: heightSwap, weightSwap: weightSwap)
+
+        #expect(close(kept.heightCm, 177.8))
+        #expect(close(kept.weightKg, 160 / Constants.Workout.poundsPerKilogram))
+    }
 }

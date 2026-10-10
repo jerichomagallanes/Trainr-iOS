@@ -3,6 +3,8 @@ import SwiftUI
 struct WorkoutSetupView: View {
     let stockedEquipment: Set<Equipment>
     var isEditing = false
+    // How the client reads their own body, answered two steps earlier.
+    var bodyUnits = UnitSystem.standard
     // The longest session these answers can really build, which is the answer
     // itself unless the split cannot fill it.
     let longestSessionMinutes: ([Equipment], Int, Int) async -> Int
@@ -19,12 +21,14 @@ struct WorkoutSetupView: View {
         stockedEquipment: Set<Equipment> = Set(Equipment.choices),
         initial: UserProfile? = nil,
         isEditing: Bool = false,
+        bodyUnits: UnitSystem = .standard,
         longestSessionMinutes: @escaping ([Equipment], Int, Int) async -> Int = { _, _, duration in duration },
         onNext: @escaping ([Equipment], UnitSystem?, Int, Int) -> Void,
         onBack: @escaping () -> Void
     ) {
         self.stockedEquipment = stockedEquipment
         self.isEditing = isEditing
+        self.bodyUnits = bodyUnits
         self.longestSessionMinutes = longestSessionMinutes
         self.onNext = onNext
         self.onBack = onBack
@@ -141,6 +145,13 @@ struct WorkoutSetupView: View {
                         .foregroundStyle(Color.onSurfaceMuted)
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
+            }
+            // Answered with the units the client already reads their own body
+            // in, which is what the profile falls back to anyway: revealed by a
+            // chip above it, the question would otherwise block NEXT from off
+            // the top of the window.
+            .onChange(of: hasLoadedEquipment, initial: true) { _, loaded in
+                if loaded, selectedLiftingUnits == nil { selectedLiftingUnits = bodyUnits }
             }
             // Off the main actor: this builds a whole week, and it is rerun on
             // every chip tap.
