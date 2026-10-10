@@ -44,6 +44,9 @@ nonisolated struct ExerciseUi: Identifiable, Equatable, Sendable {
 // or a spell in the background, otherwise loses time for good.
 nonisolated struct ExerciseTimerUi: Equatable, Sendable {
     var position: Int
+    // The row the countdown was started on: a reload may leave a different
+    // movement at that position, and the hold must not follow it there.
+    var exerciseID: UUID?
     var remainingSeconds: Int
     var isRunning: Bool
     var totalSeconds: Int
@@ -54,10 +57,11 @@ nonisolated struct ExerciseTimerUi: Equatable, Sendable {
     var isFinished = false
 
     init(
-        position: Int, remainingSeconds: Int, isRunning: Bool,
+        position: Int, exerciseID: UUID? = nil, remainingSeconds: Int, isRunning: Bool,
         totalSeconds: Int? = nil, endsAt: Date? = nil, isFinished: Bool = false
     ) {
         self.position = position
+        self.exerciseID = exerciseID
         self.remainingSeconds = remainingSeconds
         self.isRunning = isRunning
         self.totalSeconds = totalSeconds ?? remainingSeconds
@@ -65,10 +69,13 @@ nonisolated struct ExerciseTimerUi: Equatable, Sendable {
         self.isFinished = isFinished
     }
 
-    static func running(position: Int, totalSeconds: Int, from now: Date) -> ExerciseTimerUi {
+    static func running(
+        position: Int, exerciseID: UUID? = nil, totalSeconds: Int, from now: Date
+    ) -> ExerciseTimerUi {
         ExerciseTimerUi(
-            position: position, remainingSeconds: totalSeconds, isRunning: true,
-            totalSeconds: totalSeconds, endsAt: now.addingTimeInterval(TimeInterval(totalSeconds))
+            position: position, exerciseID: exerciseID, remainingSeconds: totalSeconds,
+            isRunning: true, totalSeconds: totalSeconds,
+            endsAt: now.addingTimeInterval(TimeInterval(totalSeconds))
         )
     }
 

@@ -1,60 +1,6 @@
 import Foundation
 import Observation
 
-nonisolated struct RoutineDetailState: Equatable, Sendable {
-    var routine = RoutineUi(title: "", exercises: [])
-    var equipment: [String] = []
-    var date = Date(timeIntervalSince1970: 0)
-    var timer: ExerciseTimerUi?
-    // One tutorial open at a time: a player exists for as long as its section
-    // is open, not only while playing.
-    var expandedVideo: Int?
-    var expandedHowTo: Int?
-    var dayNumber = 1
-    var weekNumber = 1
-    var completesTheWeek = false
-    // Which units the client reads and writes; storage stays metric.
-    var unitSystem = UnitSystem.metric
-    // Nothing is drawn before the stored routine is read, and the completion
-    // guard needs it too: loading must not count as finishing the day.
-    var isLoaded = false
-    var outcome: SessionOutcome?
-    var isConfirmingFinishEarly = false
-    var saveFailed = false
-    var activeAdjustment: AppliedAdjustment?
-    var adjustedBanner: AdjustedBannerUi?
-    var isShowingAdjustSheet = false
-    var isPickingExercise = false
-    var scrollToPosition: Int?
-    var undoKeptSets: Int?
-    // A day in a week that is over is a record: nothing on it may be written.
-    var isReadOnly = false
-    // The same estimate the plan card and the time presets use; nil only
-    // without a profile to estimate for, when the header sums the cards.
-    var totalMinutes: Int?
-
-    // Adjusting is offered by the work left, not by whether an outcome was
-    // recorded: a day finished early still has sets to change.
-    var hasRemainingWork: Bool {
-        !isReadOnly && outcome?.finishKind != .full && routine.hasUnperformedWork
-    }
-}
-
-// What the adjust flow left behind when it closed. Either way the stored day is
-// read again: it may be a different day now.
-nonisolated enum AdjustmentReturn: Equatable, Sendable {
-    case reload
-    case finishEarly
-    case guide
-}
-
-nonisolated struct SessionSavedEvent: Equatable, Sendable {
-    var dayNumber: Int
-    var weekNumber: Int
-    var performedExercises: Int
-    var plannedExercises: Int
-}
-
 @Observable
 final class RoutineDetailModel {
 
@@ -143,6 +89,7 @@ final class RoutineDetailModel {
         }
         // The note belongs to one undo, not to whatever the day shows next.
         state.undoKeptSets = nil
+        dropTimerIfReplaced()
         state.isLoaded = true
     }
 
@@ -212,11 +159,9 @@ final class RoutineDetailModel {
         reopen()
         let routine = state.routine.toggleCompleted(at: position)
         let nowCompleted = routine.exercises.contains { $0.position == position && $0.isCompleted }
-        let clearsTimer = nowCompleted && state.timer?.position == position
 
-        if clearsTimer { cancelTick() }
         state.routine = routine
-        if clearsTimer { state.timer = nil }
+        if nowCompleted { clearTimer(at: position) }
         persistExercise(at: position, completed: nowCompleted)
     }
 
@@ -394,7 +339,10 @@ final class RoutineDetailModel {
         // whole block rounded up, and the countdown's length is what gets logged.
         let countdown = exercise.measuredSet?.targetSeconds
             ?? (exercise.minutes * Constants.Workout.secondsPerMinute)
-        state.timer = .running(position: exercise.position, totalSeconds: countdown, from: Date())
+        state.timer = .running(
+            position: exercise.position, exerciseID: exercise.exerciseID,
+            totalSeconds: countdown, from: Date()
+        )
         startTicking()
     }
 
@@ -461,6 +409,27 @@ final class RoutineDetailModel {
         ticker = nil
     }
 
+    // The timer outlives a reload, but only on its own exercise: an adjustment
+    // can leave a different movement where it was started, and a hold must
+    // never be logged against a set nobody did.
+    private func dropTimerIfReplaced() {
+        guard let timer = state.timer,
+              state.routine.exercises.first(where: { $0.position == timer.position })?
+                .exerciseID != timer.exerciseID
+        else { return }
+        cancelTick()
+        state.timer = nil
+    }
+
+    // A completed exercise draws no timer, and a control that is gone must not
+    // leave the countdown it drove running. Dropping it logs nothing: only
+    // finish(_:) leaves the span it measured.
+    private func clearTimer(at position: Int) {
+        guard state.timer?.position == position else { return }
+        cancelTick()
+        state.timer = nil
+    }
+
     // The model outlives the view, held as @State until SwiftUI drops the
     // destination, so without this the loop keeps ticking and writing for a
     // screen nobody is looking at.
@@ -469,13 +438,36 @@ final class RoutineDetailModel {
         onTimerFinished = nil
     }
 
-    // MARK: - Persistence
+    // The countdown is held as an end time, so coming back reads the clock
+    // rather than carrying on from the second the screen left on: one that ran
+    // out while away is finished here, not frozen under a running label. The
+    // handler is restored after that catch-up tick, so an end nobody could see
+    // is shown rather than played back as an alarm.
+    func screenCameBack(announcing announce: @escaping () -> Void) {
+        defer { onTimerFinished = announce }
+        guard state.timer?.isRunning == true else { return }
+        cancelTick()
+        guard tick() else { return }
+        startTicking()
+    }
 
-    private func completion(at position: Int) -> Bool? {
+    // Finishing the last outstanding day ends the week, not just the day.
+    static func completesTheWeek(_ counted: [Bool], dayNumber: Int) -> Bool {
+        counted.enumerated()
+            .filter { index, _ in index != dayNumber - 1 }
+            .allSatisfy { _, countsAsCompleted in countsAsCompleted }
+    }
+}
+
+// MARK: - Persistence
+
+private extension RoutineDetailModel {
+
+    func completion(at position: Int) -> Bool? {
         state.routine.exercises.first { $0.position == position }?.isCompleted
     }
 
-    private func isTicked(setNumber: Int, at position: Int) -> Bool? {
+    func isTicked(setNumber: Int, at position: Int) -> Bool? {
         state.routine.exercises.first { $0.position == position }?
             .sets.first { $0.setNumber == setNumber }?.isCompleted
     }
@@ -484,7 +476,7 @@ final class RoutineDetailModel {
     // and the status follows the sets until the day is finished once more. A
     // corrected number is not new work, so it leaves the day closed; starting
     // over is, and takes a full outcome with it.
-    private func reopen(anyOutcome: Bool = false) {
+    func reopen(anyOutcome: Bool = false) {
         guard let kind = state.outcome?.finishKind, anyOutcome || kind == .partial, let day = storedDay,
               dependencies.attempt("deleteOutcome", { try dependencies.store.deleteOutcome(dayID: day.id) }) != nil
         else { return }
@@ -495,27 +487,28 @@ final class RoutineDetailModel {
 
     // The screen shows the change the moment it happens, so the record follows
     // at once.
-    private func reconcileCompletion(at position: Int, was: Bool?) {
+    func reconcileCompletion(at position: Int, was: Bool?) {
         guard let now = completion(at: position), now != was else { return }
+        if now { clearTimer(at: position) }
         persistExercise(at: position, completed: now)
     }
 
     // A card's position counts the exercises still in today's session; the
     // stored day also holds the ones an adjustment omitted, so the two lists
     // index differently and only the visible one may be counted from.
-    private func storedIndex(at position: Int) -> Int? {
+    func storedIndex(at position: Int) -> Int? {
         guard let day = storedDay, day.visibleExercises.indices.contains(position - 1)
         else { return nil }
         let target = day.visibleExercises[position - 1]
         return day.exercises.firstIndex { $0.id == target.id }
     }
 
-    private func storedExercise(at position: Int) -> WorkoutExercise? {
+    func storedExercise(at position: Int) -> WorkoutExercise? {
         guard let day = storedDay, let index = storedIndex(at: position) else { return nil }
         return day.exercises[index]
     }
 
-    private func persistExercise(at position: Int, completed: Bool) {
+    func persistExercise(at position: Int, completed: Bool) {
         guard var day = storedDay, let index = storedIndex(at: position),
               var exercise = storedExercise(at: position)
         else { return }
@@ -531,7 +524,7 @@ final class RoutineDetailModel {
 
     // Completing leaves what an adjustment omitted alone; clearing does not, so
     // undoing the adjustment hands the exercise back unticked.
-    private func persistEveryExercise(completed: Bool) {
+    func persistEveryExercise(completed: Bool) {
         guard var day = storedDay else { return }
         day.exercises = day.exercises.map { exercise in
             guard !(completed && exercise.isOmittedToday) else { return exercise }
@@ -550,7 +543,7 @@ final class RoutineDetailModel {
 
     // Stored the way it will be read back: by the PREVIOUS column, and by the
     // progression that builds next week.
-    private func persistFilledSets(at positions: [Int]) {
+    func persistFilledSets(at positions: [Int]) {
         guard var day = storedDay else { return }
         for position in positions {
             guard let index = storedIndex(at: position) else { continue }
@@ -570,7 +563,7 @@ final class RoutineDetailModel {
         storedDay = day
     }
 
-    private func persistDayStatus() {
+    func persistDayStatus() {
         guard state.outcome?.finishKind != .partial, var day = storedDay else { return }
         let visible = day.visibleExercises
         let status = WorkoutStatus.derived(performed: visible.count(where: \.isCompleted), of: visible.count)
@@ -579,12 +572,5 @@ final class RoutineDetailModel {
         day.completedAt = status == .completed ? (day.completedAt ?? Date()) : nil
         storedDay = day
         dependencies.attempt("updateDay", { try dependencies.store.updateDay(day) })
-    }
-
-    // Finishing the last outstanding day ends the week, not just the day.
-    static func completesTheWeek(_ counted: [Bool], dayNumber: Int) -> Bool {
-        counted.enumerated()
-            .filter { index, _ in index != dayNumber - 1 }
-            .allSatisfy { _, countsAsCompleted in countsAsCompleted }
     }
 }

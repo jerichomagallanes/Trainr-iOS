@@ -94,7 +94,7 @@ struct RoutineDetailView: View {
         }
         // On the outer view on purpose: hung on the routine alone, swapping in
         // the confirmation would read as leaving and kill a running timer.
-        .onAppear { model.onTimerFinished = TimerAlert.fire }
+        .onAppear { model.screenCameBack(announcing: TimerAlert.fire) }
         .onDisappear { model.screenWentAway() }
     }
 

@@ -8,13 +8,21 @@ struct RoutineDetailTimerTests {
 
     private let holdSeconds = 1
 
-    private func heldDay() throws -> (RoutineDetailFixture, RoutineDetailModel) {
-        let fixture = try RoutineDetailFixture(holdSeconds: holdSeconds)
+    private func heldDay(seconds: Int? = nil) throws -> (RoutineDetailFixture, RoutineDetailModel) {
+        let fixture = try RoutineDetailFixture(holdSeconds: seconds ?? holdSeconds)
         return (fixture, fixture.loaded(day: fixture.firstDayNumber))
     }
 
     private func hold(_ model: RoutineDetailModel) throws -> ExerciseUi {
         try #require(model.state.routine.exercises.first { $0.measure == .duration })
+    }
+
+    private func fellBelow(_ seconds: Int, _ model: RoutineDetailModel) async -> Bool {
+        for _ in 0..<60 {
+            if let remaining = model.state.timer?.remainingSeconds, remaining < seconds { return true }
+            try? await Task.sleep(for: .milliseconds(100))
+        }
+        return false
     }
 
     private func ranOut(_ model: RoutineDetailModel) async -> Bool {
@@ -120,6 +128,95 @@ struct RoutineDetailTimerTests {
         try await Task.sleep(for: .milliseconds(300))
 
         #expect(alerts.count == 0)
+    }
+
+    @Test("A countdown the screen left behind comes back counting from the clock")
+    func itComesBackCountingFromTheClock() async throws {
+        let (_, model) = try heldDay(seconds: 30)
+        model.startTimer(for: try hold(model))
+
+        model.screenWentAway()
+        try await Task.sleep(for: .milliseconds(1200))
+        let whileAway = try #require(model.state.timer).remainingSeconds
+        model.screenCameBack(announcing: {})
+
+        let resumed = try #require(model.state.timer)
+        #expect(resumed.isRunning)
+        #expect(resumed.remainingSeconds < whileAway)
+        #expect(await fellBelow(resumed.remainingSeconds, model))
+    }
+
+    // The screen was away for the end, so there is nothing to announce: it is
+    // read off the clock and shown at zero instead.
+    @Test("A countdown whose end passed while the screen was away reads as finished")
+    func anEndThatPassedWhileAwayReadsAsFinished() async throws {
+        let (_, model) = try heldDay()
+        model.startTimer(for: try hold(model))
+
+        model.screenWentAway()
+        try await Task.sleep(for: .milliseconds(1300))
+        #expect(model.state.timer?.isFinished == false)
+
+        let alerts = Counter()
+        model.screenCameBack(announcing: { alerts.bump() })
+
+        let timer = try #require(model.state.timer)
+        #expect(timer.isFinished)
+        #expect(!timer.isRunning)
+        #expect(timer.remainingSeconds == 0)
+        #expect(alerts.count == 0)
+    }
+
+    // A countdown belongs to the exercise it was started on, not to the place
+    // that exercise held: an adjustment can leave another movement there.
+    @Test("An exercise replaced under a running countdown takes the countdown with it")
+    func aReplacedExerciseDropsTheCountdown() async throws {
+        let (fixture, model) = try heldDay()
+        let plank = try hold(model)
+        model.startTimer(for: plank)
+
+        try fixture.replace(exerciseID: try #require(plank.exerciseID))
+        model.load()
+        #expect(model.state.timer == nil)
+
+        try await Task.sleep(for: .milliseconds(1300))
+        #expect(model.state.timer == nil)
+        let standing = try #require(
+            model.state.routine.exercises.first { $0.position == plank.position }
+        )
+        #expect(standing.exerciseID != plank.exerciseID)
+        #expect(standing.sets.allSatisfy { $0.actualSeconds == nil })
+        let stored = try fixture.storedDay(fixture.firstDayNumber)
+        #expect(stored.exercises.allSatisfy { exercise in
+            exercise.sets.allSatisfy { $0.actualSeconds == nil }
+        })
+    }
+
+    @Test("Ticking the set stops the countdown and leaves nothing behind")
+    func tickingTheSetStopsTheCountdown() async throws {
+        let (fixture, model) = try heldDay(seconds: 2)
+        let plank = try hold(model)
+        let alerts = Counter()
+        model.onTimerFinished = { alerts.bump() }
+        model.startTimer(for: plank)
+
+        var ticked = try #require(plank.sets.first)
+        ticked.isCompleted = true
+        model.update(ticked, at: plank.position)
+        #expect(model.state.timer == nil)
+
+        try await Task.sleep(for: .milliseconds(2400))
+        #expect(model.state.timer == nil)
+        #expect(alerts.count == 0)
+
+        let exercise = try #require(
+            model.state.routine.exercises.first { $0.position == plank.position }
+        )
+        #expect(exercise.isCompleted)
+        #expect(exercise.sets.allSatisfy { $0.actualOrigin != .measured })
+        let stored = try fixture.storedDay(fixture.firstDayNumber)
+        let recorded = try #require(stored.exercises.first { $0.measure == .duration })
+        #expect(recorded.sets.allSatisfy { $0.actualSeconds == nil })
     }
 
     @MainActor
