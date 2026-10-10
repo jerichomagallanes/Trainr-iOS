@@ -145,7 +145,7 @@ final class OnboardingScreenTests: XCTestCase {
         app.textFields["70"].tap()
         app.textFields["70"].typeText("72")
 
-        XCTAssertTrue(app.staticTexts["Normal weight"].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.staticTexts["Healthy weight"].waitForExistence(timeout: 3))
         XCTAssertTrue(next.isEnabled)
     }
 
@@ -210,6 +210,37 @@ final class OnboardingScreenTests: XCTestCase {
         let values = app.textFields.allElementsBoundByIndex.compactMap { $0.value as? String }
         XCTAssertTrue(values.contains("177"), "\(values)")
         XCTAssertTrue(values.contains("95.5"), "\(values)")
+    }
+
+    @MainActor
+    func testMeasurementsTypedBeforeGoingBackAreShownAgain() {
+        app = .launched(startingAt: "bodyMetrics")
+        XCTAssertTrue(app.textFields["170"].waitForExistence(timeout: 20))
+        app.textFields["170"].tap()
+        app.textFields["170"].typeText("175")
+        app.textFields["70"].tap()
+        app.textFields["70"].typeText("72")
+
+        XCTAssertTrue(app.tap(app.buttons["Back"], until: app.textFields["Enter your name"]))
+        XCTAssertTrue(app.tap(app.buttons["NEXT"], until: app.staticTexts["YOUR MEASUREMENTS"]))
+
+        XCTAssertEqual(app.textFields["170"].value as? String, "175")
+        XCTAssertEqual(app.textFields["70"].value as? String, "72")
+    }
+
+    @MainActor
+    func testAPartTypedImperialHeightSurvivesTheUnitTabs() {
+        app = .launched(startingAt: "bodyMetrics")
+        XCTAssertTrue(app.staticTexts["YOUR MEASUREMENTS"].waitForExistence(timeout: 20))
+        let height = app.textFields["5'10\""]
+        XCTAssertTrue(app.tap(app.buttons["Imperial"], until: height))
+        height.tap()
+        height.typeText("5")
+        XCTAssertEqual(height.value as? String, "5")
+
+        XCTAssertTrue(app.tap(app.buttons["Metric"], until: app.textFields["170"]))
+
+        XCTAssertEqual(app.textFields["170"].value as? String, "5")
     }
 
     @MainActor
@@ -318,6 +349,20 @@ final class OnboardingScreenTests: XCTestCase {
 
     // MARK: - Review
 
+    // A pinned bar that grows with the text setting leaves the step a strip:
+    // at the largest size the screen's own words still get most of it, and
+    // whatever the bar cannot hold scrolls inside the bar.
+    @MainActor
+    func testTheReviewBarIsHeldToAShareOfTheScreen() {
+        app = .launched(startingAt: "review", arguments: XCUIApplication.largestTextSize)
+        let confirm = app.buttons["GENERATE MY WORKOUT PLAN"]
+        XCTAssertTrue(confirm.waitForExistence(timeout: 20))
+        XCTAssertTrue(app.staticTexts["YOUR FITNESS PROFILE"].exists)
+
+        let screen = app.windows.firstMatch.frame
+        XCTAssertGreaterThan(confirm.frame.minY, screen.midY)
+    }
+
     @MainActor
     func testTheReviewReadsEveryAnswerBackAndOffersAnEditForEach() {
         app = .launched(startingAt: "review")
@@ -414,6 +459,6 @@ final class OnboardingScreenTests: XCTestCase {
         weight.typeText("2")
 
         XCTAssertFalse(app.text(containing: "Underweight").exists)
-        XCTAssertFalse(app.text(containing: "Normal weight").exists)
+        XCTAssertFalse(app.text(containing: "Healthy weight").exists)
     }
 }

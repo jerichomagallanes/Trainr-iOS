@@ -8,6 +8,9 @@ struct StatusChip: View {
         Text(label)
             .font(.labelSmall)
             .foregroundStyle(Color.onStatus)
+            // Always wrapped, never clipped: the label is the only thing on the
+            // card that says where the day stands.
+            .fixedSize(horizontal: false, vertical: true)
             .padding(.horizontal, Spacing.small)
             .padding(.vertical, Spacing.hairline)
             .background(fill, in: .rect(cornerRadius: CornerRadius.small))

@@ -46,6 +46,10 @@ struct OnboardingFlowView: View {
             initial: model.filled(for: .bodyMetrics, editing: editing),
             age: model.profile.age,
             isEditing: editing,
+            // Only while answering: editing a stored profile has a profile to
+            // go back to, and a half-typed figure must not outlive the screen.
+            inProgress: editing ? nil : model.bodyMetricsInProgress(),
+            onEntryChanged: { if !editing { model.rememberBodyMetrics($0) } },
             onNext: { height, weight, units in
                 model.updateBodyMetrics(height: height, weight: weight, units: units)
                 onStep(editing, .fitnessGoal(editing: false))

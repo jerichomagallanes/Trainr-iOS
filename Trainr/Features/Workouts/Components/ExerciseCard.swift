@@ -11,6 +11,10 @@ struct ExerciseCard<Extras: View>: View {
     @ViewBuilder let extras: Extras
 
     @ScaledMetric(relativeTo: .caption) private var muscleSize = TextRole.body12.size
+    // Point sizes that hold text, so they grow with it rather than cropping it
+    // to a blob at the largest accessibility size.
+    @ScaledMetric(relativeTo: .subheadline) private var badgeSide: CGFloat = 20
+    @ScaledMetric(relativeTo: .subheadline) private var tickSide: CGFloat = 30
 
     private var accentInk: Color { exercise.isCompleted ? .statusDoneInk : .onSurface }
     private var accentOutline: Color { exercise.isCompleted ? .statusDoneEdge : .cardEdge }
@@ -53,7 +57,8 @@ struct ExerciseCard<Extras: View>: View {
             Text("\(exercise.position)")
                 .font(.labelLarge)
                 .foregroundStyle(onAccentFill)
-                .frame(width: 20, height: 20)
+                .padding(.horizontal, Spacing.extraSmall)
+                .frame(minWidth: badgeSide, minHeight: badgeSide)
                 .background(accentFill, in: .circle)
 
             Text(exercise.name)
@@ -87,7 +92,7 @@ struct ExerciseCard<Extras: View>: View {
         Image(systemName: exercise.isCompleted ? "checkmark.square.fill" : "square")
             .font(.oneOff(26))
             .foregroundStyle(exercise.isCompleted ? Color.statusDoneInk : Color.outlineControl)
-            .frame(width: 30, height: 30)
+            .frame(width: tickSide, height: tickSide)
     }
 
     private func body(padding: CGFloat) -> some View {

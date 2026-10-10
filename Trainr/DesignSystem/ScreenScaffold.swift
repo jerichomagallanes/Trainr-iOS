@@ -10,17 +10,56 @@ struct ScreenScaffold<Content: View, BottomButton: View>: View {
     @ViewBuilder let content: Content
 
     var body: some View {
-        VStack(spacing: 0) {
-            TopBar(onBack: onBack, closeInsteadOfBack: closeInsteadOfBack, showLogo: showLogo)
-            content
-        }
-        .background(Color.surfacePage)
-        .safeAreaInset(edge: .bottom, spacing: 0) {
-            bottomButton
-                .padding(Spacing.large)
+        GeometryReader { screen in
+            VStack(spacing: 0) {
+                TopBar(onBack: onBack, closeInsteadOfBack: closeInsteadOfBack, showLogo: showLogo)
+                content
+            }
+            .background(Color.surfacePage)
+            .safeAreaInset(edge: .bottom, spacing: 0) {
+                CappedScroll(ceiling: screen.size.height * PinnedShare.bar) {
+                    bottomButton.padding(Spacing.large)
+                }
                 .pinnedBar()
+            }
         }
         .toolbar(.hidden, for: .navigationBar)
+    }
+}
+
+nonisolated enum PinnedShare {
+    static let bar: CGFloat = 0.34
+    // The offer gives way first, so the button under it is in the bar whatever
+    // the text setting does to the cards above it.
+    static let offer: CGFloat = 0.5
+}
+
+// A pinned bar that holds more than a button grows with the text setting until
+// the screen above it is a strip. It is held to a share of what the screen has
+// and scrolls inside that, and keeps its own height while it still fits.
+struct CappedScroll<Content: View>: View {
+    var ceiling: CGFloat
+    @ViewBuilder let content: Content
+
+    // The height the content asks for, which a scroll view would hide: inside
+    // one it is proposed no height at all, so it reports the same figure either
+    // way and the two cannot chase each other.
+    @State private var natural: CGFloat = 0
+
+    private var overflows: Bool { ceiling > 0 && natural > ceiling }
+
+    var body: some View {
+        if overflows {
+            ScrollView { measured }
+                .frame(height: ceiling)
+                .scrollBounceBehavior(.basedOnSize)
+        } else {
+            measured
+        }
+    }
+
+    private var measured: some View {
+        content.onGeometryChange(for: CGFloat.self) { $0.size.height } action: { natural = $0 }
     }
 }
 

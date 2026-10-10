@@ -103,10 +103,20 @@ nonisolated enum BodyMetricsConverter {
     }
 
     static func swapUnits(
-        _ current: String, last: UnitSwap, convert: (String) -> String
+        _ current: String, last: UnitSwap, keeping: (String) -> String? = { $0 },
+        convert: (String) -> String
     ) -> UnitSwap {
         guard let typed = last.typed, last.shown == current else {
-            return UnitSwap(shown: convert(current), typed: current)
+            // A part-typed measurement converts to nothing. Emptying the field
+            // would throw away what was being written, so as much of it as the
+            // field being switched to accepts is left there and the range
+            // message under it says it is not a measurement yet. Keeping text
+            // that field refuses would stop it taking any further keystroke.
+            let converted = convert(current)
+            if converted.isEmpty, !current.isEmpty, let kept = keeping(current) {
+                return UnitSwap(shown: kept, typed: kept)
+            }
+            return UnitSwap(shown: converted, typed: current)
         }
         return UnitSwap(shown: typed)
     }

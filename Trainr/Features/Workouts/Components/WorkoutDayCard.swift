@@ -51,6 +51,7 @@ struct WorkoutDayCard: View {
                 status: day.status, isMissed: isMissed, finishedEarly: finishedEarly,
                 isAdjusted: isAdjusted
             )
+            .layoutPriority(1)
         }
         .padding(Spacing.card)
         .background(headerIsDark ? Color.surfaceEmphasis : Color.surfaceCard)

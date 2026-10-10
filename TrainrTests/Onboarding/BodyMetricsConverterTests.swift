@@ -127,6 +127,48 @@ struct BodyMetricsConverterTests {
         #expect(back.shown == "180")
     }
 
+    @Test("A part-typed imperial height survives the unit tabs")
+    func aPartTypedHeightSurvivesTheTabs() {
+        let toMetric = BodyMetricsConverter.swapUnits(
+            "5", last: BodyMetricsConverter.UnitSwap(),
+            convert: BodyMetricsConverter.convertHeightToMetric
+        )
+        let back = BodyMetricsConverter.swapUnits(
+            toMetric.shown, last: toMetric,
+            convert: BodyMetricsConverter.convertHeightToImperial
+        )
+
+        #expect(toMetric.shown == "5")
+        #expect(back.shown == "5")
+    }
+
+    @Test("A part-typed height the other field would refuse is given back, not left in it")
+    func aPartTypedHeightTheOtherFieldRefusesIsGivenBack() {
+        let toMetric = BodyMetricsConverter.swapUnits(
+            "0'", last: BodyMetricsConverter.UnitSwap(),
+            keeping: { BodyMetricsConverter.acceptedHeight($0, useMetric: true) },
+            convert: BodyMetricsConverter.convertHeightToMetric
+        )
+        let back = BodyMetricsConverter.swapUnits(
+            toMetric.shown, last: toMetric,
+            keeping: { BodyMetricsConverter.acceptedHeight($0, useMetric: false) },
+            convert: BodyMetricsConverter.convertHeightToImperial
+        )
+
+        #expect(toMetric.shown.isEmpty)
+        #expect(back.shown == "0'")
+    }
+
+    @Test("An empty field stays empty across the unit tabs")
+    func anEmptyFieldStaysEmpty() {
+        let swapped = BodyMetricsConverter.swapUnits(
+            "", last: BodyMetricsConverter.UnitSwap(),
+            convert: BodyMetricsConverter.convertHeightToMetric
+        )
+
+        #expect(swapped.shown.isEmpty)
+    }
+
     @Test("Switching units over and over never drifts")
     func repeatedSwapsNeverDrift() {
         var text = "177"

@@ -22,6 +22,13 @@ enum Fixture: String {
 
 extension XCUIApplication {
 
+    // The largest accessibility text size, handed over the way the system hands
+    // it over: it has to be in place before the first layout, which a defaults
+    // write after launch is not.
+    static let largestTextSize = [
+        "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"
+    ]
+
     @MainActor
     static func launched(_ fixture: Fixture, pro: Bool = false, arguments: [String] = []) -> XCUIApplication {
         let app = XCUIApplication()

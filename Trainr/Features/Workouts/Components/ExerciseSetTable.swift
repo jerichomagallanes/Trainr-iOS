@@ -3,7 +3,6 @@ import SwiftUI
 // A floor rather than a fixed size, so larger text grows the row instead of
 // clipping the number in it.
 private let setRowHeight: CGFloat = 34
-private let setColumnWidth: CGFloat = 34
 
 struct ExerciseSetTable: View {
     let measure: ExerciseMeasure
@@ -15,7 +14,10 @@ struct ExerciseSetTable: View {
     var onDeleteSet: (ExerciseSet) -> Void = { _ in }
     var isReadOnly = false
 
-    private static let checkSize: CGFloat = 24
+    // Point sizes that hold text: the tick and the set number are illegible,
+    // and then clipped, once the type outgrows them.
+    @ScaledMetric(relativeTo: .subheadline) private var checkSize: CGFloat = 24
+    @ScaledMetric(relativeTo: .subheadline) private var setColumnWidth: CGFloat = 34
 
     private var showsPrevious: Bool { !previousSets.isEmpty }
 
@@ -35,6 +37,8 @@ struct ExerciseSetTable: View {
                         SetRow(
                             measure: measure,
                             set: set,
+                            checkSize: checkSize,
+                            setColumnWidth: setColumnWidth,
                             previousText: showsPrevious
                                 ? SetFormatting.previousCell(
                                     measure: measure,
@@ -70,7 +74,7 @@ struct ExerciseSetTable: View {
             }
             ColumnLabel(measure == .duration ? L10n.timeColumn : L10n.repsColumn)
                 .frame(maxWidth: .infinity)
-            Color.clear.frame(width: Self.checkSize, height: 1)
+            Color.clear.frame(width: checkSize, height: 1)
         }
     }
 
@@ -107,6 +111,8 @@ private struct ColumnLabel: View {
 private struct SetRow: View {
     let measure: ExerciseMeasure
     let set: ExerciseSet
+    let checkSize: CGFloat
+    let setColumnWidth: CGFloat
     let previousText: String?
     let units: UnitSystem
     let isReadOnly: Bool
@@ -190,7 +196,7 @@ private struct SetRow: View {
         Image(systemName: set.isCompleted ? "checkmark.square.fill" : "square")
             .font(.oneOff(20))
             .foregroundStyle(set.isCompleted ? Color.statusDoneInk : Color.outlineControl)
-            .frame(width: 24, height: 24)
+            .frame(width: checkSize, height: checkSize)
     }
 
     @ViewBuilder

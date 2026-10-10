@@ -19,9 +19,12 @@ struct SwipeToDelete<Content: View>: View {
         if enabled { swipeable } else { row }
     }
 
-    // The fill belongs to the row itself: a row that refuses the swipe still
-    // sits on a card rather than on the page.
-    private var row: some View { content.background(Color.surfaceCard) }
+    // Only while the row is held aside, where the fill hides the action behind
+    // it. An idle row that paints its own fill repaints the card it already
+    // sits on, as a lighter stripe in dark.
+    private var row: some View {
+        content.background(offset < 0 ? Color.surfaceCard : .clear)
+    }
 
     private var swipeable: some View {
         ZStack(alignment: .trailing) {

@@ -1,6 +1,14 @@
 import Foundation
 import Observation
 
+// What the measurements step currently has typed in it, in the units it is
+// showing. Text rather than numbers: a part-typed "5" is not a height yet.
+nonisolated struct BodyMetricsEntry: Equatable, Sendable {
+    var height: String
+    var weight: String
+    var useMetric: Bool
+}
+
 enum OnboardingStep {
     case basicInfo
     case bodyMetrics
@@ -52,13 +60,26 @@ final class OnboardingModel {
         firstName: String, age: Int, gender: Gender, experience: ExperienceLevel
     ) {
         answeredSteps.insert(.basicInfo)
-        profile.firstName = firstName
+        // Stored trimmed, because every greeting in the app reads it back.
+        profile.firstName = firstName.trimmingCharacters(in: .whitespacesAndNewlines)
         profile.age = age
         profile.gender = gender
         profile.experienceLevel = experience
     }
 
+    // Unobserved, so a keystroke does not redraw the flow: a step popped off the
+    // stack loses its own state, and what was typed has to outlive it for the
+    // rest of the flow.
+    @ObservationIgnored private var metricsInProgress: BodyMetricsEntry?
+
+    func rememberBodyMetrics(_ entry: BodyMetricsEntry) {
+        metricsInProgress = entry
+    }
+
+    func bodyMetricsInProgress() -> BodyMetricsEntry? { metricsInProgress }
+
     func updateBodyMetrics(height: Double, weight: Double, units: UnitSystem) {
+        metricsInProgress = nil
         answeredSteps.insert(.bodyMetrics)
         profile.height = height
         profile.weight = weight
