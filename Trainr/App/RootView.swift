@@ -83,19 +83,19 @@ struct RootView: View {
             if phase == .active { Task { await ads.gatherConsent() } }
         }
         .task {
-            let model = OnboardingModel(dependencies: dependencies)
+            let model = OnboardingModel(dependencies: dependencies, charge: charge)
             onboarding = model
             #if DEBUG
             if let start = UITestFixtures.requestedStart() {
                 UITestFixtures.seedAnswers(for: start, into: model)
-                nextWeek = NextWeekModel(dependencies: dependencies)
+                nextWeek = NextWeekModel(dependencies: dependencies, charge: charge)
                 phase = .welcome
                 path = UITestFixtures.path(for: start)
                 return
             }
             #endif
             try? await Task.sleep(for: .seconds(Self.splashSeconds))
-            nextWeek = NextWeekModel(dependencies: dependencies)
+            nextWeek = NextWeekModel(dependencies: dependencies, charge: charge)
             phase = model.hasCompletedOnboarding() ? .home : .welcome
         }
     }
@@ -151,11 +151,15 @@ struct RootView: View {
         path.append(next)
     }
 
-    // Spent only on a week that arrived.
-    private func spendFreeGeneration() {
-        guard GenerationGate.spends(isPro: entitlements.isPro, canSell: entitlements.canSell)
-        else { return }
-        allowance.markUsed()
+    // Handed to the models rather than called from a screen: the week is
+    // charged for in the same turn it is written, and a screen that is gone by
+    // then — left, or taken with the process — charges for it all the same.
+    private var charge: () -> Void {
+        { [entitlements, allowance] in
+            guard GenerationGate.spends(isPro: entitlements.isPro, canSell: entitlements.canSell)
+            else { return }
+            allowance.markUsed()
+        }
     }
 
     // A week already generated is never taken away, so only writing a new one
@@ -241,12 +245,7 @@ struct RootView: View {
                             path.append(.generating)
                         }
                     },
-                    // Spent once the week has arrived, whichever tier built it,
-                    // so a failed generation costs nothing.
-                    onGenerated: {
-                        spendFreeGeneration()
-                        restartOnHome()
-                    },
+                    onGenerated: restartOnHome,
                     onBack: pop
                 )
             } else {
@@ -340,10 +339,7 @@ struct RootView: View {
             GeneratingView(
                 isReady: nextWeek.isReady,
                 onStart: start,
-                onDone: {
-                    spendFreeGeneration()
-                    restartOnHome()
-                },
+                onDone: restartOnHome,
                 failure: nextWeek.failure,
                 failureCount: nextWeek.failureCount,
                 onRetry: start,

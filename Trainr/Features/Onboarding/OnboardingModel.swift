@@ -32,6 +32,7 @@ final class OnboardingModel {
     private(set) var failureCount = 0
 
     private let dependencies: AppDependencies
+    private let charge: () -> Void
     private let store: TrainingStore
     private let planGenerator: any PlanGenerator
 
@@ -46,8 +47,9 @@ final class OnboardingModel {
     // The request has no cancellation point of its own; a run nobody awaits must not write.
     private var run: Task<Void, Never>?
 
-    init(dependencies: AppDependencies) {
+    init(dependencies: AppDependencies, charge: @escaping () -> Void = {}) {
         self.dependencies = dependencies
+        self.charge = charge
         store = dependencies.store
         planGenerator = dependencies.planGenerator
         stockedEquipment = Set(dependencies.catalog.all.map(\.equipment))
@@ -200,9 +202,12 @@ final class OnboardingModel {
 
             guard !Task.isCancelled else { return }
             do {
-                try store.saveUser(toSave)
                 plan.userID = toSave.id
-                try store.savePlan(plan)
+                try store.saveUser(toSave, startingWith: plan)
+                // Charged where the week lands rather than on the screen that
+                // asked for it: the screen's own wait outlives the save, and
+                // the process can end inside it.
+                charge()
                 isLoading = false
                 isCompleted = true
                 onSuccess()

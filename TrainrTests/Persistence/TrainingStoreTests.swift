@@ -230,6 +230,25 @@ struct TrainingStoreTests {
         #expect(try store.plan(for: userID, weekNumber: 1) == nil)
     }
 
+    // Saving the user carries their weeks away, so the week that replaces them
+    // lands in the same save: a client is never left with neither.
+    @Test func aNewPlanReplacesTheClientAndTheirWeeksInOneGo() throws {
+        let (userID, _) = try seedSamplePlan()
+        var again = try #require(try store.user(id: userID))
+        again.firstName = "Again"
+        var fresh = SampleWorkoutData.weekOne
+        fresh.id = UUID()
+        fresh.userID = userID
+        fresh.title = "Fresh start"
+
+        try store.saveUser(again, startingWith: fresh)
+
+        let stored = try store.plans(for: userID)
+        #expect(try store.user(id: userID)?.firstName == "Again")
+        #expect(stored.map(\.title) == ["Fresh start"])
+        #expect(stored.first?.workoutDays.count == fresh.workoutDays.count)
+    }
+
     @Test func editingAUserKeepsTheirPlan() throws {
         let (userID, _) = try seedSamplePlan()
 

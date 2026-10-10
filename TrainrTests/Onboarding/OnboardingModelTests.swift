@@ -10,6 +10,12 @@ struct OnboardingModelTests {
         func generate(_ request: PlanRequest) async -> PlanGenerationResult { .failed }
     }
 
+    // What the week cost, counted where the app spends the free generation.
+    private final class Charges {
+        private(set) var count = 0
+        func record() { count += 1 }
+    }
+
     private func dependencies(_ generator: any PlanGenerator = WeekPlanGenerator()) throws -> AppDependencies {
         AppDependencies(
             store: TrainingStore(container: try TrainingStore.container(inMemory: true)),
@@ -268,6 +274,76 @@ struct OnboardingModelTests {
         model.saveUserProfile()
 
         #expect(!model.isCompleted)
+    }
+
+    // The model outlives the screen, so a run nobody is waiting for could still
+    // write a week nobody was charged for. Giving up cancels it first.
+    @Test("A generation given up on writes no plan and reports nothing complete")
+    func anAbandonedGenerationWritesNoPlan() async throws {
+        let dependencies = try dependencies(SlowGenerator())
+        let model = OnboardingModel(dependencies: dependencies)
+        answerEverything(model)
+
+        model.saveUserProfile()
+        model.cancelRun()
+        try? await Task.sleep(for: .milliseconds(800))
+
+        #expect(!model.isCompleted)
+        #expect(try dependencies.store.hasUsers() == false)
+    }
+
+    // Charged in the turn the week is written, not by the screen that asked for
+    // it: that screen waits over a second after the save, and the process can
+    // end inside that wait with the week already on disk.
+    @Test("The week that is written is the week that is charged for")
+    func aWrittenWeekIsCharged() async throws {
+        let charges = Charges()
+        let dependencies = try dependencies()
+        let model = OnboardingModel(dependencies: dependencies, charge: charges.record)
+        answerEverything(model)
+
+        model.saveUserProfile()
+        await settle(model)
+
+        let user = try #require(try dependencies.store.currentUser())
+        #expect(try dependencies.store.plans(for: user.id).count == 1)
+        #expect(charges.count == 1)
+    }
+
+    @Test("A generation that wrote no week costs nothing")
+    func aRefusedGenerationCostsNothing() async throws {
+        let charges = Charges()
+        let model = OnboardingModel(
+            dependencies: try dependencies(RefusingGenerator()), charge: charges.record
+        )
+        answerEverything(model)
+
+        model.saveUserProfile()
+        await settle(model)
+
+        #expect(charges.count == 0)
+    }
+
+    // The profile replaces the stored one and carries every week with it, so
+    // the first week of the new plan has to land in the same save: a client who
+    // starts over is never left with a plan screen and no plan.
+    @Test("A fresh plan replaces the client and their weeks in one go")
+    func aFreshPlanIsWrittenWithTheProfile() async throws {
+        let dependencies = try dependencies()
+        let first = OnboardingModel(dependencies: dependencies)
+        answerEverything(first)
+        first.saveUserProfile()
+        await settle(first)
+        let before = try #require(try dependencies.store.currentUser())
+
+        let again = OnboardingModel(dependencies: dependencies)
+        answerEverything(again, liftingUnits: .imperial)
+        again.saveUserProfile()
+        await settle(again)
+
+        let user = try #require(try dependencies.store.currentUser())
+        #expect(user.id == before.id)
+        #expect(try dependencies.store.plans(for: user.id).map(\.weekNumber) == [1])
     }
 
     @Test("A preferred name is stored without the space that was typed after it")
