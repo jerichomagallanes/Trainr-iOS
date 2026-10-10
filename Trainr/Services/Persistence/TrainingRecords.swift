@@ -129,6 +129,7 @@ final class WeeklyPlanRecord {
             id: id,
             weekNumber: weekNumber,
             startDate: startDate,
+            createdAt: createdAt,
             days: days
                 .sorted { $0.dayNumber < $1.dayNumber }
                 .map {

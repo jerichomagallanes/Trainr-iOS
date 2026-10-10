@@ -3607,6 +3607,17 @@
         }
       }
     },
+    "partly_done": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Partly done"
+          }
+        }
+      }
+    },
     "pause_timer": {
       "extractionState": "manual",
       "localizations": {

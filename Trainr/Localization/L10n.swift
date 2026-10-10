@@ -372,6 +372,7 @@ nonisolated enum L10n {
     static var painCardTitle: String { String(localized: "pain_card_title") }
     static var painSaveHint: String { String(localized: "pain_save_hint") }
     static var painTitle: String { String(localized: "pain_title") }
+    static var partlyDone: String { String(localized: "partly_done") }
     static var pauseTimer: String { String(localized: "pause_timer") }
     static var personalInformation: String { String(localized: "personal_information") }
     static var personalTrainer: String { String(localized: "personal_trainer") }

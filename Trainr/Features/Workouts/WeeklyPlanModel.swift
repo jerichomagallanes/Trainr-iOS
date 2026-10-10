@@ -21,8 +21,13 @@ nonisolated struct WeeklyPlanDay: Identifiable, Equatable, Sendable {
     var id: UUID { day.id }
 
     // Derived, not stored: a session moved to a later day stops being missed on
-    // its own, with no flag to correct.
-    var isMissed: Bool { isPast && day.status != .completed }
+    // its own, with no flag to correct. A day holding work that was logged was
+    // not missed, whether or not it was ever closed.
+    var isMissed: Bool { isUnfinishedAndPast && !day.hasPerformedWork }
+
+    var isPartlyDone: Bool { isUnfinishedAndPast && day.hasPerformedWork }
+
+    private var isUnfinishedAndPast: Bool { isPast && day.status != .completed }
 
     var isFrozen: Bool { isPast || day.status == .completed }
 }
@@ -181,7 +186,6 @@ final class WeeklyPlanModel {
         }
     }
 
-    // Plans stored before startDate existed fall back to the sample week.
     static func state(
         for plan: WeeklyPlan,
         isSample: Bool = false,
@@ -194,7 +198,7 @@ final class WeeklyPlanModel {
         now: Date = Date(),
         calendar: Calendar = .current
     ) -> WeeklyPlanState {
-        let start = plan.startDate ?? SampleWorkoutData.weekStart
+        let start = plan.startDate ?? WorkoutWeek.startOfDay(plan.createdAt, calendar: calendar)
         let readyForTheNext = plan.isReadyForTheNextWeek(now: now, calendar: calendar)
         let today = WorkoutWeek.startOfDay(now, calendar: calendar)
 

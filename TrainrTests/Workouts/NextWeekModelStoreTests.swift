@@ -229,6 +229,28 @@ struct NextWeekModelStoreTests {
         #expect(recorder.asked.first?.freshCast == true)
     }
 
+    // Every other screen dates an undated plan from the day it was made, so a
+    // replacement starting today would move the same week forward.
+    @Test("Regenerating an undated week keeps it where every screen draws it")
+    func regeneratingAnUndatedWeekKeepsItsDates() async throws {
+        let created = calendar.date(
+            byAdding: .day, value: -2, to: calendar.startOfDay(for: Date())
+        )!
+        try store.savePlan(
+            WeeklyPlan(
+                userID: userID, weekNumber: 1, title: "Week 1", startDate: nil,
+                workoutDays: [day(1)], createdAt: created
+            )
+        )
+        let recorder = RecordingGenerator()
+        let model = NextWeekModel(dependencies: dependencies(recorder))
+
+        model.regenerateThisWeek()
+        await settle(model)
+
+        #expect(recorder.asked.first?.startDate == created)
+    }
+
     @Test("The next week does not ask for new movements")
     func theNextWeekKeepsTheMovements() async throws {
         try save(week: 1, days: [day(1, .completed)])

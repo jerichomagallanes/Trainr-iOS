@@ -104,16 +104,55 @@ struct WeeklyPlanModelTests {
         #expect(state.canStartNextWeek)
     }
 
-    @Test("A plan stored without a start date is read by the same fallback")
-    func aLegacyWeekIsNotStranded() throws {
-        let legacy = WeeklyPlan(
-            userID: UUID(), weekNumber: 1, title: "Week 1", workoutDays: [day(1), day(3)]
+    // The plan screen, the progress screen and the readiness rule each dated a
+    // plan with no start date their own way, which put the same week in two
+    // different years.
+    @Test("Every screen dates a plan with no start date from the day it was made")
+    func everyScreenDatesAPlanWithNoStartDateFromTheDayItWasMade() throws {
+        let created = calendar.startOfDay(for: Date()).addingTimeInterval(9 * 60 * 60)
+        let undated = WeeklyPlan(
+            userID: UUID(), weekNumber: 1, title: "Week 1", workoutDays: [day(1), day(3)],
+            createdAt: created
         )
-        let state = WeeklyPlanModel.state(for: legacy, calendar: calendar)
+        let weekStart = calendar.startOfDay(for: created)
+        let dayAfterTheWeek = WorkoutWeek.date(of: 8, startingFrom: weekStart, calendar: calendar)
 
-        #expect(state.weekHasEnded)
-        #expect(state.nextWorkout == nil)
-        #expect(state.canStartNextWeek)
+        let state = WeeklyPlanModel.state(for: undated, now: created, calendar: calendar)
+        let progress = WeeklyProgressModel.progress(of: undated, now: created, calendar: calendar)
+
+        #expect(state.weekStart == weekStart)
+        #expect(progress.startDate == state.weekStart)
+        #expect(!state.weekHasEnded)
+        #expect(!undated.isReadyForTheNextWeek(now: created, calendar: calendar))
+        #expect(undated.isReadyForTheNextWeek(now: dayAfterTheWeek, calendar: calendar))
+    }
+
+    // The day opens as a record that plainly shows the sets that were logged,
+    // so the card may not chip it the way it chips a day nobody touched.
+    @Test("A day that has passed with work logged on it is partly done")
+    func aDayThatHasPassedWithWorkLoggedOnItIsPartlyDoneRatherThanMissed() throws {
+        let start = calendar.startOfDay(for: Date())
+        let now = calendar.date(byAdding: .day, value: 3, to: start)!
+        var trained = dayWithSetsLogged(1)
+        trained.status = .inProgress
+        let state = WeeklyPlanModel.state(
+            for: plan([trained], start: start), now: now, calendar: calendar
+        )
+
+        #expect(!state.days[0].isMissed)
+        #expect(state.days[0].isPartlyDone)
+    }
+
+    @Test("A day that has passed with nothing logged on it is still missed")
+    func aDayThatHasPassedWithNothingLoggedOnItIsStillMissed() throws {
+        let start = calendar.startOfDay(for: Date())
+        let now = calendar.date(byAdding: .day, value: 3, to: start)!
+        let state = WeeklyPlanModel.state(
+            for: plan([day(1, .inProgress)], start: start), now: now, calendar: calendar
+        )
+
+        #expect(state.days[0].isMissed)
+        #expect(!state.days[0].isPartlyDone)
     }
 
     @Test("A week whose days are all done is ready for the next one")

@@ -14,6 +14,7 @@ final class RoutineDetailModel {
     // A day opened from an earlier week must load that week's routine, not the
     // same weekday of the newest one.
     private let requestedWeekNumber: Int?
+    private let wallClock: WallClock
 
     // The end of a countdown is the only thing the screen has to announce, and a
     // screen that was away for it has nothing to catch up on, so it is dropped
@@ -25,15 +26,21 @@ final class RoutineDetailModel {
     // that do not exist.
     private var storedDay: WorkoutDay?
 
-    init(dependencies: AppDependencies, dayNumber: Int, weekNumber: Int? = nil) {
+    init(
+        dependencies: AppDependencies, dayNumber: Int, weekNumber: Int? = nil,
+        wallClock: WallClock = .system
+    ) {
         self.dependencies = dependencies
         self.requestedDayNumber = dayNumber
         self.requestedWeekNumber = weekNumber.flatMap { $0 > 0 ? $0 : nil }
+        self.wallClock = wallClock
         state.dayNumber = dayNumber
     }
 
     // Re-reads the stored day without losing what the screen is doing: the
-    // timer, the open tutorial and the scroll request all survive.
+    // timer, the open tutorial and the scroll request all survive. The date is
+    // read again with it, so a screen left open past the end of its week stops
+    // being writable rather than keeping the answer it loaded with.
     func load() {
         let store = dependencies.store
         guard let profile = dependencies.attempt("currentUser", { try store.currentUser() }) else {
@@ -73,11 +80,9 @@ final class RoutineDetailModel {
         )
         state.equipment = day.derivedEquipment(dependencies.catalog)
         state.totalMinutes = day.remainingMinutes(profile, dependencies.catalog)
-        // Plans stored before startDate existed fall back to the sample week,
-        // the same way the plan list dates them.
-        let weekStart = week.startDate ?? SampleWorkoutData.weekStart
+        let weekStart = week.startDate ?? WorkoutWeek.startOfDay(week.createdAt)
         state.date = WorkoutWeek.date(of: day.dayNumber, startingFrom: weekStart)
-        state.isReadOnly = WorkoutWeek.hasEnded(weekStartingAt: weekStart)
+        state.isReadOnly = WorkoutWeek.hasEnded(weekStartingAt: weekStart, now: wallClock.now())
         // "Day 2", not day 3: the design counts workout days, not weekdays.
         state.dayNumber = index + 1
         state.weekNumber = week.weekNumber

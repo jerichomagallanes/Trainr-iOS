@@ -2,6 +2,13 @@ import Foundation
 import Testing
 @testable import Trainr
 
+// The date the screen is being read on, which a test moves the way midnight
+// does under a screen nobody has touched.
+@MainActor
+final class MovingDate {
+    var now = Date()
+}
+
 @MainActor
 @Suite("Routine detail: a week that is over is a record")
 struct RoutineDetailRecordTests {
@@ -22,11 +29,29 @@ struct RoutineDetailRecordTests {
         #expect(!model.state.isReadOnly)
     }
 
-    // The plan list dates a plan stored before the column existed to the sample
-    // week, which is long over; the day screen reads it the same way.
-    @Test("A day from a plan with no start date is a record")
-    func aPlanWithNoStartDateIsARecord() throws {
-        let model = try RoutineDetailFixture(weekStartingDaysAgo: nil).loaded(day: dayNumber)
+    // A plan with no stored start date runs from the day it was created, which
+    // is how the progress screen has always dated it.
+    @Test("A day from a plan with no start date is dated from the day it was made")
+    func aDayFromAPlanWithNoStartDateIsDatedFromTheDayThePlanWasMade() throws {
+        let fixture = try RoutineDetailFixture(weekStartingDaysAgo: nil, createdDaysAgo: 1)
+        let model = fixture.loaded(day: fixture.lastDayNumber)
+
+        #expect(model.state.date
+            == WorkoutWeek.date(of: fixture.lastDayNumber, startingFrom: fixture.createdAt))
+        #expect(!model.state.isReadOnly)
+    }
+
+    // Nothing re-reads the date while the screen stays composed, so the week it
+    // was opened in has to be settled again every time the day is read.
+    @Test("A day left open past the end of its week is a record when read again")
+    func aDayLeftOpenPastTheEndOfItsWeekIsARecordWhenItIsReadAgain() throws {
+        let date = MovingDate()
+        let model = try RoutineDetailFixture(weekStartingDaysAgo: 6)
+            .loaded(day: dayNumber, wallClock: WallClock { date.now })
+        #expect(!model.state.isReadOnly)
+
+        date.now += TimeInterval(24 * 60 * 60)
+        model.load()
 
         #expect(model.state.isReadOnly)
     }

@@ -120,7 +120,7 @@ final class NextWeekModel {
             PlanRequest(
                 user: user,
                 weekNumber: current.weekNumber,
-                startDate: current.startDate ?? WorkoutWeek.startOfDay(),
+                startDate: current.startDate ?? WorkoutWeek.startOfDay(current.createdAt),
                 // The weeks before this one, so a replacement still progresses
                 // from what was lifted.
                 history: plans.filter { $0.weekNumber < current.weekNumber }
