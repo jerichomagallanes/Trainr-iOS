@@ -11,6 +11,7 @@ struct BodyMetricsView: View {
     @State private var useMetric: Bool
     @State private var heightTouched = false
     @State private var weightTouched = false
+    @State private var showingBMISources = false
     @FocusState private var focusedField: Field?
 
     private enum Field {
@@ -97,6 +98,19 @@ struct BodyMetricsView: View {
                 ScreenTitle(text: L10n.yourMeasurements)
                 Spacer().frame(height: Spacing.small)
                 Subtitle(text: L10n.measurementsDescription)
+                Button {
+                    focusedField = nil
+                    showingBMISources = true
+                } label: {
+                    Text(L10n.bmiAboutSources)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .font(.body14)
+                .foregroundStyle(Color.brandStrong)
+                .accessibilityIdentifier("bmiSources")
                 Spacer().frame(height: Spacing.extraLarge)
 
                 unitTabs
@@ -125,6 +139,7 @@ struct BodyMetricsView: View {
             if oldValue == .height { heightTouched = true }
             if oldValue == .weight { weightTouched = true }
         }
+        .sheet(isPresented: $showingBMISources) { BMISourcesView() }
     }
 
     private var unitTabs: some View {
@@ -243,7 +258,6 @@ private struct UnitTab: View {
 
 private struct BMICard: View {
     let bmi: Double
-    @State private var showingSources = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.extraSmall) {
@@ -256,15 +270,18 @@ private struct BMICard: View {
             Text(L10n.bmiScreeningNote)
                 .font(.body12)
                 .foregroundStyle(Color.onSurfaceMuted)
-            Button(L10n.bmiAboutSources) { showingSources = true }
+            Text(L10n.bmiFormula)
                 .font(.body14)
-                .padding(.vertical, Spacing.small)
-                .accessibilityIdentifier("bmiSources")
+                .foregroundStyle(Color.onSurface)
+            Text(L10n.bmiResultSources)
+                .font(.body14)
+                .foregroundStyle(Color.onSurfaceMuted)
+            BMISourceLink(source: .calculation)
+            BMISourceLink(source: .categories)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(Spacing.medium)
         .background(Color.surfaceSunken, in: RoundedRectangle(cornerRadius: CornerRadius.medium))
-        .sheet(isPresented: $showingSources) { BMISourcesView() }
     }
 
     private var category: String {

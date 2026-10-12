@@ -31,12 +31,18 @@ nonisolated enum L10n {
     static var beginnerDescription: String { String(localized: "beginner_description") }
     static var beginnerLevel: String { String(localized: "beginner_level") }
     static var bmiAboutSources: String { String(localized: "bmi_about_sources") }
+    static var bmiCalculationTitle: String { String(localized: "bmi_calculation_title") }
+    static var bmiCategoriesTitle: String { String(localized: "bmi_categories_title") }
     static var bmiCdcAbout: String { String(localized: "bmi_cdc_about") }
+    static var bmiCdcCalculation: String { String(localized: "bmi_cdc_calculation") }
     static var bmiCdcCategories: String { String(localized: "bmi_cdc_categories") }
     static var bmiExplanation: String { String(localized: "bmi_explanation") }
+    static var bmiFormula: String { String(localized: "bmi_formula") }
     static var bmiLabel: String { String(localized: "bmi_label") }
     static var bmiLimitations: String { String(localized: "bmi_limitations") }
+    static var bmiLimitationsTitle: String { String(localized: "bmi_limitations_title") }
     static var bmiRanges: String { String(localized: "bmi_ranges") }
+    static var bmiResultSources: String { String(localized: "bmi_result_sources") }
     static var bmiScreeningNote: String { String(localized: "bmi_screening_note") }
     static var bmiSourceDate: String { String(localized: "bmi_source_date") }
     static var bodyweightOnly: String { String(localized: "bodyweight_only") }

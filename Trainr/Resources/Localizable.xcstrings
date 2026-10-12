@@ -276,6 +276,28 @@
         }
       }
     },
+    "bmi_calculation_title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "How BMI is calculated"
+          }
+        }
+      }
+    },
+    "bmi_categories_title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Adult categories (ages 20+)"
+          }
+        }
+      }
+    },
     "bmi_cdc_about": {
       "extractionState": "manual",
       "localizations": {
@@ -283,6 +305,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "CDC: About BMI"
+          }
+        }
+      }
+    },
+    "bmi_cdc_calculation": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "CDC: BMI calculation"
           }
         }
       }
@@ -309,6 +342,17 @@
         }
       }
     },
+    "bmi_formula": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "BMI = weight (kg) ÷ height (m)²"
+          }
+        }
+      }
+    },
     "bmi_label": {
       "extractionState": "manual",
       "localizations": {
@@ -331,6 +375,17 @@
         }
       }
     },
+    "bmi_limitations_title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "What BMI can and cannot tell you"
+          }
+        }
+      }
+    },
     "bmi_ranges": {
       "extractionState": "manual",
       "localizations": {
@@ -338,6 +393,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Adult ranges (kg/m²): underweight below 18.5; healthy weight 18.5 to below 25; overweight 25 to below 30; obesity 30 and above. The category uses the unrounded result; the displayed number is rounded to one decimal place."
+          }
+        }
+      }
+    },
+    "bmi_result_sources": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sources for this calculation and category:"
           }
         }
       }
@@ -359,7 +425,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Sources reviewed 2 October 2026. Links open the CDC website in English."
+            "value": "Sources reviewed 12 October 2026. Links open the CDC website in English."
           }
         }
       }
