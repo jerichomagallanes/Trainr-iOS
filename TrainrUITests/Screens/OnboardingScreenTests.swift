@@ -90,6 +90,20 @@ final class OnboardingScreenTests: XCTestCase {
     // MARK: - Measurements
 
     @MainActor
+    func testBMISourcesAreAvailableBeforeEnteringMeasurements() {
+        app = .launched(startingAt: "bodyMetrics")
+        let sources = app.buttons["bmiSources"]
+        XCTAssertTrue(sources.waitForExistence(timeout: 20))
+        XCTAssertTrue(sources.isHittable)
+        XCTAssertFalse(app.buttons["NEXT"].isEnabled)
+        attachBMIScreenshot("BMI sources before entering measurements")
+        sources.tap()
+        assertBMISourceLinks()
+        app.buttons["bmiSourcesClose"].tap()
+        XCTAssertFalse(app.buttons["NEXT"].isEnabled)
+    }
+
+    @MainActor
     func testBMISourcesAreOneTapFromTheAdultResult() {
         app = .launched(startingAt: "bodyMetrics")
         XCTAssertTrue(app.textFields["170"].waitForExistence(timeout: 20))
@@ -97,25 +111,73 @@ final class OnboardingScreenTests: XCTestCase {
         app.textFields["170"].typeText("175")
         app.textFields["70"].tap()
         app.textFields["70"].typeText("72")
+        XCTAssertTrue(app.staticTexts["Normal weight"].waitForExistence(timeout: 5))
         let sources = app.buttons["bmiSources"]
-        // iPhone compatibility mode on iPad leaves margins outside the app.
-        // Scroll the content itself rather than the full-screen left edge.
-        for _ in 0..<5 where !sources.isHittable { app.scrollViews.firstMatch.swipeUp() }
+        for _ in 0..<5 where !sources.isHittable { app.scrollViews.firstMatch.swipeDown() }
         XCTAssertTrue(sources.isHittable)
         sources.tap()
+        assertBMISourceLinks()
+        app.buttons["bmiSourcesClose"].tap()
+        XCTAssertTrue(app.buttons["NEXT"].isEnabled)
+        XCTAssertEqual(app.textFields["170"].value as? String, "175")
+        XCTAssertEqual(app.textFields["70"].value as? String, "72")
+        assertBMIResultLinks()
+        attachBMIScreenshot("BMI result with direct CDC citations")
+    }
+
+    @MainActor
+    func testBMISourcesRemainReadableWithAccessibilityTextInDarkMode() {
+        app = XCUIApplication()
+        app.launchArguments = [
+            "-inMemoryStore", "-splashSeconds", "0", "-startAtStep", "bodyMetrics",
+            "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL",
+            "-appearance_mode", "dark"
+        ]
+        app.launch()
+        let sources = app.buttons["bmiSources"]
+        XCTAssertTrue(sources.waitForExistence(timeout: 20))
+        XCTAssertTrue(sources.isHittable)
+        sources.tap()
+        assertBMISourceLinks()
+        app.buttons["bmiSourcesClose"].tap()
+        app.textFields["170"].tap()
+        app.textFields["170"].typeText("175")
+        app.textFields["70"].tap()
+        app.textFields["70"].typeText("72")
+        assertBMIResultLinks()
+        attachBMIScreenshot("BMI result in dark mode with accessibility text")
+    }
+
+    @MainActor
+    private func assertBMIResultLinks() {
+        for title in ["CDC: BMI calculation", "CDC: Adult BMI categories"] {
+            let link = app.descendants(matching: .any).matching(identifier: title).firstMatch
+            for _ in 0..<8 where !link.isHittable { app.scrollViews.firstMatch.swipeUp() }
+            XCTAssertTrue(link.isHittable, "The result itself must cite \(title)")
+        }
+    }
+
+    @MainActor
+    private func assertBMISourceLinks() {
         XCTAssertTrue(app.staticTexts["About BMI & sources"].waitForExistence(timeout: 5))
-        // SwiftUI exposes a Link as a link on iOS 27 and as a button on iOS 26,
-        // which is what the nightly runner boots. The label is what the person
-        // reads either way, so that is what is asserted.
-        let anything = app.descendants(matching: .any)
-        XCTAssertTrue(anything["CDC: Adult BMI categories"].exists)
-        XCTAssertTrue(anything["CDC: About BMI"].exists)
+        let content = app.scrollViews["bmiSourcesContent"]
+        XCTAssertTrue(content.waitForExistence(timeout: 5))
+        for title in ["CDC: BMI calculation", "CDC: Adult BMI categories", "CDC: About BMI"] {
+            // SwiftUI exposes Link as either a button or a link, depending on iOS.
+            // Scope to the sheet: the result underneath has the same source labels.
+            let link = content.descendants(matching: .any).matching(identifier: title).firstMatch
+            for _ in 0..<8 where !link.isHittable { content.swipeUp() }
+            XCTAssertTrue(link.isHittable, "The citation must be reachable: \(title)")
+            attachBMIScreenshot(title)
+        }
+    }
+
+    @MainActor
+    private func attachBMIScreenshot(_ name: String) {
         let screenshot = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
-        screenshot.name = "BMI citations"
+        screenshot.name = name
         screenshot.lifetime = .keepAlways
         add(screenshot)
-        app.buttons["Close"].tap()
-        XCTAssertTrue(app.buttons["NEXT"].exists)
     }
 
     @MainActor
@@ -128,8 +190,9 @@ final class OnboardingScreenTests: XCTestCase {
         app.textFields["70"].tap()
         app.textFields["70"].typeText("72")
         XCTAssertTrue(app.buttons["NEXT"].isEnabled)
-        XCTAssertFalse(app.buttons["bmiSources"].exists)
+        XCTAssertTrue(app.buttons["bmiSources"].exists)
         XCTAssertFalse(app.text(containing: "BMI:").exists)
+        XCTAssertFalse(app.descendants(matching: .any)["CDC: Adult BMI categories"].exists)
     }
 
     @MainActor
@@ -243,6 +306,14 @@ final class OnboardingScreenTests: XCTestCase {
         let values = app.textFields.allElementsBoundByIndex.compactMap { $0.value as? String }
         XCTAssertTrue(values.contains("175"), "\(values)")
         XCTAssertTrue(values.contains("72"), "\(values)")
+        let sources = app.buttons["bmiSources"]
+        XCTAssertTrue(sources.isHittable)
+        sources.tap()
+        assertBMISourceLinks()
+        app.buttons["bmiSourcesClose"].tap()
+        XCTAssertTrue(app.buttons["SAVE"].isEnabled)
+        XCTAssertEqual(app.textFields["170"].value as? String, "175")
+        XCTAssertEqual(app.textFields["70"].value as? String, "72")
     }
 
     // MARK: - Goals
