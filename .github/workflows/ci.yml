@@ -51,7 +51,7 @@ jobs:
       # itself with per-test annotations on the diff rather than a raw log.
       - name: Publish test results
         if: ${{ !cancelled() }}
-        uses: mikepenz/action-junit-report@a9170d5795813c01ab4901ffb045b52bab4ab09d # v6.5.0
+        uses: mikepenz/action-junit-report@6ef3fdcfcd5f0b5d14df3e659ef19b8c6820f93d # v6.6.1
         with:
           report_paths: build/reports/junit.xml
           check_name: Unit test results
