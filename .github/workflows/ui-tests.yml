@@ -47,7 +47,7 @@ jobs:
       matrix:
         include:
           - shard: onboarding
-            classes: OnboardingScreenTests OnboardingFlowTests SplashAndOrientationTests TrainrUITests
+            classes: OnboardingScreenTests BMISourcesScreenTests OnboardingFlowTests SplashAndOrientationTests TrainrUITests
           - shard: routine
             classes: RoutineDetailScreenTests AdjustContextScreenTests UnstuckJourneyTests ExerciseSetTableScreenTests CompletionScreenTests
           - shard: plan

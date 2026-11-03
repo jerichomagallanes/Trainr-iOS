@@ -150,31 +150,6 @@ final class OnboardingScreenTests: XCTestCase {
     }
 
     @MainActor
-    func testBMISourcesAreOneTapFromTheAdultResult() {
-        app = .launched(startingAt: "bodyMetrics")
-        XCTAssertTrue(app.textFields["170"].waitForExistence(timeout: 20))
-        app.textFields["170"].tap()
-        app.textFields["170"].typeText("175")
-        app.textFields["70"].tap()
-        app.textFields["70"].typeText("72")
-        let sources = app.buttons["bmiSources"]
-        // iPhone compatibility mode on iPad leaves margins outside the app.
-        // Scroll the content itself rather than the full-screen left edge.
-        for _ in 0..<5 where !sources.isHittable { app.scrollViews.firstMatch.swipeUp() }
-        XCTAssertTrue(sources.isHittable)
-        sources.tap()
-        XCTAssertTrue(app.staticTexts["About BMI & sources"].waitForExistence(timeout: 5))
-        XCTAssertTrue(app.document("CDC: Adult BMI categories").exists)
-        XCTAssertTrue(app.document("CDC: About BMI").exists)
-        let screenshot = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
-        screenshot.name = "BMI citations"
-        screenshot.lifetime = .keepAlways
-        add(screenshot)
-        app.buttons["Close"].tap()
-        XCTAssertTrue(app.buttons["NEXT"].exists)
-    }
-
-    @MainActor
     func testTeenMeasurementsDoNotShowAdultBMI() {
         app = .launchedFresh()
         app.startOnboarding()
@@ -184,8 +159,9 @@ final class OnboardingScreenTests: XCTestCase {
         app.textFields["70"].tap()
         app.textFields["70"].typeText("72")
         XCTAssertTrue(app.buttons["NEXT"].isEnabled)
-        XCTAssertFalse(app.buttons["bmiSources"].exists)
+        XCTAssertTrue(app.buttons["bmiSources"].exists)
         XCTAssertFalse(app.text(containing: "BMI:").exists)
+        XCTAssertFalse(app.descendants(matching: .any)["CDC: Adult BMI categories"].exists)
     }
 
     @MainActor
@@ -348,6 +324,14 @@ final class OnboardingScreenTests: XCTestCase {
         let values = app.textFields.allElementsBoundByIndex.compactMap { $0.value as? String }
         XCTAssertTrue(values.contains("175"), "\(values)")
         XCTAssertTrue(values.contains("72"), "\(values)")
+        let sources = app.buttons["bmiSources"]
+        XCTAssertTrue(sources.isHittable)
+        sources.tap()
+        assertBMISourceLinks(in: app)
+        app.buttons["bmiSourcesClose"].tap()
+        XCTAssertTrue(app.buttons["SAVE"].isEnabled)
+        XCTAssertEqual(app.textFields["170"].value as? String, "175")
+        XCTAssertEqual(app.textFields["70"].value as? String, "72")
     }
 
     // MARK: - Goals
