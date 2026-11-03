@@ -15,6 +15,10 @@ final class Entitlements {
     private(set) var eligibleTrials: Set<String> = []
     private(set) var purchaseNotice: String?
 
+    // False when the purchases layer never came up: nothing can be bought in
+    // that state, so the gates let paid paths through rather than sell nothing.
+    var canSell: Bool { Purchases.isConfigured }
+
     private let breadcrumbs: any Breadcrumbs
 
     init(breadcrumbs: any Breadcrumbs) {

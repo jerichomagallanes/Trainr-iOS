@@ -106,19 +106,190 @@ struct RoutineUiTests {
         let start = routine(sets: [set(1)])
         #expect(start.totalMinutes == 15)
         #expect(start.completionPercentage == 0)
-        #expect(start.markCompleted(at: 1).completionPercentage == 50)
+        #expect(start.toggleCompleted(at: 1).completionPercentage == 50)
         #expect(start.completingAll().isComplete)
+    }
+
+    // MARK: - Where a number came from
+
+    private func origins(_ routine: RoutineUi) -> [ActualOrigin] {
+        routine.exercises[0].sets.map(\.actualOrigin)
+    }
+
+    private func firstSet(_ routine: RoutineUi) -> ExerciseSet {
+        routine.exercises[0].sets[0]
+    }
+
+    @Test("Typing a number marks the set as typed")
+    func typingIsRecordedAsTyped() {
+        let start = routine(sets: [set(1), set(2)])
+        var typed = firstSet(start)
+        typed.actualReps = 9
+
+        #expect(origins(start.updating(typed, at: 1)) == [.typed, .none])
+    }
+
+    @Test("The checkmark confirms the targets it filled in")
+    func tickingConfirmsTheTarget() {
+        let ticked = routine(sets: [set(1), set(2)]).toggleCompleted(at: 1)
+
+        #expect(origins(ticked) == [.confirmedTarget, .confirmedTarget])
+    }
+
+    @Test("A typed number keeps its origin through the checkmark")
+    func tickingLeavesATypedNumberTyped() {
+        let start = routine(sets: [set(1), set(2)])
+        var typed = firstSet(start)
+        typed.actualReps = 9
+
+        let ticked = start.updating(typed, at: 1).toggleCompleted(at: 1)
+
+        #expect(origins(ticked) == [.typed, .confirmedTarget])
+        #expect(firstSet(ticked).actualReps == 9)
+    }
+
+    @Test("Blanking every number leaves no origin")
+    func blankingClearsTheOrigin() {
+        let start = routine(sets: [set(1), set(2)])
+        var typed = firstSet(start)
+        typed.actualReps = 9
+
+        let blanked = start.updating(typed, at: 1).updating(firstSet(start), at: 1)
+
+        #expect(origins(blanked) == [.none, .none])
+    }
+
+    @Test("Un-ticking and ticking again keeps the numbers and where they came from")
+    func cyclingTheCheckmarkKeepsTheOrigin() {
+        let start = routine(sets: [set(1), set(2)])
+        var typed = firstSet(start)
+        typed.actualReps = 9
+
+        let cycled = start.updating(typed, at: 1)
+            .toggleCompleted(at: 1)
+            .toggleCompleted(at: 1)
+            .toggleCompleted(at: 1)
+
+        #expect(origins(cycled) == [.typed, .confirmedTarget])
+        #expect(firstSet(cycled).actualReps == 9)
+    }
+
+    @Test("Starting over clears every origin")
+    func clearingProgressClearsTheOrigins() {
+        let logged = routine(sets: [set(1), set(2)]).completingAll()
+
+        #expect(origins(logged.clearingProgress()) == [.none, .none])
+    }
+
+    @Test("The exercise counts ignore the ones left out of today's session")
+    func exerciseCountsFollowThePlannedSets() {
+        var omitted = set(1)
+        omitted.omittedBy = UUID()
+        let routine = RoutineUi(
+            title: "Full Body",
+            exercises: [
+                ExerciseUi(position: 1, name: "A", description: "", minutes: 5, sets: [set(1)]),
+                ExerciseUi(position: 2, name: "B", description: "", minutes: 5, sets: [omitted]),
+                ExerciseUi(position: 3, name: "C", description: "", minutes: 5, sets: [set(1)])
+            ]
+        ).toggleCompleted(at: 1)
+
+        #expect(routine.plannedExerciseCount == 2)
+        #expect(routine.performedExerciseCount == 1)
     }
 
     @Test("A week ends when every other day is already done")
     func lastOutstandingDayEndsTheWeek() {
-        let days = [
-            WorkoutDay(dayNumber: 1, title: "A", status: .completed, duration: 45, exerciseCount: 3),
-            WorkoutDay(dayNumber: 3, title: "B", status: .notStarted, duration: 45, exerciseCount: 3),
-            WorkoutDay(dayNumber: 5, title: "C", status: .completed, duration: 45, exerciseCount: 3)
-        ]
+        let counted = [true, false, true]
 
-        #expect(RoutineDetailModel.completesTheWeek(days, dayNumber: 2))
-        #expect(!RoutineDetailModel.completesTheWeek(days, dayNumber: 1))
+        #expect(RoutineDetailModel.completesTheWeek(counted, dayNumber: 2))
+        #expect(!RoutineDetailModel.completesTheWeek(counted, dayNumber: 1))
+    }
+
+    // A day closed early with nothing logged is not a day of training, so it
+    // cannot be what the week is celebrated for.
+    @Test("A day closed with nothing performed leaves the week open")
+    func aDayClosedWithNothingPerformedLeavesTheWeekOpen() {
+        var closedEarly = WorkoutDay(
+            dayNumber: 1, title: "A", status: .completed, duration: 45, exerciseCount: 3,
+            exercises: [WorkoutExercise(name: "Movement")]
+        )
+        let trained = WorkoutDay(
+            dayNumber: 5, title: "C", status: .completed, duration: 45, exerciseCount: 3,
+            exercises: [WorkoutExercise(name: "Movement", isCompleted: true)]
+        )
+
+        #expect(!RoutineDetailModel.completesTheWeek(
+            [closedEarly, trained].map(\.countsAsCompleted), dayNumber: 2
+        ))
+
+        closedEarly.exercises[0].sets = [ExerciseSet(setNumber: 1, isCompleted: true)]
+        #expect(RoutineDetailModel.completesTheWeek(
+            [closedEarly, trained].map(\.countsAsCompleted), dayNumber: 2
+        ))
+    }
+
+    // MARK: - What a countdown may write
+
+    private func timedRoutine(sets: Int, seconds: Int = 60) -> RoutineUi {
+        RoutineUi(
+            title: "Cardio & Core",
+            exercises: [
+                ExerciseUi(
+                    position: 1, name: "Plank", description: "", minutes: 5, measure: .duration,
+                    sets: (1...sets).map { ExerciseSet(setNumber: $0, targetSeconds: seconds) }
+                )
+            ]
+        )
+    }
+
+    @Test("The time measured fills the one set it measured and ticks nothing")
+    func measuredTimeFillsOneSet() throws {
+        let logged = timedRoutine(sets: 1, seconds: 300).loggingMeasuredSeconds(240, at: 1)
+
+        let exercise = try #require(logged.exercises.first)
+        let set = try #require(exercise.sets.first)
+        #expect(set.actualSeconds == 240)
+        #expect(set.targetSeconds == 300)
+        #expect(set.actualReps == nil)
+        #expect(set.actualWeightKg == nil)
+        #expect(!set.isCompleted)
+        #expect(!exercise.isCompleted)
+        #expect(set.actualOrigin == .measured)
+    }
+
+    // One countdown ran, so it is evidence for one set and not for several.
+    @Test("A timed exercise of several sets is left alone")
+    func severalTimedSetsAreLeftAlone() {
+        let routine = timedRoutine(sets: 3)
+
+        #expect(routine.loggingMeasuredSeconds(240, at: 1) == routine)
+    }
+
+    @Test("A set already timed is not overwritten")
+    func anAlreadyTimedSetIsKept() {
+        let logged = timedRoutine(sets: 1).loggingMeasuredSeconds(240, at: 1)
+
+        #expect(logged.loggingMeasuredSeconds(90, at: 1) == logged)
+    }
+
+    // Ticking is the person saying the set is done; a countdown ending after
+    // that may not write a number onto it.
+    @Test("A set already ticked is not filled by the timer")
+    func aTickedSetIsNotFilled() throws {
+        let start = timedRoutine(sets: 1)
+        var ticked = try #require(start.exercises.first?.sets.first)
+        ticked.isCompleted = true
+        let marked = start.updating(ticked, at: 1)
+
+        #expect(marked.loggingMeasuredSeconds(240, at: 1) == marked)
+    }
+
+    @Test("An exercise counted in reps is never filled by the timer")
+    func repsAreNeverFilledByTheTimer() {
+        let start = routine(sets: [set(1), set(2)])
+
+        #expect(start.loggingMeasuredSeconds(240, at: 1) == start)
+        #expect(start.loggingMeasuredSeconds(240, at: 2) == start)
     }
 }

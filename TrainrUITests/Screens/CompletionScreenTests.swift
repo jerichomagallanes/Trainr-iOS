@@ -52,6 +52,9 @@ final class CompletionScreenTests: XCTestCase {
         XCTAssertTrue(app.text(containing: "Amazing consistency").exists)
         XCTAssertTrue(app.buttons["VIEW WEEKLY PROGRESS"].exists)
         XCTAssertTrue(app.buttons["GENERATE NEXT WEEK"].exists)
+        // The last day of a week is still a day worth a note.
+        XCTAssertTrue(app.text(containing: "Anything to change next time?").exists)
+        XCTAssertTrue(app.button(containing: "Leave a note").exists)
 
         app.buttons["GENERATE NEXT WEEK"].tap()
         XCTAssertTrue(app.text(containing: "Week 2:").waitForExistence(timeout: 15))

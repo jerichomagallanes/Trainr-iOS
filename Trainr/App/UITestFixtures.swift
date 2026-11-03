@@ -25,6 +25,8 @@ enum UITestFixtures {
             break
         case "midWeek":
             try? store.savePlan(week(1, for: user, startingDaysAgo: 2, shape: .midWeek))
+        case "longDay":
+            try? store.savePlan(lengthened(week(1, for: user, startingDaysAgo: 2, shape: .midWeek)))
         case "finishedWeek":
             try? store.savePlan(week(1, for: user, startingDaysAgo: 2, shape: .finished))
         case "twoWeeks":
@@ -34,8 +36,12 @@ enum UITestFixtures {
             try? store.savePlan(week(1, for: user, startingDaysAgo: 0, shape: .fresh))
         case "missedDay":
             try? store.savePlan(week(1, for: user, startingDaysAgo: 2, shape: .fresh))
+        case "weekGoneBy":
+            try? store.savePlan(week(1, for: user, startingDaysAgo: 9, shape: .midWeek))
         case "lastDayLeft":
             try? store.savePlan(week(1, for: user, startingDaysAgo: 4, shape: .lastDayLeft))
+        case "shortTimers":
+            try? store.savePlan(timedWeek(for: user))
         default:
             assertionFailure("Unknown fixture \(name)")
         }
@@ -194,6 +200,59 @@ enum UITestFixtures {
         return plan
     }
 
+    // A countdown short enough for a test to sit through, on a hold that is one
+    // set of its own, beside work counted in reps that a countdown may not fill.
+    private static func timedWeek(for user: UserProfile) -> WeeklyPlan {
+        WeeklyPlan(
+            userID: user.id,
+            weekNumber: 1,
+            title: "Strength Foundations",
+            startDate: WorkoutWeek.startOfDay(),
+            workoutDays: [
+                WorkoutDay(
+                    dayNumber: 1,
+                    title: "Timed Core",
+                    duration: 10,
+                    exerciseCount: 2,
+                    exercises: [
+                        WorkoutExercise(
+                            exerciseKey: "plank", name: "Plank", measure: .duration,
+                            sets: [ExerciseSet(setNumber: 1)],
+                            durationMinutes: 1
+                        ),
+                        WorkoutExercise(
+                            exerciseKey: "bicep_curl", name: "Bicep Curls", measure: .reps,
+                            sets: [ExerciseSet(setNumber: 1, targetReps: 10)],
+                            durationMinutes: 1
+                        )
+                    ]
+                )
+            ]
+        )
+    }
+
+    // Day 3's unperformed work folded into the unstarted day, so 35 minutes is a real cut.
+    private static func lengthened(_ plan: WeeklyPlan) -> WeeklyPlan {
+        var plan = plan
+        let spare = plan.workoutDays
+            .filter { $0.status == .inProgress }
+            .flatMap(\.exercises)
+            .filter { $0.sets.allSatisfy { !$0.isCompleted } }
+        plan.workoutDays = plan.workoutDays.map { day in
+            guard day.status == .notStarted else { return day }
+            var longer = day
+            longer.exercises += spare.map { exercise in
+                var fresh = exercise
+                fresh.id = UUID()
+                fresh.sets = exercise.sets.map { blank($0) }
+                return fresh
+            }
+            longer.exerciseCount = longer.exercises.count
+            return longer
+        }
+        return plan
+    }
+
     private static let failureArgument = "-generationFails"
     private static let slowArgument = "-slowGeneration"
 
@@ -228,6 +287,50 @@ enum UITestFixtures {
             try? await Task.sleep(for: .milliseconds(300))
             return .failed
         }
+    }
+
+    private static let modelPathArgument = "-modelPath"
+    private static let modelStateArgument = "-modelState"
+
+    // A model already on the host, or an installer frozen in one state, so the
+    // context screen can be walked without a 731 MB download.
+    static func fakeModelInstallerIfRequested() -> (any LocalModelInstaller)? {
+        let arguments = ProcessInfo.processInfo.arguments
+        if let index = arguments.firstIndex(of: modelPathArgument), arguments.indices.contains(index + 1) {
+            return FakeModelInstaller(state: .ready, readyFile: URL(filePath: arguments[index + 1]))
+        }
+        guard let index = arguments.firstIndex(of: modelStateArgument),
+              arguments.indices.contains(index + 1),
+              let state = fakeModelState(arguments[index + 1])
+        else { return nil }
+        let missing = URL(filePath: NSTemporaryDirectory()).appending(path: "missing.gguf")
+        return FakeModelInstaller(state: state, readyFile: state == .ready ? missing : nil)
+    }
+
+    private static func fakeModelState(_ name: String) -> ModelState? {
+        switch name {
+        case "notInstalled": return .notInstalled
+        case "downloading": return .downloading(done: 420, total: 1000)
+        case "verifying": return .verifying
+        case "ready": return .ready
+        case "failed": return .failed(.download)
+        case "insufficientStorage": return .insufficientStorage
+        default: return nil
+        }
+    }
+
+    private final class FakeModelInstaller: LocalModelInstaller {
+        let state: ModelState
+        nonisolated let readyFile: URL?
+
+        init(state: ModelState, readyFile: URL?) {
+            self.state = state
+            self.readyFile = readyFile
+        }
+
+        func install() {}
+
+        func cancel() {}
     }
 
     private static func logged(_ set: ExerciseSet) -> ExerciseSet {

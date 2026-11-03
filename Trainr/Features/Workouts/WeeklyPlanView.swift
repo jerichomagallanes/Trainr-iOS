@@ -8,16 +8,25 @@ struct WeeklyPlanView: View {
     // Owned here, so a screen rebuilt around it keeps the week it read.
     @State private var model: WeeklyPlanModel
     private let versionName: String
+    private let buildNumber: Int
     private let onDayTap: (WorkoutDay) -> Void
     private let onTrackProgress: () -> Void
     private let onStartWorkout: (WorkoutDay) -> Void
     private let onLeavePlanConfirmed: () -> Void
+    // Asked at the tap: a confirmation that threatens to erase everything must
+    // never be raised for something that cannot go ahead.
+    private let askBeforeNewPlan: (() -> Void) -> Void
+    private let askBeforeRewritingWeek: (() -> Void) -> Void
     private let onUpdateProfile: () -> Void
     private let onOpenPro: () -> Void
     private let onStartNextWeek: () -> Void
     private let onRepeatWeek: () -> Void
     private let onRegenerateWeek: () -> Void
     private let onCreatePlan: () -> Void
+    // The limit already confirmed for today's weekday travels with the tap, so
+    // the flow opens on that answer instead of asking for it again.
+    private let onAdjustToday: (WorkoutDay, Int) -> Void
+    private let onTrainingPreferences: () -> Void
     // Set only when a week was opened from Weekly Progress.
     private let onBack: (() -> Void)?
 
@@ -25,32 +34,42 @@ struct WeeklyPlanView: View {
         dependencies: AppDependencies,
         weekNumber: Int? = nil,
         versionName: String = "",
+        buildNumber: Int = 0,
         onDayTap: @escaping (WorkoutDay) -> Void = { _ in },
         onTrackProgress: @escaping () -> Void = {},
         onStartWorkout: @escaping (WorkoutDay) -> Void = { _ in },
         onLeavePlanConfirmed: @escaping () -> Void = {},
+        askBeforeNewPlan: @escaping (() -> Void) -> Void = { $0() },
+        askBeforeRewritingWeek: @escaping (() -> Void) -> Void = { $0() },
         onUpdateProfile: @escaping () -> Void = {},
         onOpenPro: @escaping () -> Void = {},
         onStartNextWeek: @escaping () -> Void = {},
         onRepeatWeek: @escaping () -> Void = {},
         onRegenerateWeek: @escaping () -> Void = {},
         onCreatePlan: @escaping () -> Void = {},
+        onAdjustToday: @escaping (WorkoutDay, Int) -> Void = { _, _ in },
+        onTrainingPreferences: @escaping () -> Void = {},
         onBack: (() -> Void)? = nil
     ) {
         _model = State(
             initialValue: WeeklyPlanModel(dependencies: dependencies, weekNumber: weekNumber)
         )
         self.versionName = versionName
+        self.buildNumber = buildNumber
         self.onDayTap = onDayTap
         self.onTrackProgress = onTrackProgress
         self.onStartWorkout = onStartWorkout
         self.onLeavePlanConfirmed = onLeavePlanConfirmed
+        self.askBeforeNewPlan = askBeforeNewPlan
+        self.askBeforeRewritingWeek = askBeforeRewritingWeek
         self.onUpdateProfile = onUpdateProfile
         self.onOpenPro = onOpenPro
         self.onStartNextWeek = onStartNextWeek
         self.onRepeatWeek = onRepeatWeek
         self.onRegenerateWeek = onRegenerateWeek
         self.onCreatePlan = onCreatePlan
+        self.onAdjustToday = onAdjustToday
+        self.onTrainingPreferences = onTrainingPreferences
         self.onBack = onBack
     }
 
@@ -89,11 +108,11 @@ struct WeeklyPlanView: View {
         .background(Color.surfacePage)
         .toolbar(.hidden, for: .navigationBar)
         .onAppear { model.refresh() }
-        .alert(L10n.aboutTheApp, isPresented: $showAbout) {
-            Button(L10n.close) {}
-        } message: {
-            Text(L10n.appVersionFormat(versionName) + "\n\n"
-                + L10n.appAboutMessage + "\n\n" + L10n.healthDisclaimer)
+        // The date is what ends the week, and it can change under a screen
+        // nobody has left.
+        .onDayChange { model.refresh() }
+        .sheet(isPresented: $showAbout) {
+            AboutView(versionName: versionName, buildNumber: buildNumber)
         }
         .alert(L10n.regenerateWeekTitle, isPresented: $showRegenerateDialog) {
             Button(L10n.regenerateWeekConfirm, role: .destructive, action: onRegenerateWeek)
@@ -112,7 +131,7 @@ struct WeeklyPlanView: View {
     }
 
     private var loggedWorkouts: Int {
-        state.days.count { $0.day.status == .completed }
+        state.days.count(where: \.day.countsAsCompleted)
     }
 
     // A List rather than a ScrollView: reorder by long press, edge scrolling and
@@ -128,6 +147,7 @@ struct WeeklyPlanView: View {
                     .frame(height: 1)
                 weekRange
                 if isHome {
+                    todayCard
                     trackProgressLink
                 }
             }
@@ -141,6 +161,10 @@ struct WeeklyPlanView: View {
                     weekday: WorkoutDateFormatter.weekday(planDay.date),
                     day: planDay.day,
                     isMissed: planDay.isMissed,
+                    isPartlyDone: planDay.isPartlyDone,
+                    finishedEarly: planDay.finishKind == .partial,
+                    isAdjusted: planDay.isAdjusted,
+                    derived: planDay.derived,
                     onTap: { onDayTap(planDay.day) }
                 )
                 .listRowSeparator(.hidden)
@@ -149,6 +173,14 @@ struct WeeklyPlanView: View {
                 .moveDisabled(isBrowsedWeek || planDay.isFrozen)
             }
             .onMove(perform: move)
+
+            if isHome && state.hasMemory {
+                TextAction(title: L10n.trainingPreferences, action: onTrainingPreferences)
+                    .listRowSeparator(.hidden)
+                    .listRowInsets(.init(top: 0, leading: 0, bottom: Spacing.medium, trailing: 0))
+                    .listRowBackground(Color.clear)
+                    .moveDisabled(true)
+            }
         }
         .listStyle(.plain)
         .environment(\.defaultMinListRowHeight, 0)
@@ -156,6 +188,24 @@ struct WeeklyPlanView: View {
         .contentMargins(.horizontal, Spacing.screen, for: .scrollContent)
         .contentMargins(.vertical, Spacing.medium, for: .scrollContent)
         .safeAreaInset(edge: .bottom, spacing: 0) { bottomAction }
+    }
+
+    // One card at most, and the adjustment wins: a change already applied is
+    // what today is, and the remembered limit is only an offer.
+    @ViewBuilder
+    private var todayCard: some View {
+        if let today = state.days.first(where: \.isToday) {
+            if let adjustment = state.todayAdjustment {
+                AdjustedTodayCard(kind: adjustment) { onDayTap(today.day) }
+            } else if let preference = state.todayPreference {
+                WeekdayPreferenceCard(
+                    weekdayName: WorkoutDateFormatter.weekdayName(iso: preference.weekday),
+                    minutes: preference.minutes
+                ) {
+                    onAdjustToday(today.day, preference.minutes)
+                }
+            }
+        }
     }
 
     private var heading: some View {
@@ -193,15 +243,17 @@ struct WeeklyPlanView: View {
             // can be written again.
             if !state.canAddWeek {
                 Button(L10n.regenerateWeek) {
-                    if loggedWorkouts > 0 {
-                        showRegenerateDialog = true
-                    } else {
-                        onRegenerateWeek()
+                    askBeforeRewritingWeek {
+                        if loggedWorkouts > 0 {
+                            showRegenerateDialog = true
+                        } else {
+                            onRegenerateWeek()
+                        }
                     }
                 }
             }
             if isHome {
-                Button(L10n.regeneratePlan) { showLeaveDialog = true }
+                Button(L10n.regeneratePlan) { askBeforeNewPlan { showLeaveDialog = true } }
             }
         } label: {
             Image(systemName: "ellipsis")
@@ -284,6 +336,7 @@ struct WeeklyPlanView: View {
         return Menu {
             Button(L10n.updateProfile, action: onUpdateProfile)
             Button(L10n.proName, action: onOpenPro)
+            Button(L10n.trainingPreferences, action: onTrainingPreferences)
             Picker(L10n.appearance, selection: $preference.mode) {
                 ForEach(AppearanceMode.allCases, id: \.self) { mode in
                     Label(mode.label, systemImage: mode.symbol).tag(mode)
@@ -330,6 +383,101 @@ struct WeeklyPlanView: View {
     private func move(from source: IndexSet, to destination: Int) {
         guard let from = source.first else { return }
         model.moveDay(from: from, to: destination > from ? destination - 1 : destination)
+    }
+}
+
+// A sheet rather than an alert: the documents have to be reachable without
+// the paywall, and an alert cannot carry a link.
+private struct AboutView: View {
+    let versionName: String
+    let buildNumber: Int
+
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(alignment: .leading, spacing: Spacing.large) {
+                    Text(L10n.appVersionFormat(versionName, buildNumber))
+                    Text(L10n.appAboutMessage)
+                    Text(L10n.healthDisclaimer)
+                    Link(L10n.proTerms, destination: ProLinks.terms)
+                        .foregroundStyle(Color.brandStrong)
+                    Link(L10n.proPrivacy, destination: ProLinks.privacy)
+                        .foregroundStyle(Color.brandStrong)
+                }
+                .font(.body16)
+                .foregroundStyle(Color.onSurface)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(Spacing.large)
+            }
+            .background(Color.surfacePage)
+            .navigationTitle(L10n.aboutTheApp)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button(L10n.close) { dismiss() }
+                }
+            }
+        }
+    }
+}
+
+private struct AdjustedTodayCard: View {
+    let kind: TodayAdjustmentKind
+    var onViewWorkout: () -> Void = {}
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: Spacing.extraSmall) {
+            HStack(alignment: .firstTextBaseline) {
+                Text(L10n.readyForToday)
+                    .font(.sectionTitle)
+                    .foregroundStyle(Color.onSurface)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                StatusChip(label: L10n.adjusted, fill: .statusActive)
+                    .layoutPriority(1)
+            }
+            Text(
+                kind == .alternative
+                    ? L10n.adjustedEquipmentCardBody
+                    : L10n.adjustedTimeCardBody
+            )
+            .font(.body14)
+            .foregroundStyle(Color.onSurfaceMuted)
+            TextAction(title: L10n.viewTodaysWorkout, action: onViewWorkout)
+        }
+        .multilineTextAlignment(.leading)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(Spacing.card)
+        .overlay {
+            RoundedRectangle(cornerRadius: CornerRadius.medium)
+                .strokeBorder(Color.outlineControl, lineWidth: 1)
+        }
+    }
+}
+
+private struct WeekdayPreferenceCard: View {
+    let weekdayName: String
+    let minutes: Int
+    var onReviewShorter: () -> Void = {}
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: Spacing.extraSmall) {
+            Text(L10n.weekdayPreferenceFormat(weekdayName))
+                .font(.sectionTitle)
+                .foregroundStyle(Color.onSurface)
+            Text(L10n.usuallyHaveMinutesFormat(minutes))
+                .font(.body14)
+                .foregroundStyle(Color.onSurfaceMuted)
+            TextAction(title: L10n.reviewShorterVersion, action: onReviewShorter)
+        }
+        .multilineTextAlignment(.leading)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(Spacing.card)
+        .overlay {
+            RoundedRectangle(cornerRadius: CornerRadius.medium)
+                .strokeBorder(Color.outlineControl, lineWidth: 1)
+        }
     }
 }
 

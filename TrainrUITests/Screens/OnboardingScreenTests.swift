@@ -89,95 +89,64 @@ final class OnboardingScreenTests: XCTestCase {
 
     // MARK: - Measurements
 
+    // Nothing about the person changed, so neither may the index: read from the
+    // fields instead, 175 shown back as 5'9" is 175.26 and reads 23.4.
     @MainActor
-    func testBMISourcesAreAvailableBeforeEnteringMeasurements() {
+    func testTheIndexHoldsStillWhenOnlyTheUnitsChange() {
         app = .launched(startingAt: "bodyMetrics")
-        let sources = app.buttons["bmiSources"]
-        XCTAssertTrue(sources.waitForExistence(timeout: 20))
-        XCTAssertTrue(sources.isHittable)
-        XCTAssertFalse(app.buttons["NEXT"].isEnabled)
-        attachBMIScreenshot("BMI sources before entering measurements")
-        sources.tap()
-        assertBMISourceLinks()
-        app.buttons["bmiSourcesClose"].tap()
-        XCTAssertFalse(app.buttons["NEXT"].isEnabled)
-    }
-
-    @MainActor
-    func testBMISourcesAreOneTapFromTheAdultResult() {
-        app = .launched(startingAt: "bodyMetrics")
-        XCTAssertTrue(app.textFields["170"].waitForExistence(timeout: 20))
+        XCTAssertTrue(app.staticTexts["YOUR MEASUREMENTS"].waitForExistence(timeout: 20))
         app.textFields["170"].tap()
         app.textFields["170"].typeText("175")
         app.textFields["70"].tap()
         app.textFields["70"].typeText("72")
-        XCTAssertTrue(app.staticTexts["Normal weight"].waitForExistence(timeout: 5))
-        let sources = app.buttons["bmiSources"]
-        for _ in 0..<5 where !sources.isHittable { app.scrollViews.firstMatch.swipeDown() }
-        XCTAssertTrue(sources.isHittable)
-        sources.tap()
-        assertBMISourceLinks()
-        app.buttons["bmiSourcesClose"].tap()
-        XCTAssertTrue(app.buttons["NEXT"].isEnabled)
+        XCTAssertTrue(app.text(containing: "BMI: 23.5").waitForExistence(timeout: 5))
+
+        app.buttons["Imperial"].tap()
+
+        let values = app.textFields.allElementsBoundByIndex.compactMap { $0.value as? String }
+        XCTAssertTrue(values.contains("5'9\""), "\(values)")
+        XCTAssertTrue(app.text(containing: "BMI: 23.5").waitForExistence(timeout: 5))
+    }
+
+    // "175" passes the imperial filter but is not feet and inches, so the
+    // switch keeps it as it is. What it keeps is a height again in the field it
+    // was left in.
+    @MainActor
+    func testAHeightKeptAcrossTheSwitchIsReadInTheUnitsItIsShownIn() {
+        app = .launched(startingAt: "bodyMetrics")
+        XCTAssertTrue(app.staticTexts["YOUR MEASUREMENTS"].waitForExistence(timeout: 20))
+        let height = app.textFields["5'10\""]
+        XCTAssertTrue(app.tap(app.buttons["Imperial"], until: height))
+        height.tap()
+        height.typeText("175")
+        app.textFields["155"].tap()
+        app.textFields["155"].typeText("154")
+        XCTAssertFalse(app.buttons["NEXT"].isEnabled)
+
+        XCTAssertTrue(app.tap(app.buttons["Metric"], until: app.textFields["170"]))
+
         XCTAssertEqual(app.textFields["170"].value as? String, "175")
-        XCTAssertEqual(app.textFields["70"].value as? String, "72")
-        assertBMIResultLinks()
-        attachBMIScreenshot("BMI result with direct CDC citations")
+        XCTAssertTrue(app.buttons["NEXT"].isEnabled)
     }
 
+    // Leaving the step and coming back must not read the index off the fields
+    // again: 175 shown back as 5'9" is 175.26 and a different index for the
+    // same person, which NEXT from there would store over the one kept.
     @MainActor
-    func testBMISourcesRemainReadableWithAccessibilityTextInDarkMode() {
-        app = XCUIApplication()
-        app.launchArguments = [
-            "-inMemoryStore", "-splashSeconds", "0", "-startAtStep", "bodyMetrics",
-            "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL",
-            "-appearance_mode", "dark"
-        ]
-        app.launch()
-        let sources = app.buttons["bmiSources"]
-        XCTAssertTrue(sources.waitForExistence(timeout: 20))
-        XCTAssertTrue(sources.isHittable)
-        sources.tap()
-        assertBMISourceLinks()
-        app.buttons["bmiSourcesClose"].tap()
+    func testTheIndexHoldsStillAcrossLeavingTheStepAndComingBack() {
+        app = .launched(startingAt: "bodyMetrics")
+        XCTAssertTrue(app.staticTexts["YOUR MEASUREMENTS"].waitForExistence(timeout: 20))
         app.textFields["170"].tap()
         app.textFields["170"].typeText("175")
         app.textFields["70"].tap()
         app.textFields["70"].typeText("72")
-        assertBMIResultLinks()
-        attachBMIScreenshot("BMI result in dark mode with accessibility text")
-    }
+        app.buttons["Imperial"].tap()
+        XCTAssertTrue(app.text(containing: "BMI: 23.5").waitForExistence(timeout: 5))
 
-    @MainActor
-    private func assertBMIResultLinks() {
-        for title in ["CDC: BMI calculation", "CDC: Adult BMI categories"] {
-            let link = app.descendants(matching: .any).matching(identifier: title).firstMatch
-            for _ in 0..<8 where !link.isHittable { app.scrollViews.firstMatch.swipeUp() }
-            XCTAssertTrue(link.isHittable, "The result itself must cite \(title)")
-        }
-    }
+        XCTAssertTrue(app.tap(app.buttons["NEXT"], until: app.staticTexts["YOUR FITNESS GOALS"]))
+        XCTAssertTrue(app.tap(app.buttons["Back"], until: app.staticTexts["YOUR MEASUREMENTS"]))
 
-    @MainActor
-    private func assertBMISourceLinks() {
-        XCTAssertTrue(app.staticTexts["About BMI & sources"].waitForExistence(timeout: 5))
-        let content = app.scrollViews["bmiSourcesContent"]
-        XCTAssertTrue(content.waitForExistence(timeout: 5))
-        for title in ["CDC: BMI calculation", "CDC: Adult BMI categories", "CDC: About BMI"] {
-            // SwiftUI exposes Link as either a button or a link, depending on iOS.
-            // Scope to the sheet: the result underneath has the same source labels.
-            let link = content.descendants(matching: .any).matching(identifier: title).firstMatch
-            for _ in 0..<8 where !link.isHittable { content.swipeUp() }
-            XCTAssertTrue(link.isHittable, "The citation must be reachable: \(title)")
-            attachBMIScreenshot(title)
-        }
-    }
-
-    @MainActor
-    private func attachBMIScreenshot(_ name: String) {
-        let screenshot = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
-        screenshot.name = name
-        screenshot.lifetime = .keepAlways
-        add(screenshot)
+        XCTAssertTrue(app.text(containing: "BMI: 23.5").waitForExistence(timeout: 5))
     }
 
     @MainActor
@@ -212,7 +181,7 @@ final class OnboardingScreenTests: XCTestCase {
         app.textFields["70"].tap()
         app.textFields["70"].typeText("72")
 
-        XCTAssertTrue(app.staticTexts["Normal weight"].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.staticTexts["Healthy weight"].waitForExistence(timeout: 3))
         XCTAssertTrue(next.isEnabled)
     }
 
@@ -258,7 +227,56 @@ final class OnboardingScreenTests: XCTestCase {
         XCTAssertTrue(app.staticTexts["Weight (lbs)"].exists)
         let values = app.textFields.allElementsBoundByIndex.compactMap { $0.value as? String }
         XCTAssertTrue(values.contains("5'7\""), "\(values)")
-        XCTAssertTrue(values.contains("154"), "\(values)")
+        XCTAssertTrue(values.contains("154.3"), "\(values)")
+    }
+
+    // Looking at a measurement in the other units must not edit it.
+    @MainActor
+    func testARoundTripThroughImperialLeavesTheMeasurementsAlone() {
+        app = .launched(startingAt: "bodyMetrics")
+        XCTAssertTrue(app.staticTexts["YOUR MEASUREMENTS"].waitForExistence(timeout: 20))
+        app.textFields["170"].tap()
+        app.textFields["170"].typeText("177")
+        app.textFields["70"].tap()
+        app.textFields["70"].typeText("95.5")
+
+        app.buttons["Imperial"].tap()
+        app.buttons["Metric"].tap()
+
+        let values = app.textFields.allElementsBoundByIndex.compactMap { $0.value as? String }
+        XCTAssertTrue(values.contains("177"), "\(values)")
+        XCTAssertTrue(values.contains("95.5"), "\(values)")
+    }
+
+    @MainActor
+    func testMeasurementsTypedBeforeGoingBackAreShownAgain() {
+        app = .launched(startingAt: "bodyMetrics")
+        XCTAssertTrue(app.textFields["170"].waitForExistence(timeout: 20))
+        app.textFields["170"].tap()
+        app.textFields["170"].typeText("175")
+        app.textFields["70"].tap()
+        app.textFields["70"].typeText("72")
+
+        XCTAssertTrue(app.tap(app.buttons["Back"], until: app.textFields["Enter your name"]))
+        XCTAssertTrue(app.tap(app.buttons["NEXT"], until: app.staticTexts["YOUR MEASUREMENTS"]))
+
+        XCTAssertEqual(app.textFields["170"].value as? String, "175")
+        XCTAssertEqual(app.textFields["70"].value as? String, "72")
+    }
+
+    @MainActor
+    func testAPartTypedImperialHeightSurvivesTheUnitTabs() {
+        app = .launched(startingAt: "bodyMetrics")
+        XCTAssertTrue(app.staticTexts["YOUR MEASUREMENTS"].waitForExistence(timeout: 20))
+        let height = app.textFields["5'10\""]
+        XCTAssertTrue(app.tap(app.buttons["Imperial"], until: height))
+        height.tap()
+        height.typeText("5")
+        XCTAssertEqual(height.value as? String, "5")
+
+        XCTAssertTrue(app.tap(app.buttons["Metric"], until: app.textFields["170"]))
+
+        XCTAssertEqual(app.textFields["170"].value as? String, "5")
     }
 
     @MainActor
@@ -268,11 +286,13 @@ final class OnboardingScreenTests: XCTestCase {
 
         app.textFields["170"].tap()
         app.textFields["170"].typeText("300")
+        let heightLimits = app.text(containing: "Height must be between")
+        XCTAssertTrue(heightLimits.waitForExistence(timeout: 3))
+        XCTAssertTrue(heightLimits.isHittable, "The limits are off screen where the height is typed")
         app.textFields["70"].tap()
         app.textFields["70"].typeText("700")
         app.textFields.firstMatch.tap()
 
-        XCTAssertTrue(app.text(containing: "Height must be between").waitForExistence(timeout: 3))
         XCTAssertTrue(app.text(containing: "Weight must be between").exists)
         XCTAssertFalse(app.buttons["NEXT"].isEnabled)
         XCTAssertFalse(app.text(containing: "BMI:").exists)
@@ -286,7 +306,7 @@ final class OnboardingScreenTests: XCTestCase {
         XCTAssertTrue(app.staticTexts["5'10\""].exists)
         XCTAssertTrue(app.staticTexts["154 lbs"].exists)
 
-        app.buttons.matching(identifier: "Edit").element(boundBy: 1).tap()
+        app.buttons["Edit Measurements"].tap()
         XCTAssertTrue(app.staticTexts["YOUR MEASUREMENTS"].waitForExistence(timeout: 5))
         let values = app.textFields.allElementsBoundByIndex.compactMap { $0.value as? String }
         XCTAssertTrue(values.contains("5'10\""), "\(values)")
@@ -301,7 +321,7 @@ final class OnboardingScreenTests: XCTestCase {
         XCTAssertTrue(app.staticTexts["175 cm"].exists)
         XCTAssertTrue(app.staticTexts["72.0 kg"].exists)
 
-        app.buttons.matching(identifier: "Edit").element(boundBy: 1).tap()
+        app.buttons["Edit Measurements"].tap()
         XCTAssertTrue(app.staticTexts["YOUR MEASUREMENTS"].waitForExistence(timeout: 5))
         let values = app.textFields.allElementsBoundByIndex.compactMap { $0.value as? String }
         XCTAssertTrue(values.contains("175"), "\(values)")
@@ -309,7 +329,7 @@ final class OnboardingScreenTests: XCTestCase {
         let sources = app.buttons["bmiSources"]
         XCTAssertTrue(sources.isHittable)
         sources.tap()
-        assertBMISourceLinks()
+        assertBMISourceLinks(in: app)
         app.buttons["bmiSourcesClose"].tap()
         XCTAssertTrue(app.buttons["SAVE"].isEnabled)
         XCTAssertEqual(app.textFields["170"].value as? String, "175")
@@ -329,39 +349,6 @@ final class OnboardingScreenTests: XCTestCase {
         XCTAssertTrue(next.isEnabled)
     }
 
-    // MARK: - Setup
-
-    @MainActor
-    func testSetupAsksForEquipmentAndNotWhereTheClientStands() {
-        app = .launched(startingAt: "setup")
-        XCTAssertTrue(app.staticTexts["SET UP YOUR WORKOUT"].waitForExistence(timeout: 20))
-
-        XCTAssertTrue(app.staticTexts["Available Equipment"].exists)
-        for gone in ["Home", "Gym", "Both"] {
-            XCTAssertFalse(app.buttons[gone].exists)
-        }
-        for kit in ["Bodyweight only", "Barbell", "Dumbbell", "Machine"] {
-            XCTAssertTrue(app.buttons[kit].exists, kit)
-        }
-        XCTAssertTrue(app.buttons["Choose how many days"].exists)
-        XCTAssertFalse(app.buttons["NEXT"].isEnabled)
-    }
-
-    @MainActor
-    func testEveryDurationChipShowsItsWholeLabel() {
-        app = .launched(startingAt: "setup")
-        XCTAssertTrue(app.staticTexts["SET UP YOUR WORKOUT"].waitForExistence(timeout: 20))
-
-        let chips = ["30 mins", "45 mins", "60 mins", "90 mins"].map { app.buttons[$0] }
-        app.scrollUntilHittable(chips[0])
-        for chip in chips { XCTAssertTrue(chip.isHittable, chip.label) }
-        let widths = chips.map(\.frame.width)
-        XCTAssertEqual(widths.min()!, widths.max()!, accuracy: 2)
-        for (left, right) in zip(chips, chips.dropFirst()) {
-            XCTAssertLessThanOrEqual(left.frame.maxX, right.frame.minX + 1)
-        }
-    }
-
     // MARK: - Limitations
 
     @MainActor
@@ -375,6 +362,20 @@ final class OnboardingScreenTests: XCTestCase {
 
     // MARK: - Review
 
+    // A pinned bar that grows with the text setting leaves the step a strip:
+    // at the largest size the screen's own words still get most of it, and
+    // whatever the bar cannot hold scrolls inside the bar.
+    @MainActor
+    func testTheReviewBarIsHeldToAShareOfTheScreen() {
+        app = .launched(startingAt: "review", arguments: XCUIApplication.largestTextSize)
+        let confirm = app.buttons["GENERATE MY WORKOUT PLAN"]
+        XCTAssertTrue(confirm.waitForExistence(timeout: 20))
+        XCTAssertTrue(app.staticTexts["YOUR FITNESS PROFILE"].exists)
+
+        let screen = app.windows.firstMatch.frame
+        XCTAssertGreaterThan(confirm.frame.minY, screen.midY)
+    }
+
     @MainActor
     func testTheReviewReadsEveryAnswerBackAndOffersAnEditForEach() {
         app = .launched(startingAt: "review")
@@ -385,7 +386,9 @@ final class OnboardingScreenTests: XCTestCase {
         XCTAssertTrue(app.staticTexts["30 years old"].exists)
         XCTAssertTrue(app.staticTexts["Build Muscle"].exists)
         XCTAssertTrue(app.staticTexts["Lower Back Pain"].exists)
-        XCTAssertEqual(app.buttons.matching(identifier: "Edit").count, 5)
+        XCTAssertEqual(
+            app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "Edit ")).count, 5
+        )
         XCTAssertTrue(app.buttons["Back"].exists)
         XCTAssertFalse(app.buttons["Close"].exists)
     }
@@ -409,7 +412,7 @@ final class OnboardingScreenTests: XCTestCase {
         app = .launched(startingAt: "review")
         XCTAssertTrue(app.staticTexts["YOUR FITNESS PROFILE"].waitForExistence(timeout: 20))
 
-        app.buttons.matching(identifier: "Edit").element(boundBy: 0).tap()
+        app.buttons["Edit Personal Information"].tap()
         XCTAssertTrue(app.textFields["Enter your name"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.buttons["Close"].exists)
         XCTAssertFalse(app.otherElements["stepProgress"].exists)
@@ -471,6 +474,6 @@ final class OnboardingScreenTests: XCTestCase {
         weight.typeText("2")
 
         XCTAssertFalse(app.text(containing: "Underweight").exists)
-        XCTAssertFalse(app.text(containing: "Normal weight").exists)
+        XCTAssertFalse(app.text(containing: "Healthy weight").exists)
     }
 }

@@ -1,6 +1,17 @@
 import Foundation
 import Observation
 
+// What the measurements step currently has typed in it, in the units it is
+// showing. Text rather than numbers: a part-typed "5" is not a height yet. The
+// swaps carry the measurements behind that text, which the index is read from.
+nonisolated struct BodyMetricsEntry: Equatable, Sendable {
+    var height: String
+    var weight: String
+    var useMetric: Bool
+    var heightSwap = BodyMetricsConverter.UnitSwap()
+    var weightSwap = BodyMetricsConverter.UnitSwap()
+}
+
 enum OnboardingStep {
     case basicInfo
     case bodyMetrics
@@ -21,6 +32,7 @@ final class OnboardingModel {
     private(set) var failureCount = 0
 
     private let dependencies: AppDependencies
+    private let charge: () -> Void
     private let store: TrainingStore
     private let planGenerator: any PlanGenerator
 
@@ -28,19 +40,42 @@ final class OnboardingModel {
     // screen, so a chip can never lead to an empty week.
     let stockedEquipment: Set<Equipment>
 
+    private let skeletons: PlanSkeletonBuilder
+
     // One plan at a time; the model outlives the screen, so a rerun must not begin complete.
     private var isWorking = false
     // The request has no cancellation point of its own; a run nobody awaits must not write.
     private var run: Task<Void, Never>?
 
-    init(dependencies: AppDependencies) {
+    init(dependencies: AppDependencies, charge: @escaping () -> Void = {}) {
         self.dependencies = dependencies
+        self.charge = charge
         store = dependencies.store
         planGenerator = dependencies.planGenerator
         stockedEquipment = Set(dependencies.catalog.all.map(\.equipment))
+        skeletons = PlanSkeletonBuilder(catalog: dependencies.catalog)
         if let stored = dependencies.attempt("currentUser", { try store.currentUser() }) {
             profile = stored
         }
+    }
+
+    // The longest session these answers can actually build, so a length no day
+    // of the split can fill is said on the screen that asks for it rather than
+    // quietly delivered two thirds of. The longest, because a recovery day is
+    // meant to be short and is no sign the answer cannot be met.
+    func longestSessionMinutes(equipment: [Equipment], daysPerWeek: Int, duration: Int) async -> Int {
+        var answers = profile
+        answers.availableEquipment = equipment
+        answers.workoutDaysPerWeek = daysPerWeek
+        answers.workoutDuration = duration
+        let skeletons = skeletons
+        let weekNumber = Self.firstWeek
+        return await Task.detached {
+            let week = skeletons.build(
+                PlanRequest(user: answers, weekNumber: weekNumber, startDate: .distantPast)
+            )
+            return week.days.map(\.minutes).max() ?? duration
+        }.value
     }
 
     // Blank before answering: the profile's defaults are real values, not choices anyone made.
@@ -52,13 +87,26 @@ final class OnboardingModel {
         firstName: String, age: Int, gender: Gender, experience: ExperienceLevel
     ) {
         answeredSteps.insert(.basicInfo)
-        profile.firstName = firstName
+        // Stored trimmed, because every greeting in the app reads it back.
+        profile.firstName = firstName.trimmingCharacters(in: .whitespacesAndNewlines)
         profile.age = age
         profile.gender = gender
         profile.experienceLevel = experience
     }
 
+    // Unobserved, so a keystroke does not redraw the flow: a step popped off the
+    // stack loses its own state, and what was typed has to outlive it for the
+    // rest of the flow.
+    @ObservationIgnored private var metricsInProgress: BodyMetricsEntry?
+
+    func rememberBodyMetrics(_ entry: BodyMetricsEntry) {
+        metricsInProgress = entry
+    }
+
+    func bodyMetricsInProgress() -> BodyMetricsEntry? { metricsInProgress }
+
     func updateBodyMetrics(height: Double, weight: Double, units: UnitSystem) {
+        metricsInProgress = nil
         answeredSteps.insert(.bodyMetrics)
         profile.height = height
         profile.weight = weight
@@ -154,9 +202,12 @@ final class OnboardingModel {
 
             guard !Task.isCancelled else { return }
             do {
-                try store.saveUser(toSave)
                 plan.userID = toSave.id
-                try store.savePlan(plan)
+                try store.saveUser(toSave, startingWith: plan)
+                // Charged where the week lands rather than on the screen that
+                // asked for it: the screen's own wait outlives the save, and
+                // the process can end inside it.
+                charge()
                 isLoading = false
                 isCompleted = true
                 onSuccess()

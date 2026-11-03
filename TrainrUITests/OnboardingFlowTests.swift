@@ -54,7 +54,7 @@ final class OnboardingFlowTests: XCTestCase {
         let weightField = app.textFields["70"]
         weightField.tap()
         weightField.typeText("72")
-        XCTAssertTrue(app.staticTexts["Normal weight"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["Healthy weight"].waitForExistence(timeout: 5))
         app.buttons["NEXT"].tap()
 
         XCTAssertTrue(app.staticTexts["YOUR FITNESS GOALS"].waitForExistence(timeout: 5))

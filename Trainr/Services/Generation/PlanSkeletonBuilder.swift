@@ -21,7 +21,9 @@ nonisolated final class PlanSkeletonBuilder: Sendable {
             .filter { !InjuryGuard.excludes($0, for: user.injuries) }
             .sorted { $0.key < $1.key }
         let required = ExerciseShortlist.requiredPatterns(pool, goal: user.fitnessGoal)
-        let lastWeek = Set(request.previousWeek?.workoutDays.flatMap { $0.exercises.map(\.exerciseKey) } ?? [])
+        let lastWeek = Set(request.previousWeek?.workoutDays.flatMap {
+            $0.exercises.filter { $0.addedBy == nil }.map(\.exerciseKey)
+        } ?? [])
 
         let week = WeekBuilder(catalog: catalog, user: user, pool: pool, lastWeek: lastWeek)
         let days = Self.split(user).enumerated().map { index, entry in
@@ -129,21 +131,12 @@ private nonisolated final class DayDraft {
     }
 }
 
-private nonisolated struct Shape {
-    let count: Int
-    let sets: [SlotTier: (Int, Int)]
-    let drop: [String]
-    // Weight loss and endurance take the rest of the session as conditioning;
-    // every other goal takes a short fixed block.
-    var conditioningFillsTheSession = false
-}
-
 private nonisolated final class WeekBuilder {
     private let catalog: any ExerciseCatalog
     private let user: UserProfile
     private let pool: [CatalogExercise]
     private let lastWeek: Set<String>
-    private let shape: Shape
+    private let shape: SessionShape
     private let maxSets: Int
     private let ceiling: Int
     private let conditioningDays: Set<Int>
@@ -155,7 +148,7 @@ private nonisolated final class WeekBuilder {
         self.user = user
         self.pool = pool
         self.lastWeek = lastWeek
-        shape = Self.shape(for: user.fitnessGoal)
+        shape = SessionShape.forGoal(user.fitnessGoal)
         maxSets = SessionBudget.maxSetsPerSession(user)
         ceiling = SessionBudget.sessionCeilingMinutes(user)
         conditioningDays = Self.conditioningDayIndexes(user.fitnessGoal, min(max(user.workoutDaysPerWeek, 1), 7))
@@ -209,7 +202,7 @@ private nonisolated final class WeekBuilder {
     }
 
     func fit(_ day: DayDraft, uncovered: inout Set<PatternRequirement>) -> SkeletonDay {
-        let drop = day.focus == .activeRecovery ? ["mobility_2", "core"] : shape.drop
+        let drop = day.focus == .activeRecovery ? ["mobility_2", "core"] : shape.dropOrder
         trimToCount(day, drop)
         fillCandidates(day, uncovered: &uncovered)
         fitMinimums(day, drop)
@@ -219,12 +212,13 @@ private nonisolated final class WeekBuilder {
         }
         return SkeletonDay(
             dayNumber: day.dayNumber, focus: day.focus,
-            slots: day.slots.sorted { $0.tier < $1.tier }.map(slot(from:))
+            slots: day.slots.sorted { $0.tier < $1.tier }.map(slot(from:)),
+            minutes: SessionMinutes.forDay(day.slots.map { minutes(of: $0, atTop: false) })
         )
     }
 
     private func trimToCount(_ day: DayDraft, _ drop: [String]) {
-        for id in drop where day.slots.count > shape.count {
+        for id in drop where day.slots.count > shape.slotCount {
             day.slots.removeAll { $0.id == id && $0.isDroppable }
         }
     }
@@ -272,8 +266,10 @@ private nonisolated final class WeekBuilder {
         day.slots.removeAll { $0.candidates.isEmpty }
     }
 
+    // The minimums have to fit before anything is topped up, and what the goal
+    // gives up first is what a short answer gives up.
     private func fitMinimums(_ day: DayDraft, _ drop: [String]) {
-        for id in drop where !fits(day) {
+        for id in drop where !fits(day) || overrunsTheAnswer(day) {
             day.slots.removeAll { $0.id == id && $0.isDroppable }
         }
         while !fits(day) {
@@ -322,41 +318,65 @@ private nonisolated final class WeekBuilder {
     }
 
     // The hard limit: never more sets than the session pays for, and never
-    // past its ceiling even at the top of every rep window, so no week of the
+    // past its ceiling, priced at the dearest movement that could fill each
+    // slot at the top of every rep window, so no cast and no week of the
     // ladder can break it.
     private func fits(_ day: DayDraft) -> Bool {
         day.slots.reduce(0) { $0 + $1.sets } <= maxSets
             && SessionMinutes.forDay(day.slots.map { minutes(of: $0, atTop: true) }) <= ceiling
     }
 
-    // The aim: about as long as the answer, priced at the reps a set is
-    // typically done at rather than the most it could ever ask.
+    // The aim: about as long as the answer, priced at the reps this week
+    // prescribes rather than the most a later week could ask.
     private func isWithinTheAnswer(_ day: DayDraft) -> Bool {
         SessionMinutes.forDay(day.slots.map { minutes(of: $0, atTop: false) }) <= user.workoutDuration
     }
 
+    // A minute or two past the answer is still about the length asked for;
+    // losing a whole movement over it is not.
+    private func overrunsTheAnswer(_ day: DayDraft) -> Bool {
+        SessionMinutes.forDay(day.slots.map { minutes(of: $0, atTop: false) })
+            > user.workoutDuration * Self.overToleranceNumerator / Self.overToleranceDenominator
+    }
+
+    // The cast is drawn after the day is sized, so a slot is budgeted at what
+    // the movements that could fill it cost: every one of them against the
+    // ceiling, which is a bound, and the two really in play against the answer,
+    // which is an aim.
     private func minutes(of slot: Draft, atTop: Bool) -> Int {
-        guard let key = slot.candidates.first, let top = catalog[key] else { return 0 }
-        if top.measure == .duration {
+        if atTop {
+            return slot.candidates.compactMap { catalog[$0] }
+                .map { minutes(of: slot, $0, atTop: true) }.max() ?? 0
+        }
+        let inPlay = slot.candidates.prefix(SkeletonSlot.varietyDepth).compactMap { catalog[$0] }
+        guard !inPlay.isEmpty else { return 0 }
+        return inPlay.reduce(0) { $0 + minutes(of: slot, $1, atTop: false) } / inPlay.count
+    }
+
+    private func minutes(of slot: Draft, _ movement: CatalogExercise, atTop: Bool) -> Int {
+        if movement.measure == .duration {
             return SessionMinutes.forExercise(
-                measure: .duration, perSet: Array(repeating: seconds(for: slot, top), count: slot.sets),
+                measure: .duration,
+                perSet: Array(repeating: seconds(for: slot, movement, atTop: atTop), count: slot.sets),
                 restSeconds: rest(for: slot)
             )
         }
-        let window = RepWindow.forExercise(user, top)
-        let reps = atTop ? window.upperBound : min(window.lowerBound + Self.typicalRepClimb, window.upperBound)
+        let reps = atTop ? RepWindow.forExercise(user, movement).upperBound
+            : RepWindow.openingReps(user, movement)
         return SessionMinutes.forExercise(
-            measure: top.measure, perSet: Array(repeating: reps, count: slot.sets),
-            restSeconds: rest(for: slot), unilateral: top.unilateral
+            measure: movement.measure, perSet: Array(repeating: reps, count: slot.sets),
+            restSeconds: rest(for: slot), unilateral: movement.unilateral
         )
     }
 
-    private func seconds(for slot: Draft, _ top: CatalogExercise) -> Int {
+    // A hold climbs from a first week to the ceiling the engine stops at, the
+    // same ladder a rep window is.
+    private func seconds(for slot: Draft, _ top: CatalogExercise, atTop: Bool = true) -> Int {
         switch slot.tier {
         case .warmUp: top.key == Self.warmUpKey ? SeedLoad.warmUpSeconds : SeedLoad.mobilitySeconds
         case .mobility: SeedLoad.mobilitySeconds
         case .conditioning: slot.conditioningSeconds
-        default: Self.holdBudgetSeconds
+        default: atTop ? Self.holdBudgetSeconds : SeedLoad.holdSeconds(user)
         }
     }
 
@@ -452,39 +472,6 @@ private nonisolated final class WeekBuilder {
         return Set((0..<count).map { $0 * days / count })
     }
 
-    // A strength day sheds breadth to keep depth, a weight-loss day sheds the
-    // lifting tail to keep its conditioning, and a flexibility day has no
-    // compound slots at all.
-    private static func shape(for goal: FitnessGoal) -> Shape {
-        switch goal {
-        case .strength:
-            Shape(count: 6, sets: [
-                .warmUp: (1, 1), .primaryCompound: (3, 5), .secondaryCompound: (2, 4), .accessory: (2, 3),
-                .isolation: (2, 2), .core: (1, 2), .conditioning: (1, 1)
-            ], drop: ["isolation_2", "conditioning", "mobility_1", "accessory", "core", "isolation_1"])
-        case .muscleGain:
-            Shape(count: 8, sets: [
-                .warmUp: (1, 1), .primaryCompound: (2, 4), .secondaryCompound: (2, 3), .accessory: (2, 3),
-                .isolation: (2, 3), .core: (1, 3), .conditioning: (1, 1), .mobility: (1, 1)
-            ], drop: ["mobility_1", "conditioning", "isolation_2", "core", "accessory", "isolation_1"])
-        case .generalFitness:
-            Shape(count: 8, sets: [
-                .warmUp: (1, 1), .primaryCompound: (2, 3), .secondaryCompound: (2, 3), .accessory: (2, 3),
-                .isolation: (2, 3), .core: (1, 3), .conditioning: (1, 1), .mobility: (1, 1)
-            ], drop: ["mobility_1", "isolation_2", "isolation_1", "core", "conditioning", "accessory"])
-        case .weightLoss, .endurance:
-            Shape(count: 7, sets: [
-                .warmUp: (1, 1), .primaryCompound: (2, 3), .secondaryCompound: (2, 3), .accessory: (2, 3),
-                .isolation: (2, 2), .core: (2, 3), .conditioning: (1, 1), .mobility: (1, 1)
-            ], drop: ["isolation_2", "isolation_1", "accessory", "mobility_1", "secondary", "core"],
-            conditioningFillsTheSession: true)
-        case .flexibility:
-            Shape(count: 6, sets: [
-                .warmUp: (1, 1), .core: (1, 2), .conditioning: (1, 1), .mobility: (3, 4)
-            ], drop: ["core", "conditioning", "mobility_4", "mobility_3"])
-        }
-    }
-
     private static func wishList(for focus: SessionFocus) -> [SlotTier] {
         switch focus {
         case .fullBody:
@@ -546,7 +533,8 @@ private nonisolated final class WeekBuilder {
     private static let maxSetsPerSlot = 10
     private static let holdBudgetSeconds = 90
     private static let stretchSets = 2
-    private static let typicalRepClimb = 2
+    private static let overToleranceNumerator = 11
+    private static let overToleranceDenominator = 10
     private static let conditioningFloorSeconds = 300
     private static let conditioningStepSeconds = 60
     private static let conditioningCeilingSeconds = 3600

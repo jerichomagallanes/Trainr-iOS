@@ -1,10 +1,10 @@
 name: CI
 
-# Every pull request into main must pass this workflow, and it runs again on
-# main after a merge so the default branch always has a known-good result.
+# Every pull request must pass this workflow, whatever branch it targets, and
+# it runs again on main after a merge so the default branch always has a
+# known-good result.
 on:
   pull_request:
-    branches: [main]
   push:
     branches: [main]
 

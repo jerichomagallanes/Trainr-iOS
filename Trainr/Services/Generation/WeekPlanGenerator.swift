@@ -12,10 +12,6 @@ struct WeekPlanGenerator: PlanGenerator {
     private let expander: PlanExpander
     private let parser: GeneratedPlanParser
 
-    // Two candidates, not three: measured against the volume and frequency
-    // the evidence asks for, going deeper spread a week's sets thinner
-    // without buying any more variety worth having.
-    private static let varietyDepth = 2
     private static let fnvOffset: Int32 = -2_128_831_035
     private static let fnvPrime: Int32 = 16_777_619
 
@@ -63,7 +59,7 @@ struct WeekPlanGenerator: PlanGenerator {
         var days: [String: DaySelection] = [:]
         for day in skeleton.days {
             guard let before = previous.workoutDays.first(where: { $0.dayNumber == day.dayNumber }) else { return nil }
-            var remaining = before.exercises.map(\.exerciseKey)
+            var remaining = before.exercises.filter { $0.addedBy == nil }.map(\.exerciseKey)
             for slot in day.slots where slot.isDecided {
                 if let index = remaining.firstIndex(of: slot.candidates[0]) { remaining.remove(at: index) }
             }
@@ -125,13 +121,14 @@ struct WeekPlanGenerator: PlanGenerator {
         let pool = freshCast && slot.candidates.count > 1
             ? Array(slot.candidates.dropFirst()) + [slot.candidates[0]]
             : slot.candidates
-        let best = Array(pool.prefix(Self.varietyDepth))
+        let best = Array(pool.prefix(SkeletonSlot.varietyDepth))
         guard best.count >= 2 else { return pool }
         // Hashed together rather than xored: xor leaves the choice riding on the
         // seed's lowest bits, so with two candidates every slot in the week
         // turned on one bit and there were only ever two weeks to go round.
         let offset = Int(Self.mixed(Self.hash("\(client):\(slot.id):\(dayNumber)")) % UInt32(best.count))
-        return Array(best.dropFirst(offset)) + Array(best.prefix(offset)) + Array(pool.dropFirst(Self.varietyDepth))
+        return Array(best.dropFirst(offset)) + Array(best.prefix(offset))
+            + Array(pool.dropFirst(SkeletonSlot.varietyDepth))
     }
 
     // Who the client is, not how long they have. Session length and day count

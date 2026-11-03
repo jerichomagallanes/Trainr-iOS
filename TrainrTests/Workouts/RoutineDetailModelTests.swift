@@ -6,65 +6,19 @@ import Testing
 @Suite("Routine detail")
 struct RoutineDetailModelTests {
 
-    private let dependencies: AppDependencies
-    private let userID: UUID
+    private let fixture: RoutineDetailFixture
+    private var dependencies: AppDependencies { fixture.dependencies }
+    private var userID: UUID { fixture.userID }
+    private var firstDayNumber: Int { fixture.firstDayNumber }
+    private var lastDayNumber: Int { fixture.lastDayNumber }
 
-    // Built by hand rather than the sample week, whose first day is already finished.
+    private func loaded(day dayNumber: Int) -> RoutineDetailModel { fixture.loaded(day: dayNumber) }
+
+    private func storedDay(_ dayNumber: Int) throws -> WorkoutDay { try fixture.storedDay(dayNumber) }
+
     init() throws {
-        let store = TrainingStore(container: try TrainingStore.container(inMemory: true))
-        dependencies = AppDependencies(
-            store: store, planGenerator: WeekPlanGenerator(), breadcrumbs: NoBreadcrumbs()
-        )
-        let profile = UserProfile(firstName: "Alex", age: 30)
-        try store.saveUser(profile)
-        userID = profile.id
-        try store.savePlan(
-            WeeklyPlan(
-                userID: profile.id,
-                weekNumber: 1,
-                title: "Week 1",
-                startDate: Calendar(identifier: .gregorian).startOfDay(for: Date()),
-                workoutDays: [Self.day(1, "Full Body"), Self.day(3, "Lower Body")]
-            )
-        )
+        fixture = try RoutineDetailFixture()
     }
-
-    private static func day(_ number: Int, _ title: String) -> WorkoutDay {
-        WorkoutDay(
-            dayNumber: number,
-            title: title,
-            duration: 30,
-            exerciseCount: 2,
-            equipment: ["Dumbbells"],
-            exercises: [
-                exercise("goblet_squat", "Goblet Squat", reps: 10),
-                exercise("plank", "Plank", seconds: 60)
-            ]
-        )
-    }
-
-    private static func exercise(
-        _ key: String, _ name: String, reps: Int? = nil, seconds: Int? = nil
-    ) -> WorkoutExercise {
-        WorkoutExercise(
-            exerciseKey: key,
-            name: name,
-            measure: seconds == nil ? .reps : .duration,
-            sets: (1...3).map {
-                ExerciseSet(setNumber: $0, targetReps: reps, targetSeconds: seconds)
-            },
-            durationMinutes: 10
-        )
-    }
-
-    private func loaded(day dayNumber: Int) -> RoutineDetailModel {
-        let model = RoutineDetailModel(dependencies: dependencies, dayNumber: dayNumber)
-        model.load()
-        return model
-    }
-
-    private var firstDayNumber: Int { 1 }
-    private var lastDayNumber: Int { 3 }
 
     // MARK: - Loading
 
@@ -256,6 +210,20 @@ struct RoutineDetailModelTests {
         #expect(stored.actualWeightKg == 20)
     }
 
+    @Test("A number typed into a set is stored as typed")
+    func aTypedNumberKeepsItsProvenance() throws {
+        let model = loaded(day: firstDayNumber)
+        let first = try #require(model.state.routine.exercises.first)
+        var typed = try #require(first.sets.first)
+        typed.actualReps = 9
+
+        model.update(typed, at: first.position)
+
+        let stored = try #require(loaded(day: firstDayNumber).state.routine.exercises[0].sets.first)
+        #expect(stored.actualReps == 9)
+        #expect(stored.actualOrigin == .typed)
+    }
+
     // MARK: - Timer
 
     @Test("Starting a timer runs it against the exercise it was started for")
@@ -353,6 +321,44 @@ struct RoutineDetailModelTests {
         #expect(model.state.expandedVideo == nil)
     }
 
+    @Test("A guidance request names the exercise, not its place in the day")
+    func guidanceIsFoundByKey() throws {
+        let model = loaded(day: firstDayNumber)
+        let second = try #require(model.state.routine.exercises.last)
+
+        model.showHowTo(key: "plank")
+
+        #expect(model.state.scrollToPosition == second.position)
+        #expect((model.state.expandedHowTo ?? model.state.expandedVideo) == second.position)
+    }
+
+    @Test("A guidance note opens the sheet on the exercises and the reasons otherwise")
+    func aGuidanceNoteOpensTheSheetOnTheExercises() {
+        let model = loaded(day: firstDayNumber)
+
+        model.openExercisePicker()
+
+        #expect(model.state.isShowingAdjustSheet)
+        #expect(model.state.isPickingExercise)
+
+        model.dismissAdjustSheet()
+        model.openAdjustSheet()
+
+        #expect(model.state.isShowingAdjustSheet)
+        #expect(!model.state.isPickingExercise)
+    }
+
+    @Test("A guidance request for an exercise the day no longer shows does nothing")
+    func guidanceForAnAbsentExerciseDoesNothing() {
+        let model = loaded(day: firstDayNumber)
+
+        model.showHowTo(key: "barbell_bench_press")
+
+        #expect(model.state.expandedHowTo == nil)
+        #expect(model.state.expandedVideo == nil)
+        #expect(model.state.scrollToPosition == nil)
+    }
+
     @Test("Leaving the screen stops the clock advancing")
     func theScreenGoingAwayStopsTheTimer() async throws {
         let model = loaded(day: firstDayNumber)
@@ -363,5 +369,38 @@ struct RoutineDetailModelTests {
         try? await Task.sleep(for: .milliseconds(1200))
 
         #expect(model.state.timer?.remainingSeconds == atRest)
+    }
+
+    // MARK: - Minutes
+
+    // One estimate for the header, the plan card and the per-exercise minutes,
+    // adjusted or not: a stale stored duration is never what the screen shows.
+    @Test("The header and the plan card agree on the minutes")
+    func theHeaderAndThePlanCardAgreeOnTheMinutes() throws {
+        let plan = try #require(try dependencies.store.plan(for: userID, weekNumber: 1))
+        let profile = try #require(try dependencies.store.currentUser())
+        let day = try storedDay(firstDayNumber)
+        let card = try #require(
+            WeeklyPlanModel.state(for: plan).deriving(user: profile, catalog: dependencies.catalog)
+                .days.first { $0.day.id == day.id }?.derived
+        )
+
+        let model = loaded(day: firstDayNumber)
+
+        let header = try #require(model.state.totalMinutes)
+        #expect(header == card.minutes)
+        #expect(header == day.remainingMinutes(profile, dependencies.catalog))
+        #expect(header != day.duration)
+        #expect(model.state.routine.exercises.map(\.minutes) != day.visibleExercises.map(\.durationMinutes))
+    }
+
+    @Test("A timer runs for the minutes the card shows")
+    func aTimerRunsForTheMinutesTheCardShows() throws {
+        let model = loaded(day: firstDayNumber)
+        let first = try #require(model.state.routine.exercises.first)
+
+        model.startTimer(for: first)
+
+        #expect(model.state.timer?.totalSeconds == first.minutes * 60)
     }
 }

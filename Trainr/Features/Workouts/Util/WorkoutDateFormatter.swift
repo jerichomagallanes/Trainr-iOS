@@ -12,6 +12,20 @@ nonisolated enum WorkoutDateFormatter {
         date.formatted(Date.FormatStyle(locale: locale).weekday(.wide))
     }
 
+    static func mediumDate(_ date: Date, locale: Locale = .current) -> String {
+        date.formatted(Date.FormatStyle(date: .abbreviated, locale: locale))
+    }
+
+    // Takes the stored ISO number, Monday 1 through Sunday 7, not Calendar's
+    // own Sunday-first numbering.
+    static func weekdayName(iso weekday: Int, locale: Locale = .current) -> String {
+        var calendar = Calendar.current
+        calendar.locale = locale
+        let symbols = calendar.weekdaySymbols
+        let index = weekday % symbols.count
+        return symbols.indices.contains(index) ? symbols[index] : ""
+    }
+
     // The interval style names what the two dates share once — "September 6 –
     // 12, 2026" — which is the design's rule, per locale.
     static func weekRange(
