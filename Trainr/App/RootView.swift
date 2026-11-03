@@ -210,7 +210,9 @@ struct RootView: View {
     private static var splashSeconds: Double {
         #if DEBUG
         let arguments = ProcessInfo.processInfo.arguments
-        if let index = arguments.firstIndex(of: "-splashSeconds"),
+        // The last one wins, so a test needing a wait it can act during can
+        // override the zero its launch helper passes.
+        if let index = arguments.lastIndex(of: "-splashSeconds"),
            arguments.indices.contains(index + 1),
            let seconds = Double(arguments[index + 1]) {
             return seconds
