@@ -323,6 +323,28 @@ struct NextWeekModelStoreTests {
         #expect(recorder.asked.first?.startDate == WorkoutWeek.startOfDay(created))
     }
 
+    // The undated week is drawn from the day it was made, so the week after it
+    // begins where that one ends rather than overlapping it.
+    @Test("The week after an undated one follows the day it was made")
+    func theWeekAfterAnUndatedOneFollowsTheDayItWasMade() async throws {
+        let created = calendar.date(byAdding: .day, value: -2, to: Date())!
+        try store.savePlan(
+            WeeklyPlan(
+                userID: userID, weekNumber: 1, title: "Week 1", startDate: nil,
+                workoutDays: [day(1, .completed)], createdAt: created
+            )
+        )
+        let model = NextWeekModel(dependencies: dependencies())
+
+        model.generateNextWeek()
+        await settle(model)
+
+        #expect(try store.plan(for: userID, weekNumber: 2)?.startDate == WorkoutWeek.date(
+            of: Constants.Workout.daysPerWeek + 1,
+            startingFrom: WorkoutWeek.startOfDay(created)
+        ))
+    }
+
     @Test("The next week does not ask for new movements")
     func theNextWeekKeepsTheMovements() async throws {
         try save(week: 1, days: [day(1, .completed)])

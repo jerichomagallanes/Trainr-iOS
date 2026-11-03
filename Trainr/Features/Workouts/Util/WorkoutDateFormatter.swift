@@ -40,14 +40,14 @@ nonisolated enum WorkoutDateFormatter {
         from start: Date,
         to end: Date,
         locale: Locale = .current,
-        calendar: Calendar = WorkoutWeek.dateCalendar,
+        calendar: Calendar = .current,
         abbreviated: Bool = false
     ) -> String {
         var style = Date.IntervalFormatStyle(locale: locale, calendar: calendar)
             .month(abbreviated ? .abbreviated : .wide)
             .day()
             .year()
-        style.timeZone = calendar.timeZone
+        style.timeZone = dateZone
         // A same-day range is not an interval; the style prints the date twice.
         guard start < end else { return start.formatted(style.dateStyle) }
         return (start..<end).formatted(style)

@@ -118,6 +118,20 @@ struct WeekTimeZoneTests {
             == utcMidnight(month: 3, day: 29))
     }
 
+    // A device whose region calendar is not Gregorian names a year no week date
+    // can be built from, so today would land centuries away.
+    @Test("A device on another region calendar still knows what day it is")
+    func aDeviceOnAnotherRegionCalendarStillKnowsWhatDayItIs() {
+        var japanese = Calendar(identifier: .japanese)
+        japanese.timeZone = tokyo.timeZone
+
+        let today = WorkoutWeek.startOfDay(
+            moment(in: tokyo, month: 8, day: 24, hour: 9), calendar: japanese
+        )
+
+        #expect(today == utcMidnight(month: 8, day: 24))
+    }
+
     // Built here rather than through WorkoutWeek, so what a week date is worth
     // is pinned to the instant and not to whatever the util currently thinks.
     private func utcMidnight(month: Int, day: Int) -> Date {

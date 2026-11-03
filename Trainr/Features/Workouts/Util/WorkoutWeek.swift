@@ -17,9 +17,13 @@ nonisolated enum WorkoutWeek {
             ?? Date(timeIntervalSince1970: 0)
     }
 
-    // The calendar date the device is living in, as a week date.
+    // The calendar date the device is living in, as a week date. Its zone is
+    // the device's but its calendar is this one: a device set to the Japanese
+    // or Buddhist calendar names a year no Gregorian date can place.
     static func startOfDay(_ now: Date = Date(), calendar: Calendar = .current) -> Date {
-        let parts = calendar.dateComponents([.year, .month, .day], from: now)
+        var local = dateCalendar
+        local.timeZone = calendar.timeZone
+        let parts = local.dateComponents([.year, .month, .day], from: now)
         return date(year: parts.year ?? 1970, month: parts.month ?? 1, day: parts.day ?? 1)
     }
 
