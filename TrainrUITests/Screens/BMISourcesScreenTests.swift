@@ -38,6 +38,7 @@ final class BMISourcesScreenTests: XCTestCase {
         XCTAssertTrue(sources.isHittable)
         sources.tap()
         assertBMISourceLinks(in: app)
+        XCTAssertTrue(app.text(containing: "not a body-fat measurement or a diagnosis").exists)
         app.buttons["bmiSourcesClose"].tap()
         XCTAssertTrue(app.buttons["NEXT"].isEnabled)
         XCTAssertEqual(app.textFields["170"].value as? String, "175")
