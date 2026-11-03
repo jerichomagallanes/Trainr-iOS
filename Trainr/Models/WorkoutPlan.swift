@@ -5,8 +5,9 @@ nonisolated struct WeeklyPlan: Identifiable, Equatable, Sendable {
     var userID: UUID
     var weekNumber: Int
     var title: String
-    // Local midnight of the day the week begins; a day's date is this plus
-    // dayNumber - 1 days.
+    // Midnight UTC on the calendar date the week begins, not local midnight: a
+    // week's dates are the plan's and must not move with the phone. A day's
+    // date is this plus dayNumber - 1 days.
     var startDate: Date?
     var workoutDays: [WorkoutDay] = []
     var createdAt = Date()

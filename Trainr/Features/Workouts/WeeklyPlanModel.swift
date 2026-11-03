@@ -136,7 +136,7 @@ final class WeeklyPlanModel {
         )?.reason.todayKind
         guard state.todayAdjustment == nil else { return }
 
-        let weekday = TrainingPreference.weekday(of: today.date)
+        let weekday = WorkoutWeek.isoWeekday(of: today.date)
         state.todayPreference = preferences.first { $0.kind == .timeLimit && $0.weekday == weekday }
     }
 
@@ -198,28 +198,25 @@ final class WeeklyPlanModel {
         now: Date = Date(),
         calendar: Calendar = .current
     ) -> WeeklyPlanState {
-        let start = plan.startDate ?? WorkoutWeek.startOfDay(plan.createdAt, calendar: calendar)
+        let start = plan.weekStartDate(calendar: calendar)
         let readyForTheNext = plan.isReadyForTheNextWeek(now: now, calendar: calendar)
         let today = WorkoutWeek.startOfDay(now, calendar: calendar)
 
         return WeeklyPlanState(
             plan: plan,
             days: plan.workoutDays.map { day in
-                let date = WorkoutWeek.date(of: day.dayNumber, startingFrom: start, calendar: calendar)
-                let midnight = WorkoutWeek.startOfDay(date, calendar: calendar)
+                let date = WorkoutWeek.date(of: day.dayNumber, startingFrom: start)
                 return WeeklyPlanDay(
                     day: day,
                     date: date,
-                    isToday: midnight == today,
-                    isPast: midnight < today,
+                    isToday: date == today,
+                    isPast: date < today,
                     finishKind: finishKinds[day.id],
                     isAdjusted: adjustedDayIDs.contains(day.id)
                 )
             },
             weekStart: start,
-            weekEnd: WorkoutWeek.date(
-                of: Constants.Workout.daysPerWeek, startingFrom: start, calendar: calendar
-            ),
+            weekEnd: WorkoutWeek.date(of: Constants.Workout.daysPerWeek, startingFrom: start),
             weekHasEnded: WorkoutWeek.hasEnded(
                 weekStartingAt: start, now: now, calendar: calendar
             ),

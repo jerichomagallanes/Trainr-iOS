@@ -37,7 +37,9 @@ struct RoutineDetailRecordTests {
         let model = fixture.loaded(day: fixture.lastDayNumber)
 
         #expect(model.state.date
-            == WorkoutWeek.date(of: fixture.lastDayNumber, startingFrom: fixture.createdAt))
+            == WorkoutWeek.date(
+                of: fixture.lastDayNumber, startingFrom: WorkoutWeek.startOfDay(fixture.createdAt)
+            ))
         #expect(!model.state.isReadOnly)
     }
 

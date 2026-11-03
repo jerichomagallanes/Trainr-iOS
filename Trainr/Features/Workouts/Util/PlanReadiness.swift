@@ -7,9 +7,9 @@ extension WeeklyPlan {
     // visibility, because a screen may forget to ask and the write must refuse.
     func isReadyForTheNextWeek(now: Date = Date(), calendar: Calendar = .current) -> Bool {
         let allDone = !workoutDays.isEmpty && workoutDays.allSatisfy(\.countsAsCompleted)
-        let start = startDate ?? WorkoutWeek.startOfDay(createdAt, calendar: calendar)
-        let weekIsOver = now >= WorkoutWeek.date(
-            of: Constants.Workout.daysPerWeek + 1, startingFrom: start, calendar: calendar
+        let start = weekStartDate(calendar: calendar)
+        let weekIsOver = WorkoutWeek.startOfDay(now, calendar: calendar) >= WorkoutWeek.date(
+            of: Constants.Workout.daysPerWeek + 1, startingFrom: start
         )
         return allDone || weekIsOver
     }

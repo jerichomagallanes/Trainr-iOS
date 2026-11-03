@@ -25,9 +25,9 @@ final class TrainingStore {
         let schema = Schema(versionedSchema: TrainrSchemaV2.self)
         let configuration = url.map { ModelConfiguration(schema: schema, url: $0) }
             ?? ModelConfiguration(schema: schema, isStoredInMemoryOnly: inMemory)
-        let container = try ModelContainer(
+        let container = StoredWeekAnchor.normalised(try ModelContainer(
             for: schema, migrationPlan: TrainrMigrationPlan.self, configurations: configuration
-        )
+        ), breadcrumbs: breadcrumbs)
         if !configuration.isStoredInMemoryOnly {
             excludeFromBackup(configuration.url, breadcrumbs: breadcrumbs)
         }

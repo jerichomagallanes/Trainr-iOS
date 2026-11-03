@@ -127,7 +127,7 @@ final class NextWeekModel {
             PlanRequest(
                 user: user,
                 weekNumber: current.weekNumber,
-                startDate: current.startDate ?? WorkoutWeek.startOfDay(current.createdAt),
+                startDate: current.weekStartDate(),
                 // The weeks before this one, so a replacement still progresses
                 // from what was lifted.
                 history: plans.filter { $0.weekNumber < current.weekNumber }
@@ -178,9 +178,11 @@ final class NextWeekModel {
     // Never overlapping the week it follows, and never starting in the past.
     private func startAfter(_ previous: WeeklyPlan) -> Date {
         let today = WorkoutWeek.startOfDay()
-        guard let start = previous.startDate else { return today }
         return max(
-            WorkoutWeek.date(of: Constants.Workout.daysPerWeek + 1, startingFrom: start), today
+            WorkoutWeek.date(
+                of: Constants.Workout.daysPerWeek + 1, startingFrom: previous.weekStartDate()
+            ),
+            today
         )
     }
 

@@ -20,10 +20,9 @@ struct PreferenceWorld {
         user = testUser()
         try store.saveUser(user)
 
-        let calendar = Calendar(identifier: .gregorian)
-        let start = calendar.date(
-            byAdding: .day, value: -startingDaysAgo, to: calendar.startOfDay(for: Date())
-        ) ?? Date()
+        let start = WorkoutWeek.date(
+            of: 1 - startingDaysAgo, startingFrom: WorkoutWeek.startOfDay()
+        )
         plan = WeeklyPlan(
             userID: user.id,
             weekNumber: 1,

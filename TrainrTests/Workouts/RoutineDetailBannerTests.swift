@@ -22,7 +22,7 @@ struct RoutineDetailBannerTests {
                 userID: user.id,
                 weekNumber: 1,
                 title: "Week 1",
-                startDate: Calendar(identifier: .gregorian).startOfDay(for: Date()),
+                startDate: WorkoutWeek.startOfDay(),
                 workoutDays: [
                     WorkoutDay(
                         dayNumber: 1,

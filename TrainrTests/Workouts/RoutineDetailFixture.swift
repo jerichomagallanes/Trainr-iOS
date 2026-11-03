@@ -26,7 +26,8 @@ struct RoutineDetailFixture {
         let profile = UserProfile(firstName: "Alex", age: 30)
         try store.saveUser(profile)
         userID = profile.id
-        createdAt = Self.start(daysAgo: createdDaysAgo)
+        createdAt = Calendar(identifier: .gregorian)
+            .date(byAdding: .day, value: -createdDaysAgo, to: Date()) ?? Date()
         try store.savePlan(
             WeeklyPlan(
                 userID: profile.id,
@@ -76,9 +77,7 @@ struct RoutineDetailFixture {
     }
 
     private static func start(daysAgo: Int) -> Date {
-        let calendar = Calendar(identifier: .gregorian)
-        let today = calendar.startOfDay(for: Date())
-        return calendar.date(byAdding: .day, value: -daysAgo, to: today) ?? today
+        WorkoutWeek.date(of: 1 - daysAgo, startingFrom: WorkoutWeek.startOfDay())
     }
 
     private static func day(_ number: Int, _ title: String, holdSeconds: Int? = nil) -> WorkoutDay {

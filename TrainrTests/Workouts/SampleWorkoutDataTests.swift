@@ -108,13 +108,16 @@ struct SampleWorkoutDataTests {
         #expect(SampleWorkoutData.weekStart < SampleWorkoutData.weekEnd)
     }
 
-    // Read per call rather than cached, so a time zone that changes while the
-    // app runs does not freeze a stale date.
-    @Test("A day's date follows the time zone in force when it is asked for")
-    func datesAreNotFrozenAtFirstUse() {
-        let first = SampleWorkoutData.date(of: 1)
-        let last = SampleWorkoutData.date(of: 7)
-        #expect(Calendar(identifier: .gregorian).dateComponents([.day], from: first, to: last).day == 6)
+    // A week's dates belong to the plan, so the sample must not move with the
+    // phone. Pinned to the instant rather than to a calendar, which would read
+    // the same wrong answer back.
+    @Test("A day's date reads the same wherever the phone is")
+    func datesReadTheSameWhereverThePhoneIs() {
+        #expect(SampleWorkoutData.date(of: 1) == Date(timeIntervalSince1970: 1_753_056_000))
+        #expect(SampleWorkoutData.date(of: 7) == Date(timeIntervalSince1970: 1_753_574_400))
+        #expect(WorkoutDateFormatter.weekday(
+            SampleWorkoutData.weekStart, locale: Locale(identifier: "en_US")
+        ) == "Monday")
     }
 
     @Test("A day asked for by number is the one returned")
