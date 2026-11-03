@@ -1224,6 +1224,39 @@
         }
       }
     },
+    "context_hint_too_long": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "That note was too long to read. Shorten it, or pick one below."
+          }
+        }
+      }
+    },
+    "context_note_counter_format": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld / %2$lld"
+          }
+        }
+      }
+    },
+    "context_note_too_long": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Too long to read. Shorten it to use your note."
+          }
+        }
+      }
+    },
     "context_option_equipment": {
       "extractionState": "manual",
       "localizations": {

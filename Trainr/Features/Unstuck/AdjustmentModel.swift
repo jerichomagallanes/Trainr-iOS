@@ -14,6 +14,7 @@ nonisolated enum ApplyErrorUi: Equatable, Sendable {
 nonisolated enum ContextHint: Equatable, Sendable {
     case chooser
     case failed
+    case tooLong
 }
 
 nonisolated enum InterpreterUi: Equatable, Sendable {
@@ -201,7 +202,7 @@ final class AdjustmentModel {
         if route == .time { prefillMinutes(validation) }
         state.reason = route.directReason ?? reason
         state.contextHint = switch route {
-        case .chooser: result?.isFailure == true ? .failed : .chooser
+        case .chooser: result?.failureHint ?? .chooser
         case .guide, .time, .equipment, .pain: nil
         }
         return route
@@ -462,8 +463,9 @@ private nonisolated extension UnstuckRoute {
 }
 
 private nonisolated extension InterpreterResult {
-    var isFailure: Bool {
-        if case .failed = self { true } else { false }
+    var failureHint: ContextHint? {
+        guard case let .failed(kind) = self else { return nil }
+        return kind == .noteTooLong ? .tooLong : .failed
     }
 }
 

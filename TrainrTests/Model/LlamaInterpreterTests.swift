@@ -7,7 +7,10 @@ import Testing
 @Suite("Reading the reference notes with the real model", .serialized)
 struct LlamaInterpreterTests {
 
-    private nonisolated static let modelPath = "/private/tmp/claude-501/-Users-jericho-StudioProjects-Trainr/"
+    // TRAINR_MODEL overrides: the fallback is a scratch directory that is
+    // cleared every few days, and these tests skip silently when it is gone.
+    private nonisolated static let modelPath = ProcessInfo.processInfo.environment["TRAINR_MODEL"]
+        ?? "/private/tmp/claude-501/-Users-jericho-StudioProjects-Trainr/"
         + "c7efe0bd-083b-4b4a-b1a2-e87729cca221/scratchpad/model/lfm25-q4km.gguf"
     private nonisolated static let locale = Locale(identifier: "en")
 
@@ -73,6 +76,24 @@ struct LlamaInterpreterTests {
             #expect(!facts.painConcern)
         }
         #expect(IntentRouting.routeFor(directReason: .other, noteFlagsPain: false, validation: validation) == .chooser)
+    }
+
+    // The visible limit is the grammar's reach; this is the half of it that
+    // cannot be checked without the real tokenizer.
+    @Test("A note at the visible limit still fits the model's context",
+          .enabled(if: LlamaInterpreterTests.isRunnable))
+    func aNoteAtTheVisibleLimitStillFitsTheModelsContext() async {
+        let result = await interpret(String(repeating: "分", count: NoteText.tokenLimit))
+
+        #expect(result != .failed(.noteTooLong))
+    }
+
+    @Test("A Japanese note is read rather than quoted whole", .enabled(if: LlamaInterpreterTests.isRunnable))
+    func aJapaneseNoteIsReadRatherThanQuotedWhole() async throws {
+        let result = await interpret("今日は30分しかありません。")
+
+        let validation = try #require(interpreted(result), "expected an interpretation, got \(result)")
+        #expect(validation.facts != nil, "\(validation)")
     }
 
     private func interpret(_ note: String) async -> InterpreterResult {

@@ -53,6 +53,54 @@ struct IntentValidatorTests {
         #expect(try validated(precomposed, decomposedNote).equipmentMention == "café rack")
     }
 
+    @Test("A quote spanning a line break is accepted")
+    func aQuoteSpanningALineBreakIsAccepted() throws {
+        let note = "The gym closes soon.\nI have 20 minutes left."
+        let across = extracted(
+            intent: .lessTime,
+            timeBudget: TimeBudgetMention(minutes: 20, scope: .remaining),
+            evidence: [Evidence(field: .timeBudget, quote: "soon. I have 20 minutes left.")]
+        )
+
+        #expect(try validated(across, note).minutes == 20)
+    }
+
+    @Test("A quote spanning a double space is accepted")
+    func aQuoteSpanningADoubleSpaceIsAccepted() throws {
+        let across = extracted(
+            intent: .lessTime,
+            timeBudget: TimeBudgetMention(minutes: 20, scope: .remaining),
+            evidence: [Evidence(field: .timeBudget, quote: "20 minutes left.")]
+        )
+
+        #expect(try validated(across, "I have 20  minutes left.").minutes == 20)
+    }
+
+    @Test("A part of a Japanese note is quotable")
+    func aPartOfAJapaneseNoteIsQuotable() throws {
+        let partial = extracted(
+            intent: .lessTime,
+            timeBudget: TimeBudgetMention(minutes: 30, scope: .wholeSession),
+            evidence: [Evidence(field: .timeBudget, quote: "30 分")]
+        )
+
+        #expect(try validated(partial, "今日は30分しかありません。").minutes == 30)
+    }
+
+    @Test("A Japanese quote from another note is rejected")
+    func aJapaneseQuoteFromAnotherNoteIsRejected() throws {
+        let invented = extracted(evidence: [Evidence(field: .intent, quote: "ベ ン チ")])
+
+        #expect(try rejection(invented, "今日は30分しかありません。") == [.evidenceQuoteMismatch])
+    }
+
+    @Test("A quote of only whitespace is rejected")
+    func aQuoteOfOnlyWhitespaceIsRejected() throws {
+        let blank = extracted(evidence: [Evidence(field: .intent, quote: " ")])
+
+        #expect(try rejection(blank, plainNote) == [.evidenceQuoteMismatch])
+    }
+
     @Test("A quote that is not in the note is rejected")
     func aQuoteNotInTheNoteIsRejected() throws {
         let invented = extracted(evidence: [Evidence(field: .intent, quote: "40 minutes")])

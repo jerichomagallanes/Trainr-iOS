@@ -21,7 +21,9 @@ nonisolated final class LlamaIntentInterpreter: IntentInterpreter {
 
     func interpret(_ text: String, locale: Locale, directReason: DirectReason?) async -> InterpreterResult {
         if directReason == .pain { return .unavailable }
-        guard availability == .ready, let grammar = IntentGrammar.forNote(text) else { return .unavailable }
+        guard availability == .ready else { return .unavailable }
+        guard NoteText.isWithinLimit(text) else { return .failed(.noteTooLong) }
+        guard let grammar = IntentGrammar.forNote(text) else { return .unavailable }
 
         let result = await model.complete(
             system: IntentPrompt.systemInstruction,
@@ -33,6 +35,7 @@ nonisolated final class LlamaIntentInterpreter: IntentInterpreter {
         switch result {
         case let .text(answer): return .interpreted(IntentValidator.validate(answer, input: text))
         case .timeout: return .failed(.timeout)
+        case .tooLong: return .failed(.noteTooLong)
         case .cancelled: return .failed(.cancelled)
         case .outOfMemory: return .failed(.outOfMemory)
         case .failed: return .failed(.runtime)

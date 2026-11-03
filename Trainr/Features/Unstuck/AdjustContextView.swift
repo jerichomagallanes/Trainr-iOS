@@ -15,9 +15,15 @@ struct AdjustContextView: View {
     @Environment(\.openURL) private var openURL
     @FocusState private var isNoteFocused: Bool
 
+    private static let counterShownWithin = 40
+
     private var text: Binding<String> {
         Binding(get: { note }, set: onTypeNote)
     }
+
+    private var noteLength: Int { NoteText.length(note) }
+
+    private var isNoteTooLong: Bool { noteLength > NoteText.tokenLimit }
 
     var body: some View {
         ScreenScaffold(onBack: onBack) {
@@ -25,7 +31,7 @@ struct AdjustContextView: View {
                 if interpreter == .ready {
                     PrimaryButton(
                         title: isInterpreting ? L10n.contextReadingNote : L10n.contextUseNote,
-                        isEnabled: !note.isBlank && !isInterpreting
+                        isEnabled: !note.isBlank && !isInterpreting && !isNoteTooLong
                     ) {
                         isNoteFocused = false
                         onUseNote()
@@ -45,6 +51,18 @@ struct AdjustContextView: View {
                 AppTextArea(placeholder: L10n.contextPlaceholder, text: text)
                     .focused($isNoteFocused)
                     .padding(.top, Spacing.small)
+                if interpreter == .ready {
+                    if noteLength >= NoteText.tokenLimit - Self.counterShownWithin {
+                        Text(L10n.contextNoteCounterFormat(noteLength, NoteText.tokenLimit))
+                            .font(.body12)
+                            .foregroundStyle(isNoteTooLong ? Color.dangerInk : Color.onSurfaceMuted)
+                            .frame(maxWidth: .infinity, alignment: .trailing)
+                            .padding(.top, Spacing.tight)
+                    }
+                    if isNoteTooLong {
+                        FieldError(message: L10n.contextNoteTooLong)
+                    }
+                }
                 Text(L10n.contextPrivate)
                     .font(.body12)
                     .foregroundStyle(Color.onSurfaceMuted)
@@ -136,6 +154,7 @@ struct AdjustContextView: View {
         switch hint {
         case .chooser: L10n.contextHintChooser
         case .failed: L10n.contextHintFailed
+        case .tooLong: L10n.contextHintTooLong
         }
     }
 }

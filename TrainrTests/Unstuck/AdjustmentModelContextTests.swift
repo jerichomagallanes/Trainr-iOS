@@ -297,6 +297,17 @@ struct AdjustmentModelContextTests {
         #expect(model.state.selectedMinutes == nil)
     }
 
+    @Test("A note too long to read says so rather than blaming the wording")
+    func aNoteTooLongToReadSaysSoRatherThanBlamingTheWording() async throws {
+        let model = try model(interpreter: ReadyInterpreter(.failed(.noteTooLong)))
+        model.typeNote(String(repeating: "分", count: NoteText.tokenLimit + 1))
+
+        #expect(await model.chooseFromContext(.other) == .chooser)
+
+        #expect(model.state.contextHint == .tooLong)
+        #expect(NoteText.isWithinLimit(model.state.note) == false)
+    }
+
     @Test("The installer state reaches the screen")
     func theInstallerStateReachesTheScreen() throws {
         let installer = FakeInstaller(.notInstalled)

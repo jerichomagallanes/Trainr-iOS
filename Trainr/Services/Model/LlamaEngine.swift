@@ -6,9 +6,18 @@ import os
 nonisolated enum CompletionResult: Equatable, Sendable {
     case text(String)
     case timeout
+    case tooLong
     case cancelled
     case failed
     case outOfMemory
+}
+
+// A prompt that could not be built is a different fact from one that is too
+// long, and the person is only told to shorten the note for the second.
+nonisolated enum PromptFit: Sendable {
+    case fits
+    case tooLong
+    case unprepared
 }
 
 nonisolated protocol LocalModel: Sendable {
@@ -50,11 +59,29 @@ actor LlamaEngine: LocalModel {
         guard let session = await loadIfNeeded(file) else {
             return availableMemory() < Self.size(of: file) ? .outOfMemory : .failed
         }
-        let result = await run(
-            session, system: system, user: user, grammar: grammar, maxTokens: maxTokens, timeout: timeout
-        )
+        let result: CompletionResult
+        switch await promptFit(session, system: system, user: user, maxTokens: maxTokens) {
+        case .fits:
+            result = await run(
+                session, system: system, user: user, grammar: grammar, maxTokens: maxTokens, timeout: timeout
+            )
+        case .tooLong:
+            result = .tooLong
+        case .unprepared:
+            result = .failed
+        }
         if releaseRequested { self.session = nil }
         return result
+    }
+
+    private func promptFit(
+        _ session: LlamaSession, system: String, user: String, maxTokens: Int
+    ) async -> PromptFit {
+        await withCheckedContinuation { continuation in
+            queue.async {
+                continuation.resume(returning: session.fits(system: system, user: user, maxTokens: maxTokens))
+            }
+        }
     }
 
     private func loadIfNeeded(_ file: URL) async -> LlamaSession? {
@@ -215,10 +242,14 @@ nonisolated final class LlamaSession: @unchecked Sendable {
         return LlamaSession(interrupt: interrupt, model: model, context: context, vocab: vocab)
     }
 
+    func fits(system: String, user: String, maxTokens: Int) -> PromptFit {
+        guard let tokens = promptTokens(system: system, user: user) else { return .unprepared }
+        return fitsContext(tokens, maxTokens: maxTokens) ? .fits : .tooLong
+    }
+
     func complete(system: String, user: String, grammar: String, maxTokens: Int) -> String? {
-        guard let prompt = formatPrompt(system: system, user: user),
-              var tokens = tokenize(prompt),
-              tokens.count + maxTokens <= Int(llama_n_ctx(context)),
+        guard var tokens = promptTokens(system: system, user: user),
+              fitsContext(tokens, maxTokens: maxTokens),
               let grammarSampler = grammar.withCString({ llama_sampler_init_grammar(vocab, $0, "root") }),
               let sampler = llama_sampler_chain_init(llama_sampler_chain_default_params())
         else { return nil }
@@ -238,6 +269,15 @@ nonisolated final class LlamaSession: @unchecked Sendable {
             else { return nil }
         }
         return String(bytes: bytes, encoding: .utf8)
+    }
+
+    private func promptTokens(system: String, user: String) -> [llama_token]? {
+        guard let prompt = formatPrompt(system: system, user: user) else { return nil }
+        return tokenize(prompt)
+    }
+
+    private func fitsContext(_ tokens: [llama_token], maxTokens: Int) -> Bool {
+        tokens.count + maxTokens <= Int(llama_n_ctx(context))
     }
 
     private func formatPrompt(system: String, user: String) -> String? {

@@ -135,6 +135,11 @@ nonisolated enum L10n {
     }
     static var contextHintChooser: String { String(localized: "context_hint_chooser") }
     static var contextHintFailed: String { String(localized: "context_hint_failed") }
+    static var contextHintTooLong: String { String(localized: "context_hint_too_long") }
+    static func contextNoteCounterFormat(_ p1: Int, _ p2: Int) -> String {
+        String.localizedStringWithFormat(String(localized: "context_note_counter_format"), p1, p2)
+    }
+    static var contextNoteTooLong: String { String(localized: "context_note_too_long") }
     static var contextOptionEquipment: String { String(localized: "context_option_equipment") }
     static var contextOptionEquipmentHint: String { String(localized: "context_option_equipment_hint") }
     static var contextOptionTime: String { String(localized: "context_option_time") }

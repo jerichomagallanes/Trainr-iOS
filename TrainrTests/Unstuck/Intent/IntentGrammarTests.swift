@@ -33,6 +33,16 @@ struct IntentGrammarTests {
         #expect(tokenRule(grammar) == #"token ::= "the" | "rack" | "bench""#)
     }
 
+    // Kotlin scans the token's code units; a grapheme-wise search here would
+    // miss this quote and put it in the grammar unescaped.
+    @Test("A quote mark carrying a combining accent is dropped too")
+    func aQuoteMarkCarryingACombiningAccentIsDroppedToo() throws {
+        let accented = "a\u{22}\u{301} rack"
+        let grammar = try #require(IntentGrammar.forNote(accented))
+
+        #expect(tokenRule(grammar) == #"token ::= "rack""#)
+    }
+
     @Test("A note of only a quote mark has no grammar")
     func aNoteOfOnlyAQuoteMarkHasNoGrammar() {
         #expect(IntentGrammar.forNote("\"") == nil)
@@ -50,11 +60,20 @@ struct IntentGrammarTests {
         #expect(!rule.contains(#""w201""#))
     }
 
-    @Test("A Japanese note without spaces is one token")
-    func aJapaneseNoteWithoutSpacesIsOneToken() throws {
-        let grammar = try #require(IntentGrammar.forNote("今日は30分しかない"))
+    @Test("A Japanese note is quotable in parts")
+    func aJapaneseNoteIsQuotableInParts() throws {
+        let grammar = try #require(IntentGrammar.forNote("今日は30分しかありません。"))
 
-        #expect(tokenRule(grammar) == #"token ::= "今日は30分しかない""#)
+        #expect(tokenRule(grammar) == #"token ::= "今" | "日" | "は" | "30" | "分" | "し" | "か" | "#
+            + #""あ" | "り" | "ま" | "せ" | "ん" | "。""#)
+    }
+
+    @Test("A Chinese note is quotable in parts")
+    func aChineseNoteIsQuotableInParts() throws {
+        let grammar = try #require(IntentGrammar.forNote("我今天只有三十分钟。"))
+
+        #expect(tokenRule(grammar) == #"token ::= "我" | "今" | "天" | "只" | "有" | "三" | "十" | "#
+            + #""分" | "钟" | "。""#)
     }
 
     @Test("The grammar names every enum value of the contract")
