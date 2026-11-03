@@ -314,6 +314,7 @@ enum UITestFixtures {
         case "ready": return .ready
         case "failed": return .failed(.download)
         case "insufficientStorage": return .insufficientStorage
+        case "unsupported": return .unsupported
         default: return nil
         }
     }

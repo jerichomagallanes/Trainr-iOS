@@ -117,7 +117,10 @@ struct AdjustContextView: View {
             TextAction(title: L10n.tryAgain, action: onInstallModel)
                 .padding(.top, Spacing.tight)
 
-        case .unsupported, .ready:
+        case .unsupported:
+            notice(L10n.privateCoachingUnsupportedMessage)
+
+        case .ready:
             EmptyView()
         }
     }

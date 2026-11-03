@@ -3849,6 +3849,17 @@
         }
       }
     },
+    "private_coaching_unsupported_message": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reading a note needs a more capable phone. You can still pick a reason below."
+          }
+        }
+      }
+    },
     "private_coaching_verifying": {
       "extractionState": "manual",
       "localizations": {
