@@ -398,6 +398,7 @@ nonisolated enum L10n {
     static var privateCoachingSetupMessage: String { String(localized: "private_coaching_setup_message") }
     static var privateCoachingSetupTitle: String { String(localized: "private_coaching_setup_title") }
     static var privateCoachingStorageMessage: String { String(localized: "private_coaching_storage_message") }
+    static var privateCoachingUnsupportedMessage: String { String(localized: "private_coaching_unsupported_message") }
     static var privateCoachingVerifying: String { String(localized: "private_coaching_verifying") }
     static var proActive: String { String(localized: "pro_active") }
     static var proActiveLifetime: String { String(localized: "pro_active_lifetime") }

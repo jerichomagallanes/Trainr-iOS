@@ -66,6 +66,19 @@ final class AdjustContextScreenTests: XCTestCase {
         XCTAssertFalse(app.buttons["USE MY NOTE"].exists)
     }
 
+    @MainActor
+    func testAnUnsupportedDeviceIsToldWhyAndStillPicksAReason() {
+        openContext(arguments: ["-modelState", "unsupported"])
+
+        XCTAssertTrue(app.text(containing: "Reading a note needs a more capable phone").exists)
+        XCTAssertFalse(app.button(containing: "Set up private coaching").exists)
+        XCTAssertFalse(app.buttons["USE MY NOTE"].exists)
+
+        app.button(containing: "The time I have").tap()
+
+        XCTAssertTrue(app.staticTexts["How much time do you have?"].waitForExistence(timeout: 5))
+    }
+
     // A ready installer with nothing behind it: the button follows the note,
     // and a read that cannot happen lands back here with the failed hint.
     @MainActor
