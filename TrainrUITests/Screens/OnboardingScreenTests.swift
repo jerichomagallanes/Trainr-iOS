@@ -286,11 +286,13 @@ final class OnboardingScreenTests: XCTestCase {
 
         app.textFields["170"].tap()
         app.textFields["170"].typeText("300")
+        let heightLimits = app.text(containing: "Height must be between")
+        XCTAssertTrue(heightLimits.waitForExistence(timeout: 3))
+        XCTAssertTrue(heightLimits.isHittable, "The limits are off screen where the height is typed")
         app.textFields["70"].tap()
         app.textFields["70"].typeText("700")
         app.textFields.firstMatch.tap()
 
-        XCTAssertTrue(app.text(containing: "Height must be between").waitForExistence(timeout: 3))
         XCTAssertTrue(app.text(containing: "Weight must be between").exists)
         XCTAssertFalse(app.buttons["NEXT"].isEnabled)
         XCTAssertFalse(app.text(containing: "BMI:").exists)
