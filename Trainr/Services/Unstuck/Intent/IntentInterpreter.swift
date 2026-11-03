@@ -17,7 +17,7 @@ nonisolated enum InterpreterResult: Equatable, Sendable {
 }
 
 nonisolated enum FailureKind: Sendable {
-    case timeout, outOfMemory, cancelled, runtime
+    case timeout, outOfMemory, cancelled, runtime, noteTooLong
 }
 
 nonisolated struct UnavailableInterpreter: IntentInterpreter {

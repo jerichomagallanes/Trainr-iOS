@@ -102,6 +102,38 @@ final class AdjustContextScreenTests: XCTestCase {
     }
 
     @MainActor
+    func testTheCounterOnlyAppearsAsTheLimitComesIntoReach() {
+        openContext(arguments: ["-modelState", "ready"])
+
+        typeNote(String(repeating: "a", count: 100))
+
+        XCTAssertFalse(app.text(containing: "/ 200").exists)
+        XCTAssertTrue(app.buttons["USE MY NOTE"].isEnabled)
+    }
+
+    @MainActor
+    func testTheCounterShowsTheRoomLeftBeforeTheLimitIsReached() {
+        openContext(arguments: ["-modelState", "ready"])
+
+        typeNote(String(repeating: "a", count: 190))
+
+        XCTAssertTrue(app.staticTexts["190 / 200"].exists)
+        XCTAssertFalse(app.text(containing: "Too long to read").exists)
+        XCTAssertTrue(app.buttons["USE MY NOTE"].isEnabled)
+    }
+
+    @MainActor
+    func testANoteOverTheLimitSaysSoAndCannotBeSent() {
+        openContext(arguments: ["-modelState", "ready"])
+
+        typeNote(String(repeating: "a", count: 201))
+
+        XCTAssertTrue(app.staticTexts["201 / 200"].exists)
+        XCTAssertTrue(app.text(containing: "Too long to read. Shorten it to use your note.").exists)
+        XCTAssertFalse(app.buttons["USE MY NOTE"].isEnabled)
+    }
+
+    @MainActor
     func testANoteAboutPainGoesStraightToThePauseScreen() {
         openContext(arguments: ["-modelState", "ready"])
         typeNote("my knee hurts")

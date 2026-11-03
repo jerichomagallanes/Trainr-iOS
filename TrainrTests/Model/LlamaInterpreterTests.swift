@@ -75,6 +75,24 @@ struct LlamaInterpreterTests {
         #expect(IntentRouting.routeFor(directReason: .other, noteFlagsPain: false, validation: validation) == .chooser)
     }
 
+    // The visible limit is the grammar's reach; this is the half of it that
+    // cannot be checked without the real tokenizer.
+    @Test("A note at the visible limit still fits the model's context",
+          .enabled(if: LlamaInterpreterTests.isRunnable))
+    func aNoteAtTheVisibleLimitStillFitsTheModelsContext() async {
+        let result = await interpret(String(repeating: "分", count: NoteText.characterLimit))
+
+        #expect(result != .failed(.noteTooLong))
+    }
+
+    @Test("A Japanese note is read rather than quoted whole", .enabled(if: LlamaInterpreterTests.isRunnable))
+    func aJapaneseNoteIsReadRatherThanQuotedWhole() async throws {
+        let result = await interpret("今日は30分しかありません。")
+
+        let validation = try #require(interpreted(result), "expected an interpretation, got \(result)")
+        #expect(validation.facts != nil, "\(validation)")
+    }
+
     private func interpret(_ note: String) async -> InterpreterResult {
         let clock = ContinuousClock()
         let started = clock.now

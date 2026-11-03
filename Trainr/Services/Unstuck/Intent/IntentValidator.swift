@@ -73,7 +73,7 @@ nonisolated enum IntentValidator {
     }
 
     private static func quoteFailures(_ evidence: [Evidence], quoting input: String) -> [RejectionReason] {
-        let normalized = input.precomposedStringWithCanonicalMapping
+        let canonicalNote = NoteText.canonical(input)
         var failures: [RejectionReason] = []
         func note(_ reason: RejectionReason) {
             if !failures.contains(reason) { failures.append(reason) }
@@ -85,7 +85,10 @@ nonisolated enum IntentValidator {
                 note(.evidenceQuoteLength)
                 continue
             }
-            if normalized.range(of: quoted, options: .literal) == nil { note(.evidenceQuoteMismatch) }
+            let quote = NoteText.canonical(entry.quote)
+            if quote.isEmpty || canonicalNote.range(of: quote, options: .literal) == nil {
+                note(.evidenceQuoteMismatch)
+            }
         }
         return failures
     }

@@ -4,7 +4,7 @@ nonisolated enum IntentGrammar {
 
     static let maxTokens = 256
 
-    private static let tokenLimit = 200
+    static let tokenLimit = 200
     private static let tokenSlot = "{TOKENS}"
 
     // swiftlint:disable line_length
@@ -38,10 +38,7 @@ nonisolated enum IntentGrammar {
     private static func tokens(in note: String) -> [String] {
         var seen = Set<String>()
         var kept: [String] = []
-        let words = note.precomposedStringWithCanonicalMapping.unicodeScalars
-            .split(whereSeparator: { $0.properties.isWhitespace })
-        for word in words {
-            let token = String(word)
+        for token in NoteText.tokens(in: note) {
             if token.contains("\"") || token.contains("\\") || !seen.insert(token).inserted { continue }
             kept.append(token)
             if kept.count == tokenLimit { break }

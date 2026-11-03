@@ -108,6 +108,27 @@ struct LlamaIntentInterpreterTests {
         #expect(model.calls == 0)
     }
 
+    @Test("A note longer than the grammar's reach is refused before the model runs")
+    func aNoteLongerThanTheGrammarsReachIsRefusedBeforeTheModelRuns() async throws {
+        let model = FakeModel(.text(try validAnswer()))
+        let tooLong = String(repeating: "分", count: NoteText.characterLimit + 1)
+
+        let result = await interpreter(model: model).interpret(tooLong, locale: locale, directReason: .other)
+
+        #expect(result == .failed(.noteTooLong))
+        #expect(model.calls == 0)
+    }
+
+    @Test("A note exactly at the limit still reaches the model")
+    func aNoteExactlyAtTheLimitStillReachesTheModel() async throws {
+        let model = FakeModel(.text(try validAnswer()))
+        let atLimit = String(repeating: "分", count: NoteText.characterLimit)
+
+        _ = await interpreter(model: model).interpret(atLimit, locale: locale, directReason: .other)
+
+        #expect(model.calls == 1)
+    }
+
     @Test("The raw text goes through the validator")
     func theRawTextGoesThroughTheValidator() async throws {
         let model = FakeModel(.text(try validAnswer()))
@@ -144,7 +165,8 @@ struct LlamaIntentInterpreterTests {
         (CompletionResult.timeout, FailureKind.timeout),
         (.cancelled, .cancelled),
         (.outOfMemory, .outOfMemory),
-        (.failed, .runtime)
+        (.failed, .runtime),
+        (.tooLong, .noteTooLong)
     ])
     func everyEngineFailureIsNamed(answer: CompletionResult, kind: FailureKind) async {
         let result = await interpreter(model: FakeModel(answer)).interpret(note, locale: locale, directReason: .other)

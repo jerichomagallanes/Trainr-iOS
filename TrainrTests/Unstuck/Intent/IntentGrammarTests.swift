@@ -50,11 +50,20 @@ struct IntentGrammarTests {
         #expect(!rule.contains(#""w201""#))
     }
 
-    @Test("A Japanese note without spaces is one token")
-    func aJapaneseNoteWithoutSpacesIsOneToken() throws {
-        let grammar = try #require(IntentGrammar.forNote("今日は30分しかない"))
+    @Test("A Japanese note is quotable in parts")
+    func aJapaneseNoteIsQuotableInParts() throws {
+        let grammar = try #require(IntentGrammar.forNote("今日は30分しかありません。"))
 
-        #expect(tokenRule(grammar) == #"token ::= "今日は30分しかない""#)
+        #expect(tokenRule(grammar) == #"token ::= "今" | "日" | "は" | "30" | "分" | "し" | "か" | "#
+            + #""あ" | "り" | "ま" | "せ" | "ん" | "。""#)
+    }
+
+    @Test("A Chinese note is quotable in parts")
+    func aChineseNoteIsQuotableInParts() throws {
+        let grammar = try #require(IntentGrammar.forNote("我今天只有三十分钟。"))
+
+        #expect(tokenRule(grammar) == #"token ::= "我" | "今" | "天" | "只" | "有" | "三" | "十" | "#
+            + #""分" | "钟" | "。""#)
     }
 
     @Test("The grammar names every enum value of the contract")
