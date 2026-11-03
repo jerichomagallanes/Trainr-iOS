@@ -4,7 +4,6 @@ nonisolated enum IntentGrammar {
 
     static let maxTokens = 256
 
-    static let tokenLimit = 200
     private static let tokenSlot = "{TOKENS}"
 
     // swiftlint:disable line_length
@@ -39,9 +38,12 @@ nonisolated enum IntentGrammar {
         var seen = Set<String>()
         var kept: [String] = []
         for token in NoteText.tokens(in: note) {
-            if token.contains("\"") || token.contains("\\") || !seen.insert(token).inserted { continue }
+            // Comparing graphemes would miss a quote that carries a combining
+            // mark, which Kotlin's scan of the same token drops.
+            if token.unicodeScalars.contains(where: { $0 == "\"" || $0 == "\\" }) { continue }
+            guard seen.insert(token).inserted else { continue }
             kept.append(token)
-            if kept.count == tokenLimit { break }
+            if kept.count == NoteText.tokenLimit { break }
         }
         return kept
     }

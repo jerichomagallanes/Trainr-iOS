@@ -33,6 +33,16 @@ struct IntentGrammarTests {
         #expect(tokenRule(grammar) == #"token ::= "the" | "rack" | "bench""#)
     }
 
+    // Kotlin scans the token's code units; a grapheme-wise search here would
+    // miss this quote and put it in the grammar unescaped.
+    @Test("A quote mark carrying a combining accent is dropped too")
+    func aQuoteMarkCarryingACombiningAccentIsDroppedToo() throws {
+        let accented = "a\u{22}\u{301} rack"
+        let grammar = try #require(IntentGrammar.forNote(accented))
+
+        #expect(tokenRule(grammar) == #"token ::= "rack""#)
+    }
+
     @Test("A note of only a quote mark has no grammar")
     func aNoteOfOnlyAQuoteMarkHasNoGrammar() {
         #expect(IntentGrammar.forNote("\"") == nil)
