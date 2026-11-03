@@ -7,7 +7,10 @@ import Testing
 @Suite("Reading the reference notes with the real model", .serialized)
 struct LlamaInterpreterTests {
 
-    private nonisolated static let modelPath = "/private/tmp/claude-501/-Users-jericho-StudioProjects-Trainr/"
+    // TRAINR_MODEL overrides: the fallback is a scratch directory that is
+    // cleared every few days, and these tests skip silently when it is gone.
+    private nonisolated static let modelPath = ProcessInfo.processInfo.environment["TRAINR_MODEL"]
+        ?? "/private/tmp/claude-501/-Users-jericho-StudioProjects-Trainr/"
         + "c7efe0bd-083b-4b4a-b1a2-e87729cca221/scratchpad/model/lfm25-q4km.gguf"
     private nonisolated static let locale = Locale(identifier: "en")
 

@@ -3,7 +3,10 @@ import XCTest
 // The model already on this machine, handed to the app with -modelPath so the
 // real interpreter runs without the 731 MB download.
 enum HostModel {
-    static let path = "/private/tmp/claude-501/-Users-jericho-StudioProjects-Trainr/"
+    // TRAINR_MODEL overrides: the fallback is a scratch directory that is
+    // cleared every few days, and these tests skip silently when it is gone.
+    static let path = ProcessInfo.processInfo.environment["TRAINR_MODEL"]
+        ?? "/private/tmp/claude-501/-Users-jericho-StudioProjects-Trainr/"
         + "c7efe0bd-083b-4b4a-b1a2-e87729cca221/scratchpad/model/lfm25-q4km.gguf"
 
     static var isPresent: Bool { FileManager.default.fileExists(atPath: path) }
