@@ -133,6 +133,17 @@ final class AdjustContextScreenTests: XCTestCase {
         XCTAssertFalse(app.buttons["USE MY NOTE"].isEnabled)
     }
 
+    // Without the model there is no "use my note" button, so nothing on the
+    // screen can act on being told the note is too long for it.
+    @MainActor
+    func testAPhoneWithoutTheModelIsNotToldToShortenItsNote() {
+        openContext(arguments: ["-modelState", "notInstalled"])
+
+        typeNote(String(repeating: "\u{5206}", count: 201))
+
+        XCTAssertFalse(app.text(containing: "/ 200").exists)
+        XCTAssertFalse(app.text(containing: "Too long to read").exists)
+    }
 
     @MainActor
     func testANoteAboutPainGoesStraightToThePauseScreen() {

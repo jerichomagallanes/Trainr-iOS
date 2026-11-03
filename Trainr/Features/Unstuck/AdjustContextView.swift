@@ -51,15 +51,17 @@ struct AdjustContextView: View {
                 AppTextArea(placeholder: L10n.contextPlaceholder, text: text)
                     .focused($isNoteFocused)
                     .padding(.top, Spacing.small)
-                if noteLength >= NoteText.tokenLimit - Self.counterShownWithin {
-                    Text(L10n.contextNoteCounterFormat(noteLength, NoteText.tokenLimit))
-                        .font(.body12)
-                        .foregroundStyle(isNoteTooLong ? Color.dangerInk : Color.onSurfaceMuted)
-                        .frame(maxWidth: .infinity, alignment: .trailing)
-                        .padding(.top, Spacing.tight)
-                }
-                if isNoteTooLong {
-                    FieldError(message: L10n.contextNoteTooLong)
+                if interpreter == .ready {
+                    if noteLength >= NoteText.tokenLimit - Self.counterShownWithin {
+                        Text(L10n.contextNoteCounterFormat(noteLength, NoteText.tokenLimit))
+                            .font(.body12)
+                            .foregroundStyle(isNoteTooLong ? Color.dangerInk : Color.onSurfaceMuted)
+                            .frame(maxWidth: .infinity, alignment: .trailing)
+                            .padding(.top, Spacing.tight)
+                    }
+                    if isNoteTooLong {
+                        FieldError(message: L10n.contextNoteTooLong)
+                    }
                 }
                 Text(L10n.contextPrivate)
                     .font(.body12)
