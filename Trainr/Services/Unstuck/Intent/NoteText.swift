@@ -5,9 +5,10 @@ import Foundation
 // the two apps have to build the same grammar for the same note.
 nonisolated enum NoteText {
 
-    // Every token costs at least one code point, so a note of at most this many
-    // code points can never exceed the grammar's token cap in any script.
-    static let characterLimit = 200
+    // The grammar can quote only its first tokens, so the note is measured in
+    // the same units: 200 code points of Japanese and 200 words of English both
+    // reach the cap, and a character count would bind one of them far too soon.
+    static let tokenLimit = 200
 
     private static let separators: Set<UInt32> = [
         0x0009, 0x000A, 0x000B, 0x000C, 0x000D, 0x0020, 0x0085, 0x00A0,
@@ -27,9 +28,9 @@ nonisolated enum NoteText {
         0x20000...0x2FA1F
     ]
 
-    static func length(_ note: String) -> Int { note.unicodeScalars.count }
+    static func length(_ note: String) -> Int { tokens(in: note).count }
 
-    static func isWithinLimit(_ note: String) -> Bool { length(note) <= characterLimit }
+    static func isWithinLimit(_ note: String) -> Bool { length(note) <= tokenLimit }
 
     static func tokens(in note: String) -> [String] {
         var tokens: [String] = []

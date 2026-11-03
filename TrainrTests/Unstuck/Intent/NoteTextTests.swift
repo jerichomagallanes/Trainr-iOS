@@ -75,24 +75,35 @@ struct NoteTextTests {
         #expect(NoteText.canonical("ベンチプレス bench press") == "ベンチプレスbench press")
     }
 
-    @Test("The limit is counted in code points, not UTF-16 units")
-    func theLimitIsCountedInCodePointsNotUtf16Units() {
+    @Test("The limit is counted in tokens rather than characters")
+    func theLimitIsCountedInTokensRatherThanCharacters() {
         #expect(NoteText.length("🏋") == 1)
-        #expect(NoteText.isWithinLimit(String(repeating: "a", count: NoteText.characterLimit)))
-        #expect(NoteText.isWithinLimit(String(repeating: "🏋", count: NoteText.characterLimit)))
-        #expect(!NoteText.isWithinLimit(String(repeating: "a", count: NoteText.characterLimit + 1)))
+        #expect(NoteText.length("30 minutes\nno rack") == 4)
+        #expect(NoteText.isWithinLimit(String(repeating: "分", count: NoteText.tokenLimit)))
+        #expect(!NoteText.isWithinLimit(String(repeating: "分", count: NoteText.tokenLimit + 1)))
     }
 
-    // The grammar keeps 200 tokens, so the character limit has to be the point
-    // at which the worst script can still reach every one of them.
+    // The grammar can quote only its first 200 tokens, so a note that stays
+    // inside the limit can always be quoted whole, whatever its script.
     @Test("A note at the limit can never outrun the grammar")
     func aNoteAtTheLimitCanNeverOutrunTheGrammar() {
-        let japanese = String(repeating: "分", count: NoteText.characterLimit)
-        let english = String(repeating: "ab ", count: NoteText.characterLimit)
+        let japanese = String(repeating: "分", count: NoteText.tokenLimit)
+        let english = String(repeating: "ab ", count: NoteText.tokenLimit)
 
-        #expect(NoteText.tokens(in: japanese).count == NoteText.characterLimit)
-        #expect(NoteText.characterLimit <= IntentGrammar.tokenLimit)
-        #expect(NoteText.tokens(in: String(english.prefix(NoteText.characterLimit))).count
-            <= IntentGrammar.tokenLimit)
+        #expect(NoteText.tokens(in: japanese).count == NoteText.tokenLimit)
+        #expect(NoteText.tokens(in: english).count == NoteText.tokenLimit)
+        #expect(NoteText.isWithinLimit(english))
+    }
+
+    // A sentence of ordinary English runs well past 200 characters long before
+    // it runs out of tokens, and version/2.0 read notes that long.
+    @Test("An English sentence longer than two hundred characters is still readable")
+    func anEnglishSentenceLongerThanTwoHundredCharactersIsStillReadable() {
+        let note = "The gym is packed tonight so the squat rack and both benches are taken. "
+            + "I have about forty minutes before it closes and my lower back is still sore "
+            + "from Monday, so please keep it light and skip the heavy sets."
+
+        #expect(note.unicodeScalars.count > 200)
+        #expect(NoteText.isWithinLimit(note))
     }
 }

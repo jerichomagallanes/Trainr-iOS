@@ -23,7 +23,7 @@ struct AdjustContextView: View {
 
     private var noteLength: Int { NoteText.length(note) }
 
-    private var isNoteTooLong: Bool { noteLength > NoteText.characterLimit }
+    private var isNoteTooLong: Bool { noteLength > NoteText.tokenLimit }
 
     var body: some View {
         ScreenScaffold(onBack: onBack) {
@@ -51,8 +51,8 @@ struct AdjustContextView: View {
                 AppTextArea(placeholder: L10n.contextPlaceholder, text: text)
                     .focused($isNoteFocused)
                     .padding(.top, Spacing.small)
-                if noteLength >= NoteText.characterLimit - Self.counterShownWithin {
-                    Text(L10n.contextNoteCounterFormat(noteLength, NoteText.characterLimit))
+                if noteLength >= NoteText.tokenLimit - Self.counterShownWithin {
+                    Text(L10n.contextNoteCounterFormat(noteLength, NoteText.tokenLimit))
                         .font(.body12)
                         .foregroundStyle(isNoteTooLong ? Color.dangerInk : Color.onSurfaceMuted)
                         .frame(maxWidth: .infinity, alignment: .trailing)

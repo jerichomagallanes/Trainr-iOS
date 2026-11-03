@@ -80,7 +80,7 @@ struct LlamaInterpreterTests {
     @Test("A note at the visible limit still fits the model's context",
           .enabled(if: LlamaInterpreterTests.isRunnable))
     func aNoteAtTheVisibleLimitStillFitsTheModelsContext() async {
-        let result = await interpret(String(repeating: "分", count: NoteText.characterLimit))
+        let result = await interpret(String(repeating: "分", count: NoteText.tokenLimit))
 
         #expect(result != .failed(.noteTooLong))
     }

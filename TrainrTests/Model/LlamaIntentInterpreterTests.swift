@@ -111,7 +111,7 @@ struct LlamaIntentInterpreterTests {
     @Test("A note longer than the grammar's reach is refused before the model runs")
     func aNoteLongerThanTheGrammarsReachIsRefusedBeforeTheModelRuns() async throws {
         let model = FakeModel(.text(try validAnswer()))
-        let tooLong = String(repeating: "分", count: NoteText.characterLimit + 1)
+        let tooLong = String(repeating: "分", count: NoteText.tokenLimit + 1)
 
         let result = await interpreter(model: model).interpret(tooLong, locale: locale, directReason: .other)
 
@@ -122,7 +122,7 @@ struct LlamaIntentInterpreterTests {
     @Test("A note exactly at the limit still reaches the model")
     func aNoteExactlyAtTheLimitStillReachesTheModel() async throws {
         let model = FakeModel(.text(try validAnswer()))
-        let atLimit = String(repeating: "分", count: NoteText.characterLimit)
+        let atLimit = String(repeating: "分", count: NoteText.tokenLimit)
 
         _ = await interpreter(model: model).interpret(atLimit, locale: locale, directReason: .other)
 
