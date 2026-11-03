@@ -9,7 +9,6 @@ struct WeeklyPlanModelStoreTests {
     private let dependencies: AppDependencies
     private let store: TrainingStore
     private let userID: UUID
-    private let calendar = Calendar(identifier: .gregorian)
 
     init() throws {
         store = TrainingStore(container: try TrainingStore.container(inMemory: true))
@@ -35,9 +34,9 @@ struct WeeklyPlanModelStoreTests {
 
     @discardableResult
     private func save(week: Int, days: [WorkoutDay], startingDaysAgo: Int = 0) throws -> WeeklyPlan {
-        let start = calendar.date(
-            byAdding: .day, value: -startingDaysAgo, to: calendar.startOfDay(for: Date())
-        )!
+        let start = WorkoutWeek.date(
+            of: 1 - startingDaysAgo, startingFrom: WorkoutWeek.startOfDay()
+        )
         let plan = WeeklyPlan(
             userID: userID, weekNumber: week, title: "Week \(week)",
             startDate: start, workoutDays: days
@@ -216,7 +215,7 @@ struct WeeklyPlanModelStoreTests {
     }
 
     private var todayWeekday: Int {
-        TrainingPreference.weekday(of: Date())
+        WorkoutWeek.isoWeekday(of: WorkoutWeek.startOfDay())
     }
 
     @Test("The standing adjustments are read for every day of the week")

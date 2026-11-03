@@ -109,7 +109,7 @@ final class PreferencesModel {
 
         let today = WorkoutWeek.startOfDay()
         guard let day = week.days.first(where: {
-            WorkoutWeek.startOfDay(WorkoutWeek.date(of: $0.dayNumber, startingFrom: start)) == today
+            WorkoutWeek.date(of: $0.dayNumber, startingFrom: start) == today
         }) else { return nil }
 
         guard dependencies.attempt("outcome", { try store.outcome(dayID: day.id) }) == nil

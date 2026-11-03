@@ -80,7 +80,7 @@ final class RoutineDetailModel {
         )
         state.equipment = day.derivedEquipment(dependencies.catalog)
         state.totalMinutes = day.remainingMinutes(profile, dependencies.catalog)
-        let weekStart = week.startDate ?? WorkoutWeek.startOfDay(week.createdAt)
+        let weekStart = week.weekStartDate()
         state.date = WorkoutWeek.date(of: day.dayNumber, startingFrom: weekStart)
         state.isReadOnly = WorkoutWeek.hasEnded(weekStartingAt: weekStart, now: wallClock.now())
         // "Day 2", not day 3: the design counts workout days, not weekdays.

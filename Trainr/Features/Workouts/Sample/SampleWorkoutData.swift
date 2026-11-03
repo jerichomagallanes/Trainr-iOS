@@ -9,17 +9,10 @@ nonisolated enum SampleWorkoutData {
 
     static var weekEnd: Date { date(of: 7) }
 
-    // Read per call: a cached date would freeze if the time zone changed.
     static func date(of dayNumber: Int) -> Date {
-        // Gregorian explicitly: on a device set to another calendar these
-        // components may name no date at all.
-        var calendar = Calendar(identifier: .gregorian)
-        calendar.timeZone = Calendar.current.timeZone
-        let components = DateComponents(year: 2025, month: 7, day: 21)
-        guard let base = calendar.date(from: components),
-              let day = calendar.date(byAdding: .day, value: dayNumber - 1, to: base)
-        else { return Date(timeIntervalSince1970: 0) }
-        return day
+        WorkoutWeek.date(
+            of: dayNumber, startingFrom: WorkoutWeek.date(year: 2025, month: 7, day: 21)
+        )
     }
 
     static func day(for dayNumber: Int) -> WorkoutDay {

@@ -35,14 +35,15 @@ struct AdjustmentModelTests {
     }
 
     @discardableResult
-    private func seed(_ day: WorkoutDay) throws -> WorkoutDay {
+    private func seed(
+        _ day: WorkoutDay, anchoredOn start: Date = WorkoutWeek.startOfDay()
+    ) throws -> WorkoutDay {
         let profile = testUser()
         try store.saveUser(profile)
         try store.savePlan(
             WeeklyPlan(
                 userID: profile.id, weekNumber: 1, title: "Week 1",
-                startDate: Calendar(identifier: .gregorian).startOfDay(for: Date()),
-                workoutDays: [day]
+                startDate: start, workoutDays: [day]
             )
         )
         return day
@@ -52,9 +53,10 @@ struct AdjustmentModelTests {
         _ day: WorkoutDay = AdjustmentModelTests.fullDay(),
         reason: DirectReason = .lessTime,
         exerciseID: UUID? = nil,
-        minutes: Int? = nil
+        minutes: Int? = nil,
+        anchoredOn start: Date = WorkoutWeek.startOfDay()
     ) throws -> AdjustmentModel {
-        try seed(day)
+        try seed(day, anchoredOn: start)
         return AdjustmentModel(
             dependencies: dependencies, dayNumber: day.dayNumber, weekNumber: 1,
             reason: reason, exerciseID: exerciseID, minutes: minutes
@@ -326,7 +328,7 @@ struct AdjustmentModelTests {
         let user = try #require(try store.currentUser())
         let existing = TrainingPreference(
             userID: user.id, kind: .timeLimit, minutes: 40,
-            weekday: TrainingPreference.weekday(of: Date()),
+            weekday: WorkoutWeek.isoWeekday(of: WorkoutWeek.startOfDay()),
             confirmedAt: Date(timeIntervalSince1970: 0),
             updatedAt: Date(timeIntervalSince1970: 0)
         )
@@ -342,18 +344,18 @@ struct AdjustmentModelTests {
         #expect(stored.first?.minutes == model.state.plannedMinutes + 5)
     }
 
-    // T30: the day belongs to the person's own calendar, and the same instant
-    // is a different weekday in UTC either side of midnight.
-    @Test("The weekday is read off the day's local date")
-    func theWeekdayComesFromTheLocalDate() throws {
-        let model = try model()
+    // T30: the day a preference is remembered for is the plan's own, so it
+    // cannot change under a phone that has crossed a zone.
+    @Test("The weekday is read off the plan's own date")
+    func theWeekdayComesFromThePlansOwnDate() throws {
+        let theMondayTheWeekStarts = WorkoutWeek.date(year: 2026, month: 9, day: 21)
+        let model = try model(anchoredOn: theMondayTheWeekStarts)
         model.selectMinutes(model.state.plannedMinutes + 5)
         model.toggleRemember()
 
         model.continueWorkout()
 
-        let today = Calendar(identifier: .gregorian).startOfDay(for: Date())
-        #expect(try storedPreferences().first?.weekday == TrainingPreference.weekday(of: today))
+        #expect(try storedPreferences().first?.weekday == 1)
     }
 
     @Test("ISO numbering runs Monday 1 to Sunday 7, in the zone the day was lived in")

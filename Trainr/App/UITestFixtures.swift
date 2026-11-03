@@ -157,10 +157,9 @@ enum UITestFixtures {
     private static func week(
         _ number: Int, for user: UserProfile, startingDaysAgo: Int, shape: Shape
     ) -> WeeklyPlan {
-        let calendar = Calendar.current
-        let start = calendar.date(
-            byAdding: .day, value: -startingDaysAgo, to: WorkoutWeek.startOfDay()
-        ) ?? WorkoutWeek.startOfDay()
+        let start = WorkoutWeek.date(
+            of: 1 - startingDaysAgo, startingFrom: WorkoutWeek.startOfDay()
+        )
 
         var plan = SampleWorkoutData.weekOne
         plan.id = UUID()

@@ -38,8 +38,8 @@ struct WeeklyPlanModelTests {
 
     @Test("A day before today is past, and today's day is today")
     func datesAreReadFromTheCalendar() throws {
-        let start = calendar.startOfDay(for: Date())
-        let now = calendar.date(byAdding: .day, value: 2, to: start)!
+        let start = WorkoutWeek.startOfDay()
+        let now = calendar.date(byAdding: .day, value: 2, to: Date())!
         let state = WeeklyPlanModel.state(
             for: plan([day(1), day(3), day(5)], start: start), now: now, calendar: calendar
         )
@@ -53,7 +53,7 @@ struct WeeklyPlanModelTests {
     func aDayWithAnAdjustmentStandingIsMarkedAdjusted() throws {
         let days = [day(1), day(3), day(5)]
         let state = WeeklyPlanModel.state(
-            for: plan(days, start: calendar.startOfDay(for: Date())), adjustedDayIDs: [days[1].id]
+            for: plan(days, start: WorkoutWeek.startOfDay()), adjustedDayIDs: [days[1].id]
         )
 
         #expect(state.days.filter(\.isAdjusted).map(\.day.id) == [days[1].id])
@@ -61,8 +61,8 @@ struct WeeklyPlanModelTests {
 
     @Test("An unfinished day in the past is missed; a finished one is not")
     func missedIsDerivedRatherThanStored() throws {
-        let start = calendar.startOfDay(for: Date())
-        let now = calendar.date(byAdding: .day, value: 3, to: start)!
+        let start = WorkoutWeek.startOfDay()
+        let now = calendar.date(byAdding: .day, value: 3, to: Date())!
         let state = WeeklyPlanModel.state(
             for: plan([day(1), day(2, .completed)], start: start), now: now, calendar: calendar
         )
@@ -73,8 +73,8 @@ struct WeeklyPlanModelTests {
 
     @Test("The next workout skips the past and stops once the week is done")
     func nextWorkoutIsNeverAFinishedOne() throws {
-        let start = calendar.startOfDay(for: Date())
-        let now = calendar.date(byAdding: .day, value: 2, to: start)!
+        let start = WorkoutWeek.startOfDay()
+        let now = calendar.date(byAdding: .day, value: 2, to: Date())!
 
         let midweek = WeeklyPlanModel.state(
             for: plan([day(1), day(3), day(5)], start: start), now: now, calendar: calendar
@@ -93,8 +93,8 @@ struct WeeklyPlanModelTests {
     // anyone to a missed session in it.
     @Test("A week whose dates have run out offers no missed day to start")
     func aWeekGoneByOffersNothingToTrain() throws {
-        let start = calendar.startOfDay(for: Date())
-        let now = calendar.date(byAdding: .day, value: 7, to: start)!
+        let start = WorkoutWeek.startOfDay()
+        let now = calendar.date(byAdding: .day, value: 7, to: Date())!
         let state = WeeklyPlanModel.state(
             for: plan([day(1), day(3), day(5)], start: start), now: now, calendar: calendar
         )
@@ -114,8 +114,8 @@ struct WeeklyPlanModelTests {
             userID: UUID(), weekNumber: 1, title: "Week 1", workoutDays: [day(1), day(3)],
             createdAt: created
         )
-        let weekStart = calendar.startOfDay(for: created)
-        let dayAfterTheWeek = WorkoutWeek.date(of: 8, startingFrom: weekStart, calendar: calendar)
+        let weekStart = WorkoutWeek.startOfDay(created, calendar: calendar)
+        let dayAfterTheWeek = calendar.date(byAdding: .day, value: 7, to: created)!
 
         let state = WeeklyPlanModel.state(for: undated, now: created, calendar: calendar)
         let progress = WeeklyProgressModel.progress(of: undated, now: created, calendar: calendar)
@@ -131,8 +131,8 @@ struct WeeklyPlanModelTests {
     // so the card may not chip it the way it chips a day nobody touched.
     @Test("A day that has passed with work logged on it is partly done")
     func aDayThatHasPassedWithWorkLoggedOnItIsPartlyDoneRatherThanMissed() throws {
-        let start = calendar.startOfDay(for: Date())
-        let now = calendar.date(byAdding: .day, value: 3, to: start)!
+        let start = WorkoutWeek.startOfDay()
+        let now = calendar.date(byAdding: .day, value: 3, to: Date())!
         var trained = dayWithSetsLogged(1)
         trained.status = .inProgress
         let state = WeeklyPlanModel.state(
@@ -145,8 +145,8 @@ struct WeeklyPlanModelTests {
 
     @Test("A day that has passed with nothing logged on it is still missed")
     func aDayThatHasPassedWithNothingLoggedOnItIsStillMissed() throws {
-        let start = calendar.startOfDay(for: Date())
-        let now = calendar.date(byAdding: .day, value: 3, to: start)!
+        let start = WorkoutWeek.startOfDay()
+        let now = calendar.date(byAdding: .day, value: 3, to: Date())!
         let state = WeeklyPlanModel.state(
             for: plan([day(1, .inProgress)], start: start), now: now, calendar: calendar
         )
@@ -157,7 +157,7 @@ struct WeeklyPlanModelTests {
 
     @Test("A week whose days are all done is ready for the next one")
     func readinessFollowsTheWeek() throws {
-        let start = calendar.startOfDay(for: Date())
+        let start = WorkoutWeek.startOfDay()
         let done = plan([day(1, .completed), day(3, .completed)], start: start)
         #expect(done.isReadyForTheNextWeek(now: start, calendar: calendar))
 
@@ -169,8 +169,8 @@ struct WeeklyPlanModelTests {
     // closed with nothing logged offers neither a session nor a way on.
     @Test("A day closed with nothing performed is still offered as the next session")
     func aDayClosedWithNothingPerformedIsStillOffered() throws {
-        let start = calendar.startOfDay(for: Date())
-        let now = calendar.date(byAdding: .day, value: 1, to: start)!
+        let start = WorkoutWeek.startOfDay()
+        let now = calendar.date(byAdding: .day, value: 1, to: Date())!
         let state = WeeklyPlanModel.state(
             for: plan([day(1, .completed), day(3, .completed, performed: false)], start: start),
             now: now, calendar: calendar
@@ -184,29 +184,29 @@ struct WeeklyPlanModelTests {
     // so it must not unlock the next one before the dates run out.
     @Test("A week closed with nothing performed is not ready for the next one")
     func aWeekClosedWithNothingPerformedIsNotReady() throws {
-        let start = calendar.startOfDay(for: Date())
+        let start = WorkoutWeek.startOfDay()
         let closed = plan(
             [day(1, .completed, performed: false), day(3, .completed, performed: false)],
             start: start
         )
 
-        #expect(!closed.isReadyForTheNextWeek(now: start, calendar: calendar))
+        #expect(!closed.isReadyForTheNextWeek(now: Date(), calendar: calendar))
     }
 
     // Two sets of three is work done, and the exercise never ticks itself until
     // all of them are.
     @Test("A week closed early with sets logged is ready for the next one")
     func aWeekClosedEarlyWithSetsLoggedIsReady() throws {
-        let start = calendar.startOfDay(for: Date())
+        let start = WorkoutWeek.startOfDay()
         let trained = plan([dayWithSetsLogged(1), dayWithSetsLogged(3)], start: start)
 
-        #expect(trained.isReadyForTheNextWeek(now: start, calendar: calendar))
+        #expect(trained.isReadyForTheNextWeek(now: Date(), calendar: calendar))
     }
 
     @Test("A week whose dates have run out is ready even with days unfinished")
     func readinessAlsoFollowsTheCalendar() throws {
-        let start = calendar.startOfDay(for: Date())
-        let afterTheWeek = calendar.date(byAdding: .day, value: 7, to: start)!
+        let start = WorkoutWeek.startOfDay()
+        let afterTheWeek = calendar.date(byAdding: .day, value: 7, to: Date())!
         #expect(plan([day(1), day(3)], start: start)
             .isReadyForTheNextWeek(now: afterTheWeek, calendar: calendar))
     }

@@ -2,14 +2,22 @@ import Foundation
 
 nonisolated enum WorkoutDateFormatter {
 
+    // A week date carries no time of day and no zone, so it is read back in the
+    // calendar it was built in rather than wherever the phone has since moved.
+    private static var dateZone: TimeZone { WorkoutWeek.dateCalendar.timeZone }
+
     // FormatStyle rather than a literal pattern, which would translate the
     // words and keep English word order.
     static func fullDate(_ date: Date, locale: Locale = .current) -> String {
-        date.formatted(Date.FormatStyle(date: .complete, locale: locale))
+        var style = Date.FormatStyle(date: .complete, locale: locale)
+        style.timeZone = dateZone
+        return date.formatted(style)
     }
 
     static func weekday(_ date: Date, locale: Locale = .current) -> String {
-        date.formatted(Date.FormatStyle(locale: locale).weekday(.wide))
+        var style = Date.FormatStyle(locale: locale).weekday(.wide)
+        style.timeZone = dateZone
+        return date.formatted(style)
     }
 
     static func mediumDate(_ date: Date, locale: Locale = .current) -> String {
@@ -32,7 +40,7 @@ nonisolated enum WorkoutDateFormatter {
         from start: Date,
         to end: Date,
         locale: Locale = .current,
-        calendar: Calendar = .current,
+        calendar: Calendar = WorkoutWeek.dateCalendar,
         abbreviated: Bool = false
     ) -> String {
         var style = Date.IntervalFormatStyle(locale: locale, calendar: calendar)

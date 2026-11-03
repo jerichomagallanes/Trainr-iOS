@@ -69,9 +69,9 @@ struct NextWeekModelStoreTests {
 
     @discardableResult
     private func save(week: Int, days: [WorkoutDay], startingDaysAgo: Int = 2) throws -> WeeklyPlan {
-        let start = calendar.date(
-            byAdding: .day, value: -startingDaysAgo, to: calendar.startOfDay(for: Date())
-        )!
+        let start = WorkoutWeek.date(
+            of: 1 - startingDaysAgo, startingFrom: WorkoutWeek.startOfDay()
+        )
         let plan = WeeklyPlan(
             userID: userID, weekNumber: week, title: "Week \(week)",
             startDate: start, workoutDays: days
@@ -307,9 +307,7 @@ struct NextWeekModelStoreTests {
     // replacement starting today would move the same week forward.
     @Test("Regenerating an undated week keeps it where every screen draws it")
     func regeneratingAnUndatedWeekKeepsItsDates() async throws {
-        let created = calendar.date(
-            byAdding: .day, value: -2, to: calendar.startOfDay(for: Date())
-        )!
+        let created = calendar.date(byAdding: .day, value: -2, to: Date())!
         try store.savePlan(
             WeeklyPlan(
                 userID: userID, weekNumber: 1, title: "Week 1", startDate: nil,
@@ -322,7 +320,7 @@ struct NextWeekModelStoreTests {
         model.regenerateThisWeek()
         await settle(model)
 
-        #expect(recorder.asked.first?.startDate == created)
+        #expect(recorder.asked.first?.startDate == WorkoutWeek.startOfDay(created))
     }
 
     @Test("The next week does not ask for new movements")

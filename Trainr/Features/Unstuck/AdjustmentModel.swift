@@ -397,10 +397,10 @@ final class AdjustmentModel {
 
         read(day, profile)
         state.goal = profile.fitnessGoal
-        // The person's own calendar, never UTC: the same instant is a different
-        // weekday either side of midnight.
+        // The plan's own date, so a preference cannot be remembered against a
+        // different weekday once the phone has crossed a zone.
         let date = week.startDate.map { WorkoutWeek.date(of: day.dayNumber, startingFrom: $0) }
-        dayWeekday = date.map { TrainingPreference.weekday(of: $0) }
+        dayWeekday = date.map { WorkoutWeek.isoWeekday(of: $0) }
         state.weekdayName = date.map { WorkoutDateFormatter.weekday($0) }
         readRequestedMinutes()
         state.isLoaded = true

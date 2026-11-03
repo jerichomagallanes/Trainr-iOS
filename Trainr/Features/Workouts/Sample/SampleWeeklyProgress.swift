@@ -2,7 +2,6 @@ import Foundation
 
 nonisolated enum SampleWeeklyProgress {
 
-    // Computed per access so the dates follow the current time zone.
     static var weeks: [WeekProgressUi] {
         [
             week(1, completedDays: 3, status: .completed),
@@ -31,8 +30,8 @@ nonisolated enum SampleWeeklyProgress {
     }
 
     private static func shift(_ date: Date, by weekNumber: Int) -> Date {
-        Calendar.current.date(
-            byAdding: .day, value: (weekNumber - 1) * Constants.Workout.daysPerWeek, to: date
-        ) ?? date
+        WorkoutWeek.date(
+            of: (weekNumber - 1) * Constants.Workout.daysPerWeek + 1, startingFrom: date
+        )
     }
 }

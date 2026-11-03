@@ -30,7 +30,7 @@ final class SchemaMigrationTests {
     // Scoped so the container is released and the file closed before the
     // current schema opens it.
     @discardableResult
-    private func writeShippedStore() throws -> Written {
+    private func writeShippedStore(anchoredOn day: DateComponents? = nil) throws -> Written {
         let schema = Schema(versionedSchema: TrainrSchemaV1.self)
         let container = try ModelContainer(
             for: schema, configurations: ModelConfiguration(schema: schema, url: file)
@@ -54,6 +54,8 @@ final class SchemaMigrationTests {
         let plan = TrainrSchemaV1.WeeklyPlanRecord()
         plan.weekNumber = 1
         plan.title = "Strength"
+        // Local midnight, which is the only thing any shipped build ever wrote.
+        plan.startDate = day.flatMap { Calendar(identifier: .gregorian).date(from: $0) }
         plan.user = user
         context.insert(plan)
 
@@ -126,12 +128,7 @@ final class SchemaMigrationTests {
     }
 
     private func openWithTheCurrentSchema() throws -> TrainingStore {
-        let schema = Schema(versionedSchema: TrainrSchemaV2.self)
-        return TrainingStore(container: try ModelContainer(
-            for: schema,
-            migrationPlan: TrainrMigrationPlan.self,
-            configurations: ModelConfiguration(schema: schema, url: file)
-        ))
+        TrainingStore(container: try TrainingStore.container(url: file))
     }
 
     @Test("Every logged set is still there, and still says what was logged")
@@ -228,5 +225,28 @@ final class SchemaMigrationTests {
 
         #expect(try store.omitSets(ids: [written.setIDs[2]], adjustmentID: applied.id) == 1)
         #expect(try store.restoreOmittedSets(adjustmentID: applied.id) == 1)
+    }
+
+    // The anchor the shipped app wrote is an instant in a zone that can change;
+    // the upgrade rewrites it to the calendar date it was always meant to be.
+    @Test("A week anchored as local midnight comes back as its own calendar date")
+    func aStoredAnchorBecomesACalendarDate() throws {
+        let written = try writeShippedStore(
+            anchoredOn: DateComponents(year: 2026, month: 8, day: 24)
+        )
+
+        let store = try openWithTheCurrentSchema()
+
+        let plan = try #require(try store.plan(for: written.userID, weekNumber: 1))
+        #expect(plan.startDate == Date(timeIntervalSince1970: 1_787_529_600))
+    }
+
+    @Test("A week with no anchor is left without one")
+    func aWeekWithNoAnchorIsLeftWithoutOne() throws {
+        let written = try writeShippedStore()
+
+        let store = try openWithTheCurrentSchema()
+
+        #expect(try store.plan(for: written.userID, weekNumber: 1)?.startDate == nil)
     }
 }
