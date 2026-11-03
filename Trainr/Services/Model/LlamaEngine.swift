@@ -12,6 +12,14 @@ nonisolated enum CompletionResult: Equatable, Sendable {
     case outOfMemory
 }
 
+// A prompt that could not be built is a different fact from one that is too
+// long, and the person is only told to shorten the note for the second.
+nonisolated enum PromptFit: Sendable {
+    case fits
+    case tooLong
+    case unprepared
+}
+
 nonisolated protocol LocalModel: Sendable {
     func complete(
         system: String, user: String, grammar: String, maxTokens: Int, timeout: Duration
@@ -51,16 +59,24 @@ actor LlamaEngine: LocalModel {
         guard let session = await loadIfNeeded(file) else {
             return availableMemory() < Self.size(of: file) ? .outOfMemory : .failed
         }
-        let result = await fitsContext(session, system: system, user: user, maxTokens: maxTokens)
-            ? await run(
+        let result: CompletionResult
+        switch await promptFit(session, system: system, user: user, maxTokens: maxTokens) {
+        case .fits:
+            result = await run(
                 session, system: system, user: user, grammar: grammar, maxTokens: maxTokens, timeout: timeout
             )
-            : .tooLong
+        case .tooLong:
+            result = .tooLong
+        case .unprepared:
+            result = .failed
+        }
         if releaseRequested { self.session = nil }
         return result
     }
 
-    private func fitsContext(_ session: LlamaSession, system: String, user: String, maxTokens: Int) async -> Bool {
+    private func promptFit(
+        _ session: LlamaSession, system: String, user: String, maxTokens: Int
+    ) async -> PromptFit {
         await withCheckedContinuation { continuation in
             queue.async {
                 continuation.resume(returning: session.fits(system: system, user: user, maxTokens: maxTokens))
@@ -226,9 +242,9 @@ nonisolated final class LlamaSession: @unchecked Sendable {
         return LlamaSession(interrupt: interrupt, model: model, context: context, vocab: vocab)
     }
 
-    func fits(system: String, user: String, maxTokens: Int) -> Bool {
-        guard let tokens = promptTokens(system: system, user: user) else { return false }
-        return fitsContext(tokens, maxTokens: maxTokens)
+    func fits(system: String, user: String, maxTokens: Int) -> PromptFit {
+        guard let tokens = promptTokens(system: system, user: user) else { return .unprepared }
+        return fitsContext(tokens, maxTokens: maxTokens) ? .fits : .tooLong
     }
 
     func complete(system: String, user: String, grammar: String, maxTokens: Int) -> String? {
