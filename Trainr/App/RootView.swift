@@ -47,6 +47,10 @@ struct RootView: View {
         .environment(entitlements)
         .environment(ads)
         .preferredColorScheme(appearance.mode.colorScheme)
+        // One alert for the whole app rather than one per screen: the store can
+        // answer after the screen that asked has gone, and a notice with
+        // nothing left to read it would wait for a screen that did not ask.
+        .purchaseNotice(entitlements)
         // Pushed only once the draft has been through an update of its own: a
         // destination built in the same one captures this view while the model
         // is still nil, and keeps the empty screen it drew. Keyed on which
@@ -381,14 +385,11 @@ private extension RootView {
                 }
 
         // One route, because which of the two belongs here is the entitlement's
-        // answer and it can change while the app is open: a purchase, or a read
-        // that lands late, swaps the screen rather than throwing the person out.
+        // answer and it can change while the app is open: a purchase, a restore,
+        // or a read that lands late swaps the screen rather than throwing the
+        // person out.
         case .pro:
-            if entitlements.isPro {
-                ProStatusView { path.removeLast() }
-            } else {
-                ProPaywallView(reason: nil) { path.removeLast() }
-            }
+            ProView { path.removeLast() }
 
         case .generatingNextWeek:
             generating(start: { nextWeek?.generateNextWeek() })

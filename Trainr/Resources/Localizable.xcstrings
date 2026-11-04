@@ -3981,6 +3981,17 @@
         }
       }
     },
+    "pro_check_failed": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your purchases could not be checked. Check your connection and try again."
+          }
+        }
+      }
+    },
     "pro_compare_adjust": {
       "extractionState": "manual",
       "localizations": {
