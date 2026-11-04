@@ -9,6 +9,10 @@ import TrainrDependencies
 final class Entitlements {
 
     private(set) var isPro = false
+    // "Nobody has asked the store yet" and "this person has not paid" are the
+    // same false, and a screen that cannot tell them apart sells Pro to the
+    // people already paying for it. This is the bit that separates them.
+    private(set) var hasRead = false
     // A lifetime purchase has no expiry, and nothing to manage or cancel.
     private(set) var isLifetime = false
     private(set) var offering: Offering?
@@ -54,10 +58,16 @@ final class Entitlements {
         // becoming tests about billing.
         if ProcessInfo.processInfo.arguments.contains("-proUnlocked") {
             isPro = true
+            hasRead = true
             return
         }
         #endif
-        guard Purchases.isConfigured else { return }
+        guard Purchases.isConfigured else {
+            // There is no entitlement to wait for and never will be in this
+            // build, so that is a settled answer rather than a pending one.
+            hasRead = true
+            return
+        }
         await readEntitlement()
         await readOffering()
     }
@@ -82,22 +92,47 @@ final class Entitlements {
     }
 
     // Offered as its own action because a buyer on a new phone has no other way
-    // back to what they paid for, and both stores require it.
-    func restore() async -> Bool {
+    // back to what they paid for, and both stores require it. Every outcome
+    // leaves a notice behind, including the one that worked: a restore that
+    // changes nothing on screen is indistinguishable from a mis-tap or a crash.
+    func restore() async {
         purchaseNotice = nil
+        #if DEBUG
+        // A simulator has no App Store account, so a real restore never answers
+        // there and neither outcome could be walked without this.
+        if let found = Self.restoreFinds() {
+            isPro = found
+            isLifetime = false
+            hasRead = true
+            purchaseNotice = found ? L10n.proRestored : L10n.proNothingToRestore
+            return
+        }
+        #endif
         guard Purchases.isConfigured else {
             purchaseNotice = L10n.proRestoreFailed
-            return false
+            return
         }
         do {
             let info = try await Purchases.shared.restorePurchases()
-            return read(info)
+            purchaseNotice = read(info) ? L10n.proRestored : L10n.proNothingToRestore
         } catch {
             breadcrumbs.report(error, doing: "restorePurchases")
             purchaseNotice = L10n.proRestoreFailed
-            return false
         }
     }
+
+    func noticeShown() {
+        purchaseNotice = nil
+    }
+
+    #if DEBUG
+    private static func restoreFinds() -> Bool? {
+        let arguments = ProcessInfo.processInfo.arguments
+        if arguments.contains("-restoreFindsPro") { return true }
+        if arguments.contains("-restoreFindsNothing") { return false }
+        return nil
+    }
+    #endif
 
     private func readEntitlement() async {
         do {
@@ -114,6 +149,7 @@ final class Entitlements {
         let pro = info.entitlements.all[Self.entitlement]
         isPro = pro?.isActive == true
         isLifetime = isPro && pro?.expirationDate == nil
+        hasRead = true
         return isPro
     }
 

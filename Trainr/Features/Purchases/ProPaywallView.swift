@@ -11,7 +11,6 @@ struct ProPaywallView: View {
     @State private var selected: Package?
     @State private var openQuestion: String?
     @State private var isWorking = false
-    @State private var notice: String?
     // The width a plan card needs before it has to break its own words.
     @ScaledMetric(relativeTo: .subheadline) private var planMinWidth: CGFloat = 84
 
@@ -37,9 +36,6 @@ struct ProPaywallView: View {
         .task {
             await entitlements.refresh()
             selected = Self.preferred(from: packages)
-        }
-        .alert(notice ?? "", isPresented: .constant(notice != nil)) {
-            Button(L10n.close) { notice = nil }
         }
     }
 
@@ -402,14 +398,14 @@ struct ProPaywallView: View {
         isWorking = true
         _ = await entitlements.purchase(selected)
         isWorking = false
-        notice = entitlements.purchaseNotice
     }
 
+    // The notice lives with the entitlement rather than with this view, so a
+    // restore that lands swaps the screen underneath it and is still read.
     private func restore() async {
         isWorking = true
-        let restored = await entitlements.restore()
+        await entitlements.restore()
         isWorking = false
-        notice = entitlements.purchaseNotice ?? (restored ? L10n.proRestored : L10n.proNothingToRestore)
     }
 
     // The annual plan when there is one, because that is the one being recommended.

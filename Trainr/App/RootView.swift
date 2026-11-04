@@ -376,19 +376,23 @@ private extension RootView {
         // entitlement read landed after the gate had already opened this.
         case .paywall(let reason):
             ProPaywallView(reason: reason) { path.removeLast() }
+                .purchaseNotice(entitlements)
                 .onChange(of: entitlements.isPro, initial: true) { _, isPro in
-                    if isPro { path.removeLast() }
+                    // Nothing is left to read the notice once this is gone, so
+                    // it is dropped rather than kept for the next screen that
+                    // would have shown it long after the fact.
+                    if isPro {
+                        entitlements.noticeShown()
+                        path.removeLast()
+                    }
                 }
 
         // One route, because which of the two belongs here is the entitlement's
-        // answer and it can change while the app is open: a purchase, or a read
-        // that lands late, swaps the screen rather than throwing the person out.
+        // answer and it can change while the app is open: a purchase, a restore,
+        // or a read that lands late swaps the screen rather than throwing the
+        // person out.
         case .pro:
-            if entitlements.isPro {
-                ProStatusView { path.removeLast() }
-            } else {
-                ProPaywallView(reason: nil) { path.removeLast() }
-            }
+            ProView { path.removeLast() }
 
         case .generatingNextWeek:
             generating(start: { nextWeek?.generateNextWeek() })
