@@ -47,6 +47,10 @@ struct RootView: View {
         .environment(entitlements)
         .environment(ads)
         .preferredColorScheme(appearance.mode.colorScheme)
+        // One alert for the whole app rather than one per screen: the store can
+        // answer after the screen that asked has gone, and a notice with
+        // nothing left to read it would wait for a screen that did not ask.
+        .purchaseNotice(entitlements)
         // Pushed only once the draft has been through an update of its own: a
         // destination built in the same one captures this view while the model
         // is still nil, and keeps the empty screen it drew. Keyed on which
@@ -376,15 +380,8 @@ private extension RootView {
         // entitlement read landed after the gate had already opened this.
         case .paywall(let reason):
             ProPaywallView(reason: reason) { path.removeLast() }
-                .purchaseNotice(entitlements)
                 .onChange(of: entitlements.isPro, initial: true) { _, isPro in
-                    // Nothing is left to read the notice once this is gone, so
-                    // it is dropped rather than kept for the next screen that
-                    // would have shown it long after the fact.
-                    if isPro {
-                        entitlements.noticeShown()
-                        path.removeLast()
-                    }
+                    if isPro { path.removeLast() }
                 }
 
         // One route, because which of the two belongs here is the entitlement's

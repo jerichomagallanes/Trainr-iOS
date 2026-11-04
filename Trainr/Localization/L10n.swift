@@ -412,6 +412,7 @@ nonisolated enum L10n {
     static var proBilledMonthly: String { String(localized: "pro_billed_monthly") }
     static var proBuyLifetime: String { String(localized: "pro_buy_lifetime") }
     static var proCancelAnytime: String { String(localized: "pro_cancel_anytime") }
+    static var proCheckFailed: String { String(localized: "pro_check_failed") }
     static var proCompareAdjust: String { String(localized: "pro_compare_adjust") }
     static var proCompareAds: String { String(localized: "pro_compare_ads") }
     static var proCompareEveryWeek: String { String(localized: "pro_compare_every_week") }

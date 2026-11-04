@@ -23,7 +23,6 @@ struct ProView: View {
 
     var body: some View {
         chooser
-            .purchaseNotice(entitlements)
             // Reopening the screen is the only retry a read that failed gets,
             // and without this one the page would stay empty for good.
             .task { if !entitlements.hasRead { await entitlements.refresh() } }
@@ -33,7 +32,7 @@ struct ProView: View {
     private var chooser: some View {
         switch Self.showing(hasRead: entitlements.hasRead, isPro: entitlements.isPro) {
         case .unknown:
-            Color.surfacePage
+            ProUnknownView(readFailed: entitlements.readFailed)
         case .status:
             ProStatusView()
         case .paywall:
@@ -42,10 +41,47 @@ struct ProView: View {
     }
 }
 
+// Silence is right while the store is still answering. Once it has failed to,
+// silence is a dead end: restoring lives on the other two screens only, and a
+// subscriber on a new phone would have nowhere left to reach it.
+private struct ProUnknownView: View {
+    let readFailed: Bool
+
+    @Environment(Entitlements.self) private var entitlements
+    @State private var isWorking = false
+
+    var body: some View {
+        ScreenContent {
+            if readFailed {
+                Text(L10n.proCheckFailed)
+                    .font(.body14)
+                    .foregroundStyle(Color.onSurfaceMuted)
+                Spacer().frame(height: Spacing.sectionGap)
+                HStack(spacing: Spacing.medium) {
+                    Button(L10n.proRestore) { Task { await restore() } }
+                        .disabled(isWorking)
+                    Link(L10n.proTerms, destination: ProLinks.terms)
+                    Link(L10n.proPrivacy, destination: ProLinks.privacy)
+                }
+                .font(.body12)
+                .foregroundStyle(Color.brandStrong)
+            }
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color.surfacePage)
+    }
+
+    private func restore() async {
+        isWorking = true
+        await entitlements.restore()
+        isWorking = false
+    }
+}
+
 extension View {
-    // Carried by whatever opened the Pro screen rather than by either screen
-    // itself: a restore that lands swaps one for the other as it answers, and
-    // an alert on the screen being torn down is never read.
+    // Attached once, above everything: a purchase or a restore can answer after
+    // the screen that asked for it has gone, and a notice with nothing left to
+    // read it would otherwise surface on a screen that did not ask, long after.
     func purchaseNotice(_ entitlements: Entitlements) -> some View {
         alert(
             entitlements.purchaseNotice ?? "",

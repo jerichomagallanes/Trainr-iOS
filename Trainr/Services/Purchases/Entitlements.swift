@@ -13,6 +13,10 @@ final class Entitlements {
     // same false, and a screen that cannot tell them apart sells Pro to the
     // people already paying for it. This is the bit that separates them.
     private(set) var hasRead = false
+    // The store was asked and could not answer. Not the same as never having
+    // asked: nothing more is coming, so the screen can say so and keep offering
+    // the restore rather than wait out an answer that will not arrive.
+    private(set) var readFailed = false
     // A lifetime purchase has no expiry, and nothing to manage or cancel.
     private(set) var isLifetime = false
     private(set) var offering: Offering?
@@ -61,6 +65,12 @@ final class Entitlements {
             hasRead = true
             return
         }
+        // A real read cannot be made to fail from a test, and the page a failed
+        // one leaves behind is the page that can strand a subscriber.
+        if ProcessInfo.processInfo.arguments.contains("-entitlementReadFails") {
+            readFailed = true
+            return
+        }
         #endif
         guard Purchases.isConfigured else {
             // There is no entitlement to wait for and never will be in this
@@ -95,29 +105,36 @@ final class Entitlements {
     // back to what they paid for, and both stores require it. Every outcome
     // leaves a notice behind, including the one that worked: a restore that
     // changes nothing on screen is indistinguishable from a mis-tap or a crash.
+    // One statement turns the outcome into what is said, so the faked store
+    // below walks the same line a real one does rather than one of its own.
     func restore() async {
         purchaseNotice = nil
+        guard let found = await restoreFindsPro() else {
+            purchaseNotice = L10n.proRestoreFailed
+            return
+        }
+        purchaseNotice = found ? L10n.proRestored : L10n.proNothingToRestore
+    }
+
+    // Nil when the store could not be asked at all, which is neither outcome.
+    private func restoreFindsPro() async -> Bool? {
         #if DEBUG
         // A simulator has no App Store account, so a real restore never answers
         // there and neither outcome could be walked without this.
         if let found = Self.restoreFinds() {
             isPro = found
             isLifetime = false
+            readFailed = false
             hasRead = true
-            purchaseNotice = found ? L10n.proRestored : L10n.proNothingToRestore
-            return
+            return found
         }
         #endif
-        guard Purchases.isConfigured else {
-            purchaseNotice = L10n.proRestoreFailed
-            return
-        }
+        guard Purchases.isConfigured else { return nil }
         do {
-            let info = try await Purchases.shared.restorePurchases()
-            purchaseNotice = read(info) ? L10n.proRestored : L10n.proNothingToRestore
+            return read(try await Purchases.shared.restorePurchases())
         } catch {
             breadcrumbs.report(error, doing: "restorePurchases")
-            purchaseNotice = L10n.proRestoreFailed
+            return nil
         }
     }
 
@@ -140,6 +157,7 @@ final class Entitlements {
             read(info)
         } catch {
             // Left as it was: a network blip must not revoke a paid week.
+            readFailed = true
             breadcrumbs.report(error, doing: "customerInfo")
         }
     }
@@ -149,6 +167,7 @@ final class Entitlements {
         let pro = info.entitlements.all[Self.entitlement]
         isPro = pro?.isActive == true
         isLifetime = isPro && pro?.expirationDate == nil
+        readFailed = false
         hasRead = true
         return isPro
     }
