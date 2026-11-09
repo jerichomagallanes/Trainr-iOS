@@ -109,4 +109,131 @@ final class StaysWhereYouLeftItTests: XCTestCase {
 
         XCTAssertTrue(app.staticTexts["YOUR WEEKLY WORKOUT PLAN"].waitForExistence(timeout: 10))
     }
+
+    // The chips and the numeric field, not only the name: on Android the
+    // recreation took the gender and the experience and left NEXT disabled with
+    // nothing on screen to say why.
+    @MainActor
+    func testDarkModeKeepsTheChipsAndTheAgeOnTheFirstStep() {
+        app = .launchedFresh()
+        app.startOnboarding()
+        let name = app.textFields["Enter your name"]
+        name.tap()
+        name.typeText("Jericho")
+        let age = app.textFields["Enter your age"]
+        age.tap()
+        age.typeText("34")
+        app.buttons["Male"].tap()
+        app.button(startingWith: "Beginner").tap()
+        XCTAssertTrue(app.buttons["NEXT"].isEnabled)
+
+        XCUIDevice.shared.appearance = .dark
+        Thread.sleep(forTimeInterval: afterARepeatWouldHaveLanded)
+
+        XCTAssertEqual(name.value as? String, "Jericho")
+        XCTAssertEqual(age.value as? String, "34")
+        XCTAssertTrue(app.buttons["Male"].isSelected)
+        XCTAssertTrue(app.button(startingWith: "Beginner").isSelected)
+        XCTAssertTrue(app.buttons["NEXT"].isEnabled)
+    }
+
+    @MainActor
+    func testDarkModeKeepsTheMeasurementsTypedAndTheIndexRead() {
+        app = .launched(startingAt: "bodyMetrics")
+        XCTAssertTrue(app.staticTexts["YOUR MEASUREMENTS"].waitForExistence(timeout: 20))
+        app.textFields["170"].tap()
+        app.textFields["170"].typeText("175")
+        app.textFields["70"].tap()
+        app.textFields["70"].typeText("72")
+        XCTAssertTrue(app.text(containing: "BMI: 23.5").waitForExistence(timeout: 5))
+
+        XCUIDevice.shared.appearance = .dark
+        Thread.sleep(forTimeInterval: afterARepeatWouldHaveLanded)
+
+        XCTAssertTrue(app.staticTexts["YOUR MEASUREMENTS"].exists)
+        XCTAssertEqual(app.textFields["170"].value as? String, "175")
+        XCTAssertEqual(app.textFields["70"].value as? String, "72")
+        XCTAssertTrue(app.text(containing: "BMI: 23.5").exists)
+        XCTAssertTrue(app.buttons["NEXT"].isEnabled)
+    }
+
+    @MainActor
+    func testDarkModeKeepsTheGoalChosen() {
+        app = .launched(startingAt: "goals")
+        XCTAssertTrue(app.staticTexts["YOUR FITNESS GOALS"].waitForExistence(timeout: 20))
+        app.button(startingWith: "Build Muscle").tap()
+        XCTAssertTrue(app.buttons["NEXT"].isEnabled)
+
+        XCUIDevice.shared.appearance = .dark
+        Thread.sleep(forTimeInterval: afterARepeatWouldHaveLanded)
+
+        XCTAssertTrue(app.staticTexts["YOUR FITNESS GOALS"].exists)
+        XCTAssertTrue(app.button(startingWith: "Build Muscle").isSelected)
+        XCTAssertTrue(app.buttons["NEXT"].isEnabled)
+    }
+
+    // The days answer is given through a menu, so this covers the one onboarding
+    // answer that is not a chip or a field.
+    @MainActor
+    func testDarkModeKeepsTheSetupAnswersIncludingTheOneGivenThroughAMenu() {
+        app = .launched(startingAt: "setup")
+        XCTAssertTrue(app.staticTexts["SET UP YOUR WORKOUT"].waitForExistence(timeout: 20))
+        app.buttons["Dumbbell"].tap()
+        XCTAssertTrue(
+            app.staticTexts["What are the weights marked in?"].waitForExistence(timeout: 5))
+        app.buttons["Choose how many days"].tap()
+        app.buttons["3 days"].tap()
+        app.scrollUntilHittable(app.buttons["45 mins"])
+        app.buttons["45 mins"].tap()
+        XCTAssertTrue(app.buttons["NEXT"].isEnabled)
+
+        XCUIDevice.shared.appearance = .dark
+        Thread.sleep(forTimeInterval: afterARepeatWouldHaveLanded)
+
+        XCTAssertTrue(app.staticTexts["SET UP YOUR WORKOUT"].exists)
+        XCTAssertTrue(app.buttons["Dumbbell"].isSelected)
+        XCTAssertTrue(app.buttons["kg"].isSelected)
+        XCTAssertTrue(app.buttons["3 days"].exists)
+        XCTAssertTrue(app.buttons["45 mins"].isSelected)
+        XCTAssertTrue(app.buttons["NEXT"].isEnabled)
+    }
+
+    @MainActor
+    func testDarkModeKeepsTheInjuryTickedAndItReachesTheReview() {
+        app = .launched(startingAt: "limitations")
+        XCTAssertTrue(app.staticTexts["LET'S KEEP YOU SAFE"].waitForExistence(timeout: 20))
+        app.buttons["Lower Back Pain"].tap()
+        XCTAssertTrue(app.buttons["Lower Back Pain"].isSelected)
+
+        XCUIDevice.shared.appearance = .dark
+        Thread.sleep(forTimeInterval: afterARepeatWouldHaveLanded)
+
+        XCTAssertTrue(app.staticTexts["LET'S KEEP YOU SAFE"].exists)
+        XCTAssertTrue(app.buttons["Lower Back Pain"].isSelected)
+
+        app.buttons["SUBMIT"].tap()
+        XCTAssertTrue(app.staticTexts["YOUR FITNESS PROFILE"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.text(containing: "Lower Back Pain").exists)
+    }
+
+    // The other half of the lifetime: a trait change keeps the half-answered
+    // form, and the process ending does not. Nothing of it is written down, so
+    // the next launch opens on the welcome with an empty first step.
+    @MainActor
+    func testAHalfAnsweredFormIsGoneOnceTheProcessIs() {
+        app = .launchedFresh()
+        app.startOnboarding()
+        let name = app.textFields["Enter your name"]
+        name.tap()
+        name.typeText("Jericho")
+        XCTAssertEqual(name.value as? String, "Jericho")
+
+        app.terminate()
+        app.launch()
+
+        XCTAssertTrue(app.buttons["GET STARTED"].waitForExistence(timeout: 20))
+        app.startOnboarding()
+        XCTAssertEqual(app.textFields["Enter your name"].value as? String, "Enter your name")
+        XCTAssertFalse(app.buttons["NEXT"].isEnabled)
+    }
 }
