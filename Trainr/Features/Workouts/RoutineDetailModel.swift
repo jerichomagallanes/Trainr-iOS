@@ -95,6 +95,7 @@ final class RoutineDetailModel {
         // The note belongs to one undo, not to whatever the day shows next.
         state.undoKeptSets = nil
         dropTimerIfReplaced()
+        dropTutorialsIfReplaced()
         state.isLoaded = true
     }
 
@@ -125,10 +126,11 @@ final class RoutineDetailModel {
         else { return }
         state.isShowingAdjustSheet = false
         state.isPickingExercise = false
+        let opened = ExpandedTutorialUi(position: position, exerciseID: exercise.exerciseID)
         if exercise.steps.isEmpty {
-            state.expandedVideo = position
+            state.expandedVideo = opened
         } else {
-            state.expandedHowTo = position
+            state.expandedHowTo = opened
         }
         state.scrollToPosition = position
     }
@@ -326,13 +328,13 @@ final class RoutineDetailModel {
     }
 
     func toggleVideo(at position: Int) {
-        state.expandedVideo = state.expandedVideo == position ? nil : position
+        state.expandedVideo = .toggling(state.expandedVideo, at: position, among: state.routine.exercises)
     }
 
     // Kept apart from the video: collapsing the section should not also lose
     // the player someone left open inside it.
     func toggleHowTo(at position: Int) {
-        state.expandedHowTo = state.expandedHowTo == position ? nil : position
+        state.expandedHowTo = .toggling(state.expandedHowTo, at: position, among: state.routine.exercises)
     }
 
     // MARK: - Timer
@@ -424,6 +426,15 @@ final class RoutineDetailModel {
         else { return }
         cancelTick()
         state.timer = nil
+    }
+
+    // A tutorial outlives a reload on the same terms as the timer: only on its
+    // own exercise. Undo does not say what the person wanted to watch, so a
+    // player left over a replaced movement is closed rather than swapped.
+    private func dropTutorialsIfReplaced() {
+        let exercises = state.routine.exercises
+        if state.expandedVideo?.stillBelongs(among: exercises) == false { state.expandedVideo = nil }
+        if state.expandedHowTo?.stillBelongs(among: exercises) == false { state.expandedHowTo = nil }
     }
 
     // A completed exercise draws no timer, and a control that is gone must not

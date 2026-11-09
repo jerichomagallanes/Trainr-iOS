@@ -7,8 +7,8 @@ nonisolated struct RoutineDetailState: Equatable, Sendable {
     var timer: ExerciseTimerUi?
     // One tutorial open at a time: a player exists for as long as its section
     // is open, not only while playing.
-    var expandedVideo: Int?
-    var expandedHowTo: Int?
+    var expandedVideo: ExpandedTutorialUi?
+    var expandedHowTo: ExpandedTutorialUi?
     var dayNumber = 1
     var weekNumber = 1
     var completesTheWeek = false

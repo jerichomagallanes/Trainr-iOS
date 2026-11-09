@@ -359,7 +359,7 @@ struct RoutineDetailView: View {
         if !exercise.steps.isEmpty {
             HowToSection(
                 steps: exercise.steps,
-                isExpanded: state.expandedHowTo == exercise.position,
+                isExpanded: state.expandedHowTo?.isOn(exercise) == true,
                 onToggle: { model.toggleHowTo(at: exercise.position) },
                 video: { tutorial(for: exercise) }
             )
@@ -381,7 +381,7 @@ struct RoutineDetailView: View {
         if let video = YouTubeVideo.from(exercise.videoURL) {
             VideoTutorial(
                 video: video,
-                isExpanded: state.expandedVideo == exercise.position,
+                isExpanded: state.expandedVideo?.isOn(exercise) == true,
                 onToggle: { model.toggleVideo(at: exercise.position) }
             )
         }
