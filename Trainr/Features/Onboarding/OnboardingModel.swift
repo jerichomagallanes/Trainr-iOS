@@ -1,15 +1,42 @@
 import Foundation
 import Observation
 
-// What the measurements step currently has typed in it, in the units it is
-// showing. Text rather than numbers: a part-typed "5" is not a height yet. The
-// swaps carry the measurements behind that text, which the index is read from.
+// What each step currently has typed or chosen in it. Text rather than numbers
+// where a field is typed: a part-typed "5" is not an age or a height yet, and
+// "touched" is what decides whether a blank one is already an error.
+nonisolated struct BasicInfoEntry: Equatable, Sendable {
+    var firstName: String
+    var age: String
+    var gender: Gender?
+    var experience: ExperienceLevel?
+    var nameTouched = false
+    var ageTouched = false
+}
+
+// The swaps carry the measurements behind the shown text, which the index is
+// read from.
 nonisolated struct BodyMetricsEntry: Equatable, Sendable {
     var height: String
     var weight: String
     var useMetric: Bool
     var heightSwap = BodyMetricsConverter.UnitSwap()
     var weightSwap = BodyMetricsConverter.UnitSwap()
+}
+
+nonisolated struct FitnessGoalEntry: Equatable, Sendable {
+    var goal: FitnessGoal?
+}
+
+nonisolated struct WorkoutSetupEntry: Equatable, Sendable {
+    var equipment: Set<Equipment>
+    var liftingUnits: UnitSystem?
+    var daysPerWeek: Int?
+    var duration: Int?
+}
+
+nonisolated struct LimitationsEntry: Equatable, Sendable {
+    var injuries: Set<Injury>
+    var noneSelected: Bool
 }
 
 enum OnboardingStep {
@@ -83,9 +110,21 @@ final class OnboardingModel {
         editing || answeredSteps.contains(step) ? profile : nil
     }
 
+    // What each step has in it before NEXT turns it into an answer. Unobserved,
+    // so a keystroke does not redraw the flow, and kept here rather than written
+    // down: a trait change or a step popped off the stack must not lose it, but
+    // the process ending must. Restored from disk it would be a half-filled form
+    // on a profile nobody ever saved.
+    @ObservationIgnored var basicInfoEntry: BasicInfoEntry?
+    @ObservationIgnored var bodyMetricsEntry: BodyMetricsEntry?
+    @ObservationIgnored var fitnessGoalEntry: FitnessGoalEntry?
+    @ObservationIgnored var workoutSetupEntry: WorkoutSetupEntry?
+    @ObservationIgnored var limitationsEntry: LimitationsEntry?
+
     func updateBasicInfo(
         firstName: String, age: Int, gender: Gender, experience: ExperienceLevel
     ) {
+        basicInfoEntry = nil
         answeredSteps.insert(.basicInfo)
         // Stored trimmed, because every greeting in the app reads it back.
         profile.firstName = firstName.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -94,19 +133,8 @@ final class OnboardingModel {
         profile.experienceLevel = experience
     }
 
-    // Unobserved, so a keystroke does not redraw the flow: a step popped off the
-    // stack loses its own state, and what was typed has to outlive it for the
-    // rest of the flow.
-    @ObservationIgnored private var metricsInProgress: BodyMetricsEntry?
-
-    func rememberBodyMetrics(_ entry: BodyMetricsEntry) {
-        metricsInProgress = entry
-    }
-
-    func bodyMetricsInProgress() -> BodyMetricsEntry? { metricsInProgress }
-
     func updateBodyMetrics(height: Double, weight: Double, units: UnitSystem) {
-        metricsInProgress = nil
+        bodyMetricsEntry = nil
         answeredSteps.insert(.bodyMetrics)
         profile.height = height
         profile.weight = weight
@@ -114,6 +142,7 @@ final class OnboardingModel {
     }
 
     func updateFitnessGoal(_ goal: FitnessGoal) {
+        fitnessGoalEntry = nil
         answeredSteps.insert(.goals)
         profile.fitnessGoal = goal
     }
@@ -124,6 +153,7 @@ final class OnboardingModel {
         daysPerWeek: Int,
         duration: Int,
     ) {
+        workoutSetupEntry = nil
         answeredSteps.insert(.setup)
         profile.liftingUnitSystem = liftingUnits
         profile.availableEquipment = equipment
@@ -132,6 +162,7 @@ final class OnboardingModel {
     }
 
     func updateLimitations(injuries: [Injury]) {
+        limitationsEntry = nil
         answeredSteps.insert(.limitations)
         profile.injuries = injuries
     }

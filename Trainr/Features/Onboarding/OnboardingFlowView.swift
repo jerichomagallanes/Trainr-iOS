@@ -32,6 +32,8 @@ struct OnboardingFlowView: View {
         BasicInfoView(
             initial: model.filled(for: .basicInfo, editing: editing),
             isEditing: editing,
+            inProgress: editing ? nil : model.basicInfoEntry,
+            onEntryChanged: { if !editing { model.basicInfoEntry = $0 } },
             onNext: { firstName, age, gender, experience in
                 model.updateBasicInfo(
                     firstName: firstName, age: age, gender: gender, experience: experience)
@@ -48,8 +50,8 @@ struct OnboardingFlowView: View {
             isEditing: editing,
             // Only while answering: editing a stored profile has a profile to
             // go back to, and a half-typed figure must not outlive the screen.
-            inProgress: editing ? nil : model.bodyMetricsInProgress(),
-            onEntryChanged: { if !editing { model.rememberBodyMetrics($0) } },
+            inProgress: editing ? nil : model.bodyMetricsEntry,
+            onEntryChanged: { if !editing { model.bodyMetricsEntry = $0 } },
             onNext: { height, weight, units in
                 model.updateBodyMetrics(height: height, weight: weight, units: units)
                 onStep(editing, .fitnessGoal(editing: false))
@@ -62,6 +64,8 @@ struct OnboardingFlowView: View {
         FitnessGoalView(
             initial: model.filled(for: .goals, editing: editing),
             isEditing: editing,
+            inProgress: editing ? nil : model.fitnessGoalEntry,
+            onEntryChanged: { if !editing { model.fitnessGoalEntry = $0 } },
             onNext: { goal in
                 model.updateFitnessGoal(goal)
                 onStep(editing, .workoutSetup(editing: false))
@@ -76,6 +80,8 @@ struct OnboardingFlowView: View {
             initial: model.filled(for: .setup, editing: editing),
             isEditing: editing,
             bodyUnits: model.profile.bodyUnitSystem,
+            inProgress: editing ? nil : model.workoutSetupEntry,
+            onEntryChanged: { if !editing { model.workoutSetupEntry = $0 } },
             longestSessionMinutes: { equipment, days, duration in
                 await model.longestSessionMinutes(
                     equipment: equipment, daysPerWeek: days, duration: duration)
@@ -94,6 +100,8 @@ struct OnboardingFlowView: View {
         LimitationsView(
             initial: model.filled(for: .limitations, editing: editing),
             isEditing: editing,
+            inProgress: editing ? nil : model.limitationsEntry,
+            onEntryChanged: { if !editing { model.limitationsEntry = $0 } },
             onNext: { injuries in
                 model.updateLimitations(injuries: injuries)
                 onStep(editing, .review(fromPlan: false, profileOnly: false))
