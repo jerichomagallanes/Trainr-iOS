@@ -144,6 +144,16 @@ struct LlamaIntentInterpreterTests {
         #expect(model.lastSystem == IntentPrompt.systemInstruction)
         #expect(model.lastGrammar == IntentGrammar.forNote(note))
         #expect(model.lastMaxTokens == IntentGrammar.maxTokens)
+    }
+
+    // The two apps allowed a read different amounts of time once. The number is
+    // pinned on both so it cannot drift apart again unnoticed.
+    @Test("The read is given the same two minutes as Android")
+    func theReadIsGivenTheSameTwoMinutesAsAndroid() async throws {
+        let model = FakeModel(.text(try validAnswer()))
+
+        _ = await interpreter(model: model).interpret(note, locale: locale, directReason: .other)
+
         #expect(model.lastTimeout == .seconds(120))
     }
 
