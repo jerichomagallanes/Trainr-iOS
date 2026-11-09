@@ -304,10 +304,10 @@ struct RoutineDetailModelTests {
         try #require(exercises.count > 1)
 
         model.toggleVideo(at: exercises[0].position)
-        #expect(model.state.expandedVideo == exercises[0].position)
+        #expect(model.state.expandedVideo?.isOn(exercises[0]) == true)
 
         model.toggleVideo(at: exercises[1].position)
-        #expect(model.state.expandedVideo == exercises[1].position)
+        #expect(model.state.expandedVideo?.isOn(exercises[1]) == true)
     }
 
     @Test("Tapping the open tutorial again closes it")
@@ -329,7 +329,7 @@ struct RoutineDetailModelTests {
         model.showHowTo(key: "plank")
 
         #expect(model.state.scrollToPosition == second.position)
-        #expect((model.state.expandedHowTo ?? model.state.expandedVideo) == second.position)
+        #expect((model.state.expandedHowTo ?? model.state.expandedVideo)?.isOn(second) == true)
     }
 
     @Test("A guidance note opens the sheet on the exercises and the reasons otherwise")
@@ -357,6 +357,74 @@ struct RoutineDetailModelTests {
         #expect(model.state.expandedHowTo == nil)
         #expect(model.state.expandedVideo == nil)
         #expect(model.state.scrollToPosition == nil)
+    }
+
+    // MARK: - A tutorial and the movement it was opened on
+
+    private func substituted(_ model: RoutineDetailModel, for exercise: ExerciseUi) throws -> ExerciseUi {
+        try fixture.replace(exerciseID: try #require(exercise.exerciseID))
+        model.load()
+        let standing = try #require(
+            model.state.routine.exercises.first { $0.position == exercise.position }
+        )
+        try #require(standing.exerciseID != exercise.exerciseID)
+        return standing
+    }
+
+    @Test("Undoing a substitution takes the withdrawn movement's tutorial with it")
+    func undoingASubstitutionClosesItsTutorial() throws {
+        let model = loaded(day: firstDayNumber)
+        let plank = try #require(model.state.routine.exercises.last)
+        let substitute = try substituted(model, for: plank)
+        model.toggleVideo(at: substitute.position)
+        try #require(model.state.expandedVideo != nil)
+
+        model.undoAdjustment()
+
+        #expect(model.state.expandedVideo == nil)
+        #expect(model.state.expandedHowTo == nil)
+    }
+
+    @Test("Any reload that finds another movement at the position closes the tutorial")
+    func aReplacedMovementLosesItsTutorial() throws {
+        let model = loaded(day: firstDayNumber)
+        let plank = try #require(model.state.routine.exercises.last)
+        model.toggleHowTo(at: plank.position)
+        try #require(model.state.expandedHowTo != nil)
+
+        _ = try substituted(model, for: plank)
+
+        #expect(model.state.expandedHowTo == nil)
+        #expect(model.state.expandedVideo == nil)
+    }
+
+    @Test("The restored movement's own tutorial still opens afterwards")
+    func theRestoredMovementsTutorialStillOpens() throws {
+        let model = loaded(day: firstDayNumber)
+        let plank = try #require(model.state.routine.exercises.last)
+        let substitute = try substituted(model, for: plank)
+        model.toggleVideo(at: substitute.position)
+        model.undoAdjustment()
+        let restored = try #require(
+            model.state.routine.exercises.first { $0.position == plank.position }
+        )
+
+        model.toggleVideo(at: restored.position)
+
+        #expect(model.state.expandedVideo?.isOn(restored) == true)
+    }
+
+    // The guard on the fix above: a reload that replaces nothing must not close
+    // a tutorial somebody left open.
+    @Test("A reload leaves a tutorial on the movement that stayed put open")
+    func aReloadKeepsATutorialThatStillBelongs() throws {
+        let model = loaded(day: firstDayNumber)
+        let first = try #require(model.state.routine.exercises.first)
+        model.toggleHowTo(at: first.position)
+
+        model.load()
+
+        #expect(model.state.expandedHowTo?.isOn(first) == true)
     }
 
     @Test("Leaving the screen stops the clock advancing")
