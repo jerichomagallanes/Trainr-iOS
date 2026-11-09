@@ -30,6 +30,10 @@ struct RootView: View {
     // Bumped to give home a new identity, and with it a model that re-reads.
     @State private var planGeneration = 0
     @State private var prompt: PaywallReason?
+    // A tap that arrived before the store answered. Saying so beats guessing:
+    // letting it through gives a week away, and asking for money may be asking
+    // a subscriber to buy what they already own.
+    @State private var gateNotice: String?
     @State private var afterPrompt: Route?
 
     var body: some View {
@@ -50,7 +54,7 @@ struct RootView: View {
         // One alert for the whole app rather than one per screen: the store can
         // answer after the screen that asked has gone, and a notice with
         // nothing left to read it would wait for a screen that did not ask.
-        .purchaseNotice(entitlements)
+        .purchaseNotice(entitlements, gate: $gateNotice)
         // Pushed only once the draft has been through an update of its own: a
         // destination built in the same one captures this view while the model
         // is still nil, and keeps the empty screen it drew. Keyed on which
@@ -173,10 +177,13 @@ struct RootView: View {
         switch GenerationGate.decide(
             used: allowance.hasBeenUsed(),
             isPro: entitlements.isPro,
+            hasRead: entitlements.hasRead,
+            readFailed: entitlements.readFailed,
             canSell: entitlements.canSell
         ) {
         case .allowed: action()
         case .ask: prompt = reason
+        case .wait: gateNotice = L10n.proStillChecking
         }
     }
 

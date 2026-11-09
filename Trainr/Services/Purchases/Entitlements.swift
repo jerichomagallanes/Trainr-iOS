@@ -71,6 +71,11 @@ final class Entitlements {
             readFailed = true
             return
         }
+        // The gap a real read closes in a moment, held open: what a tap does
+        // inside it is the whole of this rule and cannot be walked otherwise.
+        if ProcessInfo.processInfo.arguments.contains("-entitlementNeverAnswers") {
+            return
+        }
         #endif
         guard Purchases.isConfigured else {
             // There is no entitlement to wait for and never will be in this
@@ -78,6 +83,16 @@ final class Entitlements {
             hasRead = true
             return
         }
+        #if DEBUG
+        // A settled non-subscriber. Without it every gate test races a live
+        // read over the network, and a tap that gets there first reads as an
+        // answer the store has not given.
+        if ProcessInfo.processInfo.arguments.contains("-proLocked") {
+            hasRead = true
+            await readOffering()
+            return
+        }
+        #endif
         await readEntitlement()
         await readOffering()
     }

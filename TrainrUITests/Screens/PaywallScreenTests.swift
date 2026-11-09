@@ -15,7 +15,7 @@ final class PaywallScreenTests: XCTestCase {
         app = XCUIApplication()
         app.launchArguments = [
             "-inMemoryStore", "-splashSeconds", "0",
-            "-seedFixture", Fixture.finishedWeek.rawValue, "-freeGenerationUsed"
+            "-seedFixture", Fixture.finishedWeek.rawValue, "-freeGenerationUsed", "-proLocked"
         ] + arguments
         app.launch()
         XCTAssertTrue(app.staticTexts["YOUR WEEKLY WORKOUT PLAN"].waitForExistence(timeout: 30))
