@@ -216,6 +216,25 @@ final class StaysWhereYouLeftItTests: XCTestCase {
         XCTAssertTrue(app.text(containing: "Lower Back Pain").exists)
     }
 
+    // The lifetime the model buys over the view's own state, which a trait
+    // change alone would not show: a step left before NEXT is still the
+    // person's answer when they come back to it.
+    @MainActor
+    func testAStepLeftBeforeNextKeepsWhatWasTypedOnTheWayBack() {
+        app = .launchedFresh()
+        app.startOnboarding()
+        let name = app.textFields["Enter your name"]
+        name.tap()
+        name.typeText("Jericho")
+
+        app.buttons["Back"].firstMatch.tap()
+        XCTAssertTrue(app.buttons["GET STARTED"].waitForExistence(timeout: 10))
+        app.buttons["GET STARTED"].tap()
+
+        XCTAssertTrue(app.staticTexts["TELL US ABOUT YOURSELF"].waitForExistence(timeout: 10))
+        XCTAssertEqual(app.textFields["Enter your name"].value as? String, "Jericho")
+    }
+
     // The other half of the lifetime: a trait change keeps the half-answered
     // form, and the process ending does not. Nothing of it is written down, so
     // the next launch opens on the welcome with an empty first step.

@@ -2,22 +2,32 @@ import SwiftUI
 
 struct LimitationsView: View {
     var isEditing = false
+    let onEntryChanged: (LimitationsEntry) -> Void
     let onNext: ([Injury]) -> Void
     let onBack: () -> Void
 
     @State private var selectedInjuries: Set<Injury>
-    @State private var noneSelected = false
+    @State private var noneSelected: Bool
 
     init(
         initial: UserProfile? = nil,
         isEditing: Bool = false,
+        inProgress: LimitationsEntry? = nil,
+        onEntryChanged: @escaping (LimitationsEntry) -> Void = { _ in },
         onNext: @escaping ([Injury]) -> Void,
         onBack: @escaping () -> Void
     ) {
         self.isEditing = isEditing
+        self.onEntryChanged = onEntryChanged
         self.onNext = onNext
         self.onBack = onBack
-        _selectedInjuries = State(initialValue: Set(initial?.injuries ?? []))
+        _selectedInjuries = State(
+            initialValue: inProgress?.injuries ?? Set(initial?.injuries ?? []))
+        _noneSelected = State(initialValue: inProgress?.noneSelected ?? false)
+    }
+
+    private var entry: LimitationsEntry {
+        LimitationsEntry(injuries: selectedInjuries, noneSelected: noneSelected)
     }
 
     var body: some View {
@@ -66,6 +76,7 @@ struct LimitationsView: View {
                 }
             }
         }
+        .onChange(of: entry, initial: true) { _, ticked in onEntryChanged(ticked) }
     }
 
     private func toggle(_ injury: Injury, to isChecked: Bool) {

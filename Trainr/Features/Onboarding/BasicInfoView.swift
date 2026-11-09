@@ -3,6 +3,7 @@ import SwiftUI
 struct BasicInfoView: View {
     var initial: UserProfile?
     var isEditing = false
+    let onEntryChanged: (BasicInfoEntry) -> Void
     let onNext: (String, Int, Gender, ExperienceLevel) -> Void
     let onBack: () -> Void
 
@@ -11,8 +12,8 @@ struct BasicInfoView: View {
     @State private var selectedGender: Gender?
     @State private var selectedExperience: ExperienceLevel?
 
-    @State private var nameTouched = false
-    @State private var ageTouched = false
+    @State private var nameTouched: Bool
+    @State private var ageTouched: Bool
     @FocusState private var focusedField: Field?
 
     private enum Field {
@@ -23,17 +24,30 @@ struct BasicInfoView: View {
     init(
         initial: UserProfile? = nil,
         isEditing: Bool = false,
+        inProgress: BasicInfoEntry? = nil,
+        onEntryChanged: @escaping (BasicInfoEntry) -> Void = { _ in },
         onNext: @escaping (String, Int, Gender, ExperienceLevel) -> Void,
         onBack: @escaping () -> Void
     ) {
         self.initial = initial
         self.isEditing = isEditing
+        self.onEntryChanged = onEntryChanged
         self.onNext = onNext
         self.onBack = onBack
-        _firstName = State(initialValue: initial?.firstName ?? "")
-        _age = State(initialValue: (initial?.age).flatMap { $0 > 0 ? String($0) : nil } ?? "")
-        _selectedGender = State(initialValue: initial?.gender)
-        _selectedExperience = State(initialValue: initial?.experienceLevel)
+        _firstName = State(initialValue: inProgress?.firstName ?? initial?.firstName ?? "")
+        _age = State(initialValue: inProgress?.age
+            ?? (initial?.age).flatMap { $0 > 0 ? String($0) : nil } ?? "")
+        _selectedGender = State(initialValue: inProgress?.gender ?? initial?.gender)
+        _selectedExperience = State(
+            initialValue: inProgress?.experience ?? initial?.experienceLevel)
+        _nameTouched = State(initialValue: inProgress?.nameTouched ?? false)
+        _ageTouched = State(initialValue: inProgress?.ageTouched ?? false)
+    }
+
+    private var entry: BasicInfoEntry {
+        BasicInfoEntry(
+            firstName: firstName, age: age, gender: selectedGender,
+            experience: selectedExperience, nameTouched: nameTouched, ageTouched: ageTouched)
     }
 
     private var ageRange: ClosedRange<Int> {
@@ -110,6 +124,7 @@ struct BasicInfoView: View {
             if oldValue == .name { nameTouched = true }
             if oldValue == .age { ageTouched = true }
         }
+        .onChange(of: entry, initial: true) { _, typed in onEntryChanged(typed) }
     }
 
     private var ageError: String? {

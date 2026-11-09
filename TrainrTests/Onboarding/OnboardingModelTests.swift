@@ -361,23 +361,59 @@ struct OnboardingModelTests {
     func measurementsTypedButNotSubmittedAreGivenBack() throws {
         let model = OnboardingModel(dependencies: try dependencies())
 
-        model.rememberBodyMetrics(
-            BodyMetricsEntry(height: "5", weight: "154", useMetric: false)
-        )
+        model.bodyMetricsEntry = BodyMetricsEntry(height: "5", weight: "154", useMetric: false)
 
-        #expect(model.bodyMetricsInProgress()
+        #expect(model.bodyMetricsEntry
             == BodyMetricsEntry(height: "5", weight: "154", useMetric: false))
     }
 
     @Test("Submitting the measurements step clears what it was holding")
     func submittingTheMeasurementsStepClearsIt() throws {
         let model = OnboardingModel(dependencies: try dependencies())
-        model.rememberBodyMetrics(
-            BodyMetricsEntry(height: "175", weight: "70", useMetric: true)
-        )
+        model.bodyMetricsEntry = BodyMetricsEntry(height: "175", weight: "70", useMetric: true)
 
         model.updateBodyMetrics(height: 175, weight: 70, units: .metric)
 
-        #expect(model.bodyMetricsInProgress() == nil)
+        #expect(model.bodyMetricsEntry == nil)
+    }
+
+    @Test("An answer that was typed but not submitted is given back for every step")
+    func everyStepGivesBackWhatWasNotSubmitted() throws {
+        let model = OnboardingModel(dependencies: try dependencies())
+
+        model.basicInfoEntry = BasicInfoEntry(
+            firstName: "Jericho", age: "30", gender: .male, experience: .beginner)
+        model.fitnessGoalEntry = FitnessGoalEntry(goal: .muscleGain)
+        model.workoutSetupEntry = WorkoutSetupEntry(
+            equipment: [.dumbbell], liftingUnits: .metric, daysPerWeek: 3, duration: 45)
+        model.limitationsEntry = LimitationsEntry(injuries: [], noneSelected: true)
+
+        #expect(model.basicInfoEntry?.firstName == "Jericho")
+        #expect(model.fitnessGoalEntry?.goal == .muscleGain)
+        #expect(model.workoutSetupEntry?.daysPerWeek == 3)
+        #expect(model.limitationsEntry?.noneSelected == true)
+    }
+
+    @Test("Submitting a step clears what that step was holding")
+    func submittingAStepClearsWhatItHeld() throws {
+        let model = OnboardingModel(dependencies: try dependencies())
+        model.basicInfoEntry = BasicInfoEntry(
+            firstName: "Jericho", age: "30", gender: .male, experience: .beginner)
+        model.fitnessGoalEntry = FitnessGoalEntry(goal: .muscleGain)
+        model.workoutSetupEntry = WorkoutSetupEntry(
+            equipment: [.dumbbell], liftingUnits: .metric, daysPerWeek: 3, duration: 45)
+        model.limitationsEntry = LimitationsEntry(injuries: [], noneSelected: true)
+
+        model.updateBasicInfo(
+            firstName: "Jericho", age: 30, gender: .male, experience: .beginner)
+        model.updateFitnessGoal(.muscleGain)
+        model.updateWorkoutSetup(
+            equipment: [.dumbbell], liftingUnits: .metric, daysPerWeek: 3, duration: 45)
+        model.updateLimitations(injuries: [])
+
+        #expect(model.basicInfoEntry == nil)
+        #expect(model.fitnessGoalEntry == nil)
+        #expect(model.workoutSetupEntry == nil)
+        #expect(model.limitationsEntry == nil)
     }
 }

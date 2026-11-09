@@ -8,6 +8,7 @@ struct WorkoutSetupView: View {
     // The longest session these answers can really build, which is the answer
     // itself unless the split cannot fill it.
     let longestSessionMinutes: ([Equipment], Int, Int) async -> Int
+    let onEntryChanged: (WorkoutSetupEntry) -> Void
     let onNext: ([Equipment], UnitSystem?, Int, Int) -> Void
     let onBack: () -> Void
 
@@ -22,6 +23,8 @@ struct WorkoutSetupView: View {
         initial: UserProfile? = nil,
         isEditing: Bool = false,
         bodyUnits: UnitSystem = .standard,
+        inProgress: WorkoutSetupEntry? = nil,
+        onEntryChanged: @escaping (WorkoutSetupEntry) -> Void = { _ in },
         longestSessionMinutes: @escaping ([Equipment], Int, Int) async -> Int = { _, _, duration in duration },
         onNext: @escaping ([Equipment], UnitSystem?, Int, Int) -> Void,
         onBack: @escaping () -> Void
@@ -29,13 +32,24 @@ struct WorkoutSetupView: View {
         self.stockedEquipment = stockedEquipment
         self.isEditing = isEditing
         self.bodyUnits = bodyUnits
+        self.onEntryChanged = onEntryChanged
         self.longestSessionMinutes = longestSessionMinutes
         self.onNext = onNext
         self.onBack = onBack
-        _selectedEquipment = State(initialValue: Set(initial?.availableEquipment ?? []))
-        _selectedDays = State(initialValue: (initial?.workoutDaysPerWeek).flatMap { $0 > 0 ? $0 : nil })
-        _selectedDuration = State(initialValue: (initial?.workoutDuration).flatMap { $0 > 0 ? $0 : nil })
-        _selectedLiftingUnits = State(initialValue: initial?.liftingUnitSystem)
+        _selectedEquipment = State(
+            initialValue: inProgress?.equipment ?? Set(initial?.availableEquipment ?? []))
+        _selectedDays = State(initialValue: inProgress?.daysPerWeek
+            ?? (initial?.workoutDaysPerWeek).flatMap { $0 > 0 ? $0 : nil })
+        _selectedDuration = State(initialValue: inProgress?.duration
+            ?? (initial?.workoutDuration).flatMap { $0 > 0 ? $0 : nil })
+        _selectedLiftingUnits = State(
+            initialValue: inProgress?.liftingUnits ?? initial?.liftingUnitSystem)
+    }
+
+    private var entry: WorkoutSetupEntry {
+        WorkoutSetupEntry(
+            equipment: selectedEquipment, liftingUnits: selectedLiftingUnits,
+            daysPerWeek: selectedDays, duration: selectedDuration)
     }
 
     // Bodyweight has no plates to read, so the units question stays unasked and unanswered.
@@ -167,6 +181,7 @@ struct WorkoutSetupView: View {
                 guard !Task.isCancelled else { return }
                 fallsShortAt = longest * 10 < duration * 9 ? longest : nil
             }
+            .onChange(of: entry, initial: true) { _, chosen in onEntryChanged(chosen) }
         }
     }
 
