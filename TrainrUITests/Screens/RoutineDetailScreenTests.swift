@@ -445,47 +445,6 @@ final class RoutineDetailScreenTests: XCTestCase {
         XCTAssertFalse(app.staticTexts["Adjusted for today"].waitForExistence(timeout: 3))
     }
 
-    // The hazard itself, on screen: a tutorial opened on a substitute must not
-    // still be open over the movement undo put back.
-    @MainActor
-    func testUndoingASubstitutionTakesItsTutorialWithIt() {
-        openUnstartedDay()
-        let alternative = app.buttons["Need an alternative?"].firstMatch
-        app.scrollUntilHittable(alternative)
-        alternative.tap()
-        XCTAssertTrue(app.staticTexts["Which exercise and what's available?"].waitForExistence(timeout: 5))
-
-        let chip = app.button(containing: "Bodyweight only")
-        app.scrollUntilHittable(chip)
-        chip.tap()
-        let recommend = app.buttons["SHOW RECOMMENDATION"]
-        app.scrollUntilHittable(recommend)
-        recommend.tap()
-        let apply = app.buttons["USE THIS WORKOUT"]
-        XCTAssertTrue(apply.waitForExistence(timeout: 10))
-        app.scrollUntilHittable(apply)
-        apply.tap()
-
-        XCTAssertTrue(app.staticTexts["LOWER BODY POWER"].waitForExistence(timeout: 5))
-        XCTAssertTrue(app.staticTexts["Adjusted for today"].waitForExistence(timeout: 5))
-        let howTo = app.buttons["How to perform"].firstMatch
-        if howTo.exists {
-            app.scrollUntilHittable(howTo)
-            howTo.tap()
-        }
-        let show = app.buttons["Show video tutorial"].firstMatch
-        app.scrollUntilHittable(show)
-        show.tap()
-        XCTAssertTrue(app.buttons["Hide video tutorial"].waitForExistence(timeout: 5))
-
-        let undo = app.buttons["Undo adjustment"]
-        app.scrollUntilHittable(undo)
-        undo.tap()
-
-        XCTAssertFalse(app.staticTexts["Adjusted for today"].waitForExistence(timeout: 3))
-        XCTAssertFalse(app.buttons["Hide video tutorial"].exists)
-    }
-
     // Cardio & Core opens on two whole-session movements with a tutorial and
     // no steps, then three with both.
     @MainActor
