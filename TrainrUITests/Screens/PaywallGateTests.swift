@@ -16,7 +16,7 @@ final class PaywallGateTests: XCTestCase {
         let app = XCUIApplication()
         app.launchArguments = [
             "-inMemoryStore", "-splashSeconds", "0",
-            "-seedFixture", fixture.rawValue, "-freeGenerationUsed"
+            "-seedFixture", fixture.rawValue, "-freeGenerationUsed", "-proLocked"
         ]
         app.launch()
         return app

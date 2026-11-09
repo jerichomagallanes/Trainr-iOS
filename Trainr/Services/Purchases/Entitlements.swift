@@ -83,6 +83,16 @@ final class Entitlements {
             hasRead = true
             return
         }
+        #if DEBUG
+        // A settled non-subscriber. Without it every gate test races a live
+        // read over the network, and a tap that gets there first reads as an
+        // answer the store has not given.
+        if ProcessInfo.processInfo.arguments.contains("-proLocked") {
+            hasRead = true
+            await readOffering()
+            return
+        }
+        #endif
         await readEntitlement()
         await readOffering()
     }

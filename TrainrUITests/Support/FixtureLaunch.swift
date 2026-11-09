@@ -36,7 +36,9 @@ extension XCUIApplication {
             "-inMemoryStore", "-seedFixture", fixture.rawValue,
             "-splashSeconds", "0"
         ]
-        if pro { app.launchArguments += ["-proUnlocked"] }
+        // Pinned either way: a gate decision taken while the read is still out
+        // is a wait, so without this every gated tap races the network.
+        app.launchArguments += [pro ? "-proUnlocked" : "-proLocked"]
         app.launchArguments += arguments
         app.launch()
         return app

@@ -16,10 +16,12 @@ nonisolated enum GenerationGate {
         used: Bool, isPro: Bool, hasRead: Bool, readFailed: Bool, canSell: Bool
     ) -> Decision {
         if !canSell { return .allowed }
-        // Read as the same state as a build that cannot sell: the store cannot
-        // say who this is and nothing more is coming, so nobody is asked for
-        // money on a guess, and spends() takes nothing for it either.
-        if readFailed { return .allowed }
+        // Read as the same state as a build that cannot sell, but only while the
+        // store has never answered at all: it cannot say who this is, so nobody
+        // is asked for money on a guess. A failure after an answer landed is a
+        // different thing, and throwing that answer away would unlock every
+        // gated week for the rest of the session.
+        if readFailed && !hasRead { return .allowed }
         // Without this a subscriber mid-read is the same false as someone who
         // has never paid, and the gate charges them for a week they own.
         if !hasRead { return .wait }
@@ -27,9 +29,11 @@ nonisolated enum GenerationGate {
     }
 
     // A subscriber spends nothing, so the free week is still there if they
-    // lapse, and neither does a build that cannot sell them the alternative,
-    // nor anyone the store has not answered for.
-    static func spends(isPro: Bool, hasRead: Bool, readFailed: Bool, canSell: Bool) -> Bool {
-        canSell && hasRead && !readFailed && !isPro
+    // lapse, and neither does a build that cannot sell them the alternative.
+    // The store's answer is deliberately not consulted beyond that: the first
+    // plan is written with no gate decision at all, so refusing to record it
+    // would hand the free week back on every launch the read fails.
+    static func spends(isPro: Bool, canSell: Bool) -> Bool {
+        canSell && !isPro
     }
 }

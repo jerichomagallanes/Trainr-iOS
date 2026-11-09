@@ -82,12 +82,18 @@ extension View {
     // Attached once, above everything: a purchase or a restore can answer after
     // the screen that asked for it has gone, and a notice with nothing left to
     // read it would otherwise surface on a screen that did not ask, long after.
-    func purchaseNotice(_ entitlements: Entitlements) -> some View {
-        alert(
-            entitlements.purchaseNotice ?? "",
-            isPresented: .constant(entitlements.purchaseNotice != nil)
-        ) {
-            Button(L10n.close) { entitlements.noticeShown() }
+    // The gate's notice comes through here too rather than through an alert of
+    // its own: SwiftUI presents only one of a stacked pair on the same view.
+    func purchaseNotice(_ entitlements: Entitlements, gate: Binding<String?>) -> some View {
+        let message = gate.wrappedValue ?? entitlements.purchaseNotice
+        return alert(message ?? "", isPresented: .constant(message != nil)) {
+            Button(L10n.close) {
+                if gate.wrappedValue != nil {
+                    gate.wrappedValue = nil
+                } else {
+                    entitlements.noticeShown()
+                }
+            }
         }
     }
 }

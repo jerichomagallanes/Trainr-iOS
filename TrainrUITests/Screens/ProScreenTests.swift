@@ -94,7 +94,7 @@ final class ProScreenTests: XCTestCase {
         app.launchArguments = [
             "-inMemoryStore", "-splashSeconds", "0",
             "-seedFixture", Fixture.finishedWeek.rawValue,
-            "-freeGenerationUsed", "-restoreFindsPro"
+            "-freeGenerationUsed", "-proLocked", "-restoreFindsPro"
         ]
         app.launch()
         XCTAssertTrue(app.staticTexts["YOUR WEEKLY WORKOUT PLAN"].waitForExistence(timeout: 30))

@@ -54,10 +54,7 @@ struct RootView: View {
         // One alert for the whole app rather than one per screen: the store can
         // answer after the screen that asked has gone, and a notice with
         // nothing left to read it would wait for a screen that did not ask.
-        .purchaseNotice(entitlements)
-        .alert(gateNotice ?? "", isPresented: .constant(gateNotice != nil)) {
-            Button(L10n.close) { gateNotice = nil }
-        }
+        .purchaseNotice(entitlements, gate: $gateNotice)
         // Pushed only once the draft has been through an update of its own: a
         // destination built in the same one captures this view while the model
         // is still nil, and keeps the empty screen it drew. Keyed on which
@@ -167,12 +164,8 @@ struct RootView: View {
     // then — left, or taken with the process — charges for it all the same.
     private var charge: () -> Void {
         { [entitlements, allowance] in
-            guard GenerationGate.spends(
-                isPro: entitlements.isPro,
-                hasRead: entitlements.hasRead,
-                readFailed: entitlements.readFailed,
-                canSell: entitlements.canSell
-            ) else { return }
+            guard GenerationGate.spends(isPro: entitlements.isPro, canSell: entitlements.canSell)
+            else { return }
             allowance.markUsed()
         }
     }

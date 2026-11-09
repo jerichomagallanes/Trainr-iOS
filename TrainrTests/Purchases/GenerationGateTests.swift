@@ -22,15 +22,8 @@ struct GenerationGateTests {
         )
     }
 
-    private func spends(
-        isPro: Bool = false,
-        hasRead: Bool = true,
-        readFailed: Bool = false,
-        canSell: Bool = true
-    ) -> Bool {
-        GenerationGate.spends(
-            isPro: isPro, hasRead: hasRead, readFailed: readFailed, canSell: canSell
-        )
+    private func spends(isPro: Bool = false, canSell: Bool = true) -> Bool {
+        GenerationGate.spends(isPro: isPro, canSell: canSell)
     }
 
     @Test("The first generation is free")
@@ -91,21 +84,25 @@ struct GenerationGateTests {
         #expect(decide(used: true, isPro: true, hasRead: false) == .wait)
     }
 
-    @Test("Nothing is spent on an answer the store has not given")
-    func nothingIsSpentOnAnAnswerTheStoreHasNotGiven() {
-        #expect(spends(hasRead: false) == false)
-    }
-
     // A failed read is not a pending one: nothing more is coming, so waiting
     // would strand the person. It falls in with the build that cannot sell,
-    // which lets the week through and takes nothing for it.
-    @Test("A read that failed lets the week through rather than asking")
-    func aReadThatFailedLetsTheWeekThrough() {
+    // which lets the week through rather than asking for money on a guess.
+    @Test("A read that was never answered at all lets the week through")
+    func aReadNeverAnsweredAtAllLetsTheWeekThrough() {
         #expect(decide(used: true, isPro: false, hasRead: false, readFailed: true) == .allowed)
     }
 
-    @Test("A read that failed spends nothing")
-    func aReadThatFailedSpendsNothing() {
-        #expect(spends(hasRead: false, readFailed: true) == false)
+    // The paywall re-reads, so a read can fail after one has already landed.
+    // Treating that as an unknown store would throw away an answer it gave and
+    // leave every gated week free for the rest of the session.
+    @Test("A read that failed after an answer landed still asks")
+    func aReadThatFailedAfterAnAnswerLandedStillAsks() {
+        #expect(decide(used: true, isPro: false, hasRead: true, readFailed: true) == .ask)
     }
+
+    @Test("A subscriber whose later read failed is still never asked")
+    func aSubscriberWhoseLaterReadFailedIsNeverAsked() {
+        #expect(decide(used: true, isPro: true, hasRead: true, readFailed: true) == .allowed)
+    }
+
 }
