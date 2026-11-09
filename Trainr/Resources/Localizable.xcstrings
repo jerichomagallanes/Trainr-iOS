@@ -4751,6 +4751,17 @@
         }
       }
     },
+    "pro_still_checking": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your subscription is still being checked. Try that again in a moment."
+          }
+        }
+      }
+    },
     "pro_subscribe": {
       "extractionState": "manual",
       "localizations": {

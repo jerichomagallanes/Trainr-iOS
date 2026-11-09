@@ -2,6 +2,16 @@ import SwiftUI
 
 struct WeeklyPlanView: View {
 
+    // Nothing is requested until the store has answered. A subscriber reads as
+    // not Pro for the whole of that gap, so the banner they pay to be rid of
+    // would be fetched and drawn before the answer landed. A read that failed
+    // leaves this false for the rest of the launch, like one that never came:
+    // an impression nobody serves costs less than showing a subscriber the one
+    // thing Pro removes.
+    static func showsAd(canShowAds: Bool, hasRead: Bool, isPro: Bool) -> Bool {
+        canShowAds && hasRead && !isPro
+    }
+
     @Environment(AppearancePreference.self) private var appearance
     @Environment(Entitlements.self) private var entitlements
     @Environment(Ads.self) private var ads
@@ -316,7 +326,11 @@ struct WeeklyPlanView: View {
             }
             // The one ad in the app, under the action rather than beside anything
             // that scrolls, and gone the moment Pro is active.
-            if ads.canShowAds && !entitlements.isPro {
+            if Self.showsAd(
+                canShowAds: ads.canShowAds,
+                hasRead: entitlements.hasRead,
+                isPro: entitlements.isPro
+            ) {
                 AdBanner(adUnitID: Ads.planBannerUnitID)
                     .padding(.bottom, Spacing.small)
                     .background(Color.surfaceRaised)

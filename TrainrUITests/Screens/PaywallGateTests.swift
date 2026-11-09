@@ -150,6 +150,28 @@ final class PaywallGateTests: XCTestCase {
         XCTAssertFalse(app.staticTexts["Unlock every week"].exists)
     }
 
+    // A tap in the gap before the store answers: a subscriber reads as not Pro
+    // for the whole of it, so letting it through gives a week away and asking
+    // for money asks someone to buy what they may already own.
+    @MainActor
+    func testATapBeforeTheStoreHasAnsweredIsToldToTryAgain() {
+        app = XCUIApplication()
+        app.launchArguments = [
+            "-inMemoryStore", "-splashSeconds", "0",
+            "-seedFixture", Fixture.finishedWeek.rawValue, "-freeGenerationUsed",
+            "-entitlementNeverAnswers"
+        ]
+        app.launch()
+        XCTAssertTrue(app.staticTexts["YOUR WEEKLY WORKOUT PLAN"].waitForExistence(timeout: 20))
+        app.buttons["GENERATE NEXT WEEK"].tap()
+        XCTAssertTrue(
+            app.staticTexts["Your subscription is still being checked. Try that again in a moment."]
+                .waitForExistence(timeout: 10)
+        )
+        XCTAssertFalse(app.staticTexts["Upgrade to Trainr Pro"].exists)
+        XCTAssertFalse(app.staticTexts["Generating your workout plan"].exists)
+    }
+
     // The very first plan is the free one, so a fresh install must not be asked.
     @MainActor
     func testTheFirstPlanIsNotAskedToPay() {
