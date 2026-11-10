@@ -83,7 +83,12 @@ struct AdjustmentAllowanceTests {
         _ allowance: StoredAdjustmentAllowance, for cycleID: String?
     ) -> AdjustmentGate.Decision {
         AdjustmentGate.decide(
-            cycleID: cycleID, included: allowance.includedCycleID(), isPro: false, canSell: true
+            cycleID: cycleID,
+            included: allowance.includedCycleID(),
+            isPro: false,
+            hasRead: true,
+            readFailed: false,
+            canSell: true
         )
     }
 }

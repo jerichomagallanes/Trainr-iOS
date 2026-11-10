@@ -14,9 +14,9 @@ enum HostModel {
 
 extension XCUIApplication {
 
-    // From the plan, through today's unstarted day and Something else, onto the context screen.
+    // From the plan, through today's unstarted day, onto the sheet of reasons.
     @MainActor
-    func openAdjustContext() {
+    func openAdjustSheet() {
         XCTAssertTrue(staticTexts["YOUR WEEKLY WORKOUT PLAN"].waitForExistence(timeout: 20))
         button(containing: "Lower Body Power").tap()
         XCTAssertTrue(staticTexts["LOWER BODY POWER"].waitForExistence(timeout: 5))
@@ -24,8 +24,20 @@ extension XCUIApplication {
         scrollUntilHittable(adjust)
         adjust.tap()
         XCTAssertTrue(staticTexts["What would help today?"].waitForExistence(timeout: 3))
+    }
+
+    @MainActor
+    func openAdjustContext() {
+        openAdjustSheet()
         button(containing: "Something else").tap()
         XCTAssertTrue(staticTexts["Tell us what you need"].waitForExistence(timeout: 5))
+    }
+
+    @MainActor
+    func openAdjustTime() {
+        openAdjustSheet()
+        button(containing: "I have less time").tap()
+        XCTAssertTrue(staticTexts["How much time do you have?"].waitForExistence(timeout: 5))
     }
 
     @MainActor

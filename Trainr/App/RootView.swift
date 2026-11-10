@@ -194,17 +194,23 @@ struct RootView: View {
             cycleID: cycleID,
             included: adjustments.includedCycleID(),
             isPro: entitlements.isPro,
+            hasRead: entitlements.hasRead,
+            readFailed: entitlements.readFailed,
             canSell: entitlements.canSell
         ) {
         case .allowed: action()
         case .ask: prompt = .adjust
+        case .wait: gateNotice = L10n.proStillChecking
         }
     }
 
     // Spent only on a change that was actually applied.
     private func spendAdjustmentCycle(_ cycleID: String) {
-        guard AdjustmentGate.spends(isPro: entitlements.isPro, canSell: entitlements.canSell)
-        else { return }
+        guard AdjustmentGate.spends(
+            isPro: entitlements.isPro,
+            hasRead: entitlements.hasRead,
+            canSell: entitlements.canSell
+        ) else { return }
         adjustments.consume(cycleID: cycleID)
     }
 
