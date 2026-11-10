@@ -445,7 +445,7 @@ struct ProPaywallView: View {
         Question(question: L10n.proFaqHumanQ, answer: L10n.proFaqHumanA),
         Question(question: L10n.proFaqRenewQ, answer: L10n.proFaqRenewA),
         Question(question: L10n.proFaqCancelQ, answer: L10n.proFaqCancelA),
-        Question(question: L10n.proFaqDevicesQ, answer: L10n.proFaqDevicesA)
+        Question(question: L10n.proFaqDevicesQ, answer: L10n.proFaqDevicesAApple)
     ]
 
 }

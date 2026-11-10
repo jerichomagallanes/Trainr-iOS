@@ -13,9 +13,9 @@ extension Gender {
 extension ExperienceLevel {
     var displayName: String {
         switch self {
-        case .beginner: L10n.beginnerLevel
-        case .intermediate: L10n.intermediateLevel
-        case .advanced: L10n.advancedLevel
+        case .beginner: L10n.beginner
+        case .intermediate: L10n.intermediate
+        case .advanced: L10n.advanced
         }
     }
 }

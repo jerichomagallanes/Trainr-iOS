@@ -407,6 +407,25 @@ final class OnboardingScreenTests: XCTestCase {
         XCTAssertTrue(app.buttons["GENERATE MY WORKOUT PLAN"].exists)
     }
 
+    // The picker and the card read from one string now, so a word changed in
+    // one place can no longer disagree with the other.
+    @MainActor
+    func testTheProfileReadsBackTheExperienceLevelItHolds() {
+        app = .launched(startingAt: "review")
+        XCTAssertTrue(app.staticTexts["YOUR FITNESS PROFILE"].waitForExistence(timeout: 20))
+        XCTAssertTrue(app.staticTexts["Beginner"].exists)
+
+        app.buttons["Edit Personal Information"].tap()
+        let advanced = app.button(startingWith: "Advanced")
+        XCTAssertTrue(advanced.waitForExistence(timeout: 5))
+        app.select(advanced)
+        app.buttons["SAVE"].tap()
+
+        XCTAssertTrue(app.staticTexts["YOUR FITNESS PROFILE"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["Advanced"].exists)
+        XCTAssertFalse(app.staticTexts["Beginner"].exists)
+    }
+
     @MainActor
     func testEditingAnAnswerFromTheReviewOpensJustThatStep() {
         app = .launched(startingAt: "review")
