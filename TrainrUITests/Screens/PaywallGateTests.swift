@@ -172,6 +172,26 @@ final class PaywallGateTests: XCTestCase {
         XCTAssertFalse(app.staticTexts["Generating your workout plan"].exists)
     }
 
+    // The adjustment gate is reached through its own flow and answers where the
+    // recommendation is sold, a step away from the screen that asks for it, so
+    // the wait it now returns is walked rather than read off the unit test.
+    @MainActor
+    func testAnAdjustmentBeforeTheStoreHasAnsweredIsToldToTryAgain() {
+        app = .launched(.longDay, arguments: ["-entitlementNeverAnswers"])
+        app.openAdjustTime()
+        let minutes = app.textFields["Other"]
+        minutes.tap()
+        minutes.typeText("35")
+        app.buttons["SHOW RECOMMENDATION"].tap()
+
+        XCTAssertTrue(
+            app.staticTexts["Your subscription is still being checked. Try that again in a moment."]
+                .waitForExistence(timeout: 10)
+        )
+        XCTAssertFalse(app.staticTexts["A shorter workout for today"].exists)
+        XCTAssertFalse(app.staticTexts["Upgrade to Trainr Pro"].exists)
+    }
+
     // The very first plan is the free one, so a fresh install must not be asked.
     @MainActor
     func testTheFirstPlanIsNotAskedToPay() {
