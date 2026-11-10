@@ -1,7 +1,5 @@
 import XCTest
 
-// "Not now" is the only way off the paywall. A bar that outgrew the window used
-// to leave it below the fold, inside a scroll nothing on screen announced.
 final class PaywallScreenTests: XCTestCase {
 
     private var app: XCUIApplication!
@@ -27,6 +25,9 @@ final class PaywallScreenTests: XCTestCase {
         XCTAssertTrue(app.staticTexts["Unlock every week"].waitForExistence(timeout: 20))
     }
 
+    // "Not now" is the only way off the paywall. A bar that outgrew the window
+    // used to leave it below the fold, inside a scroll nothing on screen
+    // announced.
     @MainActor
     func testTheWayOutOfThePaywallIsOnScreen() {
         openPaywall()
@@ -57,5 +58,20 @@ final class PaywallScreenTests: XCTestCase {
         app.scrollUntilHittable(notNow)
         XCTAssertTrue(notNow.isHittable)
         XCTAssertLessThanOrEqual(notNow.frame.maxY, window.maxY)
+    }
+
+    // This app sells through the App Store, so the answer has to name the
+    // account an iPhone owner actually has.
+    @MainActor
+    func testTheNewPhoneAnswerNamesTheAppStoreAndNeverGoogles() {
+        openPaywall()
+
+        let question = app.button(containing: "What happens if I get a new phone?")
+        app.scrollUntilHittable(question)
+        question.tap()
+
+        let answer = app.button(containing: "Sign in with the same Apple Account")
+        XCTAssertTrue(answer.waitForExistence(timeout: 5))
+        XCTAssertFalse(app.anything(containing: "Google").exists)
     }
 }

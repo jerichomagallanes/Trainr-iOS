@@ -70,7 +70,6 @@ nonisolated enum L10n {
     static var adsPrivacyOptions: String { String(localized: "ads_privacy_options") }
     static var advanced: String { String(localized: "advanced") }
     static var advancedDescription: String { String(localized: "advanced_description") }
-    static var advancedLevel: String { String(localized: "advanced_level") }
     static var age: String { String(localized: "age") }
     static var ageLabel: String { String(localized: "age_label") }
     static var alreadyFits: String { String(localized: "already_fits") }
@@ -94,7 +93,6 @@ nonisolated enum L10n {
     static var backToWorkoutPlan: String { String(localized: "back_to_workout_plan") }
     static var beginner: String { String(localized: "beginner") }
     static var beginnerDescription: String { String(localized: "beginner_description") }
-    static var beginnerLevel: String { String(localized: "beginner_level") }
     static var bmiAboutSources: String { String(localized: "bmi_about_sources") }
     static var bmiCalculationTitle: String { String(localized: "bmi_calculation_title") }
     static var bmiCategoriesTitle: String { String(localized: "bmi_categories_title") }
@@ -294,7 +292,6 @@ nonisolated enum L10n {
     static var injuriesConcernsLabel: String { String(localized: "injuries_concerns_label") }
     static var intermediate: String { String(localized: "intermediate") }
     static var intermediateDescription: String { String(localized: "intermediate_description") }
-    static var intermediateLevel: String { String(localized: "intermediate_level") }
     static func joinAndFormat(_ p1: String, _ p2: String) -> String {
         String.localizedStringWithFormat(String(localized: "join_and_format"), p1, p2)
     }
@@ -435,7 +432,8 @@ nonisolated enum L10n {
     static var proContinue: String { String(localized: "pro_continue") }
     static var proFaqCancelA: String { String(localized: "pro_faq_cancel_a") }
     static var proFaqCancelQ: String { String(localized: "pro_faq_cancel_q") }
-    static var proFaqDevicesA: String { String(localized: "pro_faq_devices_a") }
+    static var proFaqDevicesAApple: String { String(localized: "pro_faq_devices_a_apple") }
+    static var proFaqDevicesAGoogle: String { String(localized: "pro_faq_devices_a_google") }
     static var proFaqDevicesQ: String { String(localized: "pro_faq_devices_q") }
     static var proFaqFreeA: String { String(localized: "pro_faq_free_a") }
     static var proFaqFreeQ: String { String(localized: "pro_faq_free_q") }

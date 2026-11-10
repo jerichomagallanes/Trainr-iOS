@@ -553,17 +553,6 @@
         }
       }
     },
-    "advanced_level": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Advanced"
-          }
-        }
-      }
-    },
     "age": {
       "extractionState": "manual",
       "localizations": {
@@ -791,17 +780,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "New to working out or getting back into it."
-          }
-        }
-      }
-    },
-    "beginner_level": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Beginner"
           }
         }
       }
@@ -2811,17 +2789,6 @@
         }
       }
     },
-    "intermediate_level": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Intermediate"
-          }
-        }
-      }
-    },
     "join_and_format": {
       "extractionState": "manual",
       "localizations": {
@@ -4212,13 +4179,24 @@
         }
       }
     },
-    "pro_faq_devices_a": {
+    "pro_faq_devices_a_apple": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Pro follows your Google account, not the device. Sign in with the same Google account and tap Restore purchase. Trainr has no accounts of its own, so a purchase made on iOS does not unlock Android."
+            "value": "Pro follows your Apple Account, not the device. Sign in with the same Apple Account and tap Restore purchase. Trainr has no accounts of its own, so a purchase on one platform does not unlock the other."
+          }
+        }
+      }
+    },
+    "pro_faq_devices_a_google": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pro follows your Google account, not the device. Sign in with the same Google account and tap Restore purchase. Trainr has no accounts of its own, so a purchase on one platform does not unlock the other."
           }
         }
       }
@@ -4680,7 +4658,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Payment is charged to your Apple ID at confirmation. It renews automatically unless you cancel at least 24 hours before the period ends. Manage it in Settings."
+            "value": "Payment is charged to your Apple Account at confirmation. It renews automatically unless you cancel at least 24 hours before the period ends. Manage it in Settings."
           }
         }
       }

@@ -107,6 +107,13 @@ extension XCUIApplication {
         staticTexts.matching(NSPredicate(format: "label CONTAINS[c] %@", text)).firstMatch
     }
 
+    // A SwiftUI Button folds its whole label into one element, so wording that
+    // must appear nowhere on a screen cannot be looked for among static texts.
+    func anything(containing text: String) -> XCUIElement {
+        descendants(matching: .any)
+            .matching(NSPredicate(format: "label CONTAINS[c] %@", text)).firstMatch
+    }
+
     // A SwiftUI Link is a link on some iOS versions and a button on others, so
     // a test that names one must not also name its element type.
     func document(_ label: String) -> XCUIElement {
