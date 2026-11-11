@@ -94,7 +94,11 @@ final class AdjustContextScreenTests: XCTestCase {
 
         useNote.tap()
 
-        XCTAssertTrue(app.staticTexts["Couldn't read the note. Pick one below."].waitForExistence(timeout: 5))
+        // A read that fails at the load still brings the llama backend up first,
+        // which is around ten seconds on a freshly launched app and a fraction
+        // of a second for every read after it. Each test launches its own app,
+        // so this read is always the cold one.
+        XCTAssertTrue(app.staticTexts["Couldn't read the note. Pick one below."].waitForExistence(timeout: 60))
         XCTAssertTrue(app.staticTexts["Tell us what you need"].exists)
         XCTAssertTrue(app.button(containing: "The time I have").exists)
         // The read takes the focus with it, so the keyboard is gone by the time the hint lands.
