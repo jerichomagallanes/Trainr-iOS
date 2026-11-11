@@ -47,6 +47,9 @@ struct VideoTutorial: View {
         .aspectRatio(Self.aspectRatio, contentMode: .fit)
         .frame(maxWidth: .infinity)
         .clipShape(.rect(cornerRadius: 5))
+        // Load bearing. The web view is made once per identity and the clip is
+        // read off the player it was made with, so on a view that outlived a
+        // change of clip the player would go on showing the old exercise.
         .id(video.id)
     }
 }

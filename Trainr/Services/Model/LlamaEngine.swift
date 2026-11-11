@@ -99,7 +99,7 @@ actor LlamaEngine: LocalModel {
     ) async -> CompletionResult {
         session.interrupt.reset()
         let timer = Task {
-            guard (try? await Task.sleep(for: timeout)) != nil else { return }
+            guard await Self.spend(timeout) else { return }
             session.interrupt.raise(.timeout)
         }
         defer { timer.cancel() }
@@ -120,6 +120,19 @@ actor LlamaEngine: LocalModel {
         case .cancelled, .memory: return .cancelled
         case .none: return .failed
         }
+    }
+
+    // Waits out the budget a slice at a time and charges each slice with what
+    // it took, so an hour spent suspended mid-read costs the one slice it
+    // interrupted. Returns false when the wait was cancelled instead.
+    private static func spend(_ timeout: Duration) async -> Bool {
+        var budget = ReadBudget(budget: timeout, slice: readSlice)
+        while !budget.isSpent {
+            let started = ContinuousClock.now
+            guard (try? await Task.sleep(for: budget.nextSlice)) != nil else { return false }
+            budget.charge(ContinuousClock.now - started)
+        }
+        return true
     }
 
     private func memoryWarning() {
@@ -143,6 +156,8 @@ actor LlamaEngine: LocalModel {
             waiting.removeFirst().resume()
         }
     }
+
+    private static let readSlice = Duration.seconds(1)
 
     private static var threads: Int32 {
         Int32(max(2, min(6, ProcessInfo.processInfo.activeProcessorCount - 1)))

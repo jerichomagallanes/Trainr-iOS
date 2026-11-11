@@ -15,7 +15,7 @@ name: UI tests
 # simulator stalls; a test that fails twice still fails the job.
 on:
   pull_request:
-    branches: [main]
+    branches: [main, version/2.0]
     paths-ignore:
       - '**/*.md'
       - 'docs/**'

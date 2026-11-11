@@ -477,7 +477,7 @@ enum PaywallComparison {
     }
 }
 
-private struct PlanCard: View {
+struct PlanCard: View {
     let term: String
     let price: String
     let billing: String
@@ -526,22 +526,35 @@ private struct PlanCard: View {
         .frame(maxWidth: .infinity)
     }
 
-    // The term and what it bills take the line's slack; the price keeps its own
-    // width, because a price that is cut is a price the screen has not stated.
+    // The price shares the line while the term and what it bills still have
+    // room for their own words on it, and takes a line of its own once they do
+    // not: a term cut mid-word is a plan the screen has not stated, and the
+    // price is the one thing on the card that may not be cut at all.
     private var spread: some View {
-        HStack(spacing: Spacing.small) {
+        ViewThatFits(in: .horizontal) {
+            HStack(spacing: Spacing.small) {
+                terms
+                Spacer(minLength: Spacing.small)
+                amount
+            }
             VStack(alignment: .leading, spacing: 2) {
-                Text(term).font(.labelMedium).foregroundStyle(ink)
-                Text(billing).font(.body12).foregroundStyle(subdued)
+                terms
+                amount
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            Text(price)
-                .font(.sectionTitle)
-                .foregroundStyle(ink)
-                .fixedSize(horizontal: false, vertical: true)
-                .layoutPriority(1)
         }
         .padding(.vertical, Spacing.small)
         .padding(.horizontal, Spacing.card)
+    }
+
+    private var terms: some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text(term).font(.labelMedium).foregroundStyle(ink)
+            Text(billing).font(.body12).foregroundStyle(subdued)
+        }
+    }
+
+    private var amount: some View {
+        Text(price).font(.sectionTitle).foregroundStyle(ink)
     }
 }
