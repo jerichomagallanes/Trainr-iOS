@@ -45,16 +45,27 @@ extension XCUIApplication {
     }
 
     // Dragged along the left margin so the gesture never lands on a text field or a swipeable row.
+    // Hittability alone is not far enough: it turns true on the first sliver of
+    // an element, so a control that stops 130 points below the fold passes it
+    // while a drag aimed at the control's own centre starts off the screen and
+    // lands nothing. The bottom edge has to come inside the window too. The
+    // scroll stops early once a drag no longer moves the element, because a
+    // scroll view at its end will not give any more however many attempts are
+    // left, and an element that is simply taller than the screen never fits.
     @MainActor
     func scrollUntilHittable(_ element: XCUIElement, attempts: Int = 12) {
         var remaining = attempts
-        while !element.isHittable && remaining > 0 {
+        while remaining > 0 {
+            if element.isHittable, element.frame.maxY <= windows.firstMatch.frame.maxY { break }
+            let before = element.exists ? element.frame : .null
             coordinate(withNormalizedOffset: CGVector(dx: 0.03, dy: 0.8))
                 .press(
                     forDuration: 0.05,
                     thenDragTo: coordinate(withNormalizedOffset: CGVector(dx: 0.03, dy: 0.25))
                 )
             remaining -= 1
+            Thread.sleep(forTimeInterval: 0.3)
+            if !before.isNull, element.exists, element.frame == before { break }
         }
         Thread.sleep(forTimeInterval: 0.4)
     }
