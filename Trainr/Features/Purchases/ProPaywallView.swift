@@ -39,7 +39,18 @@ struct ProPaywallView: View {
         }
     }
 
-    private var packages: [Package] { entitlements.offering?.availablePackages ?? [] }
+    private var packages: [Package] {
+        Self.sellable(entitlements.offering?.availablePackages ?? [])
+    }
+
+    private static let sold: Set<PackageType> = [.monthly, .annual, .lifetime]
+
+    // The three Trainr sells, the way Android filters them. A fourth added to
+    // the offering server-side would otherwise draw here with a raw store title
+    // and a blank billing line, without any release.
+    static func sellable(_ packages: [Package]) -> [Package] {
+        packages.filter { sold.contains($0.packageType) }
+    }
 
     private var title: some View {
         VStack(alignment: .leading, spacing: Spacing.extraSmall) {
@@ -303,9 +314,9 @@ struct ProPaywallView: View {
 
     private func planCard(_ package: Package, stacked: Bool = false) -> some View {
         PlanCard(
-            term: term(package),
+            term: Self.term(package),
             price: package.storeProduct.localizedPriceString,
-            billing: billing(package),
+            billing: Self.billing(package),
             saved: saving(on: package),
             isSelected: selected?.identifier == package.identifier,
             stacked: stacked,
@@ -358,10 +369,10 @@ struct ProPaywallView: View {
         guard let selected else { return L10n.proSubscribe }
         return selected.packageType == .lifetime
             ? L10n.proBuyLifetime
-            : L10n.proSubscribeTo(term(selected))
+            : L10n.proSubscribeTo(Self.term(selected))
     }
 
-    private func term(_ package: Package) -> String {
+    static func term(_ package: Package) -> String {
         switch package.packageType {
         case .annual: L10n.proYearly
         case .monthly: L10n.proMonthly
@@ -370,7 +381,7 @@ struct ProPaywallView: View {
         }
     }
 
-    private func billing(_ package: Package) -> String {
+    static func billing(_ package: Package) -> String {
         switch package.packageType {
         case .annual: L10n.proBilledAnnually
         case .monthly: L10n.proBilledMonthly

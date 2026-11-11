@@ -9,10 +9,10 @@ struct RootView: View {
         case home
     }
 
-    @State private var dependencies = AppDependencies.shared
+    @State private var dependencies: AppDependencies
     @State private var appearance = AppearancePreference()
-    @State private var entitlements = Entitlements(breadcrumbs: AppDependencies.shared.breadcrumbs)
-    @State private var ads = Ads(breadcrumbs: AppDependencies.shared.breadcrumbs)
+    @State private var entitlements: Entitlements
+    @State private var ads: Ads
     private let allowance: any FreeGenerationAllowance = StoredGenerationAllowance()
     private let adjustments: any AdjustmentAllowance = StoredAdjustmentAllowance()
     @State private var onboarding: OnboardingModel?
@@ -35,6 +35,12 @@ struct RootView: View {
     // a subscriber to buy what they already own.
     @State private var gateNotice: String?
     @State private var afterPrompt: Route?
+
+    init(dependencies: AppDependencies) {
+        _dependencies = State(initialValue: dependencies)
+        _entitlements = State(initialValue: Entitlements(breadcrumbs: dependencies.breadcrumbs))
+        _ads = State(initialValue: Ads(breadcrumbs: dependencies.breadcrumbs))
+    }
 
     var body: some View {
         NavigationStack(path: $path) {
@@ -118,8 +124,8 @@ struct RootView: View {
         case .home:
             WeeklyPlanView(
                 dependencies: dependencies,
-                versionName: Self.version,
-                buildNumber: Self.build,
+                versionName: AppVersion.name,
+                buildNumber: AppVersion.build,
                 onDayTap: { path.append(.routineDetail(dayNumber: $0.dayNumber, weekNumber: nil)) },
                 onTrackProgress: { path.append(.weeklyProgress) },
                 onStartWorkout: {
@@ -236,14 +242,6 @@ struct RootView: View {
         }
         #endif
         return 2
-    }
-
-    static var version: String {
-        Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? ""
-    }
-
-    static var build: Int {
-        Int(Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "") ?? 0
     }
 
     @ViewBuilder
