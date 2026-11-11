@@ -15,7 +15,7 @@ name: UI tests
 # simulator stalls; a test that fails twice still fails the job.
 on:
   pull_request:
-    branches: [main]
+    branches: [main, version/2.0]
     paths-ignore:
       - '**/*.md'
       - 'docs/**'
@@ -47,11 +47,11 @@ jobs:
       matrix:
         include:
           - shard: onboarding
-            classes: OnboardingScreenTests BMISourcesScreenTests OnboardingFlowTests SplashAndOrientationTests TrainrUITests
+            classes: OnboardingScreenTests BMISourcesScreenTests OnboardingFlowTests SplashAndOrientationTests TrainrUITests StaysWhereYouLeftItTests KeepsWhatYouTypedTests
           - shard: routine
-            classes: RoutineDetailScreenTests AdjustContextScreenTests UnstuckJourneyTests ExerciseSetTableScreenTests CompletionScreenTests
+            classes: RoutineDetailScreenTests AdjustContextScreenTests UnstuckJourneyTests ExerciseSetTableScreenTests CompletionScreenTests TutorialFollowsItsExerciseTests
           - shard: plan
-            classes: WeeklyPlanScreenTests WeeklyProgressScreenTests GeneratingScreenTests PlanAfterEmptyingTests PaywallGateTests TimerFinishScreenTests
+            classes: WeeklyPlanScreenTests WeeklyProgressScreenTests GeneratingScreenTests PlanAfterEmptyingTests PaywallGateTests TimerFinishScreenTests ProScreenTests PaywallScreenTests WorkoutSetupScreenTests
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
