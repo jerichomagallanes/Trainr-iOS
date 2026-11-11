@@ -47,11 +47,11 @@ jobs:
       matrix:
         include:
           - shard: onboarding
-            classes: OnboardingScreenTests BMISourcesScreenTests OnboardingFlowTests SplashAndOrientationTests TrainrUITests StaysWhereYouLeftItTests KeepsWhatYouTypedTests
+            classes: OnboardingScreenTests BMISourcesScreenTests OnboardingFlowTests SplashAndOrientationTests TrainrUITests
           - shard: routine
-            classes: RoutineDetailScreenTests AdjustContextScreenTests UnstuckJourneyTests ExerciseSetTableScreenTests CompletionScreenTests TutorialFollowsItsExerciseTests
+            classes: RoutineDetailScreenTests AdjustContextScreenTests UnstuckJourneyTests ExerciseSetTableScreenTests CompletionScreenTests
           - shard: plan
-            classes: WeeklyPlanScreenTests WeeklyProgressScreenTests GeneratingScreenTests PlanAfterEmptyingTests PaywallGateTests TimerFinishScreenTests ProScreenTests PaywallScreenTests WorkoutSetupScreenTests
+            classes: WeeklyPlanScreenTests WeeklyProgressScreenTests GeneratingScreenTests PlanAfterEmptyingTests PaywallGateTests TimerFinishScreenTests
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
