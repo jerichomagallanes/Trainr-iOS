@@ -1,8 +1,9 @@
 import Foundation
 import SwiftData
 
-// Views and models speak in the value types; the records stay in here.
-final class TrainingStore {
+// Views and models speak in the value types; the records stay in here. Not
+// final: a test counts what a screen reads by standing in front of this.
+class TrainingStore {
 
     enum StoreError: Error {
         case noSuchUser(UUID)
@@ -122,28 +123,27 @@ final class TrainingStore {
 
     func plans(for userID: UUID) throws -> [WeeklyPlan] {
         guard let owner = try userRecord(id: userID) else { return [] }
-        return owner.plans
-            .sorted { $0.weekNumber > $1.weekNumber }
-            .map(\.plan)
+        return owner.plans.sorted { $0.weekNumber > $1.weekNumber }.map(\.plan)
     }
 
-    func plan(for userID: UUID, weekNumber: Int) throws -> WeeklyPlan? {
-        try userRecord(id: userID)?.plans
-            .first { $0.weekNumber == weekNumber }?.plan
+    // No week number asks for the newest, the only week home draws: hydrating
+    // every week stored to pick it out costs more with every week trained.
+    func plan(for userID: UUID, weekNumber: Int?) throws -> WeeklyPlan? {
+        try newestPlanRecord(userID: userID, weekNumber: weekNumber)?.plan
     }
 
     func weekOutline(userID: UUID, weekNumber: Int?) throws -> WeekOutline? {
-        let predicate: Predicate<WeeklyPlanRecord>
-        if let number = weekNumber {
-            predicate = #Predicate { $0.user?.id == userID && $0.weekNumber == number }
-        } else {
-            predicate = #Predicate { $0.user?.id == userID }
-        }
-        var descriptor = FetchDescriptor(
-            predicate: predicate, sortBy: [SortDescriptor(\WeeklyPlanRecord.weekNumber, order: .reverse)]
-        )
+        try newestPlanRecord(userID: userID, weekNumber: weekNumber)?.outline
+    }
+
+    private func newestPlanRecord(userID: UUID, weekNumber: Int?) throws -> WeeklyPlanRecord? {
+        let predicate: Predicate<WeeklyPlanRecord> = weekNumber.map { number in
+            #Predicate { $0.user?.id == userID && $0.weekNumber == number }
+        } ?? #Predicate { $0.user?.id == userID }
+        let newestFirst = SortDescriptor(\WeeklyPlanRecord.weekNumber, order: .reverse)
+        var descriptor = FetchDescriptor(predicate: predicate, sortBy: [newestFirst])
         descriptor.fetchLimit = 1
-        return try context.fetch(descriptor).first?.outline
+        return try context.fetch(descriptor).first
     }
 
     func weekOutline(dayID: UUID) throws -> WeekOutline? {
