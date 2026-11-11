@@ -600,6 +600,9 @@ nonisolated enum L10n {
     static var startWorkoutOverTitle: String { String(localized: "start_workout_over_title") }
     static var statusInProgress: String { String(localized: "status_in_progress") }
     static var stopTimer: String { String(localized: "stop_timer") }
+    static var storeUnreadableBody: String { String(localized: "store_unreadable_body") }
+    static var storeUnreadableRetry: String { String(localized: "store_unreadable_retry") }
+    static var storeUnreadableTitle: String { String(localized: "store_unreadable_title") }
     static var submit: String { String(localized: "submit") }
     static var tellUsAboutYourself: String { String(localized: "tell_us_about_yourself") }
     static var tellUsHowItWent: String { String(localized: "tell_us_how_it_went") }

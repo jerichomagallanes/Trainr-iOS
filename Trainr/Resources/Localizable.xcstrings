@@ -5711,6 +5711,39 @@
         }
       }
     },
+    "store_unreadable_body": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your plans and the sets you have logged are still on this phone, but Trainr could not open them. Close Trainr and open it again. Nothing you did now would be saved, so Trainr will not go on until it can read them."
+          }
+        }
+      }
+    },
+    "store_unreadable_retry": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Try again"
+          }
+        }
+      }
+    },
+    "store_unreadable_title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trainr cannot open your training data"
+          }
+        }
+      }
+    },
     "submit": {
       "extractionState": "manual",
       "localizations": {

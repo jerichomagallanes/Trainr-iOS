@@ -8,13 +8,11 @@ struct SplashView: View {
                 .scaledToFit()
                 .frame(width: 180)
                 .accessibilityLabel(L10n.appName)
-            Text(L10n.versionFormat(Self.version))
+            Text(L10n.versionFormat(AppVersion.name))
                 .font(.body14)
                 .foregroundStyle(Color.onSurface)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.surfacePage)
     }
-
-    private static var version: String { RootView.version }
 }

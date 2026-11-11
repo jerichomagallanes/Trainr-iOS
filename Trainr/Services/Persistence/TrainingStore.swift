@@ -54,9 +54,7 @@ final class TrainingStore {
     // Replaces a profile carrying this id, and the old plans cascade with it:
     // redoing onboarding is a fresh start.
     func saveUser(_ profile: UserProfile) throws {
-        if let existing = try userRecord(id: profile.id) {
-            context.delete(existing)
-        }
+        if let existing = try userRecord(id: profile.id) { context.delete(existing) }
         context.insert(UserRecord(profile))
         try context.save()
     }
@@ -64,17 +62,11 @@ final class TrainingStore {
     // One save, because saving the user cascades away every week they have
     // trained: written apart, a week that does not land leaves no plan at all.
     func saveUser(_ profile: UserProfile, startingWith plan: WeeklyPlan) throws {
-        do {
-            if let existing = try userRecord(id: profile.id) {
-                context.delete(existing)
-            }
+        try saving {
+            if let existing = try userRecord(id: profile.id) { context.delete(existing) }
             let owner = UserRecord(profile)
             context.insert(owner)
             context.insert(planRecord(plan, owner: owner))
-            try context.save()
-        } catch {
-            context.rollback()
-            throw error
         }
     }
 
@@ -110,7 +102,7 @@ final class TrainingStore {
         guard let owner = try userRecord(id: plan.userID) else {
             throw StoreError.noSuchUser(plan.userID)
         }
-        do {
+        try saving {
             // Every week carrying this number, not just the first: a store that
             // somehow holds two should not be left holding one.
             for existing in owner.plans where existing.weekNumber == plan.weekNumber {
@@ -118,12 +110,6 @@ final class TrainingStore {
                 context.delete(existing)
             }
             context.insert(planRecord(plan, owner: owner))
-            try context.save()
-        } catch {
-            // The delete is pending until the save: left behind, the next
-            // unrelated save in the app commits it and the week goes anyway.
-            context.rollback()
-            throw error
         }
     }
 
@@ -179,9 +165,10 @@ final class TrainingStore {
 
     func deletePlan(id: UUID) throws {
         guard let record = try planRecord(id: id) else { return }
-        try detachNotes(from: record.days)
-        context.delete(record)
-        try context.save()
+        try saving {
+            try detachNotes(from: record.days)
+            context.delete(record)
+        }
     }
 
     // MARK: - Days
@@ -579,6 +566,18 @@ extension TrainingStore {
         try context.fetch(FetchDescriptor<TrainingPreferenceRecord>(
             predicate: #Predicate { $0.id == id }
         )).first
+    }
+
+    // A delete left pending is committed by the next unrelated save in the app.
+    // rollback() drops pending inserts and deletes but, on iOS 26, not edits.
+    private func saving(_ work: () throws -> Void) throws {
+        do {
+            try work()
+            try context.save()
+        } catch {
+            context.rollback()
+            throw error
+        }
     }
 
     // A note outlives the day it was written against, but it must not keep

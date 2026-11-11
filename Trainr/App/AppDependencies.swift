@@ -51,26 +51,24 @@ final class AppDependencies {
         }
     }
 
-    // Built once for the process: every `live()` call opens a store that stays
-    // open until it deallocates.
-    static let shared = live()
+    static func openTrainingStore(_ breadcrumbs: any Breadcrumbs) throws -> ModelContainer {
+        try TrainingStore.container(inMemory: startsFresh, breadcrumbs: breadcrumbs)
+    }
 
-    static func live() -> AppDependencies {
-        let breadcrumbs = CrashlyticsBreadcrumbs()
+    // Nothing, when the training data will not open. There is deliberately no
+    // in-memory stand-in: an upgrade is when that open is most likely to fail,
+    // and a week trained into a store that dies with the process is worse than
+    // a session the app refuses to start.
+    static func live(
+        breadcrumbs: any Breadcrumbs = CrashlyticsBreadcrumbs(),
+        open: @MainActor (any Breadcrumbs) throws -> ModelContainer = openTrainingStore
+    ) -> AppDependencies? {
         let container: ModelContainer
         do {
-            container = try TrainingStore.container(inMemory: startsFresh, breadcrumbs: breadcrumbs)
+            container = try open(breadcrumbs)
         } catch {
-            // In-memory keeps the session alive long enough to write the
-            // crash report that explains the broken database.
-            breadcrumbs.record("store: persistent container failed, using memory")
-            do {
-                container = try TrainingStore.container(inMemory: true)
-            } catch {
-                // Naming the reason here is what puts it in the crash report.
-                breadcrumbs.record("store: memory container failed too: \(error)")
-                fatalError("Trainr cannot open a data store: \(error)")
-            }
+            breadcrumbs.report(error, doing: "openTrainingStore")
+            return nil
         }
         let store = TrainingStore(container: container)
         #if DEBUG
