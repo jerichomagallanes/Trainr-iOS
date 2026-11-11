@@ -360,6 +360,21 @@ final class OnboardingScreenTests: XCTestCase {
         XCTAssertTrue(app.staticTexts["None"].exists)
     }
 
+    // The chip was a plain button with an undescribed tick, so nothing outside
+    // it could tell a ticked chip from an unticked one.
+    @MainActor
+    func testAChipReportsWhetherItIsTicked() {
+        app = .launched(startingAt: "limitations")
+        XCTAssertTrue(app.staticTexts["LET'S KEEP YOU SAFE"].waitForExistence(timeout: 20))
+
+        let chip = app.switches["Knee Problems"]
+        XCTAssertEqual(chip.value as? String, "0")
+
+        chip.tap()
+
+        XCTAssertEqual(chip.value as? String, "1")
+    }
+
     // MARK: - Review
 
     // A pinned bar that grows with the text setting leaves the step a strip:
@@ -391,6 +406,18 @@ final class OnboardingScreenTests: XCTestCase {
         )
         XCTAssertTrue(app.buttons["Back"].exists)
         XCTAssertFalse(app.buttons["Close"].exists)
+    }
+
+    // The picker and the read-back drew the gender from two string keys holding
+    // the same English, so only one of them was ever pinned.
+    @MainActor
+    func testTheProfileReadsBackTheGenderItHolds() {
+        app = .launched(startingAt: "review")
+        XCTAssertTrue(app.staticTexts["YOUR FITNESS PROFILE"].waitForExistence(timeout: 20))
+
+        XCTAssertTrue(app.staticTexts["Male"].exists)
+        XCTAssertFalse(app.staticTexts["Female"].exists)
+        XCTAssertFalse(app.staticTexts["Other"].exists)
     }
 
     @MainActor

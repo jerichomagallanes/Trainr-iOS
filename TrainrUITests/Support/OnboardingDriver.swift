@@ -92,7 +92,7 @@ extension XCUIApplication {
 
     @MainActor
     func submitLimitations(injury: String? = "Lower Back Pain") {
-        if let injury { buttons[injury].tap() }
+        if let injury { switches[injury].tap() }
         buttons["SUBMIT"].tap()
         XCTAssertTrue(staticTexts["YOUR FITNESS PROFILE"].waitForExistence(timeout: 5))
     }

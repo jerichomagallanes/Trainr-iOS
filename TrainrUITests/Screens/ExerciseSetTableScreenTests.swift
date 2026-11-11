@@ -17,7 +17,7 @@ final class ExerciseSetTableScreenTests: XCTestCase {
     }
 
     private var setTicks: XCUIElementQuery {
-        app.switches.matching(NSPredicate(format: "label == %@", "Mark set as complete"))
+        app.ticks("Set complete", done: false)
     }
 
     // Started from the tick box at the right edge so the swipe has room to travel.
@@ -69,7 +69,7 @@ final class ExerciseSetTableScreenTests: XCTestCase {
         XCTAssertEqual(first.label, "Set 1 reps, target 12")
         XCTAssertEqual(first.value as? String ?? "", "")
         XCTAssertEqual(setTicks.count, 13)
-        XCTAssertFalse(app.switches["Mark set as not complete"].exists)
+        XCTAssertFalse(app.ticks("Set complete", done: true).firstMatch.exists)
     }
 
     @MainActor
@@ -77,7 +77,7 @@ final class ExerciseSetTableScreenTests: XCTestCase {
         open("Lower Body Power")
         setTicks.firstMatch.tap()
 
-        XCTAssertTrue(app.switches["Mark set as not complete"].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.ticks("Set complete", done: true).firstMatch.waitForExistence(timeout: 3))
         XCTAssertEqual(setTicks.count, 12)
     }
 

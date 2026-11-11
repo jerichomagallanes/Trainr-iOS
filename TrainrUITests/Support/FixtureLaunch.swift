@@ -95,6 +95,13 @@ extension XCUIApplication {
         XCTAssertTrue(element.isSelected)
     }
 
+    // A tick wears one label whichever way it stands, so which state it is in
+    // is its value rather than its wording.
+    func ticks(_ label: String, done: Bool) -> XCUIElementQuery {
+        switches.matching(NSPredicate(
+            format: "label == %@ AND value == %@", label, done ? "Completed" : "Not completed"))
+    }
+
     func button(startingWith prefix: String) -> XCUIElement {
         buttons.matching(NSPredicate(format: "label BEGINSWITH %@", prefix)).firstMatch
     }

@@ -202,6 +202,7 @@ nonisolated enum L10n {
     static var errorEnterName: String { String(localized: "error_enter_name") }
     static var errorEnterWeight: String { String(localized: "error_enter_weight") }
     static var estimatedWeightNote: String { String(localized: "estimated_weight_note") }
+    static var exerciseComplete: String { String(localized: "exercise_complete") }
     static var exerciseInProgress: String { String(localized: "exercise_in_progress") }
     static func exercisesCompletedOfFormat(_ p1: Int, _ p2: Int) -> String {
         String.localizedStringWithFormat(String(localized: "exercises_completed_of_format"), p1, p2)
@@ -228,7 +229,6 @@ nonisolated enum L10n {
     static var feedbackYesEquipment: String { String(localized: "feedback_yes_equipment") }
     static var feedbackYesTime: String { String(localized: "feedback_yes_time") }
     static var female: String { String(localized: "female") }
-    static var femaleGender: String { String(localized: "female_gender") }
     static var finishEarly: String { String(localized: "finish_early") }
     static var finishEarlyCardMessage: String { String(localized: "finish_early_card_message") }
     static var finishEarlyCardTitle: String { String(localized: "finish_early_card_title") }
@@ -313,11 +313,6 @@ nonisolated enum L10n {
     static var lowerBackPainInjury: String { String(localized: "lower_back_pain_injury") }
     static var mainGoalLabel: String { String(localized: "main_goal_label") }
     static var male: String { String(localized: "male") }
-    static var maleGender: String { String(localized: "male_gender") }
-    static var markExerciseComplete: String { String(localized: "mark_exercise_complete") }
-    static var markExerciseIncomplete: String { String(localized: "mark_exercise_incomplete") }
-    static var markSetComplete: String { String(localized: "mark_set_complete") }
-    static var markSetIncomplete: String { String(localized: "mark_set_incomplete") }
     static var measurementsDescription: String { String(localized: "measurements_description") }
     static var measurementsLabel: String { String(localized: "measurements_label") }
     static var metric: String { String(localized: "metric") }
@@ -370,7 +365,6 @@ nonisolated enum L10n {
         String.localizedStringWithFormat(String(localized: "original_workout_planned_format"), p1)
     }
     static var other: String { String(localized: "other") }
-    static var otherGender: String { String(localized: "other_gender") }
     static var outcomeConfusing: String { String(localized: "outcome_confusing") }
     static var outcomeDiscomfort: String { String(localized: "outcome_discomfort") }
     static var outcomeHelped: String { String(localized: "outcome_helped") }
@@ -570,6 +564,7 @@ nonisolated enum L10n {
         String.localizedStringWithFormat(String(localized: "set_cell_target"), p1, p2)
     }
     static var setColumn: String { String(localized: "set_column") }
+    static var setComplete: String { String(localized: "set_complete") }
     static func setNumberLabel(_ p1: String) -> String {
         String.localizedStringWithFormat(String(localized: "set_number_label"), p1)
     }

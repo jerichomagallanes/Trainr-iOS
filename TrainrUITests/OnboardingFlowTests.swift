@@ -73,7 +73,7 @@ final class OnboardingFlowTests: XCTestCase {
         setupNext.tap()
 
         XCTAssertTrue(app.staticTexts["LET'S KEEP YOU SAFE"].waitForExistence(timeout: 5))
-        app.buttons["Lower Back Pain"].tap()
+        app.switches["Lower Back Pain"].tap()
         app.buttons["SUBMIT"].tap()
 
     }
