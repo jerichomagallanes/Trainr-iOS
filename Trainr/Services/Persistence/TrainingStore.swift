@@ -51,12 +51,12 @@ final class TrainingStore {
 
     // MARK: - Profile
 
-    // Replaces a profile carrying this id, and the old plans cascade with it:
-    // redoing onboarding is a fresh start.
+    // Replacing a profile cascades its plans away: redoing onboarding is a fresh start.
     func saveUser(_ profile: UserProfile) throws {
-        if let existing = try userRecord(id: profile.id) { context.delete(existing) }
-        context.insert(UserRecord(profile))
-        try context.save()
+        try saving {
+            if let existing = try userRecord(id: profile.id) { context.delete(existing) }
+            context.insert(UserRecord(profile))
+        }
     }
 
     // One save, because saving the user cascades away every week they have
@@ -569,7 +569,8 @@ extension TrainingStore {
     }
 
     // A delete left pending is committed by the next unrelated save in the app.
-    // rollback() drops pending inserts and deletes but, on iOS 26, not edits.
+    // rollback() always keeps the row on disk, but iOS 26 hands back neither the
+    // deleted object (a relaunch to read it) nor an edit (a note stays detached).
     private func saving(_ work: () throws -> Void) throws {
         do {
             try work()
