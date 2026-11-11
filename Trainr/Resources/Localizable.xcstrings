@@ -5717,7 +5717,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Your plans and the sets you have logged are still on this phone, but Trainr could not open them. Close Trainr and open it again. Nothing you did now would be saved, so Trainr will not go on until it can read them."
+            "value": "Your plans and the sets you have logged are still on this phone, but Trainr could not open them. Try again below, and if that does not work, close Trainr and open it again. Nothing you did now would be saved, so Trainr will not go on until it can read them."
           }
         }
       }
