@@ -83,18 +83,27 @@ final class WeeklyPlanModel {
     }
 
     func refresh() {
-        let plans = dependencies.attempt("plans", { try currentUserPlans() }) ?? []
-        let newest = plans.max { $0.weekNumber < $1.weekNumber }
-        let stored = requestedWeekNumber
-            .flatMap { number in plans.first { $0.weekNumber == number } }
-            ?? (requestedWeekNumber == nil ? newest : nil)
+        let store = dependencies.store
+        user = dependencies.attempt("currentUser", { try store.currentUser() })
+        let newest = user.flatMap { owner in
+            dependencies.attempt("newestPlan", { try store.plan(for: owner.id, weekNumber: nil) })
+        }
+        // The week home draws is the newest one; a second is read only when
+        // another screen asked for one that is not.
+        let stored: WeeklyPlan?
+        if let user, let number = requestedWeekNumber, number != newest?.weekNumber {
+            stored = dependencies.attempt(
+                "plan", { try store.plan(for: user.id, weekNumber: number) }
+            )
+        } else {
+            stored = newest
+        }
 
         guard let stored else {
             state = WeeklyPlanState(hasLoaded: true, hasPlan: false)
             return
         }
         let dayIDs = stored.workoutDays.map(\.id)
-        let store = dependencies.store
         let outcomes = dependencies.attempt("outcomes", { try store.outcomes(dayIDs: dayIDs) }) ?? []
         finishKinds = Dictionary(
             outcomes.map { ($0.dayID, $0.finishKind) }, uniquingKeysWith: { first, _ in first }
@@ -162,12 +171,6 @@ final class WeeklyPlanModel {
         // The cards describe the session sitting in today's slot, which the
         // drag may have changed.
         readMemory()
-    }
-
-    private func currentUserPlans() throws -> [WeeklyPlan] {
-        user = try dependencies.store.currentUser()
-        guard let user else { return [] }
-        return try dependencies.store.plans(for: user.id)
     }
 
     // A completed day stays put, and nothing may be dragged across it.
