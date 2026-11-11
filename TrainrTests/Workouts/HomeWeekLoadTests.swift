@@ -159,6 +159,8 @@ struct HomeWeekLoadTests {
 
         #expect(fifty.store.rowsRead > one.store.rowsRead)
         #expect(longHistory.weeks.map(\.weekNumber) == Array(1...50))
+        #expect(longHistory.weeks.map(\.totalDays) == Array(repeating: 3, count: 50))
+        #expect(longHistory.weeks.map(\.completedDays) == Array(repeating: 0, count: 50))
     }
 
     @Test("A past day still knows whether work was logged on it")
