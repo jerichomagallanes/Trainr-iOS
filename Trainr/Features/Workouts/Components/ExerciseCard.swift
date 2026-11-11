@@ -82,9 +82,7 @@ struct ExerciseCard<Extras: View>: View {
                 tickMark.contentShape(.rect)
             }
             .buttonStyle(.plain)
-            .accessibilityLabel(
-                exercise.isCompleted ? L10n.markExerciseIncomplete : L10n.markExerciseComplete
-            )
+            .accessibilityLabel(L10n.exerciseComplete)
             .accessibilityAddTraits(.isToggle)
             .accessibilityValue(exercise.isCompleted ? L10n.completed : L10n.notCompleted)
         }

@@ -1853,6 +1853,17 @@
         }
       }
     },
+    "exercise_complete": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Exercise complete"
+          }
+        }
+      }
+    },
     "exercise_in_progress": {
       "extractionState": "manual",
       "localizations": {
@@ -2097,17 +2108,6 @@
       }
     },
     "female": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Female"
-          }
-        }
-      }
-    },
-    "female_gender": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2998,61 +2998,6 @@
         }
       }
     },
-    "male_gender": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Male"
-          }
-        }
-      }
-    },
-    "mark_exercise_complete": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Mark exercise as complete"
-          }
-        }
-      }
-    },
-    "mark_exercise_incomplete": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Mark exercise as not complete"
-          }
-        }
-      }
-    },
-    "mark_set_complete": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Mark set as complete"
-          }
-        }
-      }
-    },
-    "mark_set_incomplete": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Mark set as not complete"
-          }
-        }
-      }
-    },
     "measurements_description": {
       "extractionState": "manual",
       "localizations": {
@@ -3531,17 +3476,6 @@
       }
     },
     "other": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Other"
-          }
-        }
-      }
-    },
-    "other_gender": {
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -5487,6 +5421,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Set"
+          }
+        }
+      }
+    },
+    "set_complete": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Set complete"
           }
         }
       }

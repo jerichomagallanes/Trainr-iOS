@@ -193,7 +193,7 @@ private struct SetRow: View {
                 tickMark.contentShape(.rect)
             }
             .buttonStyle(.plain)
-            .accessibilityLabel(set.isCompleted ? L10n.markSetIncomplete : L10n.markSetComplete)
+            .accessibilityLabel(L10n.setComplete)
             .accessibilityAddTraits(.isToggle)
             .accessibilityValue(set.isCompleted ? L10n.completed : L10n.notCompleted)
         }

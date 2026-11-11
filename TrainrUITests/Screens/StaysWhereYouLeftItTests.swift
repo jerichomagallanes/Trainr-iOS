@@ -202,14 +202,15 @@ final class StaysWhereYouLeftItTests: XCTestCase {
     func testDarkModeKeepsTheInjuryTickedAndItReachesTheReview() {
         app = .launched(startingAt: "limitations")
         XCTAssertTrue(app.staticTexts["LET'S KEEP YOU SAFE"].waitForExistence(timeout: 20))
-        app.buttons["Lower Back Pain"].tap()
-        XCTAssertTrue(app.buttons["Lower Back Pain"].isSelected)
+        let injury = app.switches["Lower Back Pain"]
+        injury.tap()
+        XCTAssertEqual(injury.value as? String, "1")
 
         XCUIDevice.shared.appearance = .dark
         Thread.sleep(forTimeInterval: afterARepeatWouldHaveLanded)
 
         XCTAssertTrue(app.staticTexts["LET'S KEEP YOU SAFE"].exists)
-        XCTAssertTrue(app.buttons["Lower Back Pain"].isSelected)
+        XCTAssertEqual(injury.value as? String, "1")
 
         app.buttons["SUBMIT"].tap()
         XCTAssertTrue(app.staticTexts["YOUR FITNESS PROFILE"].waitForExistence(timeout: 10))

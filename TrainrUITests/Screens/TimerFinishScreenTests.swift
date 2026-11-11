@@ -34,7 +34,7 @@ final class TimerFinishScreenTests: XCTestCase {
     }
 
     private var ticks: XCUIElementQuery {
-        app.switches.matching(NSPredicate(format: "label == %@", "Mark set as complete"))
+        app.ticks("Set complete", done: false)
     }
 
     // A hold is what the countdown measured, so that set may carry the time it
@@ -61,8 +61,8 @@ final class TimerFinishScreenTests: XCTestCase {
 
         XCTAssertEqual(time.value as? String, "1:00")
         XCTAssertEqual(ticks.count, ticked)
-        XCTAssertFalse(app.switches["Mark set as not complete"].exists)
-        XCTAssertFalse(app.switches["Mark exercise as not complete"].exists)
+        XCTAssertFalse(app.ticks("Set complete", done: true).firstMatch.exists)
+        XCTAssertFalse(app.ticks("Exercise complete", done: true).firstMatch.exists)
     }
 
     // Running out is nobody doing the work: the numbers it used to write became
@@ -77,7 +77,7 @@ final class TimerFinishScreenTests: XCTestCase {
             .waitForExistence(timeout: blockSeconds + settle))
 
         XCTAssertEqual(ticks.count, ticked)
-        XCTAssertFalse(app.switches["Mark set as not complete"].exists)
-        XCTAssertFalse(app.switches["Mark exercise as not complete"].exists)
+        XCTAssertFalse(app.ticks("Set complete", done: true).firstMatch.exists)
+        XCTAssertFalse(app.ticks("Exercise complete", done: true).firstMatch.exists)
     }
 }

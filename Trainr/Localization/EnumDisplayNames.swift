@@ -3,9 +3,9 @@
 extension Gender {
     var displayName: String {
         switch self {
-        case .male: L10n.maleGender
-        case .female: L10n.femaleGender
-        case .nonBinary, .preferNotToSay: L10n.otherGender
+        case .male: L10n.male
+        case .female: L10n.female
+        case .nonBinary, .preferNotToSay: L10n.other
         }
     }
 }
