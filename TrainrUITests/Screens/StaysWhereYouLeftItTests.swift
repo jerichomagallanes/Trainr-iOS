@@ -81,17 +81,38 @@ final class StaysWhereYouLeftItTests: XCTestCase {
 
     // The case a zeroed wait cannot reach: the trait change arrives while the
     // wait is still suspended rather than long finished.
+    //
+    // Timed from the splash rather than slept blind through. The wait belongs to
+    // the app and starts at launch, so a fixed sleep counted from the sighting
+    // of the splash outran it under parallel load and left nothing to change the
+    // appearance during. The spare time goes into the wait itself rather than
+    // into the headroom, and what the test is for is unchanged: the plan must
+    // still be absent when the appearance changes, and a wait that began again
+    // would land it a further whole wait after that.
     @MainActor
     func testDarkModeDuringTheStartupWaitDoesNotStartItAgain() {
-        app = .launched(.midWeek, arguments: ["-splashSeconds", "10"])
-        XCTAssertTrue(app.images["Trainr"].waitForExistence(timeout: 10))
-        // Most of the wait spent, so what is left of it is shorter than a repeat.
-        Thread.sleep(forTimeInterval: 8)
-        XCTAssertFalse(app.staticTexts["YOUR WEEKLY WORKOUT PLAN"].exists)
+        let wait: TimeInterval = 20
+        app = .launched(.midWeek, arguments: ["-splashSeconds", "\(Int(wait))"])
+        let plan = app.staticTexts["YOUR WEEKLY WORKOUT PLAN"]
+        XCTAssertTrue(app.images["Trainr"].waitForExistence(timeout: wait))
+        let splashSeen = Date()
+
+        // Halfway, which puts the honest arrival and a repeat's the same distance
+        // either side of the bound below: far enough in that a repeat would be
+        // plainly later, far enough from the end that a slow sighting cannot
+        // have eaten the whole wait already.
+        Thread.sleep(
+            forTimeInterval: max(0, wait * 0.5 - Date().timeIntervalSince(splashSeen)))
+        XCTAssertFalse(plan.exists, "the startup wait was over before the appearance changed")
 
         XCUIDevice.shared.appearance = .dark
+        let changed = Date()
 
-        XCTAssertTrue(app.staticTexts["YOUR WEEKLY WORKOUT PLAN"].waitForExistence(timeout: 6))
+        XCTAssertTrue(plan.waitForExistence(timeout: wait))
+        XCTAssertLessThan(
+            Date().timeIntervalSince(changed), wait * 0.75,
+            "the startup wait began again on the appearance change"
+        )
     }
 
     @MainActor

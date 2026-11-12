@@ -102,18 +102,40 @@ final class ExerciseSetTableScreenTests: XCTestCase {
     @MainActor
     private func typeTime(_ digits: String, into field: XCUIElement, reading expected: String) {
         for _ in 0..<3 {
-            field.typeText(String(repeating: XCUIKeyboardKey.delete.rawValue, count: 8))
+            guard emptied(field) else { continue }
             field.typeText(digits)
-            let arrived = XCTNSPredicateExpectation(
-                predicate: NSPredicate(format: "value == %@", expected),
-                object: field
-            )
-            if XCTWaiter().wait(for: [arrived], timeout: 3) == .completed { return }
+            if reads(field, as: expected, within: 3) { return }
         }
         XCTFail(
             "typing \(digits) never produced \(expected); the field reads "
                 + "\(field.value as? String ?? "nothing")"
         )
+    }
+
+    // The clear is a step with its own check rather than a prefix to the typing,
+    // because a swallowed delete leaves no trace in the result: the digits that
+    // follow shift onto the one left behind and read as a different but
+    // perfectly valid time, which is how 6-3-0 came back as 5:66 under load.
+    // A keyboard that went away takes the keystrokes with it, so it is put back
+    // before the attempt rather than after it has been lost.
+    @MainActor
+    private func emptied(_ field: XCUIElement) -> Bool {
+        for _ in 0..<3 {
+            if !app.keyboards.element.exists { field.tap() }
+            field.typeText(String(repeating: XCUIKeyboardKey.delete.rawValue, count: 8))
+            if reads(field, as: "", within: 2) { return true }
+        }
+        return false
+    }
+
+    @MainActor
+    private func reads(_ field: XCUIElement, as expected: String, within timeout: TimeInterval) -> Bool {
+        let deadline = Date().addingTimeInterval(timeout)
+        repeat {
+            if (field.value as? String ?? "") == expected { return true }
+            Thread.sleep(forTimeInterval: 0.1)
+        } while Date() < deadline
+        return false
     }
 
     // Android's cell let a fourth digit through when the digits arrived one at a
@@ -161,13 +183,8 @@ final class ExerciseSetTableScreenTests: XCTestCase {
 
     @MainActor
     private func wait(_ field: XCUIElement, toRead expected: String) {
-        let arrived = XCTNSPredicateExpectation(
-            predicate: NSPredicate(format: "value == %@", expected),
-            object: field
-        )
-        XCTAssertEqual(
-            XCTWaiter().wait(for: [arrived], timeout: 5),
-            .completed,
+        XCTAssertTrue(
+            reads(field, as: expected, within: 5),
             "the field reads \(field.value as? String ?? "nothing"), not \(expected)"
         )
     }
