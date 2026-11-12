@@ -28,16 +28,19 @@ git push -u origin pre-release
 ```
 
 Bring it forward afterwards. `main` moves by squash merge, so `pre-release`
-cannot fast-forward to it; reset instead. Do this in the same push as the next
-candidate, so the release line still gets exactly one build per candidate rather
-than one for the reset and another for the merge:
+cannot fast-forward to it; merge it in rather than resetting, so the branch keeps
+one history across releases. If the squash commit conflicts, keep what
+`pre-release` already has — it is the same work, arriving a second time. Do this
+in the same push as the next candidate, so the release line still gets exactly
+one build per candidate rather than one for the merge and another for the
+candidate:
 
 ```sh
 git fetch origin
 git switch pre-release
-git reset --hard origin/main
-git merge --no-ff origin/version/2.0
-git push --force-with-lease origin pre-release
+git merge --no-ff origin/main
+git merge --no-ff origin/version/2.1
+git push origin pre-release
 ```
 
 ## The production environment
@@ -103,8 +106,11 @@ edited to make a release — the `MARKETING_VERSION` committed in
 `Trainr.xcodeproj` is stale and is not the source of truth.
 
 Change it here the moment a release line starts a new version, before the first
-candidate of that version is built. The workflow stops if it is unset or does
-not look like a version number, but it cannot tell that you forgot to bump it.
+candidate of that version is built, and set Android's `versionName` in
+`app/build.gradle.kts` to the same string in the same sitting. It is the one
+number the two stores must agree on for one release of one product, and nothing
+links or checks them. The workflow stops if it is unset or does not look like a
+version number, but it cannot tell that you forgot to bump it.
 
 ## Two settings in App Store Connect
 
