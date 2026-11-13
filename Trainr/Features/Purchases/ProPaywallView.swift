@@ -443,7 +443,7 @@ struct ProPaywallView: View {
         // is finished or over, which is a promise the plan screen keeps.
         Row(label: L10n.proCompareGenerated,
             free: .text(L10n.proCompareOne), pro: .text(L10n.proCompareEveryWeek)),
-        Row(label: L10n.proCompareRepeat, free: .no, pro: .yes),
+        Row(label: L10n.proCompareRepeat, free: .yes, pro: .yes),
         Row(label: L10n.proCompareRewrite, free: .no, pro: .yes),
         Row(label: L10n.proCompareFresh, free: .no, pro: .yes),
         Row(label: L10n.proCompareAdjust, free: .text(L10n.proCompareOne), pro: .yes),

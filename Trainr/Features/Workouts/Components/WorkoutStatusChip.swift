@@ -23,6 +23,7 @@ struct WorkoutStatusChip: View {
     var isPartlyDone = false
     var finishedEarly = false
     var isAdjusted = false
+    var hasPerformedWork = true
 
     var body: some View {
         StatusChip(label: label, fill: fill)
@@ -30,25 +31,31 @@ struct WorkoutStatusChip: View {
 
     private var showsAdjusted: Bool { isAdjusted && status != .completed }
 
+    // Finishing early closes the day whatever was logged, so this is the one
+    // closed day holding no training. It must not read as work done.
+    private var isSkipped: Bool { status == .completed && !hasPerformedWork }
+
     private var label: String {
-        switch (isMissed, isPartlyDone, finishedEarly, showsAdjusted) {
-        case (true, _, _, _): L10n.missed
-        case (false, true, _, _): L10n.partlyDone
-        case (false, false, true, _): L10n.finishedEarly
-        case (false, false, false, true): L10n.adjusted
-        case (false, false, false, false): status.label
+        switch (isMissed, isPartlyDone, isSkipped, finishedEarly, showsAdjusted) {
+        case (true, _, _, _, _): L10n.missed
+        case (false, true, _, _, _): L10n.partlyDone
+        case (false, false, true, _, _): L10n.skipped
+        case (false, false, false, true, _): L10n.finishedEarly
+        case (false, false, false, false, true): L10n.adjusted
+        case (false, false, false, false, false): status.label
         }
     }
 
     // Missed deliberately reads in the same grey as "not started"; a day that
     // was trained but never closed keeps the colour of work done.
     private var fill: Color {
-        switch (isMissed, isPartlyDone, finishedEarly, showsAdjusted) {
-        case (true, _, _, _): .statusIdle
-        case (false, true, _, _): .statusActive
-        case (false, false, true, _): .statusDone
-        case (false, false, false, true): .statusActive
-        case (false, false, false, false): status.chipColor
+        switch (isMissed, isPartlyDone, isSkipped, finishedEarly, showsAdjusted) {
+        case (true, _, _, _, _): .statusIdle
+        case (false, true, _, _, _): .statusActive
+        case (false, false, true, _, _): .statusIdle
+        case (false, false, false, true, _): .statusDone
+        case (false, false, false, false, true): .statusActive
+        case (false, false, false, false, false): status.chipColor
         }
     }
 }
@@ -69,6 +76,7 @@ struct WeekStatusChip: View {
         WorkoutStatusChip(status: .notStarted, isMissed: true)
         WorkoutStatusChip(status: .inProgress, isPartlyDone: true)
         WorkoutStatusChip(status: .completed, finishedEarly: true)
+        WorkoutStatusChip(status: .completed, finishedEarly: true, hasPerformedWork: false)
         WorkoutStatusChip(status: .inProgress, isAdjusted: true)
     }
     .padding(Spacing.medium)

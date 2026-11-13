@@ -57,7 +57,7 @@ final class NextWeekModel {
         let copy = Self.repeated(source, weekNumber: latest.weekNumber + 1, startingOn: startAfter(latest))
         // Ready means a week was written, so it cannot be announced from a
         // defer: the guard above can turn the copy down.
-        wroteAWeek = wrote(copy)
+        wroteAWeek = wrote(copy, charging: false)
         guard wroteAWeek else { return }
         isReady = true
     }
@@ -152,10 +152,12 @@ final class NextWeekModel {
 
     // Charged where the week lands rather than on the screen that asked for it:
     // the screen's own wait outlives the save, and the process can end inside it.
-    private func wrote(_ plan: WeeklyPlan) -> Bool {
+    // A copy passes charging: false — it carries the same movements and targets
+    // with nothing progressed, so there is nothing new to charge for.
+    private func wrote(_ plan: WeeklyPlan, charging: Bool = true) -> Bool {
         guard dependencies.attempt("savePlan", { try dependencies.store.savePlan(plan) }) != nil
         else { return false }
-        charge()
+        if charging { charge() }
         return true
     }
 

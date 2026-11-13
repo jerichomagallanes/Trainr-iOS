@@ -107,15 +107,16 @@ final class PaywallGateTests: XCTestCase {
         assertNoPrompt()
     }
 
-    // Repeating a week is another week of training, and only the first of those
-    // is free, so the local copy is behind the gate like everything else.
+    // Once gated, now deliberately not: a copy carries the same movements and
+    // targets with nothing progressed, so it is handed to anyone who asks. This
+    // asserts the open door rather than leaving the case untested.
     @MainActor
-    func testRepeatingAWeekAsksForPro() {
+    func testRepeatingAWeekIsNeverAsked() {
         app = launchedSpent(.finishedWeek)
         XCTAssertTrue(app.staticTexts["YOUR WEEKLY WORKOUT PLAN"].waitForExistence(timeout: 20))
         app.buttons["Workout plan options"].tap()
         app.buttons["Repeat this week"].tap()
-        assertPromptThenPaywall()
+        assertNoPrompt()
     }
 
     // The profile menu is the only way in for someone who has not hit the limit,
