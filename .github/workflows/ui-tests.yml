@@ -10,11 +10,14 @@ name: UI tests
 # the shards are numbered buckets rather than themes. Each shard runs serially
 # on its own runner and carries about 12 minutes of checkout, build and boot
 # before the first test, so rebalance from the durations in the uploaded
-# .xcresult bundles when a shard starts creeping towards the timeout. Running clones side by side inside
-# one job bought about 1.35x and cost a class of failure of its own, where a
-# clone dies and reports every test in a file as failed. A test that fails is
-# given one more attempt, because typing into a text field is where the hosted
-# simulator stalls; a test that fails twice still fails the job.
+# .xcresult bundles when a shard starts creeping towards the timeout. Running
+# clones side by side inside one job bought about 1.35x and cost a class of
+# failure of its own, where a clone dies and reports every test in a file as
+# failed. A test that fails is given one more attempt, because typing into a
+# text field is where the hosted simulator stalls; a test that fails twice
+# still fails the job. The published results honour that retry rather than
+# reporting the discarded first attempt, and list what was retried so a flake
+# stays visible instead of silent.
 on:
   pull_request:
     branches: [main, version/2.0]
@@ -92,6 +95,8 @@ jobs:
           include_passed: false
           job_summary: true
           require_tests: false
+          check_retries: true
+          flaky_summary: true
 
       - name: Upload test results
         if: ${{ !cancelled() }}
