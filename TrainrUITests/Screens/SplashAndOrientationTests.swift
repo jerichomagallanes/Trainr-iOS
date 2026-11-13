@@ -17,7 +17,13 @@ final class SplashAndOrientationTests: XCTestCase {
         app.launchArguments = ["-inMemoryStore", "-splashSeconds", "8"]
         app.launch()
 
-        XCTAssertTrue(app.staticTexts["v1.0"].waitForExistence(timeout: 5))
+        // Matched by shape, not by value: naming the version here means the
+        // splash test fails on the release that changes it, which is exactly
+        // the release nobody wants a false alarm in.
+        let version = app.staticTexts.matching(
+            NSPredicate(format: "label MATCHES %@", "^v[0-9]+\\.[0-9]+")
+        ).firstMatch
+        XCTAssertTrue(version.waitForExistence(timeout: 5))
         XCTAssertTrue(app.images["Trainr"].exists)
     }
 
