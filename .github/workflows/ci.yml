@@ -51,7 +51,7 @@ jobs:
       # itself with per-test annotations on the diff rather than a raw log.
       - name: Publish test results
         if: ${{ !cancelled() }}
-        uses: mikepenz/action-junit-report@a9170d5795813c01ab4901ffb045b52bab4ab09d # v6.5.0
+        uses: mikepenz/action-junit-report@a16be3a69023e9bd7e748ede768b3282ea7b30ce # v6.7.1
         with:
           report_paths: build/reports/junit.xml
           check_name: Unit test results
@@ -63,7 +63,7 @@ jobs:
 
       - name: Upload test results
         if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: unit-test-results
           path: TestResults.xcresult
@@ -91,7 +91,7 @@ jobs:
 
       - name: Upload lint results to code scanning
         if: ${{ !cancelled() }}
-        uses: github/codeql-action/upload-sarif@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2 # v4
+        uses: github/codeql-action/upload-sarif@33d7b85da1a04171e211befe2c739303b9a4c066 # v4
         with:
           sarif_file: swiftlint.sarif
           category: swiftlint
@@ -117,7 +117,7 @@ jobs:
       # Attaching the app to the run means any PR can be dropped onto a booted
       # simulator straight from the checks tab, without building it locally.
       - name: Upload app
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: trainr-debug-${{ github.sha }}
           path: DerivedData/Build/Products/Debug-iphonesimulator/Trainr.app
