@@ -4,6 +4,9 @@ nonisolated enum SetFormatting {
 
     static let noPrevious = "—"
 
+    private static let secondsDigits = 2
+    private static let shortestFace = 3
+
     static func weight(_ kilograms: Double, in units: UnitSystem) -> String {
         let shown = WeightUnit.forDisplay(kilograms, in: units)
         return shown == shown.rounded()
@@ -17,6 +20,17 @@ nonisolated enum SetFormatting {
         return "\(minutes):" + String(format: "%02d", seconds)
     }
 
+    // The digits as a clock rather than as the seconds they add up to: a buffer
+    // of "63" is written 0:63 while it is still being typed, because rewriting
+    // it to the 1:03 it is stored as would put the next digit in the minutes.
+    static func clockFace(_ digits: String) -> String {
+        let typed = String(digits.filter(\.isNumber).drop { $0 == "0" })
+        guard !typed.isEmpty else { return "" }
+
+        let padded = String(repeating: "0", count: max(0, shortestFace - typed.count)) + typed
+        return "\(padded.dropLast(secondsDigits)):\(padded.suffix(secondsDigits))"
+    }
+
     static func secondsFromDigits(_ digits: String) -> Int? {
         let cleaned = String(String(digits.filter(\.isNumber).suffix(4)).drop { $0 == "0" })
         guard !cleaned.isEmpty else { return nil }
@@ -24,6 +38,13 @@ nonisolated enum SetFormatting {
         let seconds = Int(cleaned.suffix(2)) ?? 0
         let minutes = Int(cleaned.dropLast(2)) ?? 0
         return minutes * Constants.Workout.secondsPerMinute + seconds
+    }
+
+    // The target is a prescription rather than something that was entered, so an
+    // empty cell carries it in its label instead of reading as a logged value.
+    static func cellLabel(column: String, value: String?, target: String?) -> String {
+        guard value == nil, let target else { return column }
+        return L10n.setCellTarget(column, target)
     }
 
     // A set prescribed but never logged shows a dash, not its target.

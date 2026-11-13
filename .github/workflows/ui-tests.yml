@@ -6,20 +6,39 @@ name: UI tests
 # read the result, re-run if it looks like a flake, investigate if it doesn't.
 # The nightly run on main catches anything that slipped through.
 #
-# Split three ways because one job took 47 minutes of test time, and balanced by
-# measured duration rather than test count: onboarding alone held a third of it.
-# Each shard runs serially on its own runner. Running clones side by side inside
-# one job bought about 1.35x and cost a class of failure of its own, where a
-# clone dies and reports every test in a file as failed. A test that fails is
-# given one more attempt, because typing into a text field is where the hosted
-# simulator stalls; a test that fails twice still fails the job.
+# Nothing requires a pull request to be up to date with its base before merging,
+# so two that were each green can land and break together. The push trigger on
+# version/X.Y re-runs the suite on the merged result, which is the only thing
+# that sees that combination. pre-release is listed because a candidate build
+# goes to real testers, so a pull request into it is the last chance to catch
+# anything that reached it without passing through version/X.Y.
+#
+# The nightly still runs against the default branch, because a schedule always
+# does. Pointing it at version/X.Y would run that branch's tests against this
+# file's shard list, which is a different branch's, and quietly skip whatever
+# the two do not have in common.
+#
+# Split four ways and balanced by measured duration rather than test count, so
+# the shards are numbered buckets rather than themes. Each shard runs serially
+# on its own runner and carries about 12 minutes of checkout, build and boot
+# before the first test, so rebalance from the durations in the uploaded
+# .xcresult bundles when a shard starts creeping towards the timeout. Running
+# clones side by side inside one job bought about 1.35x and cost a class of
+# failure of its own, where a clone dies and reports every test in a file as
+# failed. A test that fails is given one more attempt, because typing into a
+# text field is where the hosted simulator stalls; a test that fails twice
+# still fails the job. The published results honour that retry rather than
+# reporting the discarded first attempt, and list what was retried so a flake
+# stays visible instead of silent.
 on:
   pull_request:
-    branches: [main]
+    branches: [main, version/2.0, pre-release]
     paths-ignore:
       - '**/*.md'
       - 'docs/**'
       - '.gitignore'
+  push:
+    branches: [version/2.0]
   schedule:
     - cron: '0 18 * * *'  # 03:00 JST daily, against main
   workflow_dispatch:
@@ -38,7 +57,7 @@ jobs:
   ui-tests:
     name: UI tests (${{ matrix.shard }})
     runs-on: macos-26
-    timeout-minutes: 45
+    timeout-minutes: 60
     permissions:
       contents: read
       checks: write
@@ -46,12 +65,14 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - shard: onboarding
-            classes: OnboardingScreenTests OnboardingFlowTests SplashAndOrientationTests TrainrUITests
-          - shard: routine
-            classes: RoutineDetailScreenTests ExerciseSetTableScreenTests CompletionScreenTests
-          - shard: plan
-            classes: WeeklyPlanScreenTests WeeklyProgressScreenTests GeneratingScreenTests PlanAfterEmptyingTests PaywallGateTests
+          - shard: 1
+            classes: OnboardingScreenTests ExerciseSetTableScreenTests ProScreenTests GeneratingScreenTests PaywallScreenTests
+          - shard: 2
+            classes: RoutineDetailScreenTests PaywallGateTests CompletionScreenTests SplashAndOrientationTests TutorialFollowsItsExerciseTests
+          - shard: 3
+            classes: StaysWhereYouLeftItTests OnboardingFlowTests TimerFinishScreenTests WorkoutSetupScreenTests WeeklyProgressScreenTests PlanAfterEmptyingTests
+          - shard: 4
+            classes: AdjustContextScreenTests WeeklyPlanScreenTests BMISourcesScreenTests KeepsWhatYouTypedTests TrainrUITests UnstuckJourneyTests
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
@@ -88,6 +109,8 @@ jobs:
           include_passed: false
           job_summary: true
           require_tests: false
+          check_retries: true
+          flaky_summary: true
 
       - name: Upload test results
         if: ${{ !cancelled() }}

@@ -16,7 +16,7 @@ final class PaywallGateTests: XCTestCase {
         let app = XCUIApplication()
         app.launchArguments = [
             "-inMemoryStore", "-splashSeconds", "0",
-            "-seedFixture", fixture.rawValue, "-freeGenerationUsed"
+            "-seedFixture", fixture.rawValue, "-freeGenerationUsed", "-proLocked"
         ]
         app.launch()
         return app
@@ -52,24 +52,35 @@ final class PaywallGateTests: XCTestCase {
         XCTAssertTrue(app.staticTexts["YOUR WEEKLY WORKOUT PLAN"].waitForExistence(timeout: 20))
         app.buttons["Workout plan options"].tap()
         app.buttons["Generate this week again"].tap()
-        app.buttons["Generate again"].tap()
+        XCTAssertFalse(app.staticTexts["Generate this week again?"].exists)
         assertPromptThenPaywall()
     }
 
-    // The route that was missed: confirming the review from an existing plan
-    // appended the generating screen with no check at all.
+    // The same week reached from Weekly Progress is a second route to the same
+    // generation, so it is walked rather than assumed to share the home gate.
     @MainActor
-    func testStartingANewPlanFromTheReviewAsksForPro() {
+    func testRegeneratingTheCurrentWeekFromProgressAsksForPro() {
+        app = launchedSpent(.midWeek)
+        XCTAssertTrue(app.staticTexts["YOUR WEEKLY WORKOUT PLAN"].waitForExistence(timeout: 20))
+        app.buttons["Track Weekly Progress \u{2192}"].tap()
+        XCTAssertTrue(app.staticTexts["WEEKLY PROGRESS"].waitForExistence(timeout: 5))
+        app.button(startingWith: "Week 1").tap()
+        app.buttons["Workout plan options"].tap()
+        app.buttons["Generate this week again"].tap()
+        XCTAssertFalse(app.staticTexts["Generate this week again?"].exists)
+        assertPromptThenPaywall()
+    }
+
+    // The worst of them: the alert said every week and everything logged would
+    // be erased, and the gate only spoke after the whole profile was walked.
+    @MainActor
+    func testStartingANewPlanAsksForProBeforeThreateningToEraseAnything() {
         app = launchedSpent(.midWeek)
         XCTAssertTrue(app.staticTexts["YOUR WEEKLY WORKOUT PLAN"].waitForExistence(timeout: 20))
         app.buttons["Workout plan options"].tap()
         app.buttons["Start a new workout plan"].tap()
-        // Confirmed first, and nothing is erased until a new week is saved, so
-        // meeting the paywall here costs the person nothing.
-        app.buttons["Start new plan"].tap()
-        XCTAssertTrue(app.staticTexts["YOUR FITNESS PROFILE"].waitForExistence(timeout: 15))
-        app.scrollUntilHittable(app.buttons["GENERATE MY WORKOUT PLAN"])
-        app.buttons["GENERATE MY WORKOUT PLAN"].tap()
+
+        XCTAssertFalse(app.staticTexts["Start a new workout plan?"].exists)
         assertPromptThenPaywall()
     }
 
@@ -137,6 +148,48 @@ final class PaywallGateTests: XCTestCase {
         XCTAssertTrue(app.staticTexts["Pro is active"].waitForExistence(timeout: 15))
         XCTAssertTrue(app.buttons["Restore purchase"].exists)
         XCTAssertFalse(app.staticTexts["Unlock every week"].exists)
+    }
+
+    // A tap in the gap before the store answers: a subscriber reads as not Pro
+    // for the whole of it, so letting it through gives a week away and asking
+    // for money asks someone to buy what they may already own.
+    @MainActor
+    func testATapBeforeTheStoreHasAnsweredIsToldToTryAgain() {
+        app = XCUIApplication()
+        app.launchArguments = [
+            "-inMemoryStore", "-splashSeconds", "0",
+            "-seedFixture", Fixture.finishedWeek.rawValue, "-freeGenerationUsed",
+            "-entitlementNeverAnswers"
+        ]
+        app.launch()
+        XCTAssertTrue(app.staticTexts["YOUR WEEKLY WORKOUT PLAN"].waitForExistence(timeout: 20))
+        app.buttons["GENERATE NEXT WEEK"].tap()
+        XCTAssertTrue(
+            app.staticTexts["Your subscription is still being checked. Try that again in a moment."]
+                .waitForExistence(timeout: 10)
+        )
+        XCTAssertFalse(app.staticTexts["Upgrade to Trainr Pro"].exists)
+        XCTAssertFalse(app.staticTexts["Generating your workout plan"].exists)
+    }
+
+    // The adjustment gate is reached through its own flow and answers where the
+    // recommendation is sold, a step away from the screen that asks for it, so
+    // the wait it now returns is walked rather than read off the unit test.
+    @MainActor
+    func testAnAdjustmentBeforeTheStoreHasAnsweredIsToldToTryAgain() {
+        app = .launched(.longDay, arguments: ["-entitlementNeverAnswers"])
+        app.openAdjustTime()
+        let minutes = app.textFields["Other"]
+        minutes.tap()
+        minutes.typeText("35")
+        app.buttons["SHOW RECOMMENDATION"].tap()
+
+        XCTAssertTrue(
+            app.staticTexts["Your subscription is still being checked. Try that again in a moment."]
+                .waitForExistence(timeout: 10)
+        )
+        XCTAssertFalse(app.staticTexts["A shorter workout for today"].exists)
+        XCTAssertFalse(app.staticTexts["Upgrade to Trainr Pro"].exists)
     }
 
     // The very first plan is the free one, so a fresh install must not be asked.

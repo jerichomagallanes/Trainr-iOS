@@ -5,12 +5,28 @@ nonisolated struct WeeklyPlan: Identifiable, Equatable, Sendable {
     var userID: UUID
     var weekNumber: Int
     var title: String
-    // Local midnight of the day the week begins; a day's date is this plus
-    // dayNumber - 1 days.
+    // Midnight UTC on the calendar date the week begins, not local midnight: a
+    // week's dates are the plan's and must not move with the phone. A day's
+    // date is this plus dayNumber - 1 days.
     var startDate: Date?
     var workoutDays: [WorkoutDay] = []
     var createdAt = Date()
     var updatedAt = Date()
+}
+
+nonisolated struct WeekOutline: Identifiable, Equatable, Sendable {
+    var id: UUID
+    var weekNumber: Int
+    var startDate: Date?
+    var createdAt = Date()
+    var days: [DayOutline] = []
+}
+
+nonisolated struct DayOutline: Identifiable, Equatable, Sendable {
+    var id: UUID
+    var dayNumber: Int
+    var status = WorkoutStatus.notStarted
+    var countsAsCompleted = false
 }
 
 nonisolated struct WorkoutDay: Identifiable, Equatable, Sendable {
@@ -23,6 +39,12 @@ nonisolated struct WorkoutDay: Identifiable, Equatable, Sendable {
     var equipment: [String] = []
     var exercises: [WorkoutExercise] = []
     var completedAt: Date?
+
+    var hasPerformedWork: Bool { exercises.contains(where: \.wasPerformed) }
+
+    // Finishing early closes the day whatever was logged, so the status alone
+    // would count a session nobody performed as a day of training.
+    var countsAsCompleted: Bool { status == .completed && hasPerformedWork }
 }
 
 nonisolated struct WorkoutExercise: Identifiable, Equatable, Sendable {
@@ -43,6 +65,15 @@ nonisolated struct WorkoutExercise: Identifiable, Equatable, Sendable {
     var videoTutorialURL: String?
     var isCompleted = false
     var notes = ""
+    var addedBy: UUID?
+
+    var isOmittedToday: Bool { !sets.isEmpty && sets.allSatisfy { $0.omittedBy != nil } }
+
+    // A ticked set is work performed: an exercise never ticks itself until every
+    // set is, and two of three sets logged is still a session that happened.
+    var wasPerformed: Bool {
+        !isOmittedToday && (isCompleted || sets.contains(where: \.isCompleted))
+    }
 }
 
 nonisolated struct ExerciseSet: Identifiable, Equatable, Sendable {
@@ -55,6 +86,8 @@ nonisolated struct ExerciseSet: Identifiable, Equatable, Sendable {
     var actualWeightKg: Double?
     var actualSeconds: Int?
     var isCompleted = false
+    var actualOrigin = ActualOrigin.none
+    var omittedBy: UUID?
 }
 
 // The raw values are what exercise-catalog.json and the stored records spell.
@@ -68,4 +101,12 @@ nonisolated enum WorkoutStatus: String, Codable, CaseIterable, Sendable {
     case notStarted
     case inProgress
     case completed
+
+    static func derived(performed: Int, of planned: Int) -> WorkoutStatus {
+        switch performed {
+        case 0: .notStarted
+        case planned: .completed
+        default: .inProgress
+        }
+    }
 }

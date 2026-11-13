@@ -6,6 +6,10 @@
 # SECONDARY is empty everywhere for now; the source carries it but we have not
 # read it off yet, so the catalog stores null rather than a guess.
 #
+# One departure from the source's filters: the five "(Weighted)" bodyweight
+# movements sit under OTHER, because a plate or dumbbell has to be held and a
+# bodyweight-only client cannot be offered them.
+#
 # exercise-catalog.json must match this file exactly, both ways, and
 # ExerciseCatalogIntegrityTest enforces that. Nothing reaches a client's plan
 # unless it is on this list, so an entry added here without a source to read
@@ -31,11 +35,9 @@ NONE|Burpee Over the Bar|FULL_BODY|
 NONE|Clap Push Ups|CHEST|
 NONE|Climbing|CARDIO|
 NONE|Crunch|ABDOMINALS|
-NONE|Crunch (Weighted)|ABDOMINALS|
 NONE|Dead Bug|ABDOMINALS|
 NONE|Dead Hang|UPPER_BACK|
 NONE|Decline Crunch|ABDOMINALS|
-NONE|Decline Crunch (Weighted)|ABDOMINALS|
 NONE|Diamond Push Up|TRICEPS|
 NONE|Downward Dog|FULL_BODY|
 NONE|Dragon Flag|ABDOMINALS|
@@ -86,7 +88,6 @@ NONE|Pistol Squat|QUADRICEPS|
 NONE|Plank|ABDOMINALS|
 NONE|Plank Pushup|CHEST|
 NONE|Push Up|CHEST|
-NONE|Push Up (Weighted)|CHEST|
 NONE|Push Up - Close Grip|CHEST|
 NONE|Reverse Crunch|ABDOMINALS|
 NONE|Reverse Lunge|QUADRICEPS|
@@ -101,9 +102,7 @@ NONE|Side Plank|ABDOMINALS|
 NONE|Single Leg Glute Bridge|GLUTES|
 NONE|Single Leg Hip Thrust|GLUTES|
 NONE|Single Leg Standing Calf Raise|CALVES|
-NONE|Sissy Squat (Weighted)|QUADRICEPS|
 NONE|Sit Up|ABDOMINALS|
-NONE|Sit Up (Weighted)|ABDOMINALS|
 NONE|Skating|CARDIO|
 NONE|Skiing|CARDIO|
 NONE|Snowboarding|CARDIO|
@@ -472,12 +471,17 @@ OTHER|Ab Wheel|ABDOMINALS|
 OTHER|Ball Slams|FULL_BODY|
 OTHER|Bench Dip|TRICEPS|
 OTHER|Box Jump|QUADRICEPS|
+OTHER|Crunch (Weighted)|ABDOMINALS|
+OTHER|Decline Crunch (Weighted)|ABDOMINALS|
 OTHER|Decline Push Up|CHEST|
 OTHER|Farmers Walk|FULL_BODY|
 OTHER|Jump Rope|CARDIO|
 OTHER|Lateral Box Jump|QUADRICEPS|
+OTHER|Push Up (Weighted)|CHEST|
 OTHER|Ring Pull Up|LATS|
 OTHER|Ring Push Up|CHEST|
+OTHER|Sissy Squat (Weighted)|QUADRICEPS|
+OTHER|Sit Up (Weighted)|ABDOMINALS|
 OTHER|Sled Pull|FULL_BODY|
 OTHER|Sled Push|FULL_BODY|
 OTHER|Step Up|QUADRICEPS|

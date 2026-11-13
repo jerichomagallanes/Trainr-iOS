@@ -33,8 +33,8 @@ struct ExerciseCatalogIntegrityTests {
 
     // What each category holds in the source's own equipment filter.
     static let catalogSize: [Equipment: Int] = [
-        Equipment.none: 105, .barbell: 74, .dumbbell: 70, .kettlebell: 13,
-        .machine: 145, .plate: 8, .resistanceBand: 13, .suspensionBand: 7, .other: 16
+        Equipment.none: 100, .barbell: 74, .dumbbell: 70, .kettlebell: 13,
+        .machine: 145, .plate: 8, .resistanceBand: 13, .suspensionBand: 7, .other: 21
     ]
 
     // A dropped entry is silent: the reader skips what it cannot understand,

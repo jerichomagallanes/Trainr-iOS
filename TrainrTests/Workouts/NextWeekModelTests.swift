@@ -81,4 +81,35 @@ struct NextWeekModelTests {
         let copy = NextWeekModel.repeated(trainedWeek, weekNumber: 3, startingOn: Date())
         #expect(copy.workoutDays[0].exercises[0].exerciseKey == "goblet_squat")
     }
+
+    @Test("A substitute swapped in for one day is not repeated into the next week")
+    func repeatLeavesOutTheSubstitute() {
+        var week = trainedWeek
+        var substitute = week.workoutDays[0].exercises[0]
+        substitute.id = UUID()
+        substitute.exerciseKey = "split_squat"
+        substitute.name = "Split Squat"
+        substitute.addedBy = UUID()
+        week.workoutDays[0].exercises.append(substitute)
+
+        let copy = NextWeekModel.repeated(week, weekNumber: 3, startingOn: Date())
+
+        #expect(copy.workoutDays[0].exercises.map(\.exerciseKey) == ["goblet_squat"])
+        #expect(copy.workoutDays[0].exercises.allSatisfy { $0.addedBy == nil })
+    }
+
+    @Test("A set omitted for one day comes back in the repeat, and nothing claims its actuals")
+    func repeatBringsBackTheOmittedSet() {
+        var week = trainedWeek
+        week.workoutDays[0].exercises[0].sets[0].actualOrigin = .typed
+        week.workoutDays[0].exercises[0].sets[1].omittedBy = UUID()
+
+        let copy = NextWeekModel.repeated(week, weekNumber: 3, startingOn: Date())
+
+        let sets = copy.workoutDays[0].exercises[0].sets
+        #expect(sets.map(\.setNumber) == [1, 2])
+        #expect(sets.allSatisfy { $0.omittedBy == nil })
+        #expect(sets.allSatisfy { $0.actualOrigin == .none })
+        #expect(!copy.workoutDays[0].exercises[0].isOmittedToday)
+    }
 }
