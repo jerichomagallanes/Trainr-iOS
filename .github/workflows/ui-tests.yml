@@ -6,9 +6,11 @@ name: UI tests
 # read the result, re-run if it looks like a flake, investigate if it doesn't.
 # The nightly run on main catches anything that slipped through.
 #
-# Split three ways because one job took 47 minutes of test time, and balanced by
-# measured duration rather than test count: onboarding alone held a third of it.
-# Each shard runs serially on its own runner. Running clones side by side inside
+# Split four ways and balanced by measured duration rather than test count, so
+# the shards are numbered buckets rather than themes. Each shard runs serially
+# on its own runner and carries about 12 minutes of checkout, build and boot
+# before the first test, so rebalance from the durations in the uploaded
+# .xcresult bundles when a shard starts creeping towards the timeout. Running clones side by side inside
 # one job bought about 1.35x and cost a class of failure of its own, where a
 # clone dies and reports every test in a file as failed. A test that fails is
 # given one more attempt, because typing into a text field is where the hosted
@@ -38,7 +40,7 @@ jobs:
   ui-tests:
     name: UI tests (${{ matrix.shard }})
     runs-on: macos-26
-    timeout-minutes: 45
+    timeout-minutes: 60
     permissions:
       contents: read
       checks: write
@@ -46,12 +48,14 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - shard: onboarding
-            classes: OnboardingScreenTests BMISourcesScreenTests OnboardingFlowTests SplashAndOrientationTests TrainrUITests KeepsWhatYouTypedTests WorkoutSetupScreenTests StaysWhereYouLeftItTests
-          - shard: routine
-            classes: RoutineDetailScreenTests AdjustContextScreenTests UnstuckJourneyTests ExerciseSetTableScreenTests CompletionScreenTests TutorialFollowsItsExerciseTests
-          - shard: plan
-            classes: WeeklyPlanScreenTests WeeklyProgressScreenTests GeneratingScreenTests PlanAfterEmptyingTests PaywallGateTests TimerFinishScreenTests PaywallScreenTests ProScreenTests
+          - shard: 1
+            classes: OnboardingScreenTests ExerciseSetTableScreenTests ProScreenTests GeneratingScreenTests PaywallScreenTests
+          - shard: 2
+            classes: RoutineDetailScreenTests PaywallGateTests CompletionScreenTests SplashAndOrientationTests TutorialFollowsItsExerciseTests
+          - shard: 3
+            classes: StaysWhereYouLeftItTests OnboardingFlowTests TimerFinishScreenTests WorkoutSetupScreenTests WeeklyProgressScreenTests PlanAfterEmptyingTests
+          - shard: 4
+            classes: AdjustContextScreenTests WeeklyPlanScreenTests BMISourcesScreenTests KeepsWhatYouTypedTests TrainrUITests UnstuckJourneyTests
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
