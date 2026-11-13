@@ -259,7 +259,10 @@ final class RoutineDetailScreenTests: XCTestCase {
     // The whole partial finish, because what it is for is what the plan and the
     // reopened day say afterwards.
     @MainActor
-    func testSavingEarlyKeepsTheDayAsFinishedEarly() {
+    // Nothing was ticked, so the card says the day was skipped rather than
+    // crediting it. The screen's own banner still says finished early, because
+    // it names the count alongside and is describing how the session ended.
+    func testSavingEarlyWithNothingLoggedReadsSkipped() {
         openUnstartedDay()
         let finishEarly = app.buttons["Finish early"]
         app.scrollUntilHittable(finishEarly)
@@ -273,7 +276,8 @@ final class RoutineDetailScreenTests: XCTestCase {
         app.buttons["DONE"].tap()
 
         XCTAssertTrue(app.staticTexts["YOUR WEEKLY WORKOUT PLAN"].waitForExistence(timeout: 10))
-        XCTAssertTrue(app.button(containing: "Finished early").exists)
+        XCTAssertTrue(app.button(containing: "Skipped").exists)
+        XCTAssertFalse(app.button(containing: "Finished early").exists)
 
         app.button(containing: "Lower Body Power").tap()
 
