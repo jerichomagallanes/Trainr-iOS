@@ -6,6 +6,18 @@ name: UI tests
 # read the result, re-run if it looks like a flake, investigate if it doesn't.
 # The nightly run on main catches anything that slipped through.
 #
+# Nothing requires a pull request to be up to date with its base before merging,
+# so two that were each green can land and break together. The push trigger on
+# version/X.Y re-runs the suite on the merged result, which is the only thing
+# that sees that combination. pre-release is listed because a candidate build
+# goes to real testers, so a pull request into it is the last chance to catch
+# anything that reached it without passing through version/X.Y.
+#
+# The nightly still runs against the default branch, because a schedule always
+# does. Pointing it at version/X.Y would run that branch's tests against this
+# file's shard list, which is a different branch's, and quietly skip whatever
+# the two do not have in common.
+#
 # Split four ways and balanced by measured duration rather than test count, so
 # the shards are numbered buckets rather than themes. Each shard runs serially
 # on its own runner and carries about 12 minutes of checkout, build and boot
@@ -20,11 +32,13 @@ name: UI tests
 # stays visible instead of silent.
 on:
   pull_request:
-    branches: [main, version/2.0]
+    branches: [main, version/2.0, pre-release]
     paths-ignore:
       - '**/*.md'
       - 'docs/**'
       - '.gitignore'
+  push:
+    branches: [version/2.0]
   schedule:
     - cron: '0 18 * * *'  # 03:00 JST daily, against main
   workflow_dispatch:
