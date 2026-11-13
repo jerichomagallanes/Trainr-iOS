@@ -27,6 +27,17 @@ jobs:
     runs-on: macos-26
     timeout-minutes: 60
     steps:
+      # workflow_dispatch can start a run from any ref, and this workflow checks
+      # out and builds whatever it is pointed at. A candidate only ever comes
+      # from the candidate branch, so a run from anywhere else stops here rather
+      # than shipping the wrong tree to testers.
+      - name: Check this is the candidate branch
+        run: |
+          if [ "$GITHUB_REF_NAME" != "pre-release" ]; then
+            echo "::error::Test release builds pre-release; got '$GITHUB_REF_NAME'."
+            exit 1
+          fi
+
       # Nothing is built until every secret is in hand. Without the API key the
       # archive would fall back to whatever signing identity the runner happens
       # to have, and without the Firebase plist the app ships with crash
