@@ -51,7 +51,8 @@ struct WorkoutDayCard: View {
 
             WorkoutStatusChip(
                 status: day.status, isMissed: isMissed, isPartlyDone: isPartlyDone,
-                finishedEarly: finishedEarly, isAdjusted: isAdjusted
+                finishedEarly: finishedEarly, isAdjusted: isAdjusted,
+                hasPerformedWork: day.hasPerformedWork
             )
             .layoutPriority(1)
         }

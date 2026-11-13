@@ -385,10 +385,10 @@ struct NextWeekModelStoreTests {
         #expect(charges.count == 1)
     }
 
-    // Behind the same gate as a built week, so it costs the same: a copy is
-    // still a week this client did not have a minute ago.
-    @Test("A week copied from another is charged for like any other")
-    func aCopiedWeekIsCharged() async throws {
+    // A copy carries the same movements and targets with nothing progressed, so
+    // there is nothing new to charge for. Pro sells the week that gets harder.
+    @Test("A week copied from another costs nothing")
+    func aCopiedWeekCostsNothing() async throws {
         try save(week: 1, days: [day(1, .completed)])
         let model = charging()
 
@@ -396,7 +396,7 @@ struct NextWeekModelStoreTests {
 
         #expect(try storedWeeks() == [1, 2])
         #expect(model.wroteAWeek)
-        #expect(charges.count == 1)
+        #expect(charges.count == 0)
     }
 
     @Test("A week that could not be copied costs nothing")

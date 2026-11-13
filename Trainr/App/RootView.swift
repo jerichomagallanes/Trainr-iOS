@@ -141,7 +141,7 @@ struct RootView: View {
                 onUpdateProfile: { path.append(.review(fromPlan: true, profileOnly: true)) },
                 onOpenPro: { path.append(.pro) },
                 onStartNextWeek: { ask(.nextWeek) { path.append(.generatingNextWeek) } },
-                onRepeatWeek: { ask(.nextWeek) { nextWeek?.repeatWeek() } },
+                onRepeatWeek: { nextWeek?.repeatWeek() },
                 onRegenerateWeek: { path.append(.regeneratingWeek) },
                 onCreatePlan: {
                     path.append(.review(fromPlan: true, profileOnly: false))
@@ -426,10 +426,8 @@ private extension RootView {
                 // The copy joins the plan at the end, so refreshing here would
                 // re-read the old week; home is where the copy now lives.
                 onRepeatWeek: {
-                    ask(.nextWeek) {
-                        nextWeek?.repeatWeek(numbered: weekNumber)
-                        if nextWeek?.isReady == true { restartOnHome() }
-                    }
+                    nextWeek?.repeatWeek(numbered: weekNumber)
+                    if nextWeek?.isReady == true { restartOnHome() }
                 },
                 onRegenerateWeek: { path.append(.regeneratingWeek) },
                 onBack: pop
