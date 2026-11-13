@@ -51,12 +51,21 @@ nonisolated struct SkeletonSlot: Equatable, Sendable {
     var required: PatternRequirement?
 
     var isDecided: Bool { candidates.count == 1 }
+
+    // How many of a slot's candidates a week really draws from. Two, not
+    // three: measured against the volume and frequency the evidence asks for,
+    // going deeper spread a week's sets thinner without buying any more
+    // variety worth having.
+    static let varietyDepth = 2
 }
 
 nonisolated struct SkeletonDay: Equatable, Sendable {
     var dayNumber: Int
     var focus: SessionFocus
     var slots: [SkeletonSlot]
+    // What this day was budgeted at, in the same arithmetic the finished plan
+    // is measured in.
+    var minutes = 0
 
     var id: String { "day\(dayNumber)" }
     var fallbackTitle: String { focus.title }

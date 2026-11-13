@@ -48,6 +48,20 @@ struct WorkoutDateFormatterTests {
         #expect(range.contains("2027"))
     }
 
+    // The week's own days, not the ones the phone's zone would read them as.
+    @Test("A week range names the week's days wherever the phone is")
+    func awayFromGreenwich() {
+        var losAngeles = Calendar(identifier: .gregorian)
+        losAngeles.timeZone = TimeZone(identifier: "America/Los_Angeles")!
+
+        let range = WorkoutDateFormatter.weekRange(
+            from: date(2026, 9, 6), to: date(2026, 9, 12), locale: locale, calendar: losAngeles
+        )
+
+        #expect(range.contains("September 6"))
+        #expect(range.contains("12"))
+    }
+
     @Test("A range that starts where it ends is one date, not two")
     func sameDay() {
         let day = date(2026, 9, 6)

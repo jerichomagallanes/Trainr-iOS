@@ -27,6 +27,9 @@ struct WeekProgressCard: View {
             .contentShape(.rect)
         }
         .buttonStyle(.plain)
+        // Its own fill: the swipe wrapper around it paints one only while the
+        // row is held aside, and without this the card has none.
+        .background(Color.surfaceCard)
         .clipShape(.rect(cornerRadius: CornerRadius.medium))
         .overlay {
             RoundedRectangle(cornerRadius: CornerRadius.medium)
@@ -38,11 +41,10 @@ struct WeekProgressCard: View {
     private var heading: some View {
         HStack(spacing: Spacing.small) {
             Text(title)
-                .lineLimit(1)
-                .truncationMode(.tail)
                 .foregroundStyle(Color.onSurface)
                 .frame(maxWidth: .infinity, alignment: .leading)
             WeekStatusChip(status: week.status)
+                .layoutPriority(1)
         }
     }
 

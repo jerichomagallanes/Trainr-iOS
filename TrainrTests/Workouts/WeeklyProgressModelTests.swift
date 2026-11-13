@@ -11,10 +11,17 @@ struct WeeklyProgressModelTests {
         return calendar
     }
 
-    private func day(_ number: Int, _ status: WorkoutStatus) -> WorkoutDay {
+    private func day(
+        _ number: Int, _ status: WorkoutStatus, performed: Bool? = nil
+    ) -> WorkoutDay {
         WorkoutDay(
             dayNumber: number, title: "Day \(number)", status: status,
-            duration: 45, exerciseCount: 4
+            duration: 45, exerciseCount: 4,
+            exercises: [
+                WorkoutExercise(
+                    name: "Movement", isCompleted: performed ?? (status == .completed)
+                )
+            ]
         )
     }
 
@@ -42,6 +49,34 @@ struct WeeklyProgressModelTests {
         let done = plan([day(1, .completed), day(3, .completed)], start: monday)
         #expect(progress(done, daysLater: 1).status == .completed)
         #expect(progress(done, daysLater: 30).status == .completed)
+    }
+
+    // Finishing early closes the day whatever was logged, and a day nobody
+    // trained is not a day of training.
+    @Test("A day closed with nothing performed is not a completed day")
+    func aDayClosedWithNothingPerformedIsNotACompletedDay() {
+        let closedEarly = plan(
+            [day(1, .completed, performed: false), day(3, .completed)], start: monday
+        )
+        let read = progress(closedEarly, daysLater: 2)
+
+        #expect(read.completedDays == 1)
+        #expect(read.completionPercentage == 50)
+        #expect(read.status == .inProgress)
+    }
+
+    // Sets ticked without finishing their exercise are still training, and the
+    // week's percentage has to say so.
+    @Test("A day closed early with sets logged is a completed day")
+    func aDayClosedEarlyWithSetsLoggedIsACompletedDay() {
+        var partlyTrained = day(1, .completed, performed: false)
+        partlyTrained.exercises[0].sets = [
+            ExerciseSet(setNumber: 1, isCompleted: true),
+            ExerciseSet(setNumber: 2, isCompleted: false)
+        ]
+        let read = progress(plan([partlyTrained, day(3, .notStarted)], start: monday), daysLater: 2)
+
+        #expect(read.completedDays == 1)
     }
 
     @Test("A week still running is in progress, however little got done")

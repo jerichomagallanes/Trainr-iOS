@@ -3,6 +3,7 @@ import SwiftUI
 struct BodyMetricsView: View {
     var isEditing = false
     let age: Int?
+    let onEntryChanged: (BodyMetricsEntry) -> Void
     let onNext: (Double, Double, UnitSystem) -> Void
     let onBack: () -> Void
 
@@ -12,6 +13,12 @@ struct BodyMetricsView: View {
     @State private var heightTouched = false
     @State private var weightTouched = false
     @State private var showingBMISources = false
+    // Switching units must not edit the measurement: what a conversion was
+    // given is kept so the way back reads what was typed. It travels with the
+    // text it belongs to, or a step left and came back to reads the index off
+    // the fields again.
+    @State private var heightSwap: BodyMetricsConverter.UnitSwap
+    @State private var weightSwap: BodyMetricsConverter.UnitSwap
     @FocusState private var focusedField: Field?
 
     private enum Field {
@@ -23,32 +30,53 @@ struct BodyMetricsView: View {
         initial: UserProfile? = nil,
         age: Int? = nil,
         isEditing: Bool = false,
+        inProgress: BodyMetricsEntry? = nil,
+        onEntryChanged: @escaping (BodyMetricsEntry) -> Void = { _ in },
         onNext: @escaping (Double, Double, UnitSystem) -> Void,
         onBack: @escaping () -> Void
     ) {
         self.isEditing = isEditing
         self.age = age ?? initial?.age
+        self.onEntryChanged = onEntryChanged
         self.onNext = onNext
         self.onBack = onBack
 
-        // The profile is stored in cm and kg whatever was typed, so the fields are seeded converted.
+        // The profile is stored in cm and kg whatever was typed, so the fields
+        // are seeded converted. That conversion is a unit switch like any
+        // other, so it is seeded as one.
         let startsImperial = initial?.bodyUnitSystem == .imperial
         let storedHeight = (initial?.height).flatMap { $0 > 0 ? String(Int($0)) : nil } ?? ""
-        _height = State(initialValue: startsImperial
-            ? BodyMetricsConverter.convertHeightToImperial(storedHeight)
-            : storedHeight)
-        let storedWeight = (initial?.weight).flatMap { $0 > 0 ? $0 : nil }
-        _weight = State(initialValue: storedWeight.map { kg in
+        let heightSeed = startsImperial && !storedHeight.isEmpty
+            ? BodyMetricsConverter.UnitSwap(
+                shown: BodyMetricsConverter.convertHeightToImperial(storedHeight),
+                typed: storedHeight)
+            : BodyMetricsConverter.UnitSwap(shown: storedHeight)
+        let weightSeed = (initial?.weight).flatMap { $0 > 0 ? $0 : nil }.map { kg in
             startsImperial
-                ? BodyMetricsConverter.convertWeightToImperial(String(kg))
-                : BodyMetricsConverter.formatKilograms(kg)
-        } ?? "")
-        _useMetric = State(initialValue: !startsImperial)
+                ? BodyMetricsConverter.UnitSwap(
+                    shown: BodyMetricsConverter.convertWeightToImperial(String(kg)),
+                    typed: BodyMetricsConverter.formatWeight(kg))
+                : BodyMetricsConverter.UnitSwap(shown: BodyMetricsConverter.formatWeight(kg))
+        } ?? BodyMetricsConverter.UnitSwap()
+
+        _height = State(initialValue: inProgress?.height ?? heightSeed.shown)
+        _weight = State(initialValue: inProgress?.weight ?? weightSeed.shown)
+        _heightSwap = State(initialValue: inProgress?.heightSwap ?? heightSeed)
+        _weightSwap = State(initialValue: inProgress?.weightSwap ?? weightSeed)
+        _useMetric = State(initialValue: inProgress?.useMetric ?? !startsImperial)
+    }
+
+    private var entry: BodyMetricsEntry {
+        BodyMetricsEntry(
+            height: height, weight: weight, useMetric: useMetric,
+            heightSwap: heightSwap, weightSwap: weightSwap)
     }
 
     // Validated on what the text parses to: "595" passes the imperial filter and parses to zero.
     private var parsed: (heightCm: Double, weightKg: Double) {
-        BodyMetricsConverter.parseMetrics(height: height, weight: weight, useMetric: useMetric)
+        BodyMetricsConverter.keptMetrics(
+            height: height, weight: weight, useMetric: useMetric,
+            heightSwap: heightSwap, weightSwap: weightSwap)
     }
 
     private var heightIsUsable: Bool {
@@ -127,8 +155,8 @@ struct BodyMetricsView: View {
 
                 // Only for accepted measurements: a refused 300 cm and 2 kg still yields a labelled BMI.
                 if BodyMetricsConverter.showsAdultBMI(age: age), isFormValid,
-                   let bmi = BodyMetricsConverter.calculateBMI(
-                    height: height, weight: weight, useMetric: useMetric) {
+                   let bmi = BodyMetricsConverter.bodyMassIndex(
+                    heightCm: parsed.heightCm, weightKg: parsed.weightKg) {
                     BMICard(bmi: bmi)
                 }
 
@@ -139,6 +167,7 @@ struct BodyMetricsView: View {
             if oldValue == .height { heightTouched = true }
             if oldValue == .weight { weightTouched = true }
         }
+        .onChange(of: entry, initial: true) { _, typed in onEntryChanged(typed) }
         .sheet(isPresented: $showingBMISources) { BMISourcesView() }
     }
 
@@ -201,13 +230,22 @@ struct BodyMetricsView: View {
     private func switchUnits(toMetric: Bool) {
         guard toMetric != useMetric else { return }
         focusedField = nil
-        if toMetric {
-            height = BodyMetricsConverter.convertHeightToMetric(height)
-            weight = BodyMetricsConverter.convertWeightToMetric(weight)
-        } else {
-            height = BodyMetricsConverter.convertHeightToImperial(height)
-            weight = BodyMetricsConverter.convertWeightToImperial(weight)
+        heightSwap = BodyMetricsConverter.swapUnits(
+            height, last: heightSwap,
+            keeping: { BodyMetricsConverter.acceptedHeight($0, useMetric: toMetric) },
+            convert: {
+                toMetric
+                    ? BodyMetricsConverter.convertHeightToMetric($0)
+                    : BodyMetricsConverter.convertHeightToImperial($0)
+            }
+        )
+        weightSwap = BodyMetricsConverter.swapUnits(weight, last: weightSwap) {
+            toMetric
+                ? BodyMetricsConverter.convertWeightToMetric($0)
+                : BodyMetricsConverter.convertWeightToImperial($0)
         }
+        height = heightSwap.shown
+        weight = weightSwap.shown
         useMetric = toMetric
     }
 

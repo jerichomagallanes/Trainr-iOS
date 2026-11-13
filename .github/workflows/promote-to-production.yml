@@ -1,0 +1,150 @@
+name: Promote to production
+
+# Build once, promote the artifact. The build the testers approved is the build
+# that ships, so there is no archive step here and nothing to check out: this
+# workflow only attaches a build number that is already on TestFlight to the
+# App Store version and submits it. If an xcodebuild ever appears in this file,
+# the design has gone wrong. It runs on Linux for the same reason — nothing
+# here needs Xcode.
+#
+# There is deliberately no release branch. Production is reached by promoting a
+# build, not by merging. After a release ships, version/X.Y merges into main for
+# the record and the release is tagged there.
+on:
+  workflow_dispatch:
+    inputs:
+      build_number:
+        description: Build number to promote, as printed by the Test release run
+        required: true
+        type: string
+
+# Not cancel-in-progress, unlike the build workflows: a promotion is a single
+# short call that either happened or did not, and interrupting one halfway
+# leaves a half-made review submission on App Store Connect rather than saving
+# any work.
+concurrency:
+  group: promote-to-production
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  promote:
+    name: Submit the TestFlight build for review
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    # The approval is recorded in GitHub rather than being tribal knowledge.
+    # Required reviewers on an environment are free on a public repository, and
+    # the job does not start — and never sees the API key — until one approves.
+    environment: production
+    steps:
+      - name: Check the App Store Connect credentials are present
+        env:
+          APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+          APP_STORE_CONNECT_KEY_BASE64: ${{ secrets.APP_STORE_CONNECT_KEY_BASE64 }}
+        run: |
+          missing=()
+          for name in APP_STORE_CONNECT_KEY_ID APP_STORE_CONNECT_ISSUER_ID \
+                      APP_STORE_CONNECT_KEY_BASE64; do
+            [ -n "${!name}" ] || missing+=("$name")
+          done
+          if [ "${#missing[@]}" -ne 0 ]; then
+            printf '::error::Missing repository secret %s\n' "${missing[@]}"
+            echo "Create them under Settings -> Secrets and variables -> Actions."
+            echo "docs/release-secrets.md says where each value comes from."
+            exit 1
+          fi
+
+      # A typo here submits the wrong build to real users, and App Store
+      # Connect's error for a build number it cannot find is not obvious.
+      - name: Check the build number is a number
+        env:
+          BUILD_NUMBER: ${{ inputs.build_number }}
+        run: |
+          case "$BUILD_NUMBER" in
+            ''|*[!0-9]*)
+              echo "::error::build_number must be digits only, got '$BUILD_NUMBER'."
+              exit 1
+              ;;
+          esac
+
+      # The runner images ship a fastlane of their own. Pinning means an upstream
+      # release cannot change what an upload does between two runs, and the
+      # read-back catches the case where the gem installs somewhere that is not
+      # what `fastlane` on PATH resolves to.
+      - name: Install fastlane
+        run: |
+          sudo gem install --no-document fastlane -v 2.241.2
+          installed=$(fastlane --version | sed -n 's/^fastlane \([0-9][0-9.]*\)$/\1/p' | tail -1)
+          [ "$installed" = "2.241.2" ] || {
+            echo "::error::fastlane on PATH is '$installed', not the pinned 2.241.2."
+            exit 1
+          }
+
+      - name: Write the App Store Connect API key
+        env:
+          APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+          APP_STORE_CONNECT_KEY_BASE64: ${{ secrets.APP_STORE_CONNECT_KEY_BASE64 }}
+        run: |
+          printf '%s' "$APP_STORE_CONNECT_KEY_BASE64" | base64 --decode > "$RUNNER_TEMP/AuthKey.p8"
+          grep -q 'BEGIN PRIVATE KEY' "$RUNNER_TEMP/AuthKey.p8" || {
+            echo "::error::APP_STORE_CONNECT_KEY_BASE64 did not decode to a .p8 private key."
+            exit 1
+          }
+          jq -n \
+            --arg key_id "$APP_STORE_CONNECT_KEY_ID" \
+            --arg issuer_id "$APP_STORE_CONNECT_ISSUER_ID" \
+            --rawfile key "$RUNNER_TEMP/AuthKey.p8" \
+            '{key_id: $key_id, issuer_id: $issuer_id, key: $key, in_house: false}' \
+            > "$RUNNER_TEMP/asc-api-key.json"
+
+      # skip_binary_upload is what makes this a promotion: deliver finds the
+      # build that is already on TestFlight, attaches it to the version waiting
+      # in App Store Connect and submits that version. No file is passed because
+      # there is nothing to upload.
+      #
+      # The version itself, and its release notes, are the human's job and are
+      # written in App Store Connect — skip_metadata means this workflow will
+      # never overwrite them, and it stops with "could not find an editable
+      # version" if nobody prepared one.
+      #
+      # export_compliance_uses_encryption answers the one submission question
+      # the build cannot answer for itself. Everything else about the listing is
+      # left exactly as it was answered for the last release.
+      #
+      # submit_build, not plain deliver: plain deliver offers to set itself up
+      # when it finds no Deliverfile and no local metadata directory, and a
+      # prompt on a runner is a crash.
+      - name: Submit the build for App Store review
+        env:
+          FASTLANE_SKIP_UPDATE_CHECK: '1'
+          BUILD_NUMBER: ${{ inputs.build_number }}
+        run: |
+          fastlane deliver submit_build \
+            --api_key_path "$RUNNER_TEMP/asc-api-key.json" \
+            --app_identifier com.jericx.trainr \
+            --platform ios \
+            --build_number "$BUILD_NUMBER" \
+            --skip_binary_upload true \
+            --skip_metadata true \
+            --skip_screenshots true \
+            --skip_app_version_update true \
+            --run_precheck_before_submit false \
+            --force true \
+            --submit_for_review true \
+            --submission_information '{"export_compliance_uses_encryption": false}'
+
+      - name: Say what shipped
+        env:
+          BUILD_NUMBER: ${{ inputs.build_number }}
+        run: |
+          {
+            echo "### Submitted build $BUILD_NUMBER for review"
+            echo
+            echo "Run started by @${{ github.actor }} and released through the"
+            echo "production environment, which records who approved it."
+            echo "Apple has it under review; it reaches users when review passes."
+          } >> "$GITHUB_STEP_SUMMARY"

@@ -155,9 +155,7 @@ private nonisolated struct Week {
     }
 
     func bodyweight() -> ProgressionTarget {
-        let first = user.experienceLevel == .beginner && exercise.role == .compound
-            ? min(window.lowerBound, Self.beginnerBodyweightReps)
-            : window.lowerBound
+        let first = RepWindow.openingReps(user, exercise)
 
         if sessions.isEmpty { return repsTarget(first, askedSets, .calibrated, estimate: true) }
         guard let done = last else {
@@ -387,7 +385,6 @@ private nonisolated struct Week {
     private static let reseedOffset = 5
     private static let epleyCeiling = 12
     private static let epleyDivisor = 30.0
-    private static let beginnerBodyweightReps = 8
     private static let holdStepSeconds = 5
     private static let holdCeilingSeconds = 90
     private static let holdCutSeconds = 10

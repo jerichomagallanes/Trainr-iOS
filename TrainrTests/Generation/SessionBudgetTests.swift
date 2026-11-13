@@ -11,14 +11,16 @@ struct SessionBudgetTests {
         return profile
     }
 
-    // Three minutes between heavy sets is what the evidence asks for, and half
-    // an hour only pays for six of them. A plan with twelve is a plan the
-    // client abandons halfway.
+    // Three minutes between heavy sets is what the evidence asks for, so the
+    // same half hour buys far fewer of them than a circuit does. The numbers
+    // are the rest a session really spends: priced at a full rest after every
+    // set, including the last of a movement, half an hour bought six and a
+    // 90-minute answer was built as an hour.
     @Test func heavyWorkBuysFewerSetsThanTheSameHalfHourOfConditioning() {
         let strength = SessionBudget.maxSetsPerSession(profile(minutes: 30, goal: .strength))
         let weightLoss = SessionBudget.maxSetsPerSession(profile(minutes: 30, goal: .weightLoss))
 
-        #expect(strength == 6)
+        #expect(strength == 11)
         #expect(weightLoss > strength)
     }
 

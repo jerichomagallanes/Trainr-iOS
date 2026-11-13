@@ -55,6 +55,29 @@ struct ExerciseTimerTests {
         #expect(timer.remaining(at: after(510)) == 30)
     }
 
+    @Test("Running out leaves the countdown on the row at zero, saying so")
+    func finishingStaysAtZero() {
+        var timer = ExerciseTimerUi.running(position: 1, totalSeconds: 5, from: start)
+        _ = timer.advance(to: after(5))
+        timer.finish()
+
+        #expect(timer.isFinished)
+        #expect(!timer.isRunning)
+        #expect(timer.remainingSeconds == 0)
+        #expect(timer.display == "0:00")
+        #expect(timer.totalSeconds == 5)
+    }
+
+    @Test("Resetting a finished countdown makes it a countdown again")
+    func resettingClearsTheEnd() {
+        var timer = ExerciseTimerUi.running(position: 1, totalSeconds: 5, from: start)
+        timer.finish()
+        timer.reset()
+
+        #expect(!timer.isFinished)
+        #expect(timer.remainingSeconds == 5)
+    }
+
     @Test("Reset goes back to the top of the interval and holds there")
     func reset() {
         var timer = ExerciseTimerUi.running(position: 1, totalSeconds: 90, from: start)

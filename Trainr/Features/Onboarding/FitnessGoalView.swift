@@ -2,6 +2,7 @@ import SwiftUI
 
 struct FitnessGoalView: View {
     var isEditing = false
+    let onEntryChanged: (FitnessGoalEntry) -> Void
     let onNext: (FitnessGoal) -> Void
     let onBack: () -> Void
 
@@ -10,13 +11,16 @@ struct FitnessGoalView: View {
     init(
         initial: UserProfile? = nil,
         isEditing: Bool = false,
+        inProgress: FitnessGoalEntry? = nil,
+        onEntryChanged: @escaping (FitnessGoalEntry) -> Void = { _ in },
         onNext: @escaping (FitnessGoal) -> Void,
         onBack: @escaping () -> Void
     ) {
         self.isEditing = isEditing
+        self.onEntryChanged = onEntryChanged
         self.onNext = onNext
         self.onBack = onBack
-        _selectedGoal = State(initialValue: initial?.fitnessGoal)
+        _selectedGoal = State(initialValue: inProgress?.goal ?? initial?.fitnessGoal)
     }
 
     var body: some View {
@@ -60,6 +64,9 @@ struct FitnessGoalView: View {
 
                 Spacer().frame(height: Spacing.medium)
             }
+        }
+        .onChange(of: FitnessGoalEntry(goal: selectedGoal), initial: true) { _, chosen in
+            onEntryChanged(chosen)
         }
     }
 

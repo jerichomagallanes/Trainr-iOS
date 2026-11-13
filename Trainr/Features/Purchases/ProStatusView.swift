@@ -6,11 +6,8 @@ import TrainrDependencies
 // The paywall cannot serve any of that: it closes itself for anyone who already
 // has Pro.
 struct ProStatusView: View {
-    let onClose: () -> Void
-
     @Environment(Entitlements.self) private var entitlements
     @State private var isWorking = false
-    @State private var notice: String?
 
     var body: some View {
         ScreenContent {
@@ -24,9 +21,6 @@ struct ProStatusView: View {
             }
         }
         .background(Color.surfacePage)
-        .alert(notice ?? "", isPresented: .constant(notice != nil)) {
-            Button(L10n.close) { notice = nil }
-        }
     }
 
     private var header: some View {
@@ -58,6 +52,7 @@ struct ProStatusView: View {
                 .font(.oneOff(18))
                 .foregroundStyle(Color.brandStrong)
                 .frame(width: 28, height: 28)
+                .accessibilityHidden(true)
             Text(heading)
                 .font(.labelLarge)
                 .foregroundStyle(Color.onSurface)
@@ -85,11 +80,11 @@ struct ProStatusView: View {
         }
     }
 
+    // The notice lives with the entitlement rather than with this view, so a
+    // restore that lands swaps the screen underneath it and is still read.
     private func restore() async {
         isWorking = true
-        let restored = await entitlements.restore()
+        await entitlements.restore()
         isWorking = false
-        notice = entitlements.purchaseNotice ?? (restored ? L10n.proRestored : L10n.proNothingToRestore)
-        if restored { onClose() }
     }
 }
