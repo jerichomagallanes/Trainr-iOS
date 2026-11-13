@@ -53,12 +53,13 @@ final class WeeklyProgressModel {
     static func progress(
         of plan: WeeklyPlan, now: Date = Date(), calendar: Calendar = .current
     ) -> WeekProgressUi {
-        let start = plan.startDate ?? WorkoutWeek.startOfDay(plan.createdAt, calendar: calendar)
-        let completed = plan.workoutDays.count { $0.status == .completed }
+        let start = plan.weekStartDate(calendar: calendar)
+        let today = WorkoutWeek.startOfDay(now, calendar: calendar)
+        let completed = plan.workoutDays.count(where: \.countsAsCompleted)
         let total = plan.workoutDays.count
         // Over only once the day after it has arrived.
-        let over = now >= WorkoutWeek.date(
-            of: Constants.Workout.daysPerWeek + 1, startingFrom: start, calendar: calendar
+        let over = today >= WorkoutWeek.date(
+            of: Constants.Workout.daysPerWeek + 1, startingFrom: start
         )
 
         let status: WeekStatus = if total > 0 && completed == total {
@@ -70,7 +71,7 @@ final class WeeklyProgressModel {
         } else if completed > 0 {
             // Training ahead of schedule is not "upcoming" any more.
             .inProgress
-        } else if now < start {
+        } else if today < start {
             .upcoming
         } else {
             .inProgress
@@ -83,9 +84,7 @@ final class WeeklyProgressModel {
             totalDays: total,
             status: status,
             startDate: start,
-            endDate: WorkoutWeek.date(
-                of: Constants.Workout.daysPerWeek, startingFrom: start, calendar: calendar
-            )
+            endDate: WorkoutWeek.date(of: Constants.Workout.daysPerWeek, startingFrom: start)
         )
     }
 }

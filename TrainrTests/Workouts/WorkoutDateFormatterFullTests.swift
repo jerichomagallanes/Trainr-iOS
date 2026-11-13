@@ -5,7 +5,7 @@ import Testing
 @Suite("Workout dates, spelled out")
 struct WorkoutDateFormatterFullTests {
 
-    private let calendar = Calendar(identifier: .gregorian)
+    private let calendar = WorkoutWeek.dateCalendar
     private let english = Locale(identifier: "en_US")
 
     private func date(_ year: Int, _ month: Int, _ day: Int) throws -> Date {

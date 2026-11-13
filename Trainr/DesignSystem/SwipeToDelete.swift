@@ -6,6 +6,7 @@ import UIKit
 struct SwipeToDelete<Content: View>: View {
 
     var label: String
+    var enabled = true
     let onDelete: () -> Void
     @ViewBuilder let content: Content
 
@@ -15,10 +16,20 @@ struct SwipeToDelete<Content: View>: View {
     private static var actionWidth: CGFloat { 72 }
 
     var body: some View {
+        if enabled { swipeable } else { row }
+    }
+
+    // Only while the row is held aside, where the fill hides the action behind
+    // it. An idle row that paints its own fill repaints the card it already
+    // sits on, as a lighter stripe in dark.
+    private var row: some View {
+        content.background(offset < 0 ? Color.surfaceCard : .clear)
+    }
+
+    private var swipeable: some View {
         ZStack(alignment: .trailing) {
             deleteAction
-            content
-                .background(Color.surfaceCard)
+            row
                 .offset(x: offset)
                 .gesture(
                     HorizontalPan(

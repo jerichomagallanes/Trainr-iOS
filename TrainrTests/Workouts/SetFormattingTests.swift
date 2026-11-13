@@ -24,6 +24,27 @@ struct SetFormattingTests {
         #expect(SetFormatting.secondsFromDigits("5959") == 3599)
     }
 
+    // 6-3-0 used to stall at 0:06, and writing "63" back as the 1:03 it is
+    // stored as would land the third digit in the minutes and read 10:30.
+    @Test("A clock is written as the digits typed, not as the seconds they hold")
+    func theFaceKeepsTheDigitsTyped() {
+        #expect(SetFormatting.clockFace("") == "")
+        #expect(SetFormatting.clockFace("6") == "0:06")
+        #expect(SetFormatting.clockFace("63") == "0:63")
+        #expect(SetFormatting.clockFace("630") == "6:30")
+        #expect(SetFormatting.clockFace("164") == "1:64")
+        #expect(SetFormatting.clockFace("1640") == "16:40")
+        #expect(SetFormatting.clockFace("0:06") == "0:06")
+    }
+
+    // A time logged by the exercise timer can run past the four digits the
+    // keypad types, and the clock still has to read as the time that is stored.
+    @Test("A time past the longest typable one is still shown in full")
+    func aLongTimeIsShownInFull() {
+        #expect(SetFormatting.clockFace("12000") == "120:00")
+        #expect(SetFormatting.seconds(7200) == "120:00")
+    }
+
     @Test("A weight drops a trailing zero but keeps a real fraction")
     func weightsAreReadable() {
         #expect(SetFormatting.weight(20, in: .metric) == "20")
@@ -58,6 +79,43 @@ struct SetFormattingTests {
         )
         #expect(cell.contains("lbs"))
         #expect(cell.contains("100"))
+    }
+
+    @Test("A filled cell is named by its column and set")
+    func aFilledCellIsNamedByItsColumnAndSet() {
+        #expect(
+            SetFormatting.cellLabel(column: "Set 1 weight in kilograms", value: "17.5", target: "20")
+                == "Set 1 weight in kilograms"
+        )
+        #expect(
+            SetFormatting.cellLabel(column: "Set 2 reps", value: "6", target: "12") == "Set 2 reps"
+        )
+    }
+
+    // The placeholder is the prescription; reading it as the value claims a set
+    // that was never logged.
+    @Test("An empty cell offers its target without claiming it")
+    func anEmptyCellOffersItsTargetWithoutClaimingIt() {
+        #expect(
+            SetFormatting.cellLabel(column: "Set 1 reps", value: nil, target: "12")
+                == "Set 1 reps, target 12"
+        )
+        #expect(
+            SetFormatting.cellLabel(column: "Set 3 time", value: nil, target: "1:30")
+                == "Set 3 time, target 1:30"
+        )
+    }
+
+    @Test("A cell with neither value nor target is just its column")
+    func aCellWithNeitherValueNorTargetIsJustItsColumn() {
+        #expect(SetFormatting.cellLabel(column: "Set 1 reps", value: nil, target: nil) == "Set 1 reps")
+    }
+
+    @Test("A set cell names the unit its column is showing")
+    func aWeightCellNamesItsUnit() {
+        #expect(L10n.setWeightCell("1", L10n.weightUnitKilograms) == "Set 1 weight in kilograms")
+        #expect(L10n.setWeightCell("1", L10n.weightUnitPounds) == "Set 1 weight in pounds")
+        #expect(L10n.setNumberLabel("3") == "Set 3")
     }
 
     @Test("A timer counts down in the same clock shape")

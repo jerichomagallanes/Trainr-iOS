@@ -108,8 +108,8 @@ struct CheckboxChip: View {
             RoundedRectangle(cornerRadius: CornerRadius.medium)
                 .strokeBorder(Color.outlineControl, lineWidth: 1)
         }
-        // .isSelected rather than .isToggle: .isToggle reclassifies the element
-        // as a switch, and every screen reaching a chip by name finds a button.
-        .accessibilityAddTraits(isChecked ? .isSelected : [])
+        // The reader has to hear whether the box is ticked, and a Toggle says it
+        // in the platform's own words rather than a string of ours to translate.
+        .accessibilityRepresentation { Toggle(text, isOn: $isChecked) }
     }
 }

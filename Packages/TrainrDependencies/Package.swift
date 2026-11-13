@@ -29,8 +29,16 @@ let package = Package(
                 .product(name: "FirebaseCrashlytics", package: "firebase-ios-sdk"),
                 .product(name: "YouTubePlayerKit", package: "YouTubePlayerKit"),
                 .product(name: "RevenueCat", package: "purchases-ios-spm"),
-                .product(name: "GoogleMobileAds", package: "swift-package-manager-google-mobile-ads")
+                .product(name: "GoogleMobileAds", package: "swift-package-manager-google-mobile-ads"),
+                "llama"
             ]
+        ),
+        // b10456 (f275595d) is the last llama.cpp release whose xcframework
+        // still ships the iOS simulator slice, and the tag the Android app pins.
+        .binaryTarget(
+            name: "llama",
+            url: "https://github.com/ggml-org/llama.cpp/releases/download/b10456/llama-b10456-xcframework.zip",
+            checksum: "0223bedd0a01232399d943dcb72bc227882bc90df98e29d7a92343531a88cc02"
         )
     ]
 )
