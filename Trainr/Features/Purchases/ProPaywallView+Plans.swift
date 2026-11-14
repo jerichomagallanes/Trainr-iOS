@@ -2,9 +2,9 @@ import Foundation
 import RevenueCat
 
 extension ProPaywallView {
-    // Held to the unit the store reported. Left to choose for itself the
-    // formatter rounds a seven day trial up to "1 week", which is not the offer
-    // that was configured and not what the receipt will say.
+    // Said in days below a month, whichever unit the store used: "7 days free"
+    // is the offer as people know it, and a store that calls the same offer
+    // "1 week" should not change the copy.
     static func trialPeriod(_ period: SubscriptionPeriod) -> String? {
         var components = DateComponents()
         let unit: NSCalendar.Unit
@@ -13,8 +13,8 @@ extension ProPaywallView {
             components.day = period.value
             unit = .day
         case .week:
-            components.weekOfMonth = period.value
-            unit = .weekOfMonth
+            components.day = period.value * 7
+            unit = .day
         case .month:
             components.month = period.value
             unit = .month

@@ -350,7 +350,7 @@ struct ProPaywallView: View {
     private var callToAction: String {
         guard let selected else { return L10n.proSubscribe }
         if selected.packageType == .lifetime { return L10n.proBuyLifetime }
-        if let trial = trial(for: selected) { return L10n.proStartTrial(trial) }
+        if trial(for: selected) != nil { return L10n.proStartTrial }
         return L10n.proSubscribeTo(Self.term(selected))
     }
 
