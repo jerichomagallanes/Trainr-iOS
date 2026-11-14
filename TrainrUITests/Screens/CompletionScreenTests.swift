@@ -17,7 +17,7 @@ final class CompletionScreenTests: XCTestCase {
         app.button(containing: title).tap()
         XCTAssertTrue(app.staticTexts[title.uppercased()].waitForExistence(timeout: 5))
 
-        let slider = app.buttons["SLIDE TO FINISH THIS WORKOUT"]
+        let slider = app.buttons["SLIDE TO LOG THE WHOLE SESSION"]
         XCTAssertTrue(slider.waitForExistence(timeout: 5))
         let completed = app.staticTexts[completion]
         var slides = 0

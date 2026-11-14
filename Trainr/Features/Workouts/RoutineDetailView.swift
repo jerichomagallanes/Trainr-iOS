@@ -394,8 +394,14 @@ struct RoutineDetailView: View {
         if state.isReadOnly {
             EmptyView()
         } else if !routine.isComplete {
-            SlideToConfirm(title: L10n.slideToCompleteRoutine) { model.completeRoutine() }
+            // Said before the gesture, not after it: sliding fills every unticked
+            // set at its prescription, which the label alone cannot tell you.
+            Text(L10n.logWholeSessionHint)
+                .font(.body14)
+                .foregroundStyle(Color.onSurfaceMuted)
                 .padding(.top, Spacing.section + Spacing.tight)
+            SlideToConfirm(title: L10n.slideToCompleteRoutine) { model.completeRoutine() }
+                .padding(.top, Spacing.small)
             if !finishedEarly {
                 QuietAction(title: L10n.finishEarly, action: model.askToFinishEarly)
                     .padding(.top, Spacing.tight)

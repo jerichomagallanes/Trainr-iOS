@@ -2113,7 +2113,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Finish early"
+            "value": "Save what I've done"
           }
         }
       }
@@ -2168,7 +2168,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Finish early?"
+            "value": "Save what you've done?"
           }
         }
       }
@@ -2917,6 +2917,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Limitations"
+          }
+        }
+      }
+    },
+    "log_whole_session_hint": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Every remaining set is saved at its prescribed numbers, as if done."
           }
         }
       }
@@ -5254,7 +5265,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Save and finish early"
+            "value": "Save what I've done and stop"
           }
         }
       }
@@ -5596,7 +5607,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "SLIDE TO FINISH THIS WORKOUT"
+            "value": "SLIDE TO LOG THE WHOLE SESSION"
           }
         }
       }

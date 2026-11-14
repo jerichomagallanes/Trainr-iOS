@@ -130,7 +130,7 @@ final class OnboardingFlowTests: XCTestCase {
         XCTAssertTrue(app.buttons["Start timer"].firstMatch.exists)
         XCTAssertTrue(app.staticTexts["Equipment: Dumbbell"].exists)
 
-        let slider = app.buttons["SLIDE TO FINISH THIS WORKOUT"]
+        let slider = app.buttons["SLIDE TO LOG THE WHOLE SESSION"]
         XCTAssertTrue(slider.waitForExistence(timeout: 5))
         let completed = app.staticTexts["DAY 1 COMPLETED"]
         // Slid until it takes rather than once. The nightly runner failed here
