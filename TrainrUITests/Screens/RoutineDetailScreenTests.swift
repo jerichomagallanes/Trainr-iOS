@@ -146,7 +146,7 @@ final class RoutineDetailScreenTests: XCTestCase {
     @MainActor
     func testAPartialSlideLeavesTheRoutineAlone() {
         openUnstartedDay()
-        let slider = app.buttons["SLIDE TO FINISH THIS WORKOUT"]
+        let slider = app.buttons["SLIDE TO LOG THE WHOLE SESSION"]
         app.scrollUntilHittable(slider)
 
         slider.coordinate(withNormalizedOffset: CGVector(dx: 0.06, dy: 0.5))
@@ -162,7 +162,7 @@ final class RoutineDetailScreenTests: XCTestCase {
     @MainActor
     func testSlidingToTheEndFinishesTheDay() {
         openUnstartedDay()
-        let slider = app.buttons["SLIDE TO FINISH THIS WORKOUT"]
+        let slider = app.buttons["SLIDE TO LOG THE WHOLE SESSION"]
         app.scrollUntilHittable(slider)
 
         slider.coordinate(withNormalizedOffset: CGVector(dx: 0.06, dy: 0.5))
@@ -183,7 +183,7 @@ final class RoutineDetailScreenTests: XCTestCase {
         app.scrollUntilHittable(startOver)
 
         XCTAssertTrue(startOver.exists)
-        XCTAssertFalse(app.buttons["SLIDE TO FINISH THIS WORKOUT"].exists)
+        XCTAssertFalse(app.buttons["SLIDE TO LOG THE WHOLE SESSION"].exists)
     }
 
     @MainActor
@@ -206,7 +206,7 @@ final class RoutineDetailScreenTests: XCTestCase {
         startOver.tap()
         app.buttons["Start over"].tap()
 
-        XCTAssertTrue(app.buttons["SLIDE TO FINISH THIS WORKOUT"].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.buttons["SLIDE TO LOG THE WHOLE SESSION"].waitForExistence(timeout: 3))
         XCTAssertFalse(app.ticks("Exercise complete", done: true).firstMatch.exists)
     }
 
@@ -230,30 +230,30 @@ final class RoutineDetailScreenTests: XCTestCase {
     @MainActor
     func testFinishEarlyIsOfferedOnlyWhileThereIsSomethingLeftToDo() {
         openUnstartedDay()
-        let finishEarly = app.buttons["Finish early"]
+        let finishEarly = app.buttons["Save what I've done"]
         app.scrollUntilHittable(finishEarly)
         XCTAssertTrue(finishEarly.exists)
 
         openFinishedDay()
         app.scrollUntilHittable(app.buttons["Start this workout over"])
-        XCTAssertFalse(app.buttons["Finish early"].exists)
+        XCTAssertFalse(app.buttons["Save what I've done"].exists)
     }
 
     @MainActor
     func testFinishingEarlyAsksFirstAndKeepTrainingReturns() {
         openUnstartedDay()
-        let finishEarly = app.buttons["Finish early"]
+        let finishEarly = app.buttons["Save what I've done"]
         app.scrollUntilHittable(finishEarly)
         finishEarly.tap()
 
-        XCTAssertTrue(app.staticTexts["Finish early?"].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.staticTexts["Save what you've done?"].waitForExistence(timeout: 3))
         XCTAssertTrue(app.staticTexts["0 of 4 exercises completed"].exists)
         XCTAssertTrue(app.staticTexts["Unchecked sets stay unperformed. Your logged work is kept."].exists)
 
         app.buttons["Keep training"].tap()
 
         XCTAssertTrue(app.staticTexts["LOWER BODY POWER"].waitForExistence(timeout: 3))
-        XCTAssertFalse(app.staticTexts["Finish early?"].exists)
+        XCTAssertFalse(app.staticTexts["Save what you've done?"].exists)
     }
 
     // The whole partial finish, because what it is for is what the plan and the
@@ -264,10 +264,10 @@ final class RoutineDetailScreenTests: XCTestCase {
     // it names the count alongside and is describing how the session ended.
     func testSavingEarlyWithNothingLoggedReadsSkipped() {
         openUnstartedDay()
-        let finishEarly = app.buttons["Finish early"]
+        let finishEarly = app.buttons["Save what I've done"]
         app.scrollUntilHittable(finishEarly)
         finishEarly.tap()
-        XCTAssertTrue(app.staticTexts["Finish early?"].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.staticTexts["Save what you've done?"].waitForExistence(timeout: 3))
 
         app.buttons["SAVE WORKOUT"].tap()
 
@@ -284,10 +284,10 @@ final class RoutineDetailScreenTests: XCTestCase {
         XCTAssertTrue(app.staticTexts["LOWER BODY POWER"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.text(containing: "Finished early").exists)
         XCTAssertTrue(app.button(containing: "Adjust today").exists)
-        let slider = app.buttons["SLIDE TO FINISH THIS WORKOUT"]
+        let slider = app.buttons["SLIDE TO LOG THE WHOLE SESSION"]
         app.scrollUntilHittable(slider)
         XCTAssertTrue(slider.exists)
-        XCTAssertFalse(app.buttons["Finish early"].exists)
+        XCTAssertFalse(app.buttons["Save what I've done"].exists)
         XCTAssertFalse(app.buttons["Start this workout over"].exists)
     }
 
@@ -299,10 +299,10 @@ final class RoutineDetailScreenTests: XCTestCase {
         app.ticks("Exercise complete", done: false).firstMatch.tap()
         XCTAssertTrue(
             app.ticks("Exercise complete", done: true).firstMatch.waitForExistence(timeout: 3))
-        let finishEarly = app.buttons["Finish early"]
+        let finishEarly = app.buttons["Save what I've done"]
         app.scrollUntilHittable(finishEarly)
         finishEarly.tap()
-        XCTAssertTrue(app.staticTexts["Finish early?"].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.staticTexts["Save what you've done?"].waitForExistence(timeout: 3))
         app.buttons["SAVE WORKOUT"].tap()
         XCTAssertTrue(app.staticTexts["Workout saved"].waitForExistence(timeout: 5))
         app.buttons["DONE"].tap()
@@ -318,13 +318,13 @@ final class RoutineDetailScreenTests: XCTestCase {
         let startOver = app.buttons["Start this workout over"]
         app.scrollUntilHittable(startOver)
         XCTAssertTrue(startOver.exists)
-        XCTAssertTrue(app.buttons["SLIDE TO FINISH THIS WORKOUT"].exists)
-        XCTAssertFalse(app.buttons["Finish early"].exists)
+        XCTAssertTrue(app.buttons["SLIDE TO LOG THE WHOLE SESSION"].exists)
+        XCTAssertFalse(app.buttons["Save what I've done"].exists)
 
         startOver.tap()
         app.buttons["Start over"].tap()
 
-        XCTAssertTrue(app.buttons["Finish early"].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.buttons["Save what I've done"].waitForExistence(timeout: 3))
         XCTAssertFalse(app.text(containing: "Finished early").exists)
         XCTAssertFalse(app.ticks("Exercise complete", done: true).firstMatch.exists)
 
@@ -368,7 +368,7 @@ final class RoutineDetailScreenTests: XCTestCase {
         app.button(containing: "Something hurts").tap()
 
         XCTAssertTrue(app.staticTexts["Pause this exercise"].waitForExistence(timeout: 5))
-        XCTAssertTrue(app.buttons["SAVE AND FINISH EARLY"].exists)
+        XCTAssertTrue(app.buttons["SAVE WHAT I'VE DONE AND STOP"].exists)
 
         app.buttons["Return to workout"].tap()
 
@@ -476,7 +476,7 @@ final class RoutineDetailScreenTests: XCTestCase {
         openRecordedDay()
 
         for label in [
-            "Add set", "Delete set", "Start timer", "Finish early",
+            "Add set", "Delete set", "Start timer", "Save what I've done",
             "Start this workout over", "Need an alternative?", "Undo adjustment"
         ] {
             XCTAssertFalse(app.buttons[label].exists, label)
@@ -486,7 +486,7 @@ final class RoutineDetailScreenTests: XCTestCase {
             XCTAssertFalse(app.switches[label].exists, label)
         }
         XCTAssertFalse(app.button(containing: "Adjust today").exists)
-        XCTAssertFalse(app.staticTexts["SLIDE TO FINISH THIS WORKOUT"].exists)
+        XCTAssertFalse(app.staticTexts["SLIDE TO LOG THE WHOLE SESSION"].exists)
         XCTAssertEqual(app.textFields.count, 0)
     }
 

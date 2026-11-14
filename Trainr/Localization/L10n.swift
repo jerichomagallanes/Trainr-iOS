@@ -306,6 +306,7 @@ nonisolated enum L10n {
     static var letsKeepYouSafe: String { String(localized: "lets_keep_you_safe") }
     static var limitationsDescription: String { String(localized: "limitations_description") }
     static var limitationsLabel: String { String(localized: "limitations_label") }
+    static var logWholeSessionHint: String { String(localized: "log_whole_session_hint") }
     static var loseWeight: String { String(localized: "lose_weight") }
     static var loseWeightDescription: String { String(localized: "lose_weight_description") }
     static var loseWeightGoal: String { String(localized: "lose_weight_goal") }
