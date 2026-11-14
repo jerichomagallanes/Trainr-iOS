@@ -4,7 +4,7 @@ Trainr is an iOS workout planner that writes your week from your goal, your equi
 
 [![Download on the App Store](https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/en-us?size=180x60)](https://apps.apple.com/jp/app/trainr-workout-planner/id6809207852)
 
-Website: [jerichomagallanes.github.io/Trainr](https://jerichomagallanes.github.io/Trainr/) · This is the iOS version of [Trainr for Android](https://github.com/jerichomagallanes/Trainr).
+Website: [jerichomagallanes.github.io/Trainr](https://jerichomagallanes.github.io/Trainr/) · This is the iOS version of [Trainr for Android](https://github.com/jerichomagallanes/Trainr-Android).
 
 ## 📋 Features
 
