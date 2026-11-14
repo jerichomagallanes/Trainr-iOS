@@ -14,16 +14,15 @@ struct TrialPeriodTests {
         let reads: String
     }
 
-    @Test("Every length the store can report reads as the length it reported")
+    @Test("Every length the store can report reads in days below a month")
     func everyLengthIsSpelled() {
         let cases = [
             Trial(unit: .day, value: 3, reads: "3 days"),
-            // The one the formatter wants to call "1 week", which is Apple's own
-            // default trial length and so the case most likely to ship.
             Trial(unit: .day, value: 7, reads: "7 days"),
             Trial(unit: .day, value: 14, reads: "14 days"),
-            Trial(unit: .week, value: 1, reads: "1 week"),
-            Trial(unit: .week, value: 2, reads: "2 weeks"),
+            // Apple reports its default trial as a week; it still sells 7 days.
+            Trial(unit: .week, value: 1, reads: "7 days"),
+            Trial(unit: .week, value: 2, reads: "14 days"),
             Trial(unit: .month, value: 1, reads: "1 month"),
             Trial(unit: .month, value: 2, reads: "2 months"),
             Trial(unit: .year, value: 1, reads: "1 year")
