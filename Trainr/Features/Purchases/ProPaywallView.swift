@@ -35,7 +35,7 @@ struct ProPaywallView: View {
         }
         .task {
             await entitlements.refresh()
-            selected = Self.preferred(from: packages)
+            selected = preferred()
         }
     }
 
@@ -318,58 +318,40 @@ struct ProPaywallView: View {
             price: package.storeProduct.localizedPriceString,
             billing: Self.billing(package),
             saved: saving(on: package),
+            trial: trial(for: package),
             isSelected: selected?.identifier == package.identifier,
             stacked: stacked,
             onSelect: { selected = package }
         )
     }
 
-    // Nothing for a lifetime purchase, which never renews, and naming the trial
-    // where one exists: an introductory offer has to say what it costs once it
-    // ends, and the store is the only place that knows whether this buyer is
-    // still eligible for it.
-    private var renewalNote: String? {
-        guard selected?.packageType != .lifetime else { return nil }
-        guard let product = selected?.storeProduct,
+    // The store is the only place that knows whether this buyer is still
+    // eligible for the introductory offer, so the trial is only ever named
+    // where the store says so.
+    private func trial(for package: Package) -> String? {
+        let product = package.storeProduct
+        guard package.packageType != .lifetime,
               entitlements.eligibleTrials.contains(product.productIdentifier),
               let offer = product.introductoryDiscount,
-              offer.paymentMode == .freeTrial,
-              let period = Self.trialPeriod(offer.subscriptionPeriod)
-        else { return L10n.proCancelAnytime }
-        return L10n.proTrialThen(period, product.localizedPriceString)
+              offer.paymentMode == .freeTrial
+        else { return nil }
+        return Self.trialPeriod(offer.subscriptionPeriod)
     }
 
-    // Held to the unit the store reported. Left to choose for itself the
-    // formatter rounds a seven day trial up to "1 week", which is not the offer
-    // that was configured and not what the receipt will say.
-    static func trialPeriod(_ period: SubscriptionPeriod) -> String? {
-        var components = DateComponents()
-        let unit: NSCalendar.Unit
-        switch period.unit {
-        case .day:
-            components.day = period.value
-            unit = .day
-        case .week:
-            components.weekOfMonth = period.value
-            unit = .weekOfMonth
-        case .month:
-            components.month = period.value
-            unit = .month
-        case .year:
-            components.year = period.value
-            unit = .year
-        }
-        let formatter = DateComponentsFormatter()
-        formatter.unitsStyle = .full
-        formatter.allowedUnits = [unit]
-        return formatter.string(from: components)
+    // Nothing for a lifetime purchase, which never renews, and naming the trial
+    // where one exists: an introductory offer has to say what it costs once it
+    // ends.
+    private var renewalNote: String? {
+        guard selected?.packageType != .lifetime else { return nil }
+        guard let selected, let trial = trial(for: selected) else { return L10n.proCancelAnytime }
+        return L10n.proTrialThen(trial, selected.storeProduct.localizedPriceString)
     }
 
     private var callToAction: String {
         guard let selected else { return L10n.proSubscribe }
-        return selected.packageType == .lifetime
-            ? L10n.proBuyLifetime
-            : L10n.proSubscribeTo(Self.term(selected))
+        if selected.packageType == .lifetime { return L10n.proBuyLifetime }
+        if let trial = trial(for: selected) { return L10n.proStartTrial(trial) }
+        return L10n.proSubscribeTo(Self.term(selected))
     }
 
     static func term(_ package: Package) -> String {
@@ -419,9 +401,8 @@ struct ProPaywallView: View {
         isWorking = false
     }
 
-    // The annual plan when there is one, because that is the one being recommended.
-    private static func preferred(from packages: [Package]) -> Package? {
-        packages.first { $0.packageType == .annual } ?? packages.first
+    private func preferred() -> Package? {
+        Self.preferred(packages, annual: { $0.packageType == .annual }, trial: { trial(for: $0) != nil })
     }
 
     private struct Row {
@@ -485,87 +466,5 @@ enum PaywallComparison {
         case .no: L10n.proCompareNo
         case .text(let text): text
         }
-    }
-}
-
-struct PlanCard: View {
-    let term: String
-    let price: String
-    let billing: String
-    let saved: Int?
-    let isSelected: Bool
-    var stacked = false
-    let onSelect: () -> Void
-
-    private var ink: Color { isSelected ? .onSurfaceSelected : .onSurface }
-    private var subdued: Color { isSelected ? .onSurfaceSelected : .onSurfaceMuted }
-
-    var body: some View {
-        Button(action: onSelect) {
-            VStack(spacing: 0) {
-                if let saved {
-                    Text(L10n.proSavePercent(saved))
-                        .font(.body12)
-                        .foregroundStyle(Color.onBrand)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 3)
-                        .background(Color.brandLarge)
-                }
-                if stacked { spread } else { stack }
-            }
-            .frame(maxWidth: .infinity)
-            .background(isSelected ? Color.surfaceSelected : Color.surfaceCard)
-            .clipShape(.rect(cornerRadius: CornerRadius.medium))
-            .overlay {
-                RoundedRectangle(cornerRadius: CornerRadius.medium)
-                    .strokeBorder(
-                        isSelected ? Color.brandLarge : Color.outlineControl, lineWidth: 1
-                    )
-            }
-        }
-        .buttonStyle(.plain)
-    }
-
-    private var stack: some View {
-        VStack(spacing: 2) {
-            Text(term).font(.labelMedium).foregroundStyle(ink)
-            Text(price).font(.sectionTitle).foregroundStyle(ink)
-            Text(billing).font(.body12).foregroundStyle(subdued)
-        }
-        .padding(.vertical, Spacing.small)
-        .padding(.horizontal, 4)
-        .frame(maxWidth: .infinity)
-    }
-
-    // The price shares the line while the term and what it bills still have
-    // room for their own words on it, and takes a line of its own once they do
-    // not: a term cut mid-word is a plan the screen has not stated, and the
-    // price is the one thing on the card that may not be cut at all.
-    private var spread: some View {
-        ViewThatFits(in: .horizontal) {
-            HStack(spacing: Spacing.small) {
-                terms
-                Spacer(minLength: Spacing.small)
-                amount
-            }
-            VStack(alignment: .leading, spacing: 2) {
-                terms
-                amount
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-        }
-        .padding(.vertical, Spacing.small)
-        .padding(.horizontal, Spacing.card)
-    }
-
-    private var terms: some View {
-        VStack(alignment: .leading, spacing: 2) {
-            Text(term).font(.labelMedium).foregroundStyle(ink)
-            Text(billing).font(.body12).foregroundStyle(subdued)
-        }
-    }
-
-    private var amount: some View {
-        Text(price).font(.sectionTitle).foregroundStyle(ink)
     }
 }

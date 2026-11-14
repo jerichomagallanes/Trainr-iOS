@@ -401,6 +401,9 @@ nonisolated enum L10n {
     static var proAndMore: String { String(localized: "pro_and_more") }
     static var proBilledAnnually: String { String(localized: "pro_billed_annually") }
     static var proBilledMonthly: String { String(localized: "pro_billed_monthly") }
+    static func proBilledWithSaving(_ p1: String, _ p2: Int) -> String {
+        String.localizedStringWithFormat(String(localized: "pro_billed_with_saving"), p1, p2)
+    }
     static var proBuyLifetime: String { String(localized: "pro_buy_lifetime") }
     static var proCancelAnytime: String { String(localized: "pro_cancel_anytime") }
     static var proCheckFailed: String { String(localized: "pro_check_failed") }
@@ -478,6 +481,9 @@ nonisolated enum L10n {
     static func proSavePercent(_ p1: Int) -> String {
         String.localizedStringWithFormat(String(localized: "pro_save_percent"), p1)
     }
+    static func proStartTrial(_ p1: String) -> String {
+        String.localizedStringWithFormat(String(localized: "pro_start_trial"), p1)
+    }
     static var proStillChecking: String { String(localized: "pro_still_checking") }
     static var proSubscribe: String { String(localized: "pro_subscribe") }
     static func proSubscribeTo(_ p1: String) -> String {
@@ -485,6 +491,9 @@ nonisolated enum L10n {
     }
     static var proSupportTrouble: String { String(localized: "pro_support_trouble") }
     static var proTerms: String { String(localized: "pro_terms") }
+    static func proTrialBadge(_ p1: String) -> String {
+        String.localizedStringWithFormat(String(localized: "pro_trial_badge"), p1)
+    }
     static func proTrialThen(_ p1: String, _ p2: String) -> String {
         String.localizedStringWithFormat(String(localized: "pro_trial_then"), p1, p2)
     }
