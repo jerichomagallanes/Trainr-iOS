@@ -27,7 +27,7 @@ final class TutorialFollowsItsExerciseTests: XCTestCase {
         alternative.tap()
         XCTAssertTrue(app.staticTexts["Which exercise and what's available?"].waitForExistence(timeout: 5))
 
-        let chip = app.button(containing: "Bodyweight only")
+        let chip = app.buttons["None"]
         app.scrollUntilHittable(chip)
         chip.tap()
         let recommend = app.buttons["SHOW RECOMMENDATION"]

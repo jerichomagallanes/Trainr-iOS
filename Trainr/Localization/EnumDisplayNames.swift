@@ -50,7 +50,7 @@ extension FitnessGoal {
 extension Equipment {
     var displayName: String {
         switch self {
-        case .none: L10n.bodyweightOnly
+        case .none: L10n.equipmentNone
         case .barbell: L10n.equipmentBarbell
         case .dumbbell: L10n.equipmentDumbbell
         case .kettlebell: L10n.equipmentKettlebell

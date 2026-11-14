@@ -108,8 +108,6 @@ nonisolated enum L10n {
     static var bmiResultSources: String { String(localized: "bmi_result_sources") }
     static var bmiScreeningNote: String { String(localized: "bmi_screening_note") }
     static var bmiSourceDate: String { String(localized: "bmi_source_date") }
-    static var bodyweightOnly: String { String(localized: "bodyweight_only") }
-    static var bodyweightOnlyLabel: String { String(localized: "bodyweight_only_label") }
     static var buildMuscle: String { String(localized: "build_muscle") }
     static var buildMuscleDescription: String { String(localized: "build_muscle_description") }
     static var buildMuscleGoal: String { String(localized: "build_muscle_goal") }
@@ -193,6 +191,7 @@ nonisolated enum L10n {
     static var equipmentLabel: String { String(localized: "equipment_label") }
     static var equipmentLabelFull: String { String(localized: "equipment_label_full") }
     static var equipmentMachine: String { String(localized: "equipment_machine") }
+    static var equipmentNone: String { String(localized: "equipment_none") }
     static var equipmentOther: String { String(localized: "equipment_other") }
     static var equipmentPlate: String { String(localized: "equipment_plate") }
     static var equipmentResistanceBand: String { String(localized: "equipment_resistance_band") }
