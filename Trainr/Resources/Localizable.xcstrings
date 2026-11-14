@@ -4663,6 +4663,17 @@
         }
       }
     },
+    "pro_start_trial": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start free trial"
+          }
+        }
+      }
+    },
     "pro_still_checking": {
       "extractionState": "manual",
       "localizations": {
@@ -4714,6 +4725,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Terms of Use"
+          }
+        }
+      }
+    },
+    "pro_trial_badge": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ free"
           }
         }
       }

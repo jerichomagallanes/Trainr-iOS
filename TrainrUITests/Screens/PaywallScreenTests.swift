@@ -25,6 +25,16 @@ final class PaywallScreenTests: XCTestCase {
         XCTAssertTrue(app.staticTexts["Unlock every week"].waitForExistence(timeout: 20))
     }
 
+    // With the store's free trial live and a fresh simulator eligible for it the
+    // button starts the trial; without either it subscribes. Both are the way in,
+    // and these tests are about where the bar sits, not what it sells.
+    private func callToAction(timeout: TimeInterval = 10) -> XCUIElement {
+        let predicate = NSPredicate(format: "label == 'START FREE TRIAL' OR label BEGINSWITH 'SUBSCRIBE'")
+        let button = app.buttons.matching(predicate).firstMatch
+        _ = button.waitForExistence(timeout: timeout)
+        return button
+    }
+
     // "Not now" is the only way off the paywall. A bar that outgrew the window
     // used to leave it below the fold, inside a scroll nothing on screen
     // announced.
@@ -35,7 +45,7 @@ final class PaywallScreenTests: XCTestCase {
         let window = app.windows.firstMatch.frame
         let notNow = app.buttons["Not now"]
         XCTAssertTrue(notNow.waitForExistence(timeout: 10))
-        let callToAction = app.button(startingWith: "SUBSCRIBE")
+        let callToAction = callToAction()
         XCTAssertTrue(callToAction.exists)
         XCTAssertLessThanOrEqual(callToAction.frame.maxY, window.maxY)
         XCTAssertLessThanOrEqual(notNow.frame.maxY, window.maxY)
@@ -50,7 +60,7 @@ final class PaywallScreenTests: XCTestCase {
         openPaywall(XCUIApplication.largestTextSize)
 
         let window = app.windows.firstMatch.frame
-        let callToAction = app.button(startingWith: "SUBSCRIBE")
+        let callToAction = callToAction()
         XCTAssertTrue(callToAction.waitForExistence(timeout: 10))
         XCTAssertGreaterThanOrEqual(callToAction.frame.minY, window.midY)
 

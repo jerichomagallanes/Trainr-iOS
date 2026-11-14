@@ -478,6 +478,7 @@ nonisolated enum L10n {
     static func proSavePercent(_ p1: Int) -> String {
         String.localizedStringWithFormat(String(localized: "pro_save_percent"), p1)
     }
+    static var proStartTrial: String { String(localized: "pro_start_trial") }
     static var proStillChecking: String { String(localized: "pro_still_checking") }
     static var proSubscribe: String { String(localized: "pro_subscribe") }
     static func proSubscribeTo(_ p1: String) -> String {
@@ -485,6 +486,9 @@ nonisolated enum L10n {
     }
     static var proSupportTrouble: String { String(localized: "pro_support_trouble") }
     static var proTerms: String { String(localized: "pro_terms") }
+    static func proTrialBadge(_ p1: String) -> String {
+        String.localizedStringWithFormat(String(localized: "pro_trial_badge"), p1)
+    }
     static func proTrialThen(_ p1: String, _ p2: String) -> String {
         String.localizedStringWithFormat(String(localized: "pro_trial_then"), p1, p2)
     }
