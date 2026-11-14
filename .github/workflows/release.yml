@@ -1,0 +1,144 @@
+name: Release
+
+# Fires when main moves. main is fast-forwarded onto pre-release once the App
+# Store release is live; the tag goes on the commit the shipped build was made
+# from, found through the artifact the Test release run kept.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  release:
+    name: Tag what shipped and publish the release
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6.0.2
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Read what the App Store has on sale
+        id: store
+        env:
+          APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+          APP_STORE_CONNECT_KEY_BASE64: ${{ secrets.APP_STORE_CONNECT_KEY_BASE64 }}
+        run: |
+          for name in APP_STORE_CONNECT_KEY_ID APP_STORE_CONNECT_ISSUER_ID APP_STORE_CONNECT_KEY_BASE64; do
+            [ -n "${!name}" ] || { echo "::error::Missing repository secret $name"; exit 1; }
+          done
+          python3 - <<'PY' > on-sale.txt
+          import base64, json, os, subprocess, tempfile, time, urllib.request
+          kid, iss = os.environ["APP_STORE_CONNECT_KEY_ID"], os.environ["APP_STORE_CONNECT_ISSUER_ID"]
+          key = base64.b64decode(os.environ["APP_STORE_CONNECT_KEY_BASE64"])
+          b64 = lambda b: base64.urlsafe_b64encode(b).rstrip(b"=")
+          now = int(time.time())
+          msg = b64(json.dumps({"alg": "ES256", "kid": kid, "typ": "JWT"}).encode()) + b"." + \
+                b64(json.dumps({"iss": iss, "iat": now, "exp": now + 600, "aud": "appstoreconnect-v1"}).encode())
+          with tempfile.NamedTemporaryFile(suffix=".p8", delete=False) as f:
+              f.write(key); p8 = f.name
+          der = subprocess.run(["openssl", "dgst", "-sha256", "-sign", p8], input=msg, capture_output=True, check=True).stdout
+          os.unlink(p8)
+          i = 2; rl = der[i + 1]; r = der[i + 2:i + 2 + rl]; i = i + 2 + rl; sl = der[i + 1]; s = der[i + 2:i + 2 + sl]
+          token = (msg + b"." + b64(r.lstrip(b"\0").rjust(32, b"\0") + s.lstrip(b"\0").rjust(32, b"\0"))).decode()
+          def get(path):
+              req = urllib.request.Request("https://api.appstoreconnect.apple.com/v1" + path, headers={"Authorization": "Bearer " + token})
+              return json.load(urllib.request.urlopen(req))
+          for v in get("/apps/6809207852/appStoreVersions?filter[appStoreState]=READY_FOR_SALE&limit=5")["data"]:
+              build = get(f"/appStoreVersions/{v['id']}/build")["data"]
+              if build:
+                  print(v["attributes"]["versionString"], build["attributes"]["version"])
+          PY
+          echo "On sale (version build):"; cat on-sale.txt
+
+      - name: Find the newest shipped build in this branch's history
+        id: version
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # The Test release run keeps the ipa it uploaded as an artifact named
+          # after the build number, with the commit it was built from. The one
+          # that is on sale and whose commit is in main's history is the release.
+          found=
+          while read -r name run sha _; do
+            build=${name#trainr-appstore-}
+            version=$(awk -v b="$build" '$2 == b {print $1}' on-sale.txt)
+            [ -n "$version" ] || continue
+            git merge-base --is-ancestor "$sha" HEAD 2>/dev/null || continue
+            found="$name $run $sha $version"; break
+          done < <(gh api "repos/$GITHUB_REPOSITORY/actions/artifacts?per_page=100" \
+            --jq '.artifacts[] | select(.expired == false and (.name | startswith("trainr-appstore-")))
+                  | "\(.name) \(.workflow_run.id) \(.workflow_run.head_sha) \(.created_at)"' | sort -k4 -r)
+          if [ -z "$found" ]; then
+            echo "::error::Nothing on sale was built from a commit in this history (or its Test release artifact has expired). Fast-forward main to pre-release after the App Store release is live; if the artifact is gone (90 days), tag by hand."
+            exit 1
+          fi
+          read -r name run sha version <<< "$found"
+          declared=$(git show "$sha:Trainr.xcodeproj/project.pbxproj" | sed -nE 's/^[[:space:]]*MARKETING_VERSION = ([0-9][0-9.]*);/\1/p' | sort -u | head -1)
+          [ "$declared" = "$version" ] || { echo "::error::$sha declares $declared but the store sells it as $version"; exit 1; }
+          {
+            echo "name=$version"
+            echo "build=${name#trainr-appstore-}"
+            echo "sha=$sha"
+            echo "run=$run"
+            echo "artifact=$name"
+            echo "tag=v$version"
+            echo "previous=$(git tag --list 'v*' --sort=-v:refname | head -1)"
+          } >> "$GITHUB_OUTPUT"
+          echo "On sale and in history: $version build ${name#trainr-appstore-} from run $run, built from ${sha:0:7}."
+
+      - name: Stop if this version is already released
+        id: existing
+        env:
+          TAG: ${{ steps.version.outputs.tag }}
+        run: |
+          if git rev-parse -q --verify "refs/tags/$TAG" >/dev/null; then
+            echo "released=true" >> "$GITHUB_OUTPUT"
+            echo "::notice::$TAG already exists at $(git rev-parse --short "$TAG^{commit}"); nothing to do."
+          fi
+
+      - name: Fetch the build the test release exported
+        if: steps.existing.outputs.released != 'true'
+        id: ipa
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NAME: ${{ steps.version.outputs.artifact }}
+          RUN_ID: ${{ steps.version.outputs.run }}
+          VERSION_NAME: ${{ steps.version.outputs.name }}
+          BUILD: ${{ steps.version.outputs.build }}
+        run: |
+          gh run download "$RUN_ID" -n "$NAME" -D dist
+          ipa=$(find dist -name '*.ipa' | head -1)
+          mv "$ipa" "dist/Trainr-$VERSION_NAME-$BUILD.ipa"
+          echo "file=dist/Trainr-$VERSION_NAME-$BUILD.ipa" >> "$GITHUB_OUTPUT"
+          echo "Took the build from Test release run $RUN_ID."
+
+      - name: Tag the commit and publish the release
+        if: steps.existing.outputs.released != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.version.outputs.tag }}
+          SHA: ${{ steps.version.outputs.sha }}
+          PREVIOUS: ${{ steps.version.outputs.previous }}
+          FILE: ${{ steps.ipa.outputs.file }}
+        run: |
+          args=(--target "$SHA" --title "$TAG" --generate-notes --latest)
+          [ -n "$PREVIOUS" ] && args+=(--notes-start-tag "$PREVIOUS")
+          [ -n "$FILE" ] && args+=("$FILE")
+          gh release create "$TAG" "${args[@]}"
+          {
+            echo "### Released $TAG"
+            echo
+            echo "Tag on \`${SHA:0:7}\`, the commit the build was made from; notes from ${PREVIOUS:-the first commit}; ${FILE:+build attached}${FILE:-no build found}."
+          } >> "$GITHUB_STEP_SUMMARY"
