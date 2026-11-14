@@ -949,28 +949,6 @@
         }
       }
     },
-    "bodyweight_only": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bodyweight only"
-          }
-        }
-      }
-    },
-    "bodyweight_only_label": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bodyweight only"
-          }
-        }
-      }
-    },
     "build_muscle": {
       "extractionState": "manual",
       "localizations": {
@@ -1750,6 +1728,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Machine"
+          }
+        }
+      }
+    },
+    "equipment_none": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "None"
           }
         }
       }

@@ -140,7 +140,7 @@ struct ReviewView: View {
 
     private var equipmentText: String {
         if profile.availableEquipment.isEmpty || profile.availableEquipment.contains(.none) {
-            L10n.bodyweightOnlyLabel
+            L10n.equipmentNone
         } else {
             profile.availableEquipment.map(\.displayName).joined(separator: ", ")
         }

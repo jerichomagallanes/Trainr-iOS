@@ -50,7 +50,7 @@ final class WorkoutSetupScreenTests: XCTestCase {
         for gone in ["Home", "Gym", "Both"] {
             XCTAssertFalse(app.buttons[gone].exists)
         }
-        for kit in ["Bodyweight only", "Barbell", "Dumbbell", "Machine"] {
+        for kit in ["None", "Barbell", "Dumbbell", "Machine"] {
             XCTAssertTrue(app.buttons[kit].exists, kit)
         }
         XCTAssertTrue(app.buttons["Choose how many days"].exists)
@@ -78,7 +78,7 @@ final class WorkoutSetupScreenTests: XCTestCase {
     func testASessionLengthTheWeekCannotFillSaysSoWhereItIsChosen() {
         app = .launched(startingAt: "setup")
         XCTAssertTrue(app.staticTexts["SET UP YOUR WORKOUT"].waitForExistence(timeout: 20))
-        app.buttons["Bodyweight only"].tap()
+        app.buttons["None"].tap()
         app.buttons["Choose how many days"].tap()
         app.buttons["3 days"].tap()
 

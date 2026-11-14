@@ -87,17 +87,11 @@ struct WorkoutSetupView: View {
 
                 FormSection(title: L10n.availableEquipment,
                             verticalPadding: 0, titleGap: Spacing.card) {
-                    FlowLayout(horizontalSpacing: Spacing.tight,
-                               verticalSpacing: Spacing.card) {
-                        ForEach(equipmentOptions, id: \.0) { equipment, label in
-                            ToggleChip(
-                                text: label,
-                                isSelected: selectedEquipment.contains(equipment)
-                            ) {
-                                toggle(equipment)
-                            }
-                        }
-                    }
+                    EquipmentChoiceGrid(
+                        options: equipmentOptions,
+                        isSelected: { selectedEquipment.contains($0) },
+                        onTap: toggle
+                    )
                 }
 
                 if hasLoadedEquipment {

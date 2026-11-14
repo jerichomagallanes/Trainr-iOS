@@ -41,18 +41,11 @@ struct AdjustEquipmentView: View {
                     .font(.sectionTitle)
                     .foregroundStyle(Color.onSurface)
                     .padding(.top, Spacing.large)
-                FlowLayout {
-                    ForEach(Equipment.choices, id: \.self) { equipment in
-                        ToggleChip(
-                            text: equipment.displayName,
-                            isSelected: state.availableEquipment.contains(equipment),
-                            height: ComponentHeight.medium,
-                            horizontalPadding: Spacing.medium
-                        ) {
-                            onToggleEquipment(equipment)
-                        }
-                    }
-                }
+                EquipmentChoiceGrid(
+                    options: Equipment.choices.map { ($0, $0.displayName) },
+                    isSelected: { state.availableEquipment.contains($0) },
+                    onTap: onToggleEquipment
+                )
                 .padding(.top, Spacing.small)
             }
         }

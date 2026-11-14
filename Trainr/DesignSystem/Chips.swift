@@ -9,20 +9,36 @@ struct ToggleChip: View {
     // The LABEL fills, not the chip: a button hugs its label, so widening from
     // outside leaves the paint at label width with the text spilling past it.
     var fillsWidth = false
+    // A picture before the label, which also pulls the label to the start: a
+    // thumbnail chip reads as a row, not a centred pill.
+    var leading: Image?
     let action: () -> Void
 
     var body: some View {
         Button(action: action) {
-            Text(text)
-                .font(.body16)
-                .fontWeight(.medium)
-                .foregroundStyle(isSelected ? Color.onSurfaceSelected : .onSurface)
-                .lineLimit(1)
-                .minimumScaleFactor(0.75)
-                .padding(.horizontal, horizontalPadding)
-                .frame(maxWidth: fillsWidth ? .infinity : nil)
-                .frame(height: height)
-                .contentShape(RoundedRectangle(cornerRadius: CornerRadius.medium))
+            HStack(spacing: Spacing.tight) {
+                if let leading {
+                    leading
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 32, height: 32)
+                        .frame(width: 52, height: 52)
+                        .background(Color.surfaceSunken, in: Circle())
+                        .overlay(Circle().strokeBorder(Color.outlineControl, lineWidth: 1.5))
+                }
+                Text(text)
+                    .font(.body16)
+                    .fontWeight(.medium)
+                    .foregroundStyle(isSelected ? Color.onSurfaceSelected : .onSurface)
+                    .lineLimit(leading == nil ? 1 : 2)
+                    .minimumScaleFactor(0.75)
+                    .multilineTextAlignment(.leading)
+                if leading != nil { Spacer(minLength: 0) }
+            }
+            .padding(.horizontal, horizontalPadding)
+            .frame(maxWidth: fillsWidth || leading != nil ? .infinity : nil)
+            .frame(height: height)
+            .contentShape(RoundedRectangle(cornerRadius: CornerRadius.medium))
         }
         .buttonStyle(.plain)
         .background(
@@ -111,5 +127,77 @@ struct CheckboxChip: View {
         // The reader has to hear whether the box is ticked, and a Toggle says it
         // in the platform's own words rather than a string of ours to translate.
         .accessibilityRepresentation { Toggle(text, isOn: $isChecked) }
+    }
+}
+
+// One chip for every place equipment is chosen, so the thumbnail, the disc and
+// the row height cannot drift between the setup screen and Unstuck. The disc is
+// sunken, not white: in dark a white disc on a card reads as a hole punched
+// through it. The artwork carries its own light and dark colours.
+struct EquipmentChoiceChip: View {
+    let equipment: Equipment
+    let label: String
+    let isSelected: Bool
+    let action: () -> Void
+
+    var body: some View {
+        ToggleChip(
+            text: label,
+            isSelected: isSelected,
+            height: 72,
+            horizontalPadding: Spacing.tight,
+            leading: equipment.icon,
+            action: action
+        )
+    }
+}
+
+extension Equipment {
+    // Decorative: the chip's label is its text, and the UI tests find it by that.
+    var icon: Image { Image(decorative: iconName) }
+
+    private var iconName: String {
+        switch self {
+        case .none: "EquipmentNone"
+        case .barbell: "EquipmentBarbell"
+        case .dumbbell: "EquipmentDumbbell"
+        case .kettlebell: "EquipmentKettlebell"
+        case .machine: "EquipmentMachine"
+        case .plate: "EquipmentPlate"
+        case .resistanceBand: "EquipmentResistanceBand"
+        case .suspensionBand: "EquipmentSuspensionBand"
+        case .other: "EquipmentOther"
+        }
+    }
+}
+
+// Two to a row, built eagerly. A lazy grid materialises its children on layout,
+// so for a frame after the screen appears the chips are not in the accessibility
+// tree at all, and a tap that lands in that frame finds nothing. Nine fixed
+// choices have no need to be lazy.
+struct EquipmentChoiceGrid: View {
+    let options: [(Equipment, String)]
+    let isSelected: (Equipment) -> Bool
+    let onTap: (Equipment) -> Void
+
+    var body: some View {
+        VStack(spacing: Spacing.tight) {
+            ForEach(Array(stride(from: 0, to: options.count, by: 2)), id: \.self) { start in
+                HStack(spacing: Spacing.tight) {
+                    ForEach(options[start..<min(start + 2, options.count)], id: \.0) { equipment, label in
+                        EquipmentChoiceChip(
+                            equipment: equipment,
+                            label: label,
+                            isSelected: isSelected(equipment)
+                        ) {
+                            onTap(equipment)
+                        }
+                    }
+                    if start + 1 >= options.count {
+                        Color.clear.frame(maxWidth: .infinity)
+                    }
+                }
+            }
+        }
     }
 }
