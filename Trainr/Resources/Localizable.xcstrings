@@ -3860,17 +3860,6 @@
         }
       }
     },
-    "pro_billed_with_saving": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%1$@ · Save %2$lld%%"
-          }
-        }
-      }
-    },
     "pro_buy_lifetime": {
       "extractionState": "manual",
       "localizations": {

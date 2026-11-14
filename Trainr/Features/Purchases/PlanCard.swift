@@ -13,17 +13,19 @@ struct PlanCard: View {
     private var ink: Color { isSelected ? .onSurfaceSelected : .onSurface }
     private var subdued: Color { isSelected ? .onSurfaceSelected : .onSurfaceMuted }
 
-    // The trial takes the strip where there is one, and the saving moves down
-    // beside the billing term rather than disappearing.
+    private var accent: Color { isSelected ? .onSurfaceSelected : .brandStrong }
+
+    // The trial takes the strip where there is one, and the saving moves down to
+    // a line of its own under the billing term rather than disappearing.
     private var banner: String? {
         if let trial { return L10n.proTrialBadge(trial) }
         if let saved { return L10n.proSavePercent(saved) }
         return nil
     }
 
-    private var bills: String {
-        guard trial != nil, let saved else { return billing }
-        return L10n.proBilledWithSaving(billing, saved)
+    private var savingLine: String? {
+        guard trial != nil, let saved else { return nil }
+        return L10n.proSavePercent(saved)
     }
 
     var body: some View {
@@ -56,7 +58,10 @@ struct PlanCard: View {
         VStack(spacing: 2) {
             Text(term).font(.labelMedium).foregroundStyle(ink)
             Text(price).font(.sectionTitle).foregroundStyle(ink)
-            Text(bills).font(.body12).foregroundStyle(subdued)
+            Text(billing).font(.body12).foregroundStyle(subdued)
+            if let savingLine {
+                Text(savingLine).font(.body12).foregroundStyle(accent)
+            }
         }
         .padding(.vertical, Spacing.small)
         .padding(.horizontal, 4)
@@ -87,7 +92,10 @@ struct PlanCard: View {
     private var terms: some View {
         VStack(alignment: .leading, spacing: 2) {
             Text(term).font(.labelMedium).foregroundStyle(ink)
-            Text(bills).font(.body12).foregroundStyle(subdued)
+            Text(billing).font(.body12).foregroundStyle(subdued)
+            if let savingLine {
+                Text(savingLine).font(.body12).foregroundStyle(accent)
+            }
         }
     }
 

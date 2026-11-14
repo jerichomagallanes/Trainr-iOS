@@ -401,9 +401,6 @@ nonisolated enum L10n {
     static var proAndMore: String { String(localized: "pro_and_more") }
     static var proBilledAnnually: String { String(localized: "pro_billed_annually") }
     static var proBilledMonthly: String { String(localized: "pro_billed_monthly") }
-    static func proBilledWithSaving(_ p1: String, _ p2: Int) -> String {
-        String.localizedStringWithFormat(String(localized: "pro_billed_with_saving"), p1, p2)
-    }
     static var proBuyLifetime: String { String(localized: "pro_buy_lifetime") }
     static var proCancelAnytime: String { String(localized: "pro_cancel_anytime") }
     static var proCheckFailed: String { String(localized: "pro_check_failed") }
