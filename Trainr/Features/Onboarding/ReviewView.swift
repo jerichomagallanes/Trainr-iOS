@@ -14,16 +14,18 @@ struct ReviewView: View {
             closeInsteadOfBack: isRegenerating || isProfileUpdate
         ) {
             VStack(spacing: Spacing.small) {
-                // With the button rather than at the end of the scroll: this is the moment it matters.
+                PrimaryButton(
+                    title: isProfileUpdate ? L10n.saveProfile : L10n.generateMyWorkoutPlan,
+                    action: onConfirm
+                )
+                // With the button rather than at the end of the scroll: this is
+                // the moment it matters. Under it rather than over it: the bar
+                // is capped, and whatever comes second is the part that scrolls.
                 if !isProfileUpdate {
                     Text(L10n.healthDisclaimer)
                         .font(.body12)
                         .foregroundStyle(Color.onSurfaceMuted)
                 }
-                PrimaryButton(
-                    title: isProfileUpdate ? L10n.saveProfile : L10n.generateMyWorkoutPlan,
-                    action: onConfirm
-                )
             }
         } content: {
             if !isRegenerating && !isProfileUpdate {
@@ -138,7 +140,7 @@ struct ReviewView: View {
 
     private var equipmentText: String {
         if profile.availableEquipment.isEmpty || profile.availableEquipment.contains(.none) {
-            L10n.bodyweightOnlyLabel
+            L10n.equipmentNone
         } else {
             profile.availableEquipment.map(\.displayName).joined(separator: ", ")
         }
@@ -158,6 +160,7 @@ private struct ProfileSection: View {
                 Button(L10n.edit, action: onEdit)
                     .font(.labelLarge)
                     .foregroundStyle(Color.brandStrong)
+                    .accessibilityLabel(L10n.editSection(title))
             }
             ForEach(items, id: \.0) { label, value in
                 HStack(alignment: .top, spacing: Spacing.card) {

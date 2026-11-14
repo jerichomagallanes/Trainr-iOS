@@ -8,6 +8,7 @@ private struct CompletionView: View {
     let message: String
     let secondaryTitle: String
     let primaryTitle: String
+    var offer: FeedbackOffer?
     var onBack: () -> Void = {}
     var onSecondary: () -> Void = {}
     var onPrimary: () -> Void = {}
@@ -39,6 +40,8 @@ private struct CompletionView: View {
                     .multilineTextAlignment(.center)
                     .padding(.top, Spacing.card)
 
+                offer
+
                 Spacer()
             }
             .frame(maxWidth: .infinity)
@@ -58,6 +61,7 @@ private struct CompletionView: View {
 
 struct DayCompletedView: View {
     let dayNumber: Int
+    var offer: FeedbackOffer?
     var onBack: () -> Void = {}
     var onViewProgress: () -> Void = {}
     var onBackToPlan: () -> Void = {}
@@ -70,6 +74,7 @@ struct DayCompletedView: View {
             message: L10n.dayCompletedMessage,
             secondaryTitle: L10n.viewWeeklyProgress,
             primaryTitle: L10n.backToWorkoutPlan,
+            offer: offer,
             onBack: onBack,
             onSecondary: onViewProgress,
             onPrimary: onBackToPlan
@@ -79,6 +84,7 @@ struct DayCompletedView: View {
 
 struct WeekCompletedView: View {
     let weekNumber: Int
+    var offer: FeedbackOffer?
     var onBack: () -> Void = {}
     var onViewProgress: () -> Void = {}
     var onGenerateNextWeek: () -> Void = {}
@@ -93,6 +99,7 @@ struct WeekCompletedView: View {
             message: L10n.weekCompletedMessage,
             secondaryTitle: L10n.viewWeeklyProgress,
             primaryTitle: L10n.generateNextWeek,
+            offer: offer,
             onBack: onBack,
             onSecondary: onViewProgress,
             onPrimary: onGenerateNextWeek

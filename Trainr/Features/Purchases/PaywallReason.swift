@@ -9,12 +9,14 @@ nonisolated enum PaywallReason: String, Hashable, CaseIterable, Identifiable {
     case nextWeek
     case rewrite
     case freshPlan
+    case adjust
 
     var prompt: String {
         switch self {
         case .nextWeek: L10n.proPromptNextWeek
         case .rewrite: L10n.proPromptRewrite
         case .freshPlan: L10n.proPromptFresh
+        case .adjust: L10n.proPromptAdjust
         }
     }
 
@@ -23,6 +25,7 @@ nonisolated enum PaywallReason: String, Hashable, CaseIterable, Identifiable {
         case .nextWeek: L10n.proFeatureNextWeekTitle
         case .rewrite: L10n.proFeatureRewriteTitle
         case .freshPlan: L10n.proFeatureFreshTitle
+        case .adjust: L10n.proFeatureAdjustTitle
         }
     }
 
@@ -31,6 +34,16 @@ nonisolated enum PaywallReason: String, Hashable, CaseIterable, Identifiable {
         case .nextWeek: L10n.proFeatureNextWeekBody
         case .rewrite: L10n.proFeatureRewriteBody
         case .freshPlan: L10n.proFeatureFreshBody
+        case .adjust: L10n.proFeatureAdjustBody
+        }
+    }
+
+    // The shared line names the free week, which is the wrong limit to state to
+    // someone who has just run out of adjustments.
+    var freeLimit: String {
+        switch self {
+        case .nextWeek, .rewrite, .freshPlan: L10n.proFreeLimit
+        case .adjust: L10n.proFreeLimitAdjust
         }
     }
 
@@ -39,6 +52,7 @@ nonisolated enum PaywallReason: String, Hashable, CaseIterable, Identifiable {
         case .nextWeek: "sparkles"
         case .rewrite: "arrow.trianglehead.2.clockwise"
         case .freshPlan: "figure.run"
+        case .adjust: "slider.horizontal.3"
         }
     }
 

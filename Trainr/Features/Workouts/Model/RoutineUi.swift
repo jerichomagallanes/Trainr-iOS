@@ -15,18 +15,43 @@ nonisolated struct RoutineUi: Equatable, Sendable {
 
     var isComplete: Bool { !exercises.isEmpty && completedCount == exercises.count }
 
+    var plannedExerciseCount: Int { exercises.count(where: { !$0.isOmitted }) }
+
+    var performedExerciseCount: Int {
+        exercises.count(where: { !$0.isOmitted && $0.isPerformed })
+    }
+
+    var hasUnperformedWork: Bool {
+        exercises.contains { !$0.isOmitted && !$0.isPerformed }
+    }
+
     func toggleCompleted(at position: Int) -> RoutineUi {
         mapping(position) { $0.isCompleted ? $0.notLogged() : $0.loggedAsPrescribed() }
     }
 
-    func markCompleted(at position: Int) -> RoutineUi {
-        mapping(position) { $0.loggedAsPrescribed() }
+    // The timer measured one span of time, so it may fill the one set that span
+    // was: never a second set, never a rep or a weight, and it ticks nothing.
+    func loggingMeasuredSeconds(_ seconds: Int, at position: Int) -> RoutineUi {
+        mapping(position) { exercise in
+            guard let measured = exercise.measuredSet else { return exercise }
+            var logged = exercise
+            logged.sets = exercise.sets.map { set in
+                guard set.setNumber == measured.setNumber else { return set }
+                var filled = set
+                filled.actualSeconds = seconds
+                filled.actualOrigin = .measured
+                return filled
+            }
+            return logged
+        }
     }
 
     func updating(_ set: ExerciseSet, at position: Int) -> RoutineUi {
         mapping(position) { exercise in
             var updated = exercise
-            updated.sets = exercise.sets.map { $0.setNumber == set.setNumber ? set : $0 }
+            updated.sets = exercise.sets.map {
+                $0.setNumber == set.setNumber ? set.originStamped(after: $0) : $0
+            }
             return updated.tickedFromItsSets()
         }
     }
@@ -35,9 +60,10 @@ nonisolated struct RoutineUi: Equatable, Sendable {
         mapping(position) { exercise in
             var updated = exercise
             let last = exercise.sets.last
+            let taken = exercise.sets.map(\.setNumber) + exercise.omittedSetNumbers
             updated.sets.append(
                 ExerciseSet(
-                    setNumber: exercise.sets.count + 1,
+                    setNumber: (taken.max() ?? 0) + 1,
                     targetReps: last?.targetReps,
                     targetWeightKg: last?.targetWeightKg,
                     targetSeconds: last?.targetSeconds
@@ -83,6 +109,7 @@ nonisolated struct RoutineUi: Equatable, Sendable {
                 blank.actualWeightKg = nil
                 blank.actualSeconds = nil
                 blank.isCompleted = false
+                blank.actualOrigin = .none
                 return blank
             }
             return reset
@@ -120,12 +147,14 @@ private nonisolated extension ExerciseUi {
             done.actualWeightKg = set.actualWeightKg ?? set.targetWeightKg
             done.actualSeconds = set.actualSeconds ?? set.targetSeconds
             done.isCompleted = true
+            done.actualOrigin = set.hasActuals ? set.actualOrigin : .confirmedTarget
             return done
         }
         return logged
     }
 
-    // The marks clear and the numbers stay: hand-typed logs must survive.
+    // The marks clear and the numbers keep both their values and their origin:
+    // dropping the origin would relabel a hand-typed log on the next write.
     func notLogged() -> ExerciseUi {
         var open = self
         open.isCompleted = false
@@ -142,5 +171,32 @@ private nonisolated extension ExerciseUi {
         var ticked = self
         ticked.isCompleted = !sets.isEmpty && sets.allSatisfy(\.isCompleted)
         return ticked
+    }
+
+    var isOmitted: Bool { !sets.isEmpty && sets.allSatisfy { $0.omittedBy != nil } }
+
+    var isPerformed: Bool {
+        let planned = sets.filter { $0.omittedBy == nil }
+        return planned.isEmpty ? isCompleted : planned.allSatisfy(\.isCompleted)
+    }
+}
+
+private nonisolated extension ExerciseSet {
+
+    var hasActuals: Bool {
+        actualReps != nil || actualWeightKg != nil || actualSeconds != nil
+    }
+
+    func originStamped(after stored: ExerciseSet) -> ExerciseSet {
+        let changed = actualReps != stored.actualReps
+            || actualWeightKg != stored.actualWeightKg
+            || actualSeconds != stored.actualSeconds
+        var stamped = self
+        stamped.actualOrigin = switch (hasActuals, changed) {
+        case (false, _): .none
+        case (true, true): .typed
+        case (true, false): stored.actualOrigin
+        }
+        return stamped
     }
 }

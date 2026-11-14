@@ -11,13 +11,22 @@ nonisolated enum InjuryGuard {
         injuries.contains { isRuledOut(exercise, by: $0) }
     }
 
-    // Offered, with a line on the card saying what to watch. One line, from
-    // the first injury the client declared that the movement touches.
-    static func caution(for exercise: CatalogExercise, injuries: [Injury]) -> Injury? {
-        injuries.first { injury in
-            !isRuledOut(exercise, by: injury)
-                && cautionPatterns[injury, default: []].contains(exercise.pattern)
-        }
+    // Offered, with a line on the card for every injury the movement touches.
+    // Narrowest first, because an injury that cautions few patterns says more
+    // about this movement than one that cautions many; never the order the
+    // client happened to answer in.
+    static func cautions(for exercise: CatalogExercise, injuries: [Injury]) -> [Injury] {
+        Injury.allCases.enumerated()
+            .filter { _, injury in
+                injuries.contains(injury) && !isRuledOut(exercise, by: injury)
+                    && cautionPatterns[injury, default: []].contains(exercise.pattern)
+            }
+            .sorted { (patternCount($0.element), $0.offset) < (patternCount($1.element), $1.offset) }
+            .map(\.element)
+    }
+
+    private static func patternCount(_ injury: Injury) -> Int {
+        cautionPatterns[injury, default: []].count
     }
 
     // Each clause is one the coaching brief already stated in prose; this is

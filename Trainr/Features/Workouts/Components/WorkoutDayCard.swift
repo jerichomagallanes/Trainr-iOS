@@ -5,9 +5,16 @@ struct WorkoutDayCard: View {
     // The equipment line is one AttributedString in two weights, so its label
     // size is read here rather than set by a modifier.
     @ScaledMetric(relativeTo: .subheadline) private var labelSize = TextRole.labelMedium.size
+    @Environment(\.dynamicTypeSize) private var textSize
     let weekday: String
     let day: WorkoutDay
     var isMissed = false
+    var isPartlyDone = false
+    var finishedEarly = false
+    var isAdjusted = false
+    // Nil while the stored day is unadjusted, when its own columns still say
+    // what the session is.
+    var derived: DerivedDay?
     let onTap: () -> Void
 
     private var headerIsDark: Bool { day.status != .notStarted }
@@ -32,7 +39,7 @@ struct WorkoutDayCard: View {
     }
 
     private var header: some View {
-        HStack(alignment: .top) {
+        headerLayout {
             VStack(alignment: .leading, spacing: 0) {
                 Text(weekday)
                     .font(.sectionTitle)
@@ -42,7 +49,12 @@ struct WorkoutDayCard: View {
             .foregroundStyle(headerIsDark ? Color.onSurfaceEmphasis : Color.onSurface)
             .frame(maxWidth: .infinity, alignment: .leading)
 
-            WorkoutStatusChip(status: day.status, isMissed: isMissed)
+            WorkoutStatusChip(
+                status: day.status, isMissed: isMissed, isPartlyDone: isPartlyDone,
+                finishedEarly: finishedEarly, isAdjusted: isAdjusted,
+                hasPerformedWork: day.hasPerformedWork
+            )
+            .layoutPriority(1)
         }
         .padding(Spacing.card)
         .background(headerIsDark ? Color.surfaceEmphasis : Color.surfaceCard)
@@ -57,7 +69,7 @@ struct WorkoutDayCard: View {
         HStack(spacing: Spacing.small) {
             VStack(alignment: .leading, spacing: Spacing.small) {
                 Label {
-                    Text(L10n.minutes(day.duration))
+                    Text(L10n.minutes(derived?.minutes ?? day.duration))
                         .font(.body14)
                         .foregroundStyle(Color.onSurfaceStrong)
                 } icon: {
@@ -66,14 +78,14 @@ struct WorkoutDayCard: View {
                 }
                 .font(.body14)
 
-                Text(L10n.exercisesCount(day.exerciseCount))
+                Text(L10n.exercisesCount(derived?.exerciseCount ?? day.exerciseCount))
                     .font(.labelLarge)
                     .foregroundStyle(Color.onSurface)
                     .padding(.horizontal, Spacing.small)
                     .padding(.vertical, Spacing.hairline)
                     .background(Color.surfaceSunken, in: .rect(cornerRadius: CornerRadius.small))
 
-                if !day.equipment.isEmpty {
+                if !equipment.isEmpty {
                     Text(equipmentLine)
                         .font(.body14)
                         .foregroundStyle(Color.onSurface)
@@ -87,8 +99,22 @@ struct WorkoutDayCard: View {
         .background(Color.surfaceCard)
     }
 
+    private var headerLayout: AnyLayout {
+        Self.sharesARow(at: textSize)
+            ? AnyLayout(HStackLayout(alignment: .top))
+            : AnyLayout(VStackLayout(alignment: .leading, spacing: Spacing.small))
+    }
+
+    // The chip keeps the width it asks for so its own label is never squeezed
+    // to a column of letters. Past this point it asks for more of the row than
+    // the weekday beside it has words to spare, which is how "Thursday" came to
+    // be drawn as "Thursd / ay"; from there the two take a line each.
+    static func sharesARow(at size: DynamicTypeSize) -> Bool { !size.isAccessibilitySize }
+
+    private var equipment: [String] { derived?.equipment ?? day.equipment }
+
     private var equipmentLine: AttributedString {
-        EquipmentLine.text(day.equipment, labelFont: TextRole.labelMedium.font(at: labelSize))
+        EquipmentLine.text(equipment, labelFont: TextRole.labelMedium.font(at: labelSize))
     }
 }
 

@@ -54,7 +54,7 @@ final class OnboardingFlowTests: XCTestCase {
         let weightField = app.textFields["70"]
         weightField.tap()
         weightField.typeText("72")
-        XCTAssertTrue(app.staticTexts["Normal weight"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["Healthy weight"].waitForExistence(timeout: 5))
         app.buttons["NEXT"].tap()
 
         XCTAssertTrue(app.staticTexts["YOUR FITNESS GOALS"].waitForExistence(timeout: 5))
@@ -73,7 +73,7 @@ final class OnboardingFlowTests: XCTestCase {
         setupNext.tap()
 
         XCTAssertTrue(app.staticTexts["LET'S KEEP YOU SAFE"].waitForExistence(timeout: 5))
-        app.buttons["Lower Back Pain"].tap()
+        app.switches["Lower Back Pain"].tap()
         app.buttons["SUBMIT"].tap()
 
     }
@@ -130,7 +130,7 @@ final class OnboardingFlowTests: XCTestCase {
         XCTAssertTrue(app.buttons["Start timer"].firstMatch.exists)
         XCTAssertTrue(app.staticTexts["Equipment: Dumbbell"].exists)
 
-        let slider = app.buttons["SLIDE TO FINISH THIS WORKOUT"]
+        let slider = app.buttons["SLIDE TO LOG THE WHOLE SESSION"]
         XCTAssertTrue(slider.waitForExistence(timeout: 5))
         let completed = app.staticTexts["DAY 1 COMPLETED"]
         // Slid until it takes rather than once. The nightly runner failed here

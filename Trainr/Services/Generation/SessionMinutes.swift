@@ -9,7 +9,7 @@ nonisolated enum SessionMinutes {
     private static let secondsPerRep = 3
 
     // Walking to the next station, changing the pin, finding a bench.
-    private static let transitionSeconds = 60
+    static let transitionSeconds = 60
 
     static func forExercise(
         measure: ExerciseMeasure,

@@ -11,35 +11,46 @@ struct ProPaywallView: View {
     @State private var selected: Package?
     @State private var openQuestion: String?
     @State private var isWorking = false
-    @State private var notice: String?
+    // The width a plan card needs before it has to break its own words.
+    @ScaledMetric(relativeTo: .subheadline) private var planMinWidth: CGFloat = 84
 
     var body: some View {
-        ScreenContent {
-            VStack(alignment: .leading, spacing: 0) {
-                title
-                Spacer().frame(height: Spacing.section)
-                features
-                Spacer().frame(height: Spacing.sectionGap)
-                comparison
-                Spacer().frame(height: Spacing.sectionGap)
-                questions
-                Spacer().frame(height: Spacing.sectionGap)
-                support
-                Spacer().frame(height: Spacing.large)
+        GeometryReader { screen in
+            ScreenContent {
+                VStack(alignment: .leading, spacing: 0) {
+                    title
+                    Spacer().frame(height: Spacing.section)
+                    features
+                    Spacer().frame(height: Spacing.sectionGap)
+                    comparison
+                    Spacer().frame(height: Spacing.sectionGap)
+                    questions
+                    Spacer().frame(height: Spacing.sectionGap)
+                    support
+                    Spacer().frame(height: Spacing.large)
+                }
             }
+            .background(Color.surfacePage)
+            .safeAreaInset(edge: .bottom, spacing: 0) { purchaseBar(in: screen.size) }
         }
-        .background(Color.surfacePage)
-        .safeAreaInset(edge: .bottom, spacing: 0) { purchaseBar }
         .task {
             await entitlements.refresh()
-            selected = Self.preferred(from: packages)
-        }
-        .alert(notice ?? "", isPresented: .constant(notice != nil)) {
-            Button(L10n.close) { notice = nil }
+            selected = preferred()
         }
     }
 
-    private var packages: [Package] { entitlements.offering?.availablePackages ?? [] }
+    private var packages: [Package] {
+        Self.sellable(entitlements.offering?.availablePackages ?? [])
+    }
+
+    private static let sold: Set<PackageType> = [.monthly, .annual, .lifetime]
+
+    // The three Trainr sells, the way Android filters them. A fourth added to
+    // the offering server-side would otherwise draw here with a raw store title
+    // and a blank billing line, without any release.
+    static func sellable(_ packages: [Package]) -> [Package] {
+        packages.filter { sold.contains($0.packageType) }
+    }
 
     private var title: some View {
         VStack(alignment: .leading, spacing: Spacing.extraSmall) {
@@ -64,13 +75,14 @@ struct ProPaywallView: View {
                     Image(systemName: reason.symbol)
                         .font(.oneOff(30))
                         .foregroundStyle(Color.brandStrong)
+                        .accessibilityHidden(true)
                     Text(reason.heading)
                         .font(.sectionTitle)
                         .foregroundStyle(Color.onSurface)
                     Text(reason.detail)
                         .font(.body16)
                         .foregroundStyle(Color.onSurfaceMuted)
-                    Text(L10n.proFreeLimit)
+                    Text(reason.freeLimit)
                         .font(.body12)
                         .foregroundStyle(Color.onSurfaceMuted)
                 }
@@ -97,6 +109,7 @@ struct ProPaywallView: View {
                 .font(.oneOff(18))
                 .foregroundStyle(Color.brandStrong)
                 .frame(width: 28, height: 28)
+                .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 2) {
                 Text(heading)
                     .font(.labelLarge)
@@ -143,6 +156,16 @@ struct ProPaywallView: View {
                 mark(row.pro).frame(width: 72)
             }
             .padding(.vertical, Spacing.small)
+            // A tick on its own belongs to no column, so the line is read as one
+            // sentence rather than as three unrelated elements.
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel(PaywallComparison.rowLabel(
+                feature: row.label,
+                freeHead: L10n.proCompareFree,
+                free: PaywallComparison.word(row.free),
+                proHead: L10n.proComparePro,
+                pro: PaywallComparison.word(row.pro)
+            ))
         }
     }
 
@@ -189,6 +212,7 @@ struct ProPaywallView: View {
                     Image(systemName: isOpen ? "chevron.up" : "chevron.down")
                         .font(.oneOff(12, .semibold))
                         .foregroundStyle(Color.onSurfaceMuted)
+                        .accessibilityHidden(true)
                 }
                 if isOpen {
                     Text(entry.answer)
@@ -228,123 +252,109 @@ struct ProPaywallView: View {
         }
     }
 
-    private var purchaseBar: some View {
-        VStack(spacing: Spacing.small) {
-            if packages.isEmpty {
-                Text(L10n.proUnavailable)
-                    .font(.body14)
-                    .foregroundStyle(Color.onSurfaceMuted)
-            } else {
-                HStack(spacing: Spacing.small) {
-                    ForEach(packages, id: \.identifier) { planCard($0) }
+    // The offer is the one part of the bar that grows without bound, so it is
+    // held to a share of the screen of its own and the call to action, the
+    // renewal note and the way out are laid out after it. The bar keeps a
+    // ceiling of its own so it can never take the page, and says so when the
+    // text setting leaves it holding something back.
+    private func purchaseBar(in screen: CGSize) -> some View {
+        CappedScroll(ceiling: screen.height * PinnedShare.purchaseBar) {
+            VStack(spacing: Spacing.small) {
+                CappedScroll(ceiling: screen.height * PinnedShare.offer) {
+                    offer(in: screen.width)
                 }
-            }
-            PrimaryButton(title: callToAction, isEnabled: selected != nil && !isWorking) {
-                Task { await buy() }
-            }
-            if let note = renewalNote {
-                Text(note)
-                    .font(.body12)
+                PrimaryButton(title: callToAction, isEnabled: selected != nil && !isWorking) {
+                    Task { await buy() }
+                }
+                if let note = renewalNote {
+                    Text(note)
+                        .font(.body12)
+                        .foregroundStyle(Color.onSurfaceMuted)
+                        .multilineTextAlignment(.center)
+                }
+                Button(L10n.proNotNow, action: onClose)
+                    .font(.labelMedium)
                     .foregroundStyle(Color.onSurfaceMuted)
-                    .multilineTextAlignment(.center)
             }
-            Button(L10n.proNotNow, action: onClose)
-                .font(.labelMedium)
-                .foregroundStyle(Color.onSurfaceMuted)
+            .padding(Spacing.large)
         }
-        .padding(Spacing.large)
         .pinnedBar()
     }
 
-    private func planCard(_ package: Package) -> some View {
-        let isSelected = selected?.identifier == package.identifier
-        return Button { selected = package } label: {
-            VStack(spacing: 0) {
-                if let saved = saving(on: package) {
-                    Text(L10n.proSavePercent(saved))
-                        .font(.body12)
-                        .foregroundStyle(Color.onBrand)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 3)
-                        .background(Color.brandLarge)
-                }
-                VStack(spacing: 2) {
-                    Text(term(package))
-                        .font(.labelMedium)
-                        .foregroundStyle(isSelected ? Color.onSurfaceSelected : .onSurface)
-                    Text(package.storeProduct.localizedPriceString)
-                        .font(.sectionTitle)
-                        .foregroundStyle(isSelected ? Color.onSurfaceSelected : .onSurface)
-                    Text(billing(package))
-                        .font(.body12)
-                        .foregroundStyle(isSelected ? Color.onSurfaceSelected : .onSurfaceMuted)
-                }
-                .padding(.vertical, Spacing.small)
-                .padding(.horizontal, 4)
-                .frame(maxWidth: .infinity)
+    // Side by side while every card still has room for its own words; once the
+    // text setting takes that away they stack full width, where a price has the
+    // whole line and nothing has to be broken or cut.
+    @ViewBuilder
+    private func offer(in width: CGFloat) -> some View {
+        if packages.isEmpty {
+            Text(L10n.proUnavailable)
+                .font(.body14)
+                .foregroundStyle(Color.onSurfaceMuted)
+        } else if fitsAbreast(in: width) {
+            HStack(spacing: Spacing.small) {
+                ForEach(packages, id: \.identifier) { planCard($0) }
             }
-            .frame(maxWidth: .infinity)
-            .background(isSelected ? Color.surfaceSelected : Color.surfaceCard)
-            .clipShape(.rect(cornerRadius: CornerRadius.medium))
-            .overlay {
-                RoundedRectangle(cornerRadius: CornerRadius.medium)
-                    .strokeBorder(
-                        isSelected ? Color.brandLarge : Color.outlineControl, lineWidth: 1
-                    )
+        } else {
+            VStack(spacing: Spacing.small) {
+                ForEach(packages, id: \.identifier) { planCard($0, stacked: true) }
             }
         }
-        .buttonStyle(.plain)
+    }
+
+    private func fitsAbreast(in width: CGFloat) -> Bool {
+        Self.fitsAbreast(packages.count, minWidth: planMinWidth, within: width)
+    }
+
+    static func fitsAbreast(_ count: Int, minWidth: CGFloat, within width: CGFloat) -> Bool {
+        guard count > 1 else { return true }
+        let cards = CGFloat(count)
+        let needed = minWidth * cards + Spacing.small * (cards - 1)
+        return needed <= width - Spacing.large * 2
+    }
+
+    private func planCard(_ package: Package, stacked: Bool = false) -> some View {
+        PlanCard(
+            term: Self.term(package),
+            price: package.storeProduct.localizedPriceString,
+            billing: Self.billing(package),
+            saved: saving(on: package),
+            trial: trial(for: package),
+            isSelected: selected?.identifier == package.identifier,
+            stacked: stacked,
+            onSelect: { selected = package }
+        )
+    }
+
+    // The store is the only place that knows whether this buyer is still
+    // eligible for the introductory offer, so the trial is only ever named
+    // where the store says so.
+    private func trial(for package: Package) -> String? {
+        let product = package.storeProduct
+        guard package.packageType != .lifetime,
+              entitlements.eligibleTrials.contains(product.productIdentifier),
+              let offer = product.introductoryDiscount,
+              offer.paymentMode == .freeTrial
+        else { return nil }
+        return Self.trialPeriod(offer.subscriptionPeriod)
     }
 
     // Nothing for a lifetime purchase, which never renews, and naming the trial
     // where one exists: an introductory offer has to say what it costs once it
-    // ends, and the store is the only place that knows whether this buyer is
-    // still eligible for it.
+    // ends.
     private var renewalNote: String? {
         guard selected?.packageType != .lifetime else { return nil }
-        guard let product = selected?.storeProduct,
-              entitlements.eligibleTrials.contains(product.productIdentifier),
-              let offer = product.introductoryDiscount,
-              offer.paymentMode == .freeTrial,
-              let period = Self.trialPeriod(offer.subscriptionPeriod)
-        else { return L10n.proCancelAnytime }
-        return L10n.proTrialThen(period, product.localizedPriceString)
-    }
-
-    // Held to the unit the store reported. Left to choose for itself the
-    // formatter rounds a seven day trial up to "1 week", which is not the offer
-    // that was configured and not what the receipt will say.
-    static func trialPeriod(_ period: SubscriptionPeriod) -> String? {
-        var components = DateComponents()
-        let unit: NSCalendar.Unit
-        switch period.unit {
-        case .day:
-            components.day = period.value
-            unit = .day
-        case .week:
-            components.weekOfMonth = period.value
-            unit = .weekOfMonth
-        case .month:
-            components.month = period.value
-            unit = .month
-        case .year:
-            components.year = period.value
-            unit = .year
-        }
-        let formatter = DateComponentsFormatter()
-        formatter.unitsStyle = .full
-        formatter.allowedUnits = [unit]
-        return formatter.string(from: components)
+        guard let selected, let trial = trial(for: selected) else { return L10n.proCancelAnytime }
+        return L10n.proTrialThen(trial, selected.storeProduct.localizedPriceString)
     }
 
     private var callToAction: String {
         guard let selected else { return L10n.proSubscribe }
-        return selected.packageType == .lifetime
-            ? L10n.proBuyLifetime
-            : L10n.proSubscribeTo(term(selected))
+        if selected.packageType == .lifetime { return L10n.proBuyLifetime }
+        if trial(for: selected) != nil { return L10n.proStartTrial }
+        return L10n.proSubscribeTo(Self.term(selected))
     }
 
-    private func term(_ package: Package) -> String {
+    static func term(_ package: Package) -> String {
         switch package.packageType {
         case .annual: L10n.proYearly
         case .monthly: L10n.proMonthly
@@ -353,7 +363,7 @@ struct ProPaywallView: View {
         }
     }
 
-    private func billing(_ package: Package) -> String {
+    static func billing(_ package: Package) -> String {
         switch package.packageType {
         case .annual: L10n.proBilledAnnually
         case .monthly: L10n.proBilledMonthly
@@ -381,19 +391,18 @@ struct ProPaywallView: View {
         isWorking = true
         _ = await entitlements.purchase(selected)
         isWorking = false
-        notice = entitlements.purchaseNotice
     }
 
+    // The notice lives with the entitlement rather than with this view, so a
+    // restore that lands swaps the screen underneath it and is still read.
     private func restore() async {
         isWorking = true
-        let restored = await entitlements.restore()
+        await entitlements.restore()
         isWorking = false
-        notice = entitlements.purchaseNotice ?? (restored ? L10n.proRestored : L10n.proNothingToRestore)
     }
 
-    // The annual plan when there is one, because that is the one being recommended.
-    private static func preferred(from packages: [Package]) -> Package? {
-        packages.first { $0.packageType == .annual } ?? packages.first
+    private func preferred() -> Package? {
+        Self.preferred(packages, annual: { $0.packageType == .annual }, trial: { trial(for: $0) != nil })
     }
 
     private struct Row {
@@ -415,9 +424,10 @@ struct ProPaywallView: View {
         // is finished or over, which is a promise the plan screen keeps.
         Row(label: L10n.proCompareGenerated,
             free: .text(L10n.proCompareOne), pro: .text(L10n.proCompareEveryWeek)),
-        Row(label: L10n.proCompareRepeat, free: .no, pro: .yes),
+        Row(label: L10n.proCompareRepeat, free: .yes, pro: .yes),
         Row(label: L10n.proCompareRewrite, free: .no, pro: .yes),
         Row(label: L10n.proCompareFresh, free: .no, pro: .yes),
+        Row(label: L10n.proCompareAdjust, free: .text(L10n.proCompareOne), pro: .yes),
         Row(label: L10n.proCompareAds, free: .no, pro: .yes)
     ]
 
@@ -427,7 +437,7 @@ struct ProPaywallView: View {
         Question(question: L10n.proFaqHumanQ, answer: L10n.proFaqHumanA),
         Question(question: L10n.proFaqRenewQ, answer: L10n.proFaqRenewA),
         Question(question: L10n.proFaqCancelQ, answer: L10n.proFaqCancelA),
-        Question(question: L10n.proFaqDevicesQ, answer: L10n.proFaqDevicesA)
+        Question(question: L10n.proFaqDevicesQ, answer: L10n.proFaqDevicesAApple)
     ]
 
 }
@@ -436,4 +446,25 @@ private enum Mark {
     case yes
     case no
     case text(String)
+}
+
+enum PaywallComparison {
+
+    static func rowLabel(
+        feature: String,
+        freeHead: String,
+        free: String,
+        proHead: String,
+        pro: String
+    ) -> String {
+        L10n.proCompareRow(feature, freeHead, free, proHead, pro)
+    }
+
+    fileprivate static func word(_ mark: Mark) -> String {
+        switch mark {
+        case .yes: L10n.proCompareYes
+        case .no: L10n.proCompareNo
+        case .text(let text): text
+        }
+    }
 }
