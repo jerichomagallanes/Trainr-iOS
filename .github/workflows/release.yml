@@ -81,8 +81,9 @@ jobs:
             --jq '.artifacts[] | select(.expired == false and (.name | startswith("trainr-appstore-")))
                   | "\(.name) \(.workflow_run.id) \(.workflow_run.head_sha) \(.created_at)"' | sort -k4 -r)
           if [ -z "$found" ]; then
-            echo "::error::Nothing on sale was built from a commit in this history (or its Test release artifact has expired). Fast-forward main to pre-release after the App Store release is live; if the artifact is gone (90 days), tag by hand."
-            exit 1
+            echo "nothing=true" >> "$GITHUB_OUTPUT"
+            echo "::notice::Nothing on sale was built from a commit in this history, so there is nothing to tag. If main was just fast-forwarded before the App Store release went live, re-run this workflow once it is; if the artifact has expired (90 days), tag by hand."
+            exit 0
           fi
           read -r name run sha version <<< "$found"
           declared=$(git show "$sha:Trainr.xcodeproj/project.pbxproj" | sed -nE 's/^[[:space:]]*MARKETING_VERSION = ([0-9][0-9.]*);/\1/p' | sort -u | head -1)
@@ -103,13 +104,13 @@ jobs:
         env:
           TAG: ${{ steps.version.outputs.tag }}
         run: |
-          if git rev-parse -q --verify "refs/tags/$TAG" >/dev/null; then
+          if [ -n "$TAG" ] && git rev-parse -q --verify "refs/tags/$TAG" >/dev/null; then
             echo "released=true" >> "$GITHUB_OUTPUT"
             echo "::notice::$TAG already exists at $(git rev-parse --short "$TAG^{commit}"); nothing to do."
           fi
 
       - name: Fetch the build the test release exported
-        if: steps.existing.outputs.released != 'true'
+        if: steps.existing.outputs.released != 'true' && steps.version.outputs.nothing != 'true'
         id: ipa
         env:
           GH_TOKEN: ${{ github.token }}
@@ -125,7 +126,7 @@ jobs:
           echo "Took the build from Test release run $RUN_ID."
 
       - name: Tag the commit and publish the release
-        if: steps.existing.outputs.released != 'true'
+        if: steps.existing.outputs.released != 'true' && steps.version.outputs.nothing != 'true'
         env:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ steps.version.outputs.tag }}
