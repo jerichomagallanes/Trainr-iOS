@@ -1,6 +1,6 @@
 # 🏋️ Trainr - Workout Planner
 
-Trainr is an iOS workout planner that writes your week from your goal, your equipment and your days, bends it when life gets in the way, and builds next week from what you actually did. Everything runs on the phone: the plan is generated on-device, and a small language model reads the free-text "Adjust today" note without anything leaving the device. Built with Swift and SwiftUI, it keeps a clean separation between its models, services and features.
+Trainr is an iOS workout planner that writes your week from your goal, your equipment and your days, adjusts it when life gets in the way, and builds next week from what you actually did. Everything runs on the phone: the plan is generated on-device, and a small language model reads the free-text "Adjust today" note without anything leaving the device. Built with Swift and SwiftUI, it keeps a clean separation between its models, services and features.
 
 [![Download on the App Store](https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/en-us?size=180x60)](https://apps.apple.com/jp/app/trainr-workout-planner/id6809207852)
 
