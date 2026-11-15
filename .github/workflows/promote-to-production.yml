@@ -9,7 +9,7 @@ name: Promote to production
 #
 # There is deliberately no release branch. Production is reached by promoting a
 # build, not by merging. After a release ships, version/X.Y merges into main for
-# the record and the release is tagged there.
+# the record, the release is tagged there, and the branch is deleted.
 on:
   workflow_dispatch:
     inputs:

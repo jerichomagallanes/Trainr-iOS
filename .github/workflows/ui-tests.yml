@@ -32,13 +32,13 @@ name: UI tests
 # stays visible instead of silent.
 on:
   pull_request:
-    branches: [main, version/2.0, pre-release]
+    branches: [main, 'version/**', pre-release]
     paths-ignore:
       - '**/*.md'
       - 'docs/**'
       - '.gitignore'
   push:
-    branches: [version/2.0]
+    branches: ['version/**']
   schedule:
     - cron: '0 18 * * *'  # 03:00 JST daily, against main
   workflow_dispatch:
