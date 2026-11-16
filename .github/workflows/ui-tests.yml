@@ -30,6 +30,14 @@ name: UI tests
 # still fails the job. The published results honour that retry rather than
 # reporting the discarded first attempt, and list what was retried so a flake
 # stays visible instead of silent.
+#
+# Two more guards against the runner itself. A hosted VM sometimes comes up
+# with the iOS runtime installed but no simulator registered, so a step finds
+# or creates the device, boots it and waits for it before xcodebuild is asked
+# for it. And a shard whose attempt died of the simulator (no device, the app
+# failing to launch, the connection lost) rather than of a test is reset and
+# run once more; a shard with a genuinely failed test is not, so red still
+# means a test. The rerun is announced in the job summary.
 on:
   pull_request:
     branches: [main, 'version/**', pre-release]
@@ -51,7 +59,7 @@ permissions:
   contents: read
 
 env:
-  DESTINATION: platform=iOS Simulator,name=iPhone 17 Pro
+  SIMULATOR: iPhone 17 Pro
 
 jobs:
   ui-tests:
@@ -79,25 +87,14 @@ jobs:
       - name: Check every test class is in a shard
         run: scripts/check-ui-shards.sh
 
+      - name: Prepare simulator
+        id: sim
+        run: echo "udid=$(scripts/prepare-simulator.sh "$SIMULATOR")" >> "$GITHUB_OUTPUT"
+
       - name: Run UI tests
         env:
           CLASSES: ${{ matrix.classes }}
-        run: |
-          set -o pipefail
-          only=()
-          for class in $CLASSES; do
-            only+=("-only-testing:TrainrUITests/$class")
-          done
-          xcodebuild test \
-            -project Trainr.xcodeproj \
-            -scheme Trainr \
-            -destination "$DESTINATION" \
-            "${only[@]}" \
-            -resultBundlePath UITestResults.xcresult \
-            -parallel-testing-enabled NO \
-            -retry-tests-on-failure \
-            -test-iterations 2 \
-            | xcbeautify --report junit --report-path build/reports
+        run: scripts/run-ui-shard.sh "${{ steps.sim.outputs.udid }}" $CLASSES
 
       - name: Publish test results
         if: ${{ !cancelled() }}
@@ -117,5 +114,5 @@ jobs:
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: ui-test-results-${{ matrix.shard }}
-          path: UITestResults.xcresult
+          path: UITestResults*.xcresult
           retention-days: 14
